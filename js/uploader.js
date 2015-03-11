@@ -1,17 +1,17 @@
 /**
  * uploader.js
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
  
-!function($, mollify) {
+!function($, kloudspeaker) {
 
 	"use strict";
 
-	mollify.MollifyHTML5Uploader = function() {
+	kloudspeaker.HTML5Uploader = function() {
 		var t = this;
 		
 		// prevent default file drag&drop		
@@ -21,8 +21,8 @@
 		});
 		
 		/*this.open = function(folder) {
-			var $d = mollify.dom.template("mollify-tmpl-uploader-dlg");
-			mollify.ui.dialogs.custom({
+			var $d = kloudspeaker.dom.template("kloudspeaker-tmpl-uploader-dlg");
+			kloudspeaker.ui.dialogs.custom({
 				element: $d,
 				"title-key": 'fileUploadDialogTitle',
 				buttons: [
@@ -39,15 +39,15 @@
 		};*/
 		
 		/*this.onOpen = function($d, dlg, folder) {
-			//var $form = $d.find(".mollify-uploader-form");//.attr("action", );
+			//var $form = $d.find(".kloudspeaker-uploader-form");//.attr("action", );
 			var $input = $d.find("input").on('change', function() {
 				//if (!this.files || this.files.length == 0) return;
 				//if (this.files.length == 1) alert(this.files[0].name);
 				//else alert(this.files.length);
 			}).fileupload({
-				url: mollify.service.url("filesystem/"+folder.id+'/files/'),
+				url: kloudspeaker.service.url("filesystem/"+folder.id+'/files/'),
 				dataType: 'json',
-				dropZone: $d.find(".mollify-uploader").bind("dragover", function(e) { e.stopPropagation(); }),
+				dropZone: $d.find(".kloudspeaker-uploader").bind("dragover", function(e) { e.stopPropagation(); }),
 				drop: function (e, data) {
 					alert('Dropped: ' + data.files.length);	//TODO
 				},
@@ -62,7 +62,7 @@
 		};*/
 		
 		this._getUploaderSettings = function() {
-			return mollify.settings["html5-uploader"] || {};	
+			return kloudspeaker.settings["html5-uploader"] || {};	
 		};
 		
 		this._initDropZoneEffects = function($e) {
@@ -89,8 +89,8 @@
 		};
 		
 		this.initWidget = function($e, o) {
-			var $d = mollify.dom.template("mollify-tmpl-uploader-widget").appendTo($e);
-			mollify.ui.handlers.localize($e);
+			var $d = kloudspeaker.dom.template("kloudspeaker-tmpl-uploader-widget").appendTo($e);
+			kloudspeaker.ui.handlers.localize($e);
 			var $dropZone = o.dropElement || $e;
 			var started = false;
 			var rejected = false;
@@ -171,7 +171,7 @@
 		
 		return {
 			initUploadWidget : function($e, o) {
-				mollify.templates.load("mollify-uploader", mollify.templates.url("uploader.html")).done(function() {
+				kloudspeaker.templates.load("kloudspeaker-uploader", kloudspeaker.templates.url("uploader.html")).done(function() {
 					t.initWidget($e, o);
 				});
 			},
@@ -184,7 +184,7 @@
 				var failed = false;
 				var attributes = '';
 				if (t._getUploaderSettings()["allow-folders"]) attributes = "directory webkitdirectory mozdirectory";
-				var $dndUploader = $('<input type="file" class="mollify-mainview-uploader-input" name="uploader-html5[]" multiple="multiple"' + attributes + '></input>').appendTo($form).fileupload($.extend({
+				var $dndUploader = $('<input type="file" class="kloudspeaker-mainview-uploader-input" name="uploader-html5[]" multiple="multiple"' + attributes + '></input>').appendTo($form).fileupload($.extend({
 					url: '',
 					dataType: 'json',
 					dropZone: h.dropElement,
@@ -269,4 +269,4 @@
 			}
 		};
 	}
-}(window.jQuery, window.mollify);
+}(window.jQuery, window.kloudspeaker);

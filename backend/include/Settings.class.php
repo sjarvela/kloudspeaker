@@ -3,10 +3,10 @@
 /**
  * Settings.class.php
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
 class Settings {
@@ -30,7 +30,7 @@ class Settings {
 		"enable_folder_protection" => FALSE,
 		"enable_guest_mode" => FALSE,
 
-		"server_hash_salt" => "MOLLIFY_SERVER_SALT",
+		"server_hash_salt" => "kloudspeaker_SERVER_SALT",
 		"email_login" => FALSE,
 		"allowed_file_upload_types" => array(),
 		"forbidden_file_upload_types" => array(),

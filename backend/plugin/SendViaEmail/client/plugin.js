@@ -1,13 +1,13 @@
 /**
  * plugin.js
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
-! function($, mollify) {
+! function($, kloudspeaker) {
 
     "use strict"; // jshint ;_;
 
@@ -56,5 +56,5 @@
         };
     }
 
-    mollify.plugins.register(new SendViaEmailPlugin());
-}(window.jQuery, window.mollify);
+    kloudspeaker.plugins.register(new SendViaEmailPlugin());
+}(window.jQuery, window.kloudspeaker);

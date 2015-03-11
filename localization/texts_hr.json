@@ -371,10 +371,10 @@
 		"registrationConfirmSubmit": "Potvrdi",
 		"registrationConfirmFailed": "Upis se ne može potvrditi",
 		"registrationConfirmSuccessTitle": "Upis dovršen",
-		"registrationConfirmSuccessMessage": "Upis je dovršen, možete se prijaviti na Mollify.",
+		"registrationConfirmSuccessMessage": "Upis je dovršen, možete se prijaviti na kloudspeaker.",
 		"registrationConfirmSuccessWaitApprovalTitle": "Upis dovršen",
 		"registrationConfirmSuccessWaitApprovalMessage": "Upis je dovršen, ali čeka se dopuštenje.",
-		"registrationContinueButton": "Prijava na Mollify",
+		"registrationContinueButton": "Prijava na kloudspeaker",
 		
 		"pluginRegistrationAdminNavTitle" : "Upisi",
 		"pluginRegistrationAdminAddRegistrationTitle" : "Dodaj upis",

@@ -1,17 +1,17 @@
 /**
  * plugin.js
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
-! function($, mollify) {
+! function($, kloudspeaker) {
 
     "use strict"; // jshint ;_;
 
-    mollify.view.config.admin.Registration = {
+    kloudspeaker.view.config.admin.Registration = {
         RegistrationsView: function() {
             var that = this;
 
@@ -21,8 +21,8 @@
 
             this.init = function(s, cv) {
                 that._cv = cv;
-                that.title = mollify.ui.texts.get("pluginRegistrationAdminNavTitle");
-                that._timestampFormatter = new mollify.ui.formatters.Timestamp(mollify.ui.texts.get('shortDateTimeFormat'));
+                that.title = kloudspeaker.ui.texts.get("pluginRegistrationAdminNavTitle");
+                that._timestampFormatter = new kloudspeaker.ui.formatters.Timestamp(kloudspeaker.ui.texts.get('shortDateTimeFormat'));
             }
 
             this.onActivate = function($c) {
@@ -31,14 +31,14 @@
 
                 var updateList = function() {
                     that._cv.showLoading(true);
-                    mollify.service.get("registration/list/").done(function(l) {
+                    kloudspeaker.service.get("registration/list/").done(function(l) {
                         list = l;
                         listView.table.set(list);
                         that._cv.showLoading(false);
                     });
                 };
 
-                listView = new mollify.view.ConfigListView($c, {
+                listView = new kloudspeaker.view.ConfigListView($c, {
                     actions: [{
                         id: "action-add",
                         content: '<i class="icon-plus"></i>',
@@ -51,8 +51,8 @@
                         cls: "btn-danger",
                         depends: "table-selection",
                         callback: function(sel) {
-                            mollify.service.del("registration/list/", {
-                                ids: mollify.helpers.extractValue(sel, "id")
+                            kloudspeaker.service.del("registration/list/", {
+                                ids: kloudspeaker.helpers.extractValue(sel, "id")
                             }).done(updateList);
                         }
                     }, {
@@ -74,35 +74,35 @@
                             }
                         }, {
                             id: "id",
-                            title: mollify.ui.texts.get('configAdminTableIdTitle')
+                            title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
                         }, {
                             id: "name",
-                            title: mollify.ui.texts.get('pluginRegistrationAdminNameTitle')
+                            title: kloudspeaker.ui.texts.get('pluginRegistrationAdminNameTitle')
                         }, {
                             id: "email",
-                            title: mollify.ui.texts.get('pluginRegistrationAdminEmailTitle')
+                            title: kloudspeaker.ui.texts.get('pluginRegistrationAdminEmailTitle')
                         }, {
                             id: "key",
-                            title: mollify.ui.texts.get('pluginRegistrationAdminKeyTitle')
+                            title: kloudspeaker.ui.texts.get('pluginRegistrationAdminKeyTitle')
                         }, {
                             id: "time",
-                            title: mollify.ui.texts.get('pluginRegistrationAdminTimeTitle'),
+                            title: kloudspeaker.ui.texts.get('pluginRegistrationAdminTimeTitle'),
                             formatter: that._timestampFormatter
                         }, {
                             id: "confirmed",
-                            title: mollify.ui.texts.get('pluginRegistrationAdminConfirmedTitle'),
+                            title: kloudspeaker.ui.texts.get('pluginRegistrationAdminConfirmedTitle'),
                             formatter: that._timestampFormatter
                         }, {
                             id: "approve",
-                            title: mollify.ui.texts.get('pluginRegistrationAdminApproveTitle'),
+                            title: kloudspeaker.ui.texts.get('pluginRegistrationAdminApproveTitle'),
                             type: "action",
                             content: '<i class="icon-thumbs-up"></i>',
                             enabled: function(r) {
-                                return mollify.session.plugins.Registration.require_approval && r.confirmed;
+                                return kloudspeaker.session.plugins.Registration.require_approval && r.confirmed;
                             }
                         }, {
                             id: "remove",
-                            title: mollify.ui.texts.get('configAdminActionRemoveTitle'),
+                            title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'),
                             type: "action",
                             content: '<i class="icon-trash"></i>'
                         }],
@@ -112,9 +112,9 @@
                         },
                         onRowAction: function(id, r) {
                             if (id == "remove") {
-                                mollify.service.del("registration/list/" + r.id).done(updateList);
+                                kloudspeaker.service.del("registration/list/" + r.id).done(updateList);
                             } else if (id == "approve") {
-                                mollify.service.post("registration/approve/" + r.id).done(updateList);
+                                kloudspeaker.service.post("registration/approve/" + r.id).done(updateList);
                             }
                         }
                     }
@@ -123,23 +123,23 @@
             };
 
             this.onAddRegistration = function(cb) {
-                mollify.templates.load("plugin-registration-content", mollify.helpers.noncachedUrl(mollify.plugins.adminUrl("Registration", "content.html"))).done(function() {
+                kloudspeaker.templates.load("plugin-registration-content", kloudspeaker.helpers.noncachedUrl(kloudspeaker.plugins.adminUrl("Registration", "content.html"))).done(function() {
                     var $content = false;
                     var $name = false;
                     var $email = false;
                     var $password = false;
 
-                    mollify.ui.dialogs.custom({
+                    kloudspeaker.ui.dialogs.custom({
                         resizable: true,
                         initSize: [600, 400],
-                        title: mollify.ui.texts.get('pluginRegistrationAdminAddRegistrationTitle'),
-                        content: mollify.dom.template("mollify-tmpl-registration-add"),
+                        title: kloudspeaker.ui.texts.get('pluginRegistrationAdminAddRegistrationTitle'),
+                        content: kloudspeaker.dom.template("kloudspeaker-tmpl-registration-add"),
                         buttons: [{
                             id: "yes",
-                            "title": mollify.ui.texts.get('dialogSave')
+                            "title": kloudspeaker.ui.texts.get('dialogSave')
                         }, {
                             id: "no",
-                            "title": mollify.ui.texts.get('dialogCancel')
+                            "title": kloudspeaker.ui.texts.get('dialogCancel')
                         }],
                         "on-button": function(btn, d) {
                             if (btn.id == 'no') {
@@ -152,21 +152,21 @@
                             var password = $password.val();
                             if (!username || username.length === 0 || !password || password.length === 0) return;
 
-                            mollify.service.post("registration/create", {
+                            kloudspeaker.service.post("registration/create", {
                                 name: username,
                                 password: window.Base64.encode(password),
                                 email: email
                             }).done(d.close).done(cb).fail(function(er) {
                                 if (er.code == 301) {
                                     this.handled = true;
-                                    mollify.ui.dialogs.error({
-                                        message: mollify.ui.texts.get('registrationFailedDuplicateNameOrEmail')
+                                    kloudspeaker.ui.dialogs.error({
+                                        message: kloudspeaker.ui.texts.get('registrationFailedDuplicateNameOrEmail')
                                     });
                                 }
                             });
                         },
                         "on-show": function(h, $d) {
-                            $content = $d.find("#mollify-registration-add-dialog");
+                            $content = $d.find("#kloudspeaker-registration-add-dialog");
                             $name = $d.find("#usernameField");
                             $email = $d.find("#emailField");
                             $password = $d.find("#passwordField");
@@ -207,12 +207,12 @@
         }
     }
 
-    mollify.admin.plugins.Registration = {
+    kloudspeaker.admin.plugins.Registration = {
         resources: {
             texts: false
         },
         views: [
-            new mollify.view.config.admin.Registration.RegistrationsView()
+            new kloudspeaker.view.config.admin.Registration.RegistrationsView()
         ]
     };
-}(window.jQuery, window.mollify);
+}(window.jQuery, window.kloudspeaker);

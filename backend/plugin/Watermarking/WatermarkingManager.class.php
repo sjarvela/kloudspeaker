@@ -3,10 +3,10 @@
 /**
  * WatermarkingManager.class.php
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL license.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
 class WatermarkingManager {
@@ -102,7 +102,7 @@ class WatermarkingManager {
 	}
 
 	private function getTempFile($item, $type) {
-		return rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . uniqid('Mollify', true) . $type;
+		return rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . uniqid('kloudspeaker', true) . $type;
 	}
 
 	private function getMarker($t, $def) {

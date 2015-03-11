@@ -1,35 +1,35 @@
-<script id="mollify-tmpl-configview" type="text/x-jquery-tmpl">
-	<div id="mollify-configview">
-		<h2 id="mollify-configview-header"></h2>
+<script id="kloudspeaker-tmpl-configview" type="text/x-jquery-tmpl">
+	<div id="kloudspeaker-configview">
+		<h2 id="kloudspeaker-configview-header"></h2>
 		
-		<div id="mollify-configview-content">
+		<div id="kloudspeaker-configview-content">
 		</div>
 	</div>
 </script>
 
-<script id="mollify-tmpl-configlistview" type="text/x-jquery-tmpl">
-	<div class="mollify-configlistview">
-		<div class="mollify-configlistview-header">
+<script id="kloudspeaker-tmpl-configlistview" type="text/x-jquery-tmpl">
+	<div class="kloudspeaker-configlistview">
+		<div class="kloudspeaker-configlistview-header">
 			{{if title}}
-			<div class="mollify-configlistview-title">${title}</div>
+			<div class="kloudspeaker-configlistview-title">${title}</div>
 			{{/if}}
 			{{if actions}}
-			<div class="mollify-configlistview-actions">
-				{{tmpl(actions) "#mollify-tmpl-configlistview-action"}}
+			<div class="kloudspeaker-configlistview-actions">
+				{{tmpl(actions) "#kloudspeaker-tmpl-configlistview-action"}}
 			</div>
 			{{/if}}
-			<div class="mollify-configlistview-options"></div>
+			<div class="kloudspeaker-configlistview-options"></div>
 		</div>
-		<table class="mollify-configlistview-table"></table>
+		<table class="kloudspeaker-configlistview-table"></table>
 	</div>
 </script>
 
-<script id="mollify-tmpl-configlistview-action" type="text/x-jquery-tmpl">
-	<a id="mollify-configlistview-action-${id}" class="mollify-configlistview-action btn ${cls}">{{if content}}{{html content}}{{/if}}{{if title}}${title}{{/if}}</a>
+<script id="kloudspeaker-tmpl-configlistview-action" type="text/x-jquery-tmpl">
+	<a id="kloudspeaker-configlistview-action-${id}" class="kloudspeaker-configlistview-action btn ${cls}">{{if content}}{{html content}}{{/if}}{{if title}}${title}{{/if}}</a>
 </script>
 
-<script id="mollify-tmpl-config-useraccountview" type="text/x-jquery-tmpl">
-	<div id="mollify-config-useraccountview">
+<script id="kloudspeaker-tmpl-config-useraccountview" type="text/x-jquery-tmpl">
+	<div id="kloudspeaker-config-useraccountview">
 		<form class="form-horizontal">
 			<div class="control-group">
 				<label class="control-label localized" text-key="configUserAccountUsernameTitle"></label>
@@ -50,8 +50,8 @@
 	</div>
 </script>
 
-<script id="mollify-tmpl-config-admin-user-searchoptions" type="text/x-jquery-tmpl">
-	<div class="mollify-admin-user-searchoptions accordion">
+<script id="kloudspeaker-tmpl-config-admin-user-searchoptions" type="text/x-jquery-tmpl">
+	<div class="kloudspeaker-admin-user-searchoptions accordion">
 		<div class="accordion-group">
 			<div class="accordion-heading">
 				<a class="accordion-toggle localized" data-toggle="collapse" href="#userSearchOptions" text-key="configAdminUserSearchOptionsTitle"></a>
@@ -61,15 +61,15 @@
 		      
 					<form class="form-horizontal">
 						<div class="control-group">
-							<label class="control-label localized" for="mollify-admin-user-searchoptions-name" text-key="configAdminUserSearchOptionsNameTitle"></label>
+							<label class="control-label localized" for="kloudspeaker-admin-user-searchoptions-name" text-key="configAdminUserSearchOptionsNameTitle"></label>
 							<div class="controls">
-								<input id="mollify-admin-user-searchoptions-name" type="text"></input>
+								<input id="kloudspeaker-admin-user-searchoptions-name" type="text"></input>
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label localized" for="mollify-admin-user-searchoptions-email" text-key="configAdminUserSearchOptionsEmailTitle"></label>
+							<label class="control-label localized" for="kloudspeaker-admin-user-searchoptions-email" text-key="configAdminUserSearchOptionsEmailTitle"></label>
 							<div class="controls">
-								<input id="mollify-admin-user-searchoptions-email" type="text"></input>
+								<input id="kloudspeaker-admin-user-searchoptions-email" type="text"></input>
 							</div>
 						</div>
 					</form>
@@ -80,8 +80,8 @@
 	</div>
 </script>
 
-<script id="mollify-tmpl-config-admin-userdialog" type="text/x-jquery-tmpl">
-	<div id="mollify-config-admin-userdialog-content">
+<script id="kloudspeaker-tmpl-config-admin-userdialog" type="text/x-jquery-tmpl">
+	<div id="kloudspeaker-config-admin-userdialog-content">
 		<form class="form-horizontal">
 			<div class="control-group">
 				<label class="control-label localized" text-key="configAdminUserDialogUsernameTitle"></label>
@@ -148,8 +148,8 @@
 	</div>
 </script>
 
-<script id="mollify-tmpl-config-admin-userchangepassworddialog" type="text/x-jquery-tmpl">
-	<div id="mollify-config-admin-userchangepassworddialog-content">
+<script id="kloudspeaker-tmpl-config-admin-userchangepassworddialog" type="text/x-jquery-tmpl">
+	<div id="kloudspeaker-config-admin-userchangepassworddialog-content">
 		<form class="form-horizontal">
 			<div class="control-group">
 				<label class="control-label localized" text-key="configAdminUserDialogPasswordTitle"></label>
@@ -162,50 +162,50 @@
 	</div>
 </script>
 
-<script id="mollify-tmpl-config-admin-userdetails" type="text/x-jquery-tmpl">
-	<div id="mollify-config-admin-userdetails-content">
+<script id="kloudspeaker-tmpl-config-admin-userdetails" type="text/x-jquery-tmpl">
+	<div id="kloudspeaker-config-admin-userdetails-content">
 		<legend>${user.name}</legend>
 		
-		<div class="mollify-config-admin-userdetails-section">
-			<div class="mollify-config-admin-userdetails-folders">
+		<div class="kloudspeaker-config-admin-userdetails-section">
+			<div class="kloudspeaker-config-admin-userdetails-folders">
 			</div>
 		</div>
 
-		<div class="mollify-config-admin-userdetails-section">
-			<div class="mollify-config-admin-userdetails-groups">
+		<div class="kloudspeaker-config-admin-userdetails-section">
+			<div class="kloudspeaker-config-admin-userdetails-groups">
 			</div>
 		</div>
 		
-		<div class="mollify-config-admin-userdetails-section">
-			<div class="mollify-config-admin-userdetails-permissions">
+		<div class="kloudspeaker-config-admin-userdetails-section">
+			<div class="kloudspeaker-config-admin-userdetails-permissions">
 			</div>
 		</div>
 	</div>
 </script>
 
-<script id="mollify-tmpl-config-admin-groupdetails" type="text/x-jquery-tmpl">
-	<div id="mollify-config-admin-groupdetails-content">
+<script id="kloudspeaker-tmpl-config-admin-groupdetails" type="text/x-jquery-tmpl">
+	<div id="kloudspeaker-config-admin-groupdetails-content">
 		<legend>${group.name}</legend>
 		
-		<div class="mollify-config-admin-groupdetails-section">
-			<div class="mollify-config-admin-groupdetails-users">
+		<div class="kloudspeaker-config-admin-groupdetails-section">
+			<div class="kloudspeaker-config-admin-groupdetails-users">
 			</div>
 		</div>
 
-		<div class="mollify-config-admin-groupdetails-section">
-			<div class="mollify-config-admin-groupdetails-folders">
+		<div class="kloudspeaker-config-admin-groupdetails-section">
+			<div class="kloudspeaker-config-admin-groupdetails-folders">
 			</div>
 		</div>
 		
-		<div class="mollify-config-admin-groupdetails-section">
-			<div class="mollify-config-admin-groupdetails-permissions">
+		<div class="kloudspeaker-config-admin-groupdetails-section">
+			<div class="kloudspeaker-config-admin-groupdetails-permissions">
 			</div>
 		</div>
 	</div>
 </script>
 
-<script id="mollify-tmpl-config-admin-folderdialog" type="text/x-jquery-tmpl">
-	<div id="mollify-config-admin-folderdialog-content">
+<script id="kloudspeaker-tmpl-config-admin-folderdialog" type="text/x-jquery-tmpl">
+	<div id="kloudspeaker-config-admin-folderdialog-content">
 		<form class="form-horizontal">
 			<div class="control-group">
 				<label class="control-label localized" text-key="configAdminFolderDialogNameTitle"></label>
@@ -224,19 +224,19 @@
 	</div>
 </script>
 
-<script id="mollify-tmpl-config-admin-folderdetails" type="text/x-jquery-tmpl">
-	<div id="mollify-config-admin-folderdetails-content">
+<script id="kloudspeaker-tmpl-config-admin-folderdetails" type="text/x-jquery-tmpl">
+	<div id="kloudspeaker-config-admin-folderdetails-content">
 		<legend>${folder.name}</legend>
 		
-		<div class="mollify-config-admin-folderdetails-section">
-			<div class="mollify-config-admin-folderdetails-usersandgroups">
+		<div class="kloudspeaker-config-admin-folderdetails-section">
+			<div class="kloudspeaker-config-admin-folderdetails-usersandgroups">
 			</div>
 		</div>
 	</div>
 </script>
 
-<script id="mollify-tmpl-config-admin-groupdialog" type="text/x-jquery-tmpl">
-	<div id="mollify-config-admin-groupdialog-content">
+<script id="kloudspeaker-tmpl-config-admin-groupdialog" type="text/x-jquery-tmpl">
+	<div id="kloudspeaker-config-admin-groupdialog-content">
 		<form class="form-horizontal">
 			<div class="control-group">
 				<label class="control-label localized" text-key="configAdminGroupDialogNameTitle"></label>

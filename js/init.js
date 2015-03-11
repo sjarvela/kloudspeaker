@@ -1,19 +1,19 @@
 /**
  * init.js
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
-var mollifyDefaults = {
+var kloudspeaker_defaults = {
     "language": {
         "default": "en",
         "options": ["en"]
     },
     "view-url": true,
-    "app-element-id": "mollify",
+    "app-element-id": "kloudspeaker",
     "service-path": "backend/",
     "service-param": false,
     "file-view": {
@@ -46,7 +46,7 @@ var mollifyDefaults = {
 
     "use strict";
 
-    var mollify = {
+    var kloudspeaker = {
         App: {},
         view: {},
         ui: {},
@@ -59,75 +59,75 @@ var mollifyDefaults = {
         templates: {}
     };
 
-    mollify._time = new Date().getTime();
-    mollify._hiddenInd = 0;
-    mollify.settings = false;
-    mollify.session = false;
+    kloudspeaker._time = new Date().getTime();
+    kloudspeaker._hiddenInd = 0;
+    kloudspeaker.settings = false;
+    kloudspeaker.session = false;
 
     /* APP */
 
-    mollify.App.init = function(s, p) {
-        mollify.App._initDf = $.Deferred();
+    kloudspeaker.App.init = function(s, p) {
+        kloudspeaker.App._initDf = $.Deferred();
         window.Modernizr.testProp("touch");
 
-        mollify.App._initialized = false;
-        mollify.App._views = {};
-        mollify.App.baseUrl = mollify.request.getBaseUrl(window.location.href);
-        mollify.App.pageUrl = mollify.request.getPageUrl(window.location.href);
-        mollify.App.pageParams = mollify.request.getParams(window.location.href);
-        mollify.App.mobile = (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+        kloudspeaker.App._initialized = false;
+        kloudspeaker.App._views = {};
+        kloudspeaker.App.baseUrl = kloudspeaker.request.getBaseUrl(window.location.href);
+        kloudspeaker.App.pageUrl = kloudspeaker.request.getPageUrl(window.location.href);
+        kloudspeaker.App.pageParams = kloudspeaker.request.getParams(window.location.href);
+        kloudspeaker.App.mobile = (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
 
-        mollify.settings = $.extend(true, {}, mollifyDefaults, s);
-        mollify.service.init(false, mollify.settings["service-param"]);
+        kloudspeaker.settings = $.extend(true, {}, kloudspeaker_defaults, s);
+        kloudspeaker.service.init(false, kloudspeaker.settings["service-param"]);
 
-        mollify.plugins.register(new mollify.plugin.Core());
-        mollify.plugins.register(new mollify.plugin.PermissionsPlugin());
+        kloudspeaker.plugins.register(new kloudspeaker.plugin.Core());
+        kloudspeaker.plugins.register(new kloudspeaker.plugin.PermissionsPlugin());
         if (p) {
             for (var i = 0, j = p.length; i < j; i++)
-                mollify.plugins.register(p[i]);
+                kloudspeaker.plugins.register(p[i]);
         }
 
-        mollify.events.addEventHandler(function(e) {
+        kloudspeaker.events.addEventHandler(function(e) {
             if (e.type == 'session/start') {
-                mollify.App._onSessionStart(e.payload);
+                kloudspeaker.App._onSessionStart(e.payload);
             } else if (e.type == 'session/end') {
-                mollify.session = {};
-                mollify.filesystem.init([]);
+                kloudspeaker.session = {};
+                kloudspeaker.filesystem.init([]);
                 start();
             }
         });
 
         var start = function() {
-            mollify.service.get("session/info/").fail(function() {
-                new mollify.ui.FullErrorView('Failed to initialize Mollify').show();
+            kloudspeaker.service.get("session/info/").fail(function() {
+                new kloudspeaker.ui.FullErrorView('Failed to initialize Kloudspeaker').show();
             }).done(function(s) {
-                mollify.events.dispatch('session/start', s);
+                kloudspeaker.events.dispatch('session/start', s);
             });
         };
 
         var onError = function() {
-            new mollify.ui.FullErrorView('Failed to initialize Mollify').show();
-            if (mollify.App._initDf.state() == "pending") mollify.App._initDf.reject();
+            new kloudspeaker.ui.FullErrorView('Failed to initialize Kloudspeaker').show();
+            if (kloudspeaker.App._initDf.state() == "pending") kloudspeaker.App._initDf.reject();
         };
-        mollify.ui.initialize().done(function() {
-            mollify.plugins.initialize().done(function() {
-                mollify.App._initialized = true;
+        kloudspeaker.ui.initialize().done(function() {
+            kloudspeaker.plugins.initialize().done(function() {
+                kloudspeaker.App._initialized = true;
                 start();
             }).fail(onError);
         }).fail(onError);
 
-        if (mollify.settings["view-url"])
+        if (kloudspeaker.settings["view-url"])
             window.onpopstate = function(event) {
-                mollify.App.onRestoreState(document.location.href, event.state);
+                kloudspeaker.App.onRestoreState(document.location.href, event.state);
             };
-        return mollify.App._initDf;
+        return kloudspeaker.App._initDf;
     };
 
-    mollify.App.getElement = function() {
-        return $("#" + mollify.settings["app-element-id"]);
+    kloudspeaker.App.getElement = function() {
+        return $("#" + kloudspeaker.settings["app-element-id"]);
     };
 
-    mollify.App._onSessionStart = function(s) {
+    kloudspeaker.App._onSessionStart = function(s) {
         var user = s.authenticated ? {
             id: s.user_id,
             name: s.username,
@@ -137,11 +137,11 @@ var mollifyDefaults = {
             permissions: s.permissions,
             auth: s.user_auth,
             hasPermission: function(name, required) {
-                return mollify.helpers.hasPermission(s.permissions, name, required);
+                return kloudspeaker.helpers.hasPermission(s.permissions, name, required);
             }
         } : null;
 
-        mollify.session = {
+        kloudspeaker.session = {
             id: s.session_id,
             user: user,
             features: s.features,
@@ -150,98 +150,98 @@ var mollifyDefaults = {
         };
 
         var onError = function() {
-            new mollify.ui.FullErrorView('Failed to initialize Mollify').show();
+            new kloudspeaker.ui.FullErrorView('Failed to initialize Kloudspeaker').show();
         };
 
-        mollify.service.init(s.features['limited_http_methods']);
+        kloudspeaker.service.init(s.features['limited_http_methods']);
 
-        mollify.plugins.load(s.plugins).done(function() {
-            mollify.filesystem.init(mollify.session.data.folders, ((mollify.session.user && mollify.session.user.admin) ? mollify.session.data.roots : false));
-            mollify.ui.initializeLang().done(mollify.App._doStart).fail(onError);
+        kloudspeaker.plugins.load(s.plugins).done(function() {
+            kloudspeaker.filesystem.init(kloudspeaker.session.data.folders, ((kloudspeaker.session.user && kloudspeaker.session.user.admin) ? kloudspeaker.session.data.roots : false));
+            kloudspeaker.ui.initializeLang().done(kloudspeaker.App._doStart).fail(onError);
         }).fail(onError);
     };
 
-    mollify.App._doStart = function() {
-        mollify.App.activeView = false;
-        mollify.App.activeViewId = null;
-        mollify.App.openView(mollify.App.pageParams.v || "/files/");
+    kloudspeaker.App._doStart = function() {
+        kloudspeaker.App.activeView = false;
+        kloudspeaker.App.activeViewId = null;
+        kloudspeaker.App.openView(kloudspeaker.App.pageParams.v || "/files/");
     };
 
-    mollify.App.openView = function(viewId) {
+    kloudspeaker.App.openView = function(viewId) {
         var id = viewId.split("/");
 
         var onView = function(v) {
             if (v) {
-                mollify.App.activeView = v;
-                mollify.App.activeViewId = id[0];
+                kloudspeaker.App.activeView = v;
+                kloudspeaker.App.activeViewId = id[0];
             } else {
-                if (!mollify.session.user) {
-                    mollify.App.activeView = new mollify.view.LoginView();
-                    mollify.App.activeViewId = "login";
+                if (!kloudspeaker.session.user) {
+                    kloudspeaker.App.activeView = new kloudspeaker.view.LoginView();
+                    kloudspeaker.App.activeViewId = "login";
                 } else {
-                    mollify.App.activeView = new mollify.view.MainView();
-                    mollify.App.activeViewId = "main";
+                    kloudspeaker.App.activeView = new kloudspeaker.view.MainView();
+                    kloudspeaker.App.activeViewId = "main";
                 }
             }
 
-            mollify.App.activeView.init(mollify.App.getElement(), id).done(function() {
-                if (mollify.App._initDf.state() == "pending") mollify.App._initDf.resolve();
+            kloudspeaker.App.activeView.init(kloudspeaker.App.getElement(), id).done(function() {
+                if (kloudspeaker.App._initDf.state() == "pending") kloudspeaker.App._initDf.resolve();
             });
         };
 
         if (id) {
-            var custom = !!mollify.App._views[id[0]];
-            var isActiveView = (custom && mollify.App.activeViewId == id[0]) || (!custom && mollify.App.activeViewId == "main");
+            var custom = !!kloudspeaker.App._views[id[0]];
+            var isActiveView = (custom && kloudspeaker.App.activeViewId == id[0]) || (!custom && kloudspeaker.App.activeViewId == "main");
 
-            if (isActiveView) mollify.App.activeView.onRestoreView(id);
-            else mollify.App._getView(id, onView);
+            if (isActiveView) kloudspeaker.App.activeView.onRestoreView(id);
+            else kloudspeaker.App._getView(id, onView);
         } else onView();
     };
 
-    mollify.App._getView = function(id, cb) {
-        var h = mollify.App._views[id[0]];
+    kloudspeaker.App._getView = function(id, cb) {
+        var h = kloudspeaker.App._views[id[0]];
         if (h && h.getView) {
-            var view = h.getView(id, mollify.App.pageParams);
+            var view = h.getView(id, kloudspeaker.App.pageParams);
             if (view && view.done) view.done(cb);
             else cb(view);
         } else cb(false);
     };
 
-    mollify.App.onRestoreState = function(url, o) {
-        if (!mollify.settings["view-url"]) return;
+    kloudspeaker.App.onRestoreState = function(url, o) {
+        if (!kloudspeaker.settings["view-url"]) return;
 
         // if no view active, app is not loaded -> don't restore
-        if (!mollify.App.activeView) return;
+        if (!kloudspeaker.App.activeView) return;
 
-        if (!o || !o.user_id || !mollify.session.user || mollify.session.user.id != o.user_id) return;
+        if (!o || !o.user_id || !kloudspeaker.session.user || kloudspeaker.session.user.id != o.user_id) return;
 
-        //baseUrl = mollify.request.getBaseUrl(url);
-        var params = mollify.request.getParams(url);
+        //baseUrl = kloudspeaker.request.getBaseUrl(url);
+        var params = kloudspeaker.request.getParams(url);
         if (!params.v || params.v.length < 1) return;
-        mollify.App.openView(params.v);
+        kloudspeaker.App.openView(params.v);
     };
 
-    mollify.App.storeView = function(viewId) {
-        if (!mollify.settings["view-url"]) return;
+    kloudspeaker.App.storeView = function(viewId) {
+        if (!kloudspeaker.settings["view-url"]) return;
         var obj = {
-            user_id: mollify.session.user ? mollify.session.user.id : null
+            user_id: kloudspeaker.session.user ? kloudspeaker.session.user.id : null
         };
         if (window.history) window.history.pushState(obj, "", "?v=" + viewId);
     };
 
-    mollify.App.registerView = function(id, h) {
-        mollify.App._views[id] = h;
+    kloudspeaker.App.registerView = function(id, h) {
+        kloudspeaker.App._views[id] = h;
     };
 
-    mollify.App.openPage = function(pageUrl) {
-        window.location = mollify.App.getPageUrl(pageUrl);
+    kloudspeaker.App.openPage = function(pageUrl) {
+        window.location = kloudspeaker.App.getPageUrl(pageUrl);
     };
 
-    mollify.App.getPageUrl = function(pageUrl) {
-        return mollify.App.pageUrl + "?v=" + pageUrl;
+    kloudspeaker.App.getPageUrl = function(pageUrl) {
+        return kloudspeaker.App.pageUrl + "?v=" + pageUrl;
     }
 
-    mollify.getItemDownloadInfo = function(i) {
+    kloudspeaker.getItemDownloadInfo = function(i) {
         if (!i) return false;
         var single = false;
 
@@ -251,27 +251,27 @@ var mollifyDefaults = {
         if (single && single.is_file) {
             return {
                 name: single.name,
-                url: mollify.filesystem.getDownloadUrl(single)
+                url: kloudspeaker.filesystem.getDownloadUrl(single)
             };
         } else {
             if (!single) return false;
 
-            if (mollify.plugins.exists("plugin-archiver")) return {
+            if (kloudspeaker.plugins.exists("plugin-archiver")) return {
                 name: single.name + ".zip", //TODO get extension from plugin
-                url: mollify.plugins.get("plugin-archiver").getDownloadCompressedUrl(i)
+                url: kloudspeaker.plugins.get("plugin-archiver").getDownloadCompressedUrl(i)
             };
         }
 
         return false;
     };
 
-    mollify.resourceUrl = function(u) {
-        if (!mollify.settings["resource-map"]) return u;
+    kloudspeaker.resourceUrl = function(u) {
+        if (!kloudspeaker.settings["resource-map"]) return u;
 
-        var urlParts = mollify.helpers.breakUrl(u);
+        var urlParts = kloudspeaker.helpers.breakUrl(u);
         if (!urlParts) return u;
 
-        var mapped = mollify.settings["resource-map"][urlParts.path];
+        var mapped = kloudspeaker.settings["resource-map"][urlParts.path];
         if (mapped === undefined) return u;
         if (mapped === false) return false;
 
@@ -280,13 +280,13 @@ var mollifyDefaults = {
 
     /* REQUEST */
 
-    mollify.request = {
+    kloudspeaker.request = {
         getParam: function(name) {
             if (name = (new RegExp('[?&]' + encodeURIComponent(name) + '=([^&]*)')).exec(location.search))
                 return decodeURIComponent(name[1]);
         },
         getParams: function() {
-            return mollify.helpers.getUrlParams(location.search);
+            return kloudspeaker.helpers.getUrlParams(location.search);
         },
         getBaseUrl: function(url) {
             var param = url.lastIndexOf('?');
@@ -303,7 +303,7 @@ var mollifyDefaults = {
     }
 
     /* EVENTS */
-    var et = mollify.events;
+    var et = kloudspeaker.events;
     et._handlers = [];
     et._handlerTypes = {};
 
@@ -324,7 +324,7 @@ var mollifyDefaults = {
     };
 
     /* SERVICE */
-    var st = mollify.service;
+    var st = kloudspeaker.service;
 
     st.init = function(limitedHttpMethods, serviceParam) {
         st._limitedHttpMethods = !!limitedHttpMethods;
@@ -333,10 +333,10 @@ var mollifyDefaults = {
 
     st.url = function(u, full) {
         if (u.startsWith('http')) return u;
-        var url = mollify.settings["service-path"] + "r.php";
+        var url = kloudspeaker.settings["service-path"] + "r.php";
         url = url + (st._serviceParam ? ("?sp=" + u) : ("/" + u));
         if (!full) return url;
-        return mollify.App.baseUrl + url;
+        return kloudspeaker.App.baseUrl + url;
     };
 
     st.get = function(url, s, err) {
@@ -369,10 +369,10 @@ var mollifyDefaults = {
                 contentType: 'application/json',
                 dataType: 'json',
                 beforeSend: function(xhr) {
-                    if (mollify.session && mollify.session.id)
-                        xhr.setRequestHeader("mollify-session-id", mollify.session.id);
+                    if (kloudspeaker.session && kloudspeaker.session.id)
+                        xhr.setRequestHeader("kloudspeaker-session-id", kloudspeaker.session.id);
                     if (st._limitedHttpMethods || diffMethod)
-                        xhr.setRequestHeader("mollify-http-method", type);
+                        xhr.setRequestHeader("kloudspeaker-http-method", type);
                 }
             }).pipe(function(r) {
                 if (!r) {
@@ -385,7 +385,7 @@ var mollifyDefaults = {
                 var df = $.Deferred();
 
                 // if session has expired since starting request, ignore it
-                if (mollify.session.id != sid) return df;
+                if (kloudspeaker.session.id != sid) return df;
 
                 var error = false;
                 var data = false;
@@ -398,8 +398,8 @@ var mollifyDefaults = {
                 var failContext = {
                     handled: false
                 }
-                if (error.code == 100 && mollify.session.user) {
-                    mollify.events.dispatch('session/end');
+                if (error.code == 100 && kloudspeaker.session.user) {
+                    kloudspeaker.events.dispatch('session/end');
                     failContext.handled = true;
                 }
                 // push default handler to end of callback list
@@ -408,108 +408,108 @@ var mollifyDefaults = {
                         if (failContext.handled) return;
                         // request denied
                         if (err.code == 109 && err.data && err.data.items) {
-                            mollify.ui.actions.handleDenied(null, err.data, mollify.ui.texts.get('genericActionDeniedMsg'));
+                            kloudspeaker.ui.actions.handleDenied(null, err.data, kloudspeaker.ui.texts.get('genericActionDeniedMsg'));
                         } else {
-                            mollify.ui.dialogs.showError(err);
+                            kloudspeaker.ui.dialogs.showError(err);
                         }
                     });
                 }, 0);
                 return df.rejectWith(failContext, [error]);
             }).promise()
-        }(mollify.session.id));
+        }(kloudspeaker.session.id));
     };
 
     /* FILESYSTEM */
 
-    var mfs = mollify.filesystem;
+    var mfs = kloudspeaker.filesystem;
 
     mfs.init = function(f, allRoots) {
-        mollify.filesystem.permissionCache = {};
-        mollify.filesystem.roots = [];
-        mollify.filesystem.allRoots = false;
-        mollify.filesystem.rootsById = {};
+        kloudspeaker.filesystem.permissionCache = {};
+        kloudspeaker.filesystem.roots = [];
+        kloudspeaker.filesystem.allRoots = false;
+        kloudspeaker.filesystem.rootsById = {};
 
         mfs.updateRoots(f, allRoots);
     };
 
     mfs.updateRoots = function(f, allRoots) {
-        if (f && mollify.session.user) {
-            mollify.filesystem.roots = f.sort(function(a, b) {
+        if (f && kloudspeaker.session.user) {
+            kloudspeaker.filesystem.roots = f.sort(function(a, b) {
                 return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
             });
             for (var i = 0, j = f.length; i < j; i++)
-                mollify.filesystem.rootsById[f[i].id] = f[i];
+                kloudspeaker.filesystem.rootsById[f[i].id] = f[i];
 
             if (allRoots) {
-                mollify.filesystem.allRoots = allRoots;
+                kloudspeaker.filesystem.allRoots = allRoots;
                 for (var k = 0, l = allRoots.length; k < l; k++)
-                    if (!mollify.filesystem.rootsById[allRoots[k].id])
-                        mollify.filesystem.rootsById[allRoots[k].id] = allRoots[k];
+                    if (!kloudspeaker.filesystem.rootsById[allRoots[k].id])
+                        kloudspeaker.filesystem.rootsById[allRoots[k].id] = allRoots[k];
             }
         }
     };
 
     mfs.getDownloadUrl = function(item) {
         if (!item.is_file) return false;
-        var url = mollify.service.url("filesystem/" + item.id, true);
-        if (mollify.App.mobile)
+        var url = kloudspeaker.service.url("filesystem/" + item.id, true);
+        if (kloudspeaker.App.mobile)
             url = url + ((url.indexOf('?') >= 0) ? "&" : "?") + "m=1";
         return url;
     };
 
     mfs.getUploadUrl = function(folder) {
         if (!folder || folder.is_file) return null;
-        return mollify.service.url("filesystem/" + folder.id + '/files/') + "?format=binary";
+        return kloudspeaker.service.url("filesystem/" + folder.id + '/files/') + "?format=binary";
     };
 
     mfs.itemDetails = function(item, data) {
-        return mollify.service.post((item.detailsId ? (item.detailsId + "/details/") : ("filesystem/" + item.id + "/details/")), {
+        return kloudspeaker.service.post((item.detailsId ? (item.detailsId + "/details/") : ("filesystem/" + item.id + "/details/")), {
             data: data
         }).done(function(r) {
             if (r.permissions)
-                mollify.filesystem.permissionCache[item.id] = r.permissions;
-            if (item.parent_id && r.parent_permissions) mollify.filesystem.permissionCache[item.parent_id] = r.parent_permissions;
+                kloudspeaker.filesystem.permissionCache[item.id] = r.permissions;
+            if (item.parent_id && r.parent_permissions) kloudspeaker.filesystem.permissionCache[item.parent_id] = r.parent_permissions;
         });
     };
 
     mfs.folderInfo = function(id, hierarchy, data) {
-        return mollify.service.post("filesystem/" + (id ? id : "roots") + "/info/" + (hierarchy ? "?h=1" : ""), {
+        return kloudspeaker.service.post("filesystem/" + (id ? id : "roots") + "/info/" + (hierarchy ? "?h=1" : ""), {
             data: data
         }).done(function(r) {
-            mollify.filesystem.permissionCache[id] = r.permissions;
+            kloudspeaker.filesystem.permissionCache[id] = r.permissions;
         });
     };
 
     mfs.findFolder = function(d, data) {
-        return mollify.service.post("filesystem/find/", {
+        return kloudspeaker.service.post("filesystem/find/", {
             folder: d,
             data: data
         });
     };
 
     mfs.hasPermission = function(item, name, required) {
-        if (!mollify.session.user) return false;
-        if (mollify.session.user.admin) return true;
-        return mollify.helpers.hasPermission(mollify.filesystem.permissionCache[((typeof(item) === "string") ? item : item.id)], name, required);
+        if (!kloudspeaker.session.user) return false;
+        if (kloudspeaker.session.user.admin) return true;
+        return kloudspeaker.helpers.hasPermission(kloudspeaker.filesystem.permissionCache[((typeof(item) === "string") ? item : item.id)], name, required);
     };
 
     mfs.items = function(parent, files, allRoots) {
         if (parent == null) {
             var df = $.Deferred();
             df.resolve({
-                folders: (allRoots && mollify.session.user.admin) ? mfs.allRoots : mfs.roots,
+                folders: (allRoots && kloudspeaker.session.user.admin) ? mfs.allRoots : mfs.roots,
                 files: []
             });
             return df.promise();
         }
-        return mollify.service.get("filesystem/" + parent.id + "/items/?files=" + (files ? '1' : '0'));
+        return kloudspeaker.service.get("filesystem/" + parent.id + "/items/?files=" + (files ? '1' : '0'));
     };
 
     mfs.createEmptyFile = function(parent, name) {
-        return mollify.service.post("filesystem/" + parent.id + "/empty_file", {
+        return kloudspeaker.service.post("filesystem/" + parent.id + "/empty_file", {
             name: name
         }).done(function() {
-            mollify.events.dispatch('filesystem/create_item', {
+            kloudspeaker.events.dispatch('filesystem/create_item', {
                 parent: parent,
                 name: name
             });
@@ -522,13 +522,13 @@ var mollifyDefaults = {
         if (window.isArray(i) && i.length > 1) {
             if (!to) {
                 var df = $.Deferred();
-                mollify.ui.dialogs.folderSelector({
-                    title: mollify.ui.texts.get('copyMultipleFileDialogTitle'),
-                    message: mollify.ui.texts.get('copyMultipleFileMessage', [i.length]),
-                    actionTitle: mollify.ui.texts.get('copyFileDialogAction'),
+                kloudspeaker.ui.dialogs.folderSelector({
+                    title: kloudspeaker.ui.texts.get('copyMultipleFileDialogTitle'),
+                    message: kloudspeaker.ui.texts.get('copyMultipleFileMessage', [i.length]),
+                    actionTitle: kloudspeaker.ui.texts.get('copyFileDialogAction'),
                     handler: {
                         onSelect: function(f) {
-                            mfs._validated(mfs._copyMany, [i, f], "copy", mollify.ui.texts.get("actionDeniedCopyMany", i.length), mollify.ui.texts.get("actionAcceptCopyMany", i.length)).done(df.resolve).fail(df.reject);
+                            mfs._validated(mfs._copyMany, [i, f], "copy", kloudspeaker.ui.texts.get("actionDeniedCopyMany", i.length), kloudspeaker.ui.texts.get("actionAcceptCopyMany", i.length)).done(df.resolve).fail(df.reject);
                         },
                         canSelect: function(f) {
                             return mfs.canCopyTo(i, f);
@@ -546,13 +546,13 @@ var mollifyDefaults = {
 
         if (!to) {
             var df2 = $.Deferred();
-            mollify.ui.dialogs.folderSelector({
-                title: mollify.ui.texts.get('copyFileDialogTitle'),
-                message: mollify.ui.texts.get('copyFileMessage', [i.name]),
-                actionTitle: mollify.ui.texts.get('copyFileDialogAction'),
+            kloudspeaker.ui.dialogs.folderSelector({
+                title: kloudspeaker.ui.texts.get('copyFileDialogTitle'),
+                message: kloudspeaker.ui.texts.get('copyFileMessage', [i.name]),
+                actionTitle: kloudspeaker.ui.texts.get('copyFileDialogAction'),
                 handler: {
                     onSelect: function(f) {
-                        mfs._validated(mfs._copy, [i, f], "copy", mollify.ui.texts.get("actionDeniedCopy", i.name), mollify.ui.texts.get("actionAcceptCopy", i.name)).done(df2.resolve).fail(df2.reject);
+                        mfs._validated(mfs._copy, [i, f], "copy", kloudspeaker.ui.texts.get("actionDeniedCopy", i.name), kloudspeaker.ui.texts.get("actionAcceptCopy", i.name)).done(df2.resolve).fail(df2.reject);
                     },
                     canSelect: function(f) {
                         return mfs.canCopyTo(i, f);
@@ -569,18 +569,18 @@ var mollifyDefaults = {
 
         if (!name) {
             var df = $.Deferred();
-            mollify.ui.dialogs.input({
-                title: mollify.ui.texts.get('copyHereDialogTitle'),
-                message: mollify.ui.texts.get('copyHereDialogMessage'),
+            kloudspeaker.ui.dialogs.input({
+                title: kloudspeaker.ui.texts.get('copyHereDialogTitle'),
+                message: kloudspeaker.ui.texts.get('copyHereDialogMessage'),
                 defaultValue: item.name,
-                yesTitle: mollify.ui.texts.get('copyFileDialogAction'),
-                noTitle: mollify.ui.texts.get('dialogCancel'),
+                yesTitle: kloudspeaker.ui.texts.get('copyFileDialogAction'),
+                noTitle: kloudspeaker.ui.texts.get('dialogCancel'),
                 handler: {
                     isAcceptable: function(n) {
                         return !!n && n.length > 0 && n != item.name;
                     },
                     onInput: function(n) {
-                        mfs._validated(mfs._copyHere, [item, n], "copy", mollify.ui.texts.get("actionDeniedCopy", item.name), mollify.ui.texts.get("actionAcceptCopy", item.name)).done(df.resolve).fail(df.reject);
+                        mfs._validated(mfs._copyHere, [item, n], "copy", kloudspeaker.ui.texts.get("actionDeniedCopy", item.name), kloudspeaker.ui.texts.get("actionAcceptCopy", item.name)).done(df.resolve).fail(df.reject);
                     }
                 }
             });
@@ -630,11 +630,11 @@ var mollifyDefaults = {
     };
 
     mfs._copyHere = function(i, name, acceptKeys) {
-        return mollify.service.post("filesystem/" + i.id + "/copy/", {
+        return kloudspeaker.service.post("filesystem/" + i.id + "/copy/", {
             name: name,
             acceptKeys: acceptKeys
         }).done(function(r) {
-            mollify.events.dispatch('filesystem/copy', {
+            kloudspeaker.events.dispatch('filesystem/copy', {
                 items: [i],
                 name: name
             });
@@ -643,12 +643,12 @@ var mollifyDefaults = {
 
     mfs._copy = function(i, to, acceptKeys, overwrite) {
         var df = $.Deferred();
-        mollify.service.post("filesystem/" + i.id + "/copy/", {
+        kloudspeaker.service.post("filesystem/" + i.id + "/copy/", {
             folder: to.id,
             overwrite: !!overwrite,
             acceptKeys: acceptKeys
         }).done(function(r) {
-            mollify.events.dispatch('filesystem/copy', {
+            kloudspeaker.events.dispatch('filesystem/copy', {
                 items: [i],
                 to: to
             });
@@ -656,9 +656,9 @@ var mollifyDefaults = {
         }).fail(function(e) {
             if (e.code == 204) {
                 this.handled = true;
-                mollify.ui.dialogs.confirmation({
-                    title: mollify.ui.texts.get('copyOverwriteConfirmationTitle'),
-                    message: mollify.ui.texts.get('copyOverwriteConfirmationMsg', [i.name]),
+                kloudspeaker.ui.dialogs.confirmation({
+                    title: kloudspeaker.ui.texts.get('copyOverwriteConfirmationTitle'),
+                    message: kloudspeaker.ui.texts.get('copyOverwriteConfirmationMsg', [i.name]),
                     callback: function() {
                         mfs._copy(i, to, acceptKeys, true).done(df.resolve).fail(df.reject);
                     }
@@ -672,14 +672,14 @@ var mollifyDefaults = {
 
     mfs._copyMany = function(i, to, acceptKeys, overwrite) {
         var df = $.Deferred();
-        return mollify.service.post("filesystem/items/", {
+        return kloudspeaker.service.post("filesystem/items/", {
             action: 'copy',
             items: i,
             to: to,
             overwrite: !!overwrite,
             acceptKeys: acceptKeys
         }).done(function(r) {
-            mollify.events.dispatch('filesystem/copy', {
+            kloudspeaker.events.dispatch('filesystem/copy', {
                 items: i,
                 to: to
             });
@@ -689,9 +689,9 @@ var mollifyDefaults = {
                 this.handled = true;
                 var files = e.data.files;
 
-                mollify.ui.dialogs.confirmation({
-                    title: mollify.ui.texts.get(files.length > 1 ? 'copyManyOverwriteConfirmationTitle' : 'copyOverwriteConfirmationTitle'),
-                    message: files.length > 1 ? mollify.ui.texts.get('copyManyOverwriteConfirmationMsg', [files.length]) : mollify.ui.texts.get('copyOverwriteConfirmationMsg', [files[0].name]),
+                kloudspeaker.ui.dialogs.confirmation({
+                    title: kloudspeaker.ui.texts.get(files.length > 1 ? 'copyManyOverwriteConfirmationTitle' : 'copyOverwriteConfirmationTitle'),
+                    message: files.length > 1 ? kloudspeaker.ui.texts.get('copyManyOverwriteConfirmationMsg', [files.length]) : kloudspeaker.ui.texts.get('copyOverwriteConfirmationMsg', [files[0].name]),
                     callback: function() {
                         mfs._copyMany(i, to, acceptKeys, true).done(df.resolve).fail(df.reject);
                     }
@@ -709,13 +709,13 @@ var mollifyDefaults = {
         if (window.isArray(i) && i.length > 1) {
             if (!to) {
                 var df = $.Deferred();
-                mollify.ui.dialogs.folderSelector({
-                    title: mollify.ui.texts.get('moveMultipleFileDialogTitle'),
-                    message: mollify.ui.texts.get('moveMultipleFileMessage', [i.length]),
-                    actionTitle: mollify.ui.texts.get('moveFileDialogAction'),
+                kloudspeaker.ui.dialogs.folderSelector({
+                    title: kloudspeaker.ui.texts.get('moveMultipleFileDialogTitle'),
+                    message: kloudspeaker.ui.texts.get('moveMultipleFileMessage', [i.length]),
+                    actionTitle: kloudspeaker.ui.texts.get('moveFileDialogAction'),
                     handler: {
                         onSelect: function(f) {
-                            mfs._validated(mfs._moveMany, [i, f], "move", mollify.ui.texts.get("actionDeniedMoveMany", i.length), mollify.ui.texts.get("actionAcceptMoveMany", i.length)).done(df.resolve).fail(df.reject);
+                            mfs._validated(mfs._moveMany, [i, f], "move", kloudspeaker.ui.texts.get("actionDeniedMoveMany", i.length), kloudspeaker.ui.texts.get("actionAcceptMoveMany", i.length)).done(df.resolve).fail(df.reject);
                         },
                         canSelect: function(f) {
                             return mfs.canMoveTo(i, f);
@@ -731,13 +731,13 @@ var mollifyDefaults = {
 
         if (!to) {
             var df2 = $.Deferred();
-            mollify.ui.dialogs.folderSelector({
-                title: mollify.ui.texts.get('moveFileDialogTitle'),
-                message: mollify.ui.texts.get('moveFileMessage', [i.name]),
-                actionTitle: mollify.ui.texts.get('moveFileDialogAction'),
+            kloudspeaker.ui.dialogs.folderSelector({
+                title: kloudspeaker.ui.texts.get('moveFileDialogTitle'),
+                message: kloudspeaker.ui.texts.get('moveFileMessage', [i.name]),
+                actionTitle: kloudspeaker.ui.texts.get('moveFileDialogAction'),
                 handler: {
                     onSelect: function(f) {
-                        mfs._validated(mfs._move, [i, f], "move", mollify.ui.texts.get("actionDeniedMove", i.name), mollify.ui.texts.get("actionAcceptMove", i.name)).done(df2.resolve).fail(df2.reject);
+                        mfs._validated(mfs._move, [i, f], "move", kloudspeaker.ui.texts.get("actionDeniedMove", i.name), kloudspeaker.ui.texts.get("actionAcceptMove", i.name)).done(df2.resolve).fail(df2.reject);
                     },
                     canSelect: function(f) {
                         return mfs.canMoveTo(i, f);
@@ -751,12 +751,12 @@ var mollifyDefaults = {
 
     mfs._move = function(i, to, acceptKeys, overwrite) {
         var df = $.Deferred();
-        return mollify.service.post("filesystem/" + i.id + "/move/", {
+        return kloudspeaker.service.post("filesystem/" + i.id + "/move/", {
             id: to.id,
             overwrite: !!overwrite,
             acceptKeys: acceptKeys
         }).done(function(r) {
-            mollify.events.dispatch('filesystem/move', {
+            kloudspeaker.events.dispatch('filesystem/move', {
                 items: [i],
                 to: to
             });
@@ -764,9 +764,9 @@ var mollifyDefaults = {
         }).fail(function(e) {
             if (e.code == 204) {
                 this.handled = true;
-                mollify.ui.dialogs.confirmation({
-                    title: mollify.ui.texts.get('moveOverwriteConfirmationTitle'),
-                    message: mollify.ui.texts.get('moveOverwriteConfirmationMsg', [i.name]),
+                kloudspeaker.ui.dialogs.confirmation({
+                    title: kloudspeaker.ui.texts.get('moveOverwriteConfirmationTitle'),
+                    message: kloudspeaker.ui.texts.get('moveOverwriteConfirmationMsg', [i.name]),
                     callback: function() {
                         mfs._move(i, to, acceptKeys, true).done(df.resolve).fail(df.reject);
                     }
@@ -780,14 +780,14 @@ var mollifyDefaults = {
 
     mfs._moveMany = function(i, to, acceptKeys, overwrite) {
         var df = $.Deferred();
-        return mollify.service.post("filesystem/items/", {
+        return kloudspeaker.service.post("filesystem/items/", {
             action: 'move',
             items: i,
             to: to,
             overwrite: !!overwrite,
             acceptKeys: acceptKeys
         }).done(function(r) {
-            mollify.events.dispatch('filesystem/move', {
+            kloudspeaker.events.dispatch('filesystem/move', {
                 items: i,
                 to: to
             });
@@ -797,9 +797,9 @@ var mollifyDefaults = {
                 this.handled = true;
                 var files = e.data.files;
 
-                mollify.ui.dialogs.confirmation({
-                    title: mollify.ui.texts.get(files.length > 1 ? 'moveManyOverwriteConfirmationTitle' : 'moveOverwriteConfirmationTitle'),
-                    message: files.length > 1 ? mollify.ui.texts.get('moveManyOverwriteConfirmationMsg', [files.length]) : mollify.ui.texts.get('moveOverwriteConfirmationMsg', [files[0].name]),
+                kloudspeaker.ui.dialogs.confirmation({
+                    title: kloudspeaker.ui.texts.get(files.length > 1 ? 'moveManyOverwriteConfirmationTitle' : 'moveOverwriteConfirmationTitle'),
+                    message: files.length > 1 ? kloudspeaker.ui.texts.get('moveManyOverwriteConfirmationMsg', [files.length]) : kloudspeaker.ui.texts.get('moveOverwriteConfirmationMsg', [files[0].name]),
                     callback: function() {
                         mfs._moveMany(i, to, acceptKeys, true).done(df.resolve).fail(df.reject);
                     }
@@ -814,12 +814,12 @@ var mollifyDefaults = {
     mfs.rename = function(item, name) {
         if (!name || name.length === 0) {
             var df = $.Deferred();
-            mollify.ui.dialogs.input({
-                title: mollify.ui.texts.get(item.is_file ? 'renameDialogTitleFile' : 'renameDialogTitleFolder'),
-                message: mollify.ui.texts.get('renameDialogNewName'),
+            kloudspeaker.ui.dialogs.input({
+                title: kloudspeaker.ui.texts.get(item.is_file ? 'renameDialogTitleFile' : 'renameDialogTitleFolder'),
+                message: kloudspeaker.ui.texts.get('renameDialogNewName'),
                 defaultValue: item.name,
-                yesTitle: mollify.ui.texts.get('renameDialogRenameButton'),
-                noTitle: mollify.ui.texts.get('dialogCancel'),
+                yesTitle: kloudspeaker.ui.texts.get('renameDialogRenameButton'),
+                noTitle: kloudspeaker.ui.texts.get('dialogCancel'),
                 handler: {
                     isAcceptable: function(n) {
                         return !!n && n.length > 0 && n != item.name;
@@ -836,10 +836,10 @@ var mollifyDefaults = {
     };
 
     mfs._rename = function(item, name) {
-        return mollify.service.put("filesystem/" + item.id + "/name/", {
+        return kloudspeaker.service.put("filesystem/" + item.id + "/name/", {
             name: name
         }).done(function(r) {
-            mollify.events.dispatch('filesystem/rename', {
+            kloudspeaker.events.dispatch('filesystem/rename', {
                 items: [item],
                 name: name
             });
@@ -852,7 +852,7 @@ var mollifyDefaults = {
             // request denied
             if (e.code == 109 && e.data && e.data.items) {
                 this.handled = true;
-                mollify.ui.actions.handleDenied(action, e.data, denyMessage, acceptMessage).done(function(acceptKeys) {
+                kloudspeaker.ui.actions.handleDenied(action, e.data, denyMessage, acceptMessage).done(function(acceptKeys) {
                     var argsWithKeys = args.slice(0);
                     argsWithKeys.push(acceptKeys);
 
@@ -870,42 +870,42 @@ var mollifyDefaults = {
 
         var df = $.Deferred();
         if (window.isArray(i) && i.length > 1) {
-            mfs._validated(mfs._delMany, [i], "delete", mollify.ui.texts.get("actionDeniedDeleteMany", i.length), mollify.ui.texts.get("actionAcceptDeleteMany", i.length)).done(df.resolve).fail(df.reject);
+            mfs._validated(mfs._delMany, [i], "delete", kloudspeaker.ui.texts.get("actionDeniedDeleteMany", i.length), kloudspeaker.ui.texts.get("actionAcceptDeleteMany", i.length)).done(df.resolve).fail(df.reject);
             return df.promise();
         }
 
         if (window.isArray(i)) i = i[0];
-        mfs._validated(mfs._del, [i], "delete", mollify.ui.texts.get("actionDeniedDelete", i.name), mollify.ui.texts.get("actionAcceptDelete", i.name)).done(df.resolve).fail(df.reject);
+        mfs._validated(mfs._del, [i], "delete", kloudspeaker.ui.texts.get("actionDeniedDelete", i.name), kloudspeaker.ui.texts.get("actionAcceptDelete", i.name)).done(df.resolve).fail(df.reject);
         return df.promise();
     };
 
     mfs._del = function(item, acceptKeys) {
-        return mollify.service.del("filesystem/" + item.id, acceptKeys ? {
+        return kloudspeaker.service.del("filesystem/" + item.id, acceptKeys ? {
             acceptKeys: acceptKeys
         } : null).done(function(r) {
-            mollify.events.dispatch('filesystem/delete', {
+            kloudspeaker.events.dispatch('filesystem/delete', {
                 items: [item]
             });
         });
     };
 
     mfs._delMany = function(i, acceptKeys) {
-        return mollify.service.post("filesystem/items/", {
+        return kloudspeaker.service.post("filesystem/items/", {
             action: 'delete',
             items: i,
             acceptKeys: (acceptKeys ? acceptKeys : null)
         }).done(function(r) {
-            mollify.events.dispatch('filesystem/delete', {
+            kloudspeaker.events.dispatch('filesystem/delete', {
                 items: i
             });
         });
     };
 
     mfs.createFolder = function(folder, name) {
-        return mollify.service.post("filesystem/" + folder.id + "/folders/", {
+        return kloudspeaker.service.post("filesystem/" + folder.id + "/folders/", {
             name: name
         }).done(function(r) {
-            mollify.events.dispatch('filesystem/createfolder', {
+            kloudspeaker.events.dispatch('filesystem/createfolder', {
                 items: [folder],
                 name: name
             });
@@ -914,7 +914,7 @@ var mollifyDefaults = {
 
     /* PLUGINS */
 
-    var pl = mollify.plugins;
+    var pl = kloudspeaker.plugins;
     pl._list = {};
 
     pl.register = function(p) {
@@ -932,18 +932,18 @@ var mollifyDefaults = {
             if (p.initialized) continue;
 
             if (p.initialize) {
-                var settings = ((mollify.settings.plugins && mollify.settings.plugins[id]) ? mollify.settings.plugins[id] : false) || {};
+                var settings = ((kloudspeaker.settings.plugins && kloudspeaker.settings.plugins[id]) ? kloudspeaker.settings.plugins[id] : false) || {};
                 p.initialize(settings);
             }
             if (p.resources) {
                 var pid = p.backendPluginId || id;
                 if (p.resources.texts) {
-                    if (mollify.settings.texts_js)
-                        l.push(mollify.dom.importScript(mollify.plugins.getJsLocalizationUrl(pid)));
+                    if (kloudspeaker.settings.texts_js)
+                        l.push(kloudspeaker.dom.importScript(kloudspeaker.plugins.getJsLocalizationUrl(pid)));
                     else
-                        l.push(mollify.ui.texts.loadPlugin(pid));
+                        l.push(kloudspeaker.ui.texts.loadPlugin(pid));
                 }
-                if (p.resources.css) mollify.dom.importCss(mollify.plugins.getStyleUrl(pid));
+                if (p.resources.css) kloudspeaker.dom.importCss(kloudspeaker.plugins.getStyleUrl(pid));
             }
             p.initialized = true;
         }
@@ -959,9 +959,9 @@ var mollifyDefaults = {
         if (!list) return df.resolve();
 
         var l = [];
-        $.each(mollify.helpers.getKeys(list), function(i, k) {
+        $.each(kloudspeaker.helpers.getKeys(list), function(i, k) {
             var p = list[k];
-            if (p.client_plugin) l.push(mollify.dom.importScript(p.client_plugin));
+            if (p.client_plugin) l.push(kloudspeaker.dom.importScript(p.client_plugin));
         });
         if (l.length === 0) return df.resolve();
 
@@ -981,10 +981,10 @@ var mollifyDefaults = {
     };
 
     pl.url = function(id, p, admin) {
-        var ps = mollify.session && mollify.session.data.plugins[id];
+        var ps = kloudspeaker.session && kloudspeaker.session.data.plugins[id];
         var custom = (ps && ps.custom);
 
-        var url = custom ? mollify.session.data.resources.custom_url : mollify.settings["service-path"];
+        var url = custom ? kloudspeaker.session.data.resources.custom_url : kloudspeaker.settings["service-path"];
         url = url + "plugin/" + id;
 
         if (!p) return url;
@@ -996,7 +996,7 @@ var mollifyDefaults = {
     };
 
     pl.getLocalizationUrl = function(id) {
-        return pl.url(id) + "/localization/texts_" + mollify.ui.texts.locale + ".json";
+        return pl.url(id) + "/localization/texts_" + kloudspeaker.ui.texts.locale + ".json";
     };
 
     pl.getStyleUrl = function(id, admin) {
@@ -1074,18 +1074,18 @@ var mollifyDefaults = {
 
     /* FEATURES */
 
-    var ft = mollify.features;
+    var ft = kloudspeaker.features;
     ft.hasFeature = function(id) {
-        return mollify.session.features && mollify.session.features[id];
+        return kloudspeaker.session.features && kloudspeaker.session.features[id];
     };
 
     /* TEMPLATES */
-    var mt = mollify.templates;
+    var mt = kloudspeaker.templates;
     mt._loaded = [];
 
     mt.url = function(name) {
-        var base = mollify.settings["template-url"] || 'templates/';
-        return mollify.helpers.noncachedUrl(mollify.resourceUrl(base + name));
+        var base = kloudspeaker.settings["template-url"] || 'templates/';
+        return kloudspeaker.helpers.noncachedUrl(kloudspeaker.resourceUrl(base + name));
     };
 
     mt.load = function(name, url) {
@@ -1094,7 +1094,7 @@ var mollifyDefaults = {
             return df.resolve();
         }
 
-        $.get(url ? mollify.resourceUrl(url) : mt.url(name)).done(function(h) {
+        $.get(url ? kloudspeaker.resourceUrl(url) : mt.url(name)).done(function(h) {
             mt._loaded.push(name);
             $("body").append(h);
             df.resolve();
@@ -1105,29 +1105,29 @@ var mollifyDefaults = {
     };
 
     /* DOM */
-    var md = mollify.dom;
+    var md = kloudspeaker.dom;
     md._hiddenLoaded = [];
 
     md.importScript = function(url) {
-        var u = mollify.resourceUrl(url);
+        var u = kloudspeaker.resourceUrl(url);
         if (!u)
             return $.Deferred().resolve().promise();
         var df = $.Deferred();
         $.getScript(u, df.resolve).fail(function(e) {
-            new mollify.ui.FullErrorView("Failed to load script ", "<code>" + u + "</code>").show();
+            new kloudspeaker.ui.FullErrorView("Failed to load script ", "<code>" + u + "</code>").show();
         });
         return df.promise();
     };
 
     md.importCss = function(url) {
-        var u = mollify.resourceUrl(url);
+        var u = kloudspeaker.resourceUrl(url);
         if (!u) return;
 
         var link = $("<link>");
         link.attr({
             type: 'text/css',
             rel: 'stylesheet',
-            href: mollify.helpers.noncachedUrl(u)
+            href: kloudspeaker.helpers.noncachedUrl(u)
         });
         $("head").append(link);
     };
@@ -1137,25 +1137,25 @@ var mollifyDefaults = {
             if (cb) cb();
             return;
         }
-        var u = mollify.resourceUrl(url);
+        var u = kloudspeaker.resourceUrl(url);
         if (!u) {
             if (cb) cb();
             return;
         }
-        var id = 'mollify-tmp-' + (mollify._hiddenInd++);
-        $('<div id="' + id + '" style="display:none"/>').appendTo($("body")).load(mollify.helpers.noncachedUrl(u), function() {
+        var id = 'kloudspeaker-tmp-' + (kloudspeaker._hiddenInd++);
+        $('<div id="' + id + '" style="display:none"/>').appendTo($("body")).load(kloudspeaker.helpers.noncachedUrl(u), function() {
             md._hiddenLoaded.push(contentId);
             if (cb) cb();
         });
     };
 
     md.loadContentInto = function($target, url, handler, process) {
-        var u = mollify.resourceUrl(url);
+        var u = kloudspeaker.resourceUrl(url);
         if (!u) return $.Deferred().resolve().promise();
 
         var df = $.Deferred();
-        $target.load(mollify.helpers.noncachedUrl(u), function() {
-            if (process) mollify.ui.process($target, process, handler);
+        $target.load(kloudspeaker.helpers.noncachedUrl(u), function() {
+            if (process) kloudspeaker.ui.process($target, process, handler);
             if (typeof handler === 'function') handler();
             else if (handler.onLoad) handler.onLoad($target);
             df.resolve();
@@ -1165,14 +1165,14 @@ var mollifyDefaults = {
 
     md.template = function(id, data, opt) {
         var templateId = id;
-        if (mollify.settings["resource-map"] && mollify.settings["resource-map"]["template:" + id])
-            templateId = mollify.settings["resource-map"]["template:" + id];
+        if (kloudspeaker.settings["resource-map"] && kloudspeaker.settings["resource-map"]["template:" + id])
+            templateId = kloudspeaker.settings["resource-map"]["template:" + id];
         return $("#" + templateId).tmpl(data, opt);
     };
 
     /* HELPERS */
 
-    mollify.helpers = {
+    kloudspeaker.helpers = {
         getPluginActions: function(plugins) {
             var list = [];
 
@@ -1231,7 +1231,7 @@ var mollifyDefaults = {
                 if (a.id == 'download' || a.type == 'primary') continue;
                 result.push(a);
             }
-            return mollify.helpers.cleanupActions(result);
+            return kloudspeaker.helpers.cleanupActions(result);
         },
 
         cleanupActions: function(actions) {
@@ -1270,7 +1270,7 @@ var mollifyDefaults = {
             var parts = u.split("?");
             return {
                 path: parts[0],
-                params: mollify.helpers.getUrlParams(u),
+                params: kloudspeaker.helpers.getUrlParams(u),
                 paramsString: (parts.length > 1 ? ("?" + parts[1]) : "")
             };
         },
@@ -1292,16 +1292,16 @@ var mollifyDefaults = {
         },
 
         noncachedUrl: function(url) {
-            return mollify.helpers.urlWithParam(url, "_=" + mollify._time);
+            return kloudspeaker.helpers.urlWithParam(url, "_=" + kloudspeaker._time);
         },
 
         hasPermission: function(list, name, required) {
             if (!list || list[name] === undefined) return false;
-            if (mollify.session.user.admin) return true;
+            if (kloudspeaker.session.user.admin) return true;
 
             var v = list[name];
 
-            var options = mollify.session.data.permission_types.values[name];
+            var options = kloudspeaker.session.data.permission_types.values[name];
             if (!required || !options) return (v == "1");
 
             var ui = options.indexOf(v);
@@ -1344,7 +1344,7 @@ var mollifyDefaults = {
             var sec = pad(""+time.getUTCSeconds(), 2, '0', STR_PAD_LEFT);
             return year + month + day + hour + min + sec;*/
             //var timeUTC = new Date(Date.UTC(time.getYear(), time.getMonth(), time.getDay(), time.getHours(), time.getMinutes(), time.getSeconds()));
-            return mollify.helpers.formatDateTime(time, 'yyyyMMddHHmmss');
+            return kloudspeaker.helpers.formatDateTime(time, 'yyyyMMddHHmmss');
         },
 
         mapByKey: function(list, key, value) {
@@ -1402,7 +1402,7 @@ var mollifyDefaults = {
         }
     };
 
-    window.mollify = mollify;
+    window.kloudspeaker = kloudspeaker;
 
     /* Common */
 

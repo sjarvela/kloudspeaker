@@ -1,15 +1,15 @@
 <?php
 
 /**
- * MollifyInstallProcessor.class.php
+ * kloudspeakerInstallProcessor.class.php
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
-class MollifyInstallProcessor {
+class kloudspeakerInstallProcessor {
 	protected $type;
 	protected $pageRoot;
 	private $settingsVar;
@@ -64,7 +64,7 @@ class MollifyInstallProcessor {
 		$this->configuration->initialize($this);
 		$this->features = new Features($this->settings);
 		$this->cookies = new Cookie($this->settings);
-		$this->passwordHash = new Mollify_PasswordHash($this->settings);
+		$this->passwordHash = new kloudspeaker_PasswordHash($this->settings);
 		$this->resources = new ResourceLoader($this);
 
 		$this->plugins->setup();
@@ -253,7 +253,7 @@ class MollifyInstallProcessor {
 	}
 
 	public function __toString() {
-		return "MollifyInstaller";
+		return "kloudspeakerInstaller";
 	}
 }
 ?>

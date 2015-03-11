@@ -1,24 +1,24 @@
 <?php
 
 /**
- * MollifyZipRaw.class.php
+ * kloudspeakerZipRaw.class.php
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
 @include_once 'zip.lib.php';
 
-class MollifyZipRaw implements MollifyCompressor {
+class kloudspeakerZipRaw implements kloudspeakerCompressor {
 	private $env;
 	private $name;
 	private $zip;
 
 	function __construct($env) {
 		$this->env = $env;
-		$this->name = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . uniqid('Mollify', true) . 'zip';
+		$this->name = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . uniqid('kloudspeaker', true) . 'zip';
 		$this->zip = new zipfile();
 	}
 

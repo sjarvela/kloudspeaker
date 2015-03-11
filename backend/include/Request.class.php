@@ -3,10 +3,10 @@
 /**
  * Request.class.php
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
 class Request {
@@ -28,8 +28,8 @@ class Request {
 		$uri = self::getUri();
 		$ip = self::getIp();
 
-		if (isset($_SERVER['HTTP_MOLLIFY_HTTP_METHOD'])) {
-			$method = strtolower($_SERVER['HTTP_MOLLIFY_HTTP_METHOD']);
+		if (isset($_SERVER['HTTP_kloudspeaker_HTTP_METHOD'])) {
+			$method = strtolower($_SERVER['HTTP_kloudspeaker_HTTP_METHOD']);
 		}
 
 		$p = stripos($uri, "?");
@@ -49,7 +49,7 @@ class Request {
 
 		$data = self::getData($method, $raw, $params);
 
-		return new Request(self::getMollifySessionId($params), $method, $uri, $ip, $parts, $params, $data);
+		return new Request(self::getkloudspeakerSessionId($params), $method, $uri, $ip, $parts, $params, $data);
 	}
 
 	private static function getUri() {
@@ -87,13 +87,13 @@ class Request {
 		}
 	}
 
-	private static function getMollifySessionId($params) {
+	private static function getkloudspeakerSessionId($params) {
 		if (isset($params['session'])) {
 			return $params["session"];
 		}
 
-		if (isset($_SERVER['HTTP_MOLLIFY_SESSION_ID'])) {
-			return $_SERVER['HTTP_MOLLIFY_SESSION_ID'];
+		if (isset($_SERVER['HTTP_kloudspeaker_SESSION_ID'])) {
+			return $_SERVER['HTTP_kloudspeaker_SESSION_ID'];
 		}
 
 		return NULL;

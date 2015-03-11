@@ -3,10 +3,10 @@
 	/**
 	 * PostgresqlDatabase.class.php
 	 *
-	 * Copyright 2008- Samuli Järvelä
+	 * Copyright 2015- Samuli Järvelä
 	 * Released under GPL License.
 	 *
-	 * License: http://www.mollify.org/license.php
+	 * License: http://www.kloudspeaker.com/license.php
 	 */
 
 	class PostgresqlDatabase {
@@ -25,7 +25,7 @@
 			else $host = "localhost";
 			
 			if (isset($conf["database"])) $database = $conf["database"];
-			else $database = "mollify";
+			else $database = "kloudspeaker";
 
 			if (isset($conf["table_prefix"])) $tablePrefix = $conf["table_prefix"];
 			else $tablePrefix = "";

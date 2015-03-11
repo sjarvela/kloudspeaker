@@ -2,22 +2,22 @@
 /**
  * MetadataController.class.php
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
 require_once "MetadataDao.class.php";
 
-class Mollify_MetadataController {
+class kloudspeaker_MetadataController {
 	private $env;
 	private $dao;
 	private $_cache = array();
 
 	public function __construct($env) {
 		$this->env = $env;
-		$this->dao = new Mollify_MetadataDao($this->env);
+		$this->dao = new kloudspeaker_MetadataDao($this->env);
 	}
 
 	public function initialize() {

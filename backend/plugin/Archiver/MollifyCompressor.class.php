@@ -1,15 +1,15 @@
 <?php
 
 /**
- * MollifyCompressor.class.php
+ * kloudspeakerCompressor.class.php
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
-interface MollifyCompressor {
+interface kloudspeakerCompressor {
 	function acceptFolders();
 
 	function add($name, $path, $size = 0);

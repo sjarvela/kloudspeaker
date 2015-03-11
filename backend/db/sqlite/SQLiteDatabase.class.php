@@ -3,13 +3,13 @@
 /**
  * SQLiteDatabase.class.php
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
-class MollifySQLiteDatabase {
+class kloudspeakerSQLiteDatabase {
 	private $file;
 	private $db = NULL;
 	private $transaction = FALSE;
@@ -20,7 +20,7 @@ class MollifySQLiteDatabase {
 		}
 
 		$file = $conf["file"];
-		$db = new MollifySQLiteDatabase($file);
+		$db = new kloudspeakerSQLiteDatabase($file);
 		$db->connect();
 		return $db;
 	}

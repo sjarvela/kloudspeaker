@@ -3,10 +3,10 @@
 /**
  * ArchiveManager.class.php
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
 class ArchiveManager {
@@ -81,17 +81,17 @@ class ArchiveManager {
 	}
 
 	private function getCompressor() {
-		require_once 'MollifyCompressor.class.php';
+		require_once 'kloudspeakerCompressor.class.php';
 
 		if ($this->compressor == NULL || strcasecmp($this->compressor, "ziparchive") === 0) {
-			require_once 'zip/MollifyZipArchive.class.php';
-			return new MollifyZipArchive($this->env);
+			require_once 'zip/kloudspeakerZipArchive.class.php';
+			return new kloudspeakerZipArchive($this->env);
 		} else if (strcasecmp($this->compressor, "native") === 0) {
-			require_once 'zip/MollifyZipNative.class.php';
-			return new MollifyZipNative($this->env);
+			require_once 'zip/kloudspeakerZipNative.class.php';
+			return new kloudspeakerZipNative($this->env);
 		} else if (strcasecmp($this->compressor, "raw") === 0) {
-			require_once 'zip/MollifyZipRaw.class.php';
-			return new MollifyZipRaw($this->env);
+			require_once 'zip/kloudspeakerZipRaw.class.php';
+			return new kloudspeakerZipRaw($this->env);
 		}
 
 		throw new ServiceException("INVALID_CONFIGURATION", "Unsupported compressor configured: " . $this->compressor);

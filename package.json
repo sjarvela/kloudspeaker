@@ -1,15 +1,15 @@
 {
-    "name": "mollify"
-  , "description": "Mollify"
-  , "version": "2.6.6"
-  , "revision": "18"
-  , "keywords": ["mollify"]
-  , "homepage": "http://www.mollify.org/"
+    "name": "kloudspeaker"
+  , "description": "Kloudspeaker"
+  , "version": "1.0"
+  , "revision": "1"
+  , "keywords": ["kloudspeaker"]
+  , "homepage": "http://www.kloudspeaker.com/"
   , "author": "Samuli Järvelä"
   , "scripts": { "test": "grunt test" }
   , "repository": {
       "type": "git"
-    , "url": "https://github.com/sjarvela/mollify.git"
+    , "url": "https://github.com/sjarvela/kloudspeaker.git"
   }
   , "licenses": [
     {

@@ -9,7 +9,7 @@ class ImageGenerator {
 	}
 
 	public function createText($text, $size, $font, $fontSize, $textColor, $textAlpha, $rotation) {
-		$target = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . uniqid('Mollify', true) . '.png';
+		$target = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . uniqid('kloudspeaker', true) . '.png';
 
 		$this->render_text_on_gd_image(
 			$target,

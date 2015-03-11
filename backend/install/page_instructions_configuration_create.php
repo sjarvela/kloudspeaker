@@ -3,10 +3,10 @@
 /**
  * page_instructions_configuration_create.class.php
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
 include "installation_page.php";
@@ -15,9 +15,9 @@ include "installation_page.php";
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 
 <html>
-	<?php pageHeader("Mollify Installation", "init");?>
+	<?php pageHeader("kloudspeaker Installation", "init");?>
 
-	<?php pageBody("Welcome to Mollify installation");?>
+	<?php pageBody("Welcome to kloudspeaker installation");?>
 
 	<?php if ($installer->action() == 'retry') {?>
 		<p>
@@ -26,7 +26,7 @@ include "installation_page.php";
 				<p>
 					Make sure that the file "<code>configuration.php</code>"
 					<ul>
-						<li>is located in the Mollify <code>backend</code> folder</li>
+						<li>is located in the kloudspeaker <code>backend</code> folder</li>
 						<li>is accessible to PHP</li>
 					</ul>
 				</p>
@@ -35,10 +35,10 @@ include "installation_page.php";
 	<?php }?>
 
 	<p>
-		To begin with the installation process, create configuration file called "<code>configuration.php</code>" in the Mollify backend directory. Example configuration files can be found from <code>backend/example</code>.
+		To begin with the installation process, create configuration file called "<code>configuration.php</code>" in the kloudspeaker backend directory. Example configuration files can be found from <code>backend/example</code>.
 	</p>
 	<p>
-		Alternatively, you can create full configuration based on <a href="https://github.com/sjarvela/mollify/wiki/Installation">Installation instructions</a>.
+		Alternatively, you can create full configuration based on <a href="https://github.com/sjarvela/kloudspeaker/wiki/Installation">Installation instructions</a>.
 	</p>
 	<p>
 		<a href="javascript: action('retry')" class="btn btn-success">Continue</a>

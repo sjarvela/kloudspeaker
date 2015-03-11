@@ -1,4 +1,4 @@
-.mollify-filelist-col-comment-count {
+.kloudspeaker-filelist-col-comment-count {
 	width: 22px;
 }
 
@@ -38,7 +38,7 @@
 	cursor: pointer;
 }
 
-.mollify-filelist-item.hover .filelist-item-comment-count-none, html.touch .filelist-item-comment-count-none {
+.kloudspeaker-filelist-item.hover .filelist-item-comment-count-none, html.touch .filelist-item-comment-count-none {
 	background: url(comment_add.png) no-repeat;
 	height: 16px;
 	width: 20px;

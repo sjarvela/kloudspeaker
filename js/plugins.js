@@ -1,29 +1,29 @@
 /**
  * plugins.js
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
-! function($, mollify) {
+! function($, kloudspeaker) {
 
     "use strict";
 
-    mollify.plugin = {};
+    kloudspeaker.plugin = {};
 
-    mollify.plugin.Core = function() {
+    kloudspeaker.plugin.Core = function() {
         var that = this;
 
         return {
             id: "plugin-core",
             itemContextHandler: function(item, ctx, data) {
                 var root = (item.id == item.root_id);
-                var writable = mollify.filesystem.hasPermission(item, "filesystem_item_access", "rw");
+                var writable = kloudspeaker.filesystem.hasPermission(item, "filesystem_item_access", "rw");
                 var movable = writable && !root;
-                var deletable = !root && mollify.filesystem.hasPermission(item, "filesystem_item_access", "rwd");
-                var parentWritable = !root && mollify.filesystem.hasPermission(item.parent_id, "filesystem_item_access", "rw");
+                var deletable = !root && kloudspeaker.filesystem.hasPermission(item, "filesystem_item_access", "rwd");
+                var parentWritable = !root && kloudspeaker.filesystem.hasPermission(item.parent_id, "filesystem_item_access", "rw");
 
                 var actions = [];
                 if (item.is_file) {
@@ -33,24 +33,24 @@
                         type: "primary",
                         group: "download",
                         callback: function() {
-                            mollify.ui.download(mollify.filesystem.getDownloadUrl(item));
+                            kloudspeaker.ui.download(kloudspeaker.filesystem.getDownloadUrl(item));
                         }
                     });
                     actions.push({
                         title: '-'
                     });
                 } else {
-                    if (writable && mollify.settings["file-view"]["create-empty-file-action"])
+                    if (writable && kloudspeaker.settings["file-view"]["create-empty-file-action"])
                         actions.push({
                             'title-key': 'actionCreateEmptyFileItem',
                             icon: 'file',
                             callback: function() {
-                                mollify.ui.dialogs.input({
-                                    message: mollify.ui.texts.get('actionCreateEmptyFileMessage'),
-                                    title: mollify.ui.texts.get('actionCreateEmptyFileTitle'),
+                                kloudspeaker.ui.dialogs.input({
+                                    message: kloudspeaker.ui.texts.get('actionCreateEmptyFileMessage'),
+                                    title: kloudspeaker.ui.texts.get('actionCreateEmptyFileTitle'),
                                     defaultValue: "",
-                                    yesTitle: mollify.ui.texts.get('ok'),
-                                    noTitle: mollify.ui.texts.get('dialogCancel'),
+                                    yesTitle: kloudspeaker.ui.texts.get('ok'),
+                                    noTitle: kloudspeaker.ui.texts.get('dialogCancel'),
                                     handler: {
                                         isAcceptable: function(v) {
                                             if (!v || v.trim().length === 0) return false;
@@ -59,7 +59,7 @@
 
                                         },
                                         onInput: function(v) {
-                                            mollify.filesystem.createEmptyFile(item, v);
+                                            kloudspeaker.filesystem.createEmptyFile(item, v);
                                         }
                                     }
                                 });
@@ -71,7 +71,7 @@
                     'title-key': 'actionCopyItem',
                     icon: 'copy',
                     callback: function() {
-                        return mollify.filesystem.copy(item);
+                        return kloudspeaker.filesystem.copy(item);
                     }
                 });
                 if (parentWritable)
@@ -79,7 +79,7 @@
                         'title-key': 'actionCopyItemHere',
                         icon: 'copy',
                         callback: function() {
-                            return mollify.filesystem.copyHere(item);
+                            return kloudspeaker.filesystem.copyHere(item);
                         }
                     });
 
@@ -88,14 +88,14 @@
                         'title-key': 'actionMoveItem',
                         icon: 'mail-forward',
                         callback: function() {
-                            return mollify.filesystem.move(item);
+                            return kloudspeaker.filesystem.move(item);
                         }
                     });
                     actions.push({
                         'title-key': 'actionRenameItem',
                         icon: 'pencil',
                         callback: function() {
-                            return mollify.filesystem.rename(item);
+                            return kloudspeaker.filesystem.rename(item);
                         }
                     });
                     if (deletable)
@@ -104,11 +104,11 @@
                             icon: 'trash',
                             callback: function() {
                                 var df = $.Deferred();
-                                mollify.ui.dialogs.confirmation({
-                                    title: item.is_file ? mollify.ui.texts.get("deleteFileConfirmationDialogTitle") : mollify.ui.texts.get("deleteFolderConfirmationDialogTitle"),
-                                    message: mollify.ui.texts.get(item.is_file ? "confirmFileDeleteMessage" : "confirmFolderDeleteMessage", [item.name]),
+                                kloudspeaker.ui.dialogs.confirmation({
+                                    title: item.is_file ? kloudspeaker.ui.texts.get("deleteFileConfirmationDialogTitle") : kloudspeaker.ui.texts.get("deleteFolderConfirmationDialogTitle"),
+                                    message: kloudspeaker.ui.texts.get(item.is_file ? "confirmFileDeleteMessage" : "confirmFolderDeleteMessage", [item.name]),
                                     callback: function() {
-                                        $.when(mollify.filesystem.del(item)).then(df.resolve, df.reject);
+                                        $.when(kloudspeaker.filesystem.del(item)).then(df.resolve, df.reject);
                                     }
                                 });
                                 return df.promise();
@@ -132,7 +132,7 @@
                     'title-key': 'actionCopyMultiple',
                     icon: 'copy',
                     callback: function() {
-                        return mollify.filesystem.copy(items);
+                        return kloudspeaker.filesystem.copy(items);
                     }
                 }];
 
@@ -141,14 +141,14 @@
                         'title-key': 'actionMoveMultiple',
                         icon: 'mail-forward',
                         callback: function() {
-                            return mollify.filesystem.move(items);
+                            return kloudspeaker.filesystem.move(items);
                         }
                     });
                     actions.push({
                         'title-key': 'actionDeleteMultiple',
                         icon: 'trash',
                         callback: function() {
-                            return mollify.filesystem.del(items);
+                            return kloudspeaker.filesystem.del(items);
                         }
                     });
                 }
@@ -163,14 +163,14 @@
     /**
     /* Item details plugin
     /**/
-    mollify.plugin.ItemDetailsPlugin = function(conf, sp) {
+    kloudspeaker.plugin.ItemDetailsPlugin = function(conf, sp) {
         var that = this;
         that.formatters = {};
         that.typeConfs = false;
 
         this.initialize = function() {
-            that.fileSizeFormatter = new mollify.ui.formatters.ByteSize(new mollify.ui.formatters.Number(2, false, mollify.ui.texts.get('decimalSeparator')));
-            that.timestampFormatter = new mollify.ui.formatters.Timestamp(mollify.ui.texts.get('shortDateTimeFormat'));
+            that.fileSizeFormatter = new kloudspeaker.ui.formatters.ByteSize(new kloudspeaker.ui.formatters.Number(2, false, kloudspeaker.ui.texts.get('decimalSeparator')));
+            that.timestampFormatter = new kloudspeaker.ui.formatters.Timestamp(kloudspeaker.ui.texts.get('shortDateTimeFormat'));
             /*if (sp) {
                 for (var i=0; i<sp.length;i++)
                     that.addDetailsSpec(sp[i]);
@@ -207,7 +207,7 @@
 
         this.renderItemContextDetails = function(el, item, $content, data) {
             $content.addClass("loading");
-            mollify.templates.load("itemdetails-content", mollify.helpers.noncachedUrl(mollify.plugins.url("ItemDetails", "content.html"))).done(function() {
+            kloudspeaker.templates.load("itemdetails-content", kloudspeaker.helpers.noncachedUrl(kloudspeaker.plugins.url("ItemDetails", "content.html"))).done(function() {
                 $content.removeClass("loading");
                 that.renderItemDetails(el, item, {
                     element: $content.empty(),
@@ -238,7 +238,7 @@
                 
                 data.push({key:k, title:that.getTitle(k, rowSpec), value: that.formatData(k, rowData)});
             }*/
-            mollify.dom.template("itemdetails-template", {
+            kloudspeaker.dom.template("itemdetails-template", {
                 groups: result
             }).appendTo(o.element);
         };
@@ -263,10 +263,10 @@
             if (that.formatters[g]) {
                 var f = that.formatters[g];
                 if (f.groupTitle) return f.groupTitle;
-                if (f["group-title-key"]) return mollify.ui.texts.get(f["group-title-key"]);
+                if (f["group-title-key"]) return kloudspeaker.ui.texts.get(f["group-title-key"]);
             }
-            if (g == 'file') return mollify.ui.texts.get('fileItemDetailsGroupFile');
-            if (g == 'exif') return mollify.ui.texts.get('fileItemDetailsGroupExif');
+            if (g == 'file') return kloudspeaker.ui.texts.get('fileItemDetailsGroupFile');
+            if (g == 'exif') return kloudspeaker.ui.texts.get('fileItemDetailsGroupExif');
             return '';
         };
 
@@ -294,29 +294,29 @@
 
         this.getFileRowTitle = function(dataKey, rowSpec) {
             if (rowSpec.title) return rowSpec.title;
-            if (rowSpec["title-key"]) return mollify.ui.texts.get(rowSpec["title-key"]);
+            if (rowSpec["title-key"]) return kloudspeaker.ui.texts.get(rowSpec["title-key"]);
 
-            if (dataKey == 'name') return mollify.ui.texts.get('fileItemContextDataName');
-            if (dataKey == 'size') return mollify.ui.texts.get('fileItemContextDataSize');
-            if (dataKey == 'path') return mollify.ui.texts.get('fileItemContextDataPath');
-            if (dataKey == 'extension') return mollify.ui.texts.get('fileItemContextDataExtension');
-            if (dataKey == 'last-modified') return mollify.ui.texts.get('fileItemContextDataLastModified');
-            if (dataKey == 'image-size') return mollify.ui.texts.get('fileItemContextDataImageSize');
-            if (dataKey == 'metadata-created') return mollify.ui.texts.get('fileItemContextDataCreated');
+            if (dataKey == 'name') return kloudspeaker.ui.texts.get('fileItemContextDataName');
+            if (dataKey == 'size') return kloudspeaker.ui.texts.get('fileItemContextDataSize');
+            if (dataKey == 'path') return kloudspeaker.ui.texts.get('fileItemContextDataPath');
+            if (dataKey == 'extension') return kloudspeaker.ui.texts.get('fileItemContextDataExtension');
+            if (dataKey == 'last-modified') return kloudspeaker.ui.texts.get('fileItemContextDataLastModified');
+            if (dataKey == 'image-size') return kloudspeaker.ui.texts.get('fileItemContextDataImageSize');
+            if (dataKey == 'metadata-created') return kloudspeaker.ui.texts.get('fileItemContextDataCreated');
 
             /*if (that.specs[dataKey]) {
                 var spec = that.specs[dataKey];
                 if (spec.title) return spec.title;
-                if (spec["title-key"]) return mollify.ui.texts.get(spec["title-key"]);
+                if (spec["title-key"]) return kloudspeaker.ui.texts.get(spec["title-key"]);
             }*/
             return dataKey;
         };
 
         this.formatFileData = function(key, data) {
             if (key == 'size') return that.fileSizeFormatter.format(data);
-            if (key == 'last-modified') return that.timestampFormatter.format(mollify.helpers.parseInternalTime(data));
-            if (key == 'image-size') return mollify.ui.texts.get('fileItemContextDataImageSizePixels', [data]);
-            if (key == 'metadata-created') return that.timestampFormatter.format(mollify.helpers.parseInternalTime(data.at)) + "&nbsp;<i class='icon-user'/>&nbsp;" + data.by.name;
+            if (key == 'last-modified') return that.timestampFormatter.format(kloudspeaker.helpers.parseInternalTime(data));
+            if (key == 'image-size') return kloudspeaker.ui.texts.get('fileItemContextDataImageSizePixels', [data]);
+            if (key == 'metadata-created') return that.timestampFormatter.format(kloudspeaker.helpers.parseInternalTime(data.at)) + "&nbsp;<i class='icon-user'/>&nbsp;" + data.by.name;
 
             if (that.specs[key]) {
                 var spec = that.specs[key];
@@ -389,19 +389,19 @@
     /**
      *  Item collection plugin
      **/
-    mollify.plugin.ItemCollectionPlugin = function() {
+    kloudspeaker.plugin.ItemCollectionPlugin = function() {
         var that = this;
 
         this.initialize = function() {};
 
         this.onStore = function(items) {
             var df = $.Deferred();
-            mollify.ui.dialogs.input({
-                title: mollify.ui.texts.get('pluginItemCollectionStoreDialogTitle'),
-                message: mollify.ui.texts.get('pluginItemCollectionStoreDialogMessage'),
+            kloudspeaker.ui.dialogs.input({
+                title: kloudspeaker.ui.texts.get('pluginItemCollectionStoreDialogTitle'),
+                message: kloudspeaker.ui.texts.get('pluginItemCollectionStoreDialogMessage'),
                 defaultValue: "",
-                yesTitle: mollify.ui.texts.get('pluginItemCollectionStoreDialogAction'),
-                noTitle: mollify.ui.texts.get('dialogCancel'),
+                yesTitle: kloudspeaker.ui.texts.get('pluginItemCollectionStoreDialogAction'),
+                noTitle: kloudspeaker.ui.texts.get('dialogCancel'),
                 handler: {
                     isAcceptable: function(n) {
                         return (!!n && n.length > 0);
@@ -415,7 +415,7 @@
         };
 
         this._onStore = function(items, name) {
-            return mollify.service.post("itemcollections", {
+            return kloudspeaker.service.post("itemcollections", {
                 items: items,
                 name: name
             }).done(function(list) {
@@ -425,13 +425,13 @@
         };
 
         this.onAddItems = function(ic, items) {
-            return mollify.service.post("itemcollections/" + ic.id, {
+            return kloudspeaker.service.post("itemcollections/" + ic.id, {
                 items: window.isArray(items) ? items : [items]
             });
         };
 
         this._removeCollectionItem = function(ic, items) {
-            return mollify.service.del("itemcollections/" + ic.id + "/items", {
+            return kloudspeaker.service.del("itemcollections/" + ic.id + "/items", {
                 items: window.isArray(items) ? items : [items]
             });
         };
@@ -441,15 +441,15 @@
         };
 
         this.editCollection = function(ic, done) {
-            mollify.service.get("itemcollections/" + ic.id).done(function(loaded) {
-                mollify.ui.dialogs.tableView({
-                    title: mollify.ui.texts.get('pluginItemCollectionsEditDialogTitle', ic.name),
+            kloudspeaker.service.get("itemcollections/" + ic.id).done(function(loaded) {
+                kloudspeaker.ui.dialogs.tableView({
+                    title: kloudspeaker.ui.texts.get('pluginItemCollectionsEditDialogTitle', ic.name),
                     buttons: [{
                         id: "close",
-                        title: mollify.ui.texts.get('dialogClose')
+                        title: kloudspeaker.ui.texts.get('dialogClose')
                     }, {
                         id: "remove",
-                        title: mollify.ui.texts.get("pluginItemCollectionsEditDialogRemove"),
+                        title: kloudspeaker.ui.texts.get("pluginItemCollectionsEditDialogRemove"),
                         type: "secondary",
                         cls: "btn-danger secondary"
                     }],
@@ -468,7 +468,7 @@
                             }
                         }, {
                             id: "name",
-                            title: mollify.ui.texts.get('fileListColumnTitleName')
+                            title: kloudspeaker.ui.texts.get('fileListColumnTitleName')
                         }, {
                             id: "remove",
                             title: "",
@@ -514,15 +514,15 @@
         }
 
         this.removeCollection = function(ic) {
-            return mollify.service.del("itemcollections/" + ic.id).done(that._updateNavBar);
+            return kloudspeaker.service.del("itemcollections/" + ic.id).done(that._updateNavBar);
         };
 
         this._onShareNavItem = function(ic) {
-            if (!mollify.plugins.exists("plugin-share")) return;
-            mollify.plugins.get("plugin-share").openShares({
+            if (!kloudspeaker.plugins.exists("plugin-share")) return;
+            kloudspeaker.plugins.get("plugin-share").openShares({
                 id: "ic_" + ic.id,
                 "name": ic.name,
-                shareTitle: mollify.ui.texts.get("pluginItemCollectionShareTitle")
+                shareTitle: kloudspeaker.ui.texts.get("pluginItemCollectionShareTitle")
             });
         };
 
@@ -545,7 +545,7 @@
                     that.removeCollection(ic);
                 }
             }];
-            if (mollify.plugins.exists("plugin-share")) items.push({
+            if (kloudspeaker.plugins.exists("plugin-share")) items.push({
                 "title-key": "pluginItemCollectionsNavShare",
                 callback: function() {
                     that._onShareNavItem(ic);
@@ -559,7 +559,7 @@
             that._fileView.addCustomFolderType("ic", {
                 onSelectFolder: function(id) {
                     var df = $.Deferred();
-                    mollify.service.post("itemcollections/" + id + "/data", {
+                    kloudspeaker.service.post("itemcollections/" + id + "/data", {
                         rq_data: that._fileView.getDataRequest()
                     }).done(function(r) {
                         that._collectionsNav.setActive(r.ic);
@@ -584,21 +584,21 @@
                 },
 
                 onRenderFolderView: function(f, data, $h, $tb) {
-                    mollify.dom.template("mollify-tmpl-fileview-header-custom", {
+                    kloudspeaker.dom.template("kloudspeaker-tmpl-fileview-header-custom", {
                         folder: f
                     }).appendTo($h);
 
                     var opt = {
                         title: function() {
-                            return this.data.title ? this.data.title : mollify.ui.texts.get(this.data['title-key']);
+                            return this.data.title ? this.data.title : kloudspeaker.ui.texts.get(this.data['title-key']);
                         }
                     };
-                    var $fa = $("#mollify-fileview-folder-actions");
-                    var actionsElement = mollify.dom.template("mollify-tmpl-fileview-foldertools-action", {
+                    var $fa = $("#kloudspeaker-fileview-folder-actions");
+                    var actionsElement = kloudspeaker.dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
                         icon: 'icon-cog',
                         dropdown: true
                     }, opt).appendTo($fa);
-                    mollify.ui.controls.dropdown({
+                    kloudspeaker.ui.controls.dropdown({
                         element: actionsElement,
                         items: that._getItemActions(data.ic),
                         hideDelay: 0,
@@ -611,14 +611,14 @@
 
         this._onFileViewActivate = function($e, h) {
             that._collectionsNav = h.addNavBar({
-                title: mollify.ui.texts.get("pluginItemCollectionsNavTitle"),
+                title: kloudspeaker.ui.texts.get("pluginItemCollectionsNavTitle"),
                 classes: "ic-navbar-item",
                 items: [],
                 dropdown: {
                     items: that._getItemActions
                 },
-                onRender: mollify.ui.draganddrop ? function($nb, $items, objs) {
-                    mollify.ui.draganddrop.enableDrop($items, {
+                onRender: kloudspeaker.ui.draganddrop ? function($nb, $items, objs) {
+                    kloudspeaker.ui.draganddrop.enableDrop($items, {
                         canDrop: function($e, e, obj) {
                             if (!obj || obj.type != 'filesystemitem') return false;
                             return true;
@@ -636,7 +636,7 @@
                     });
                 } : false
             });
-            mollify.service.get("itemcollections").done(that._updateNavBar);
+            kloudspeaker.service.get("itemcollections").done(that._updateNavBar);
         };
 
         return {
@@ -662,7 +662,7 @@
     /**
      *  Archiver plugin
      **/
-    mollify.plugin.ArchiverPlugin = function() {
+    kloudspeaker.plugin.ArchiverPlugin = function() {
         var that = this;
 
         this.initialize = function() {};
@@ -672,7 +672,7 @@
 
             var defaultName = '';
             var item = false;
-            var items = mollify.helpers.arrayize(i);
+            var items = kloudspeaker.helpers.arrayize(i);
             if (items.length == 1) {
                 item = i[0];
             }
@@ -681,12 +681,12 @@
             var doCompress = function(folder) {
                 if (item) defaultName = item.name + ".zip";
 
-                mollify.ui.dialogs.input({
-                    title: mollify.ui.texts.get('pluginArchiverCompressDialogTitle'),
-                    message: mollify.ui.texts.get('pluginArchiverCompressDialogMessage'),
+                kloudspeaker.ui.dialogs.input({
+                    title: kloudspeaker.ui.texts.get('pluginArchiverCompressDialogTitle'),
+                    message: kloudspeaker.ui.texts.get('pluginArchiverCompressDialogMessage'),
                     defaultValue: defaultName,
-                    yesTitle: mollify.ui.texts.get('pluginArchiverCompressDialogAction'),
-                    noTitle: mollify.ui.texts.get('dialogCancel'),
+                    yesTitle: kloudspeaker.ui.texts.get('pluginArchiverCompressDialogAction'),
+                    noTitle: kloudspeaker.ui.texts.get('dialogCancel'),
                     handler: {
                         isAcceptable: function(n) {
                             return (!!n && n.length > 0 && (!item || n != item.name));
@@ -698,10 +698,10 @@
                 });
             };
             if (!f) {
-                mollify.ui.dialogs.folderSelector({
-                    title: mollify.ui.texts.get('pluginArchiverCompressDialogTitle'),
-                    message: mollify.ui.texts.get('pluginArchiverCompressSelectFolderDialogMessage'),
-                    actionTitle: mollify.ui.texts.get('ok'),
+                kloudspeaker.ui.dialogs.folderSelector({
+                    title: kloudspeaker.ui.texts.get('pluginArchiverCompressDialogTitle'),
+                    message: kloudspeaker.ui.texts.get('pluginArchiverCompressSelectFolderDialogMessage'),
+                    actionTitle: kloudspeaker.ui.texts.get('ok'),
                     handler: {
                         onSelect: function(folder) {
                             doCompress(folder);
@@ -720,41 +720,41 @@
 
         this.onDownloadCompressed = function(items) {
             //TODO show progress
-            return mollify.service.post("archiver/download", {
+            return kloudspeaker.service.post("archiver/download", {
                 items: items
             }).done(function(r) {
                 //TODO remove progress
-                mollify.ui.download(mollify.service.url('archiver/download/' + r.id, true));
+                kloudspeaker.ui.download(kloudspeaker.service.url('archiver/download/' + r.id, true));
             });
         };
 
         this._onCompress = function(items, folder, name) {
-            return mollify.service.post("archiver/compress", {
+            return kloudspeaker.service.post("archiver/compress", {
                 'items': items,
                 'folder': folder,
                 'name': name
             }).done(function(r) {
-                mollify.events.dispatch('archiver/compress', {
+                kloudspeaker.events.dispatch('archiver/compress', {
                     items: items,
                     folder: folder,
                     name: name
                 });
-                mollify.events.dispatch('filesystem/update', {
+                kloudspeaker.events.dispatch('filesystem/update', {
                     folder: folder
                 });
             });
         };
 
         this._onExtract = function(a, folder) {
-            return mollify.service.post("archiver/extract", {
+            return kloudspeaker.service.post("archiver/extract", {
                 item: a,
                 folder: folder
             }).done(function(r) {
-                mollify.events.dispatch('archiver/extract', {
+                kloudspeaker.events.dispatch('archiver/extract', {
                     item: a,
                     folder: folder
                 });
-                mollify.events.dispatch('filesystem/update', {
+                kloudspeaker.events.dispatch('filesystem/update', {
                     folder: folder
                 });
             });
@@ -777,20 +777,20 @@
                 else if (i.length == 1) single = i[0];
 
                 if (single)
-                    return mollify.service.url("archiver/download?item=" + single.id, true);
+                    return kloudspeaker.service.url("archiver/download?item=" + single.id, true);
 
                 return false; //TODO enable downloading array of items?
             },
             itemContextHandler: function(item, ctx, data) {
                 var root = (item.id == item.root_id);
 
-                var writable = !root && mollify.filesystem.hasPermission(item, "filesystem_item_access", "rw");
-                var parentWritable = !root && mollify.filesystem.hasPermission(item.parent_id, "filesystem_item_access", "rw");
+                var writable = !root && kloudspeaker.filesystem.hasPermission(item, "filesystem_item_access", "rw");
+                var parentWritable = !root && kloudspeaker.filesystem.hasPermission(item.parent_id, "filesystem_item_access", "rw");
                 //TODO folder? is this ever something else than parent?
                 var folderWritable = !root && ctx.folder && ctx.folder_writable;
 
                 if (parentWritable && that._isArchive(item)) {
-                    if (!mollify.session.plugins.Archiver.actions.extract) return false;
+                    if (!kloudspeaker.session.plugins.Archiver.actions.extract) return false;
 
                     return {
                         actions: [{
@@ -804,7 +804,7 @@
 
                 var actions = [];
 
-                if (mollify.session.plugins.Archiver.actions.download) actions.push({
+                if (kloudspeaker.session.plugins.Archiver.actions.download) actions.push({
                     "title-key": "pluginArchiverDownloadCompressed",
                     icon: 'archive',
                     type: "primary",
@@ -813,7 +813,7 @@
                         that.onDownloadCompressed([item]);
                     }
                 });
-                if (ctx.folder && folderWritable && mollify.session.plugins.Archiver.actions.compress) actions.push({
+                if (ctx.folder && folderWritable && kloudspeaker.session.plugins.Archiver.actions.compress) actions.push({
                     "title-key": "pluginArchiverCompress",
                     icon: 'archive',
                     callback: function() {
@@ -826,14 +826,14 @@
             },
             itemCollectionHandler: function(items, ctx) {
                 var actions = [];
-                if (mollify.session.plugins.Archiver.actions.compress) actions.push({
+                if (kloudspeaker.session.plugins.Archiver.actions.compress) actions.push({
                     "title-key": "pluginArchiverCompress",
                     icon: 'archive',
                     callback: function() {
                         return that.onCompress(items)
                     }
                 });
-                if (mollify.session.plugins.Archiver.actions.download) actions.push({
+                if (kloudspeaker.session.plugins.Archiver.actions.download) actions.push({
                     "title-key": "pluginArchiverDownloadCompressed",
                     icon: 'archive',
                     type: "primary",
@@ -853,23 +853,23 @@
     /**
     /* File viewer editor plugin
     /**/
-    mollify.plugin.FileViewerEditorPlugin = function() {
+    kloudspeaker.plugin.FileViewerEditorPlugin = function() {
         var that = this;
 
         this.initialize = function() {};
 
         this.onEdit = function(item, spec) {
-            mollify.ui.dialogs.custom({
+            kloudspeaker.ui.dialogs.custom({
                 resizable: true,
                 initSize: [600, 400],
-                title: mollify.ui.texts.get('fileViewerEditorViewEditDialogTitle'),
+                title: kloudspeaker.ui.texts.get('fileViewerEditorViewEditDialogTitle'),
                 content: '<div class="fileviewereditor-editor-content"></div>',
                 buttons: [{
                     id: "yes",
-                    "title": mollify.ui.texts.get('dialogSave')
+                    "title": kloudspeaker.ui.texts.get('dialogSave')
                 }, {
                     id: "no",
-                    "title": mollify.ui.texts.get('dialogCancel')
+                    "title": kloudspeaker.ui.texts.get('dialogCancel')
                 }],
                 "on-button": function(btn, d) {
                     if (btn.id == 'no') {
@@ -899,7 +899,7 @@
                 that.onView(item, [], d.plugins['plugin-fileviewereditor']);
             }
 
-            mollify.filesystem.itemDetails(item, mollify.plugins.getItemContextRequestData(item)).done(function(d) {
+            kloudspeaker.filesystem.itemDetails(item, kloudspeaker.plugins.getItemContextRequestData(item)).done(function(d) {
                 doView(d);
             });
         };
@@ -950,12 +950,12 @@
                 if (loaded[id]) return;
                 $.ajax({
                     type: 'GET',
-                    url: mollify.helpers.noncachedUrl(itm.embedded)
+                    url: kloudspeaker.helpers.noncachedUrl(itm.embedded)
                 }).done(function(data) {
                     loaded[id] = true;
 
-                    $i = $("#mollify-fileviewereditor-viewer-item-" + id);
-                    var $ic = $i.find(".mollify-fileviewereditor-viewer-item-content");
+                    $i = $("#kloudspeaker-fileviewereditor-viewer-item-" + id);
+                    var $ic = $i.find(".kloudspeaker-fileviewereditor-viewer-item-content");
                     $ic.removeClass("loading").html(data.result.html);
                     isImage = ($ic.children("img").length > 0);
 
@@ -993,7 +993,7 @@
                 });
             };
 
-            var $v = mollify.dom.template("mollify-tmpl-fileviewereditor-popup", {
+            var $v = kloudspeaker.dom.template("kloudspeaker-tmpl-fileviewereditor-popup", {
                 items: list
             }, {
                 content: function(i) {
@@ -1011,7 +1011,7 @@
                 show: false,
                 onHide: onHide
             });
-            mollify.ui.process($lb, ["localize"]);
+            kloudspeaker.ui.process($lb, ["localize"]);
 
             $lb.find("button.close").click(function() {
                 $lb.lightbox('hide');
@@ -1021,19 +1021,19 @@
             var $c = $v.find(".carousel").carousel({
                 interval: false
             }).on('slid', function() {
-                var $active = $v.find(".mollify-fileviewereditor-viewer-item.active");
+                var $active = $v.find(".kloudspeaker-fileviewereditor-viewer-item.active");
                 load($active.tmplItem().data);
             });
             $c.find(".carousel-control").click(function() {
                 if ($(this).hasClass("left")) $c.carousel('prev');
                 else $c.carousel('next');
             });
-            var $tools = $c.find(".mollify-fileviewereditor-viewer-tools");
-            $tools.find(".mollify-fileviewereditor-viewer-item-viewinnewwindow").click(function() {
+            var $tools = $c.find(".kloudspeaker-fileviewereditor-viewer-tools");
+            $tools.find(".kloudspeaker-fileviewereditor-viewer-item-viewinnewwindow").click(function() {
                 $lb.lightbox('hide');
-                mollify.ui.window.open(activeItem.full);
+                kloudspeaker.ui.window.open(activeItem.full);
             });
-            $tools.find(".mollify-fileviewereditor-viewer-item-edit").click(function() {
+            $tools.find(".kloudspeaker-fileviewereditor-viewer-item-edit").click(function() {
                 $lb.lightbox('hide');
                 that.onEdit(item, spec.edit); //TODO activeItem
             });
@@ -1047,7 +1047,7 @@
             canView: function(itemDetails) {
                 if (!itemDetails) {
                     var df = $.Deferred();
-                    mollify.filesystem.itemDetails(item, mollify.plugins.getItemContextRequestData(item)).done(function(d) {
+                    kloudspeaker.filesystem.itemDetails(item, kloudspeaker.plugins.getItemContextRequestData(item)).done(function(d) {
                         df.resolve(!!(d.plugins && d.plugins["plugin-fileviewereditor"] && d.plugins["plugin-fileviewereditor"].view));
                     });
                     return df;
@@ -1091,7 +1091,7 @@
                         }
                     });
                 }
-                if (editorAvailable && mollify.filesystem.hasPermission(item, "filesystem_item_access", "rw")) {
+                if (editorAvailable && kloudspeaker.filesystem.hasPermission(item, "filesystem_item_access", "rw")) {
                     result.actions.push({
                         id: 'pluginFileViewerEditorView',
                         "title-key": 'pluginFileViewerEditorEdit',
@@ -1109,12 +1109,12 @@
     /**
      *  Comment plugin
      **/
-    mollify.plugin.CommentPlugin = function() {
+    kloudspeaker.plugin.CommentPlugin = function() {
         var that = this;
 
         this.initialize = function() {
-            that._timestampFormatter = new mollify.ui.formatters.Timestamp(mollify.ui.texts.get('shortDateTimeFormat'));
-            mollify.dom.importCss(mollify.plugins.url("Comment", "style.css"));
+            that._timestampFormatter = new kloudspeaker.ui.formatters.Timestamp(kloudspeaker.ui.texts.get('shortDateTimeFormat'));
+            kloudspeaker.dom.importCss(kloudspeaker.plugins.url("Comment", "style.css"));
         };
 
         this.getListCellContent = function(item, data) {
@@ -1129,7 +1129,7 @@
 
         this.renderItemContextDetails = function(el, item, ctx, $content, data) {
             $content.addClass("loading");
-            mollify.templates.load("comments-content", mollify.helpers.noncachedUrl(mollify.plugins.url("Comment", "content.html"))).done(function() {
+            kloudspeaker.templates.load("comments-content", kloudspeaker.helpers.noncachedUrl(kloudspeaker.plugins.url("Comment", "content.html"))).done(function() {
                 $content.removeClass("loading");
                 if (data.count === 0) {
                     that.renderItemContextComments(el, item, ctx, [], {
@@ -1148,8 +1148,8 @@
         };
 
         this.renderItemContextComments = function(el, item, ctx, comments, o) {
-            var canAdd = (mollify.session.user.admin || mollify.filesystem.hasPermission(item, "comment_item"));
-            var $c = mollify.dom.template(o.contentTemplate, {
+            var canAdd = (kloudspeaker.session.user.admin || kloudspeaker.filesystem.hasPermission(item, "comment_item"));
+            var $c = kloudspeaker.dom.template(o.contentTemplate, {
                 item: item,
                 canAdd: canAdd
             }).appendTo(o.element);
@@ -1165,16 +1165,16 @@
         };
 
         this.showCommentsBubble = function(item, e, ctx) {
-            var bubble = mollify.ui.controls.dynamicBubble({
+            var bubble = kloudspeaker.ui.controls.dynamicBubble({
                 element: e,
                 title: item.name,
                 container: ctx.container
             });
 
-            mollify.templates.load("comments-content", mollify.helpers.noncachedUrl(mollify.plugins.url("Comment", "content.html"))).done(function() {
+            kloudspeaker.templates.load("comments-content", kloudspeaker.helpers.noncachedUrl(kloudspeaker.plugins.url("Comment", "content.html"))).done(function() {
                 that.loadComments(item, true, function(item, comments, permission) {
-                    var canAdd = mollify.session.user.admin || permission == '1';
-                    var $c = mollify.dom.template("comments-template", {
+                    var canAdd = kloudspeaker.session.user.admin || permission == '1';
+                    var $c = kloudspeaker.dom.template("comments-template", {
                         item: item,
                         canAdd: canAdd
                     });
@@ -1193,24 +1193,24 @@
         };
 
         this.loadComments = function(item, permission, cb) {
-            mollify.service.get("comment/" + item.id + (permission ? '?p=1' : '')).done(function(r) {
+            kloudspeaker.service.get("comment/" + item.id + (permission ? '?p=1' : '')).done(function(r) {
                 cb(item, that.processComments(permission ? r.comments : r), permission ? r.permission : undefined);
             });
         };
 
         this.processComments = function(comments) {
-            var userId = mollify.session.user_id;
+            var userId = kloudspeaker.session.user_id;
 
             for (var i = 0, j = comments.length; i < j; i++) {
-                comments[i].time = that._timestampFormatter.format(mollify.helpers.parseInternalTime(comments[i].time));
+                comments[i].time = that._timestampFormatter.format(kloudspeaker.helpers.parseInternalTime(comments[i].time));
                 comments[i].comment = comments[i].comment.replace(new RegExp('\n', 'g'), '<br/>');
-                comments[i].remove = mollify.session.user.admin || (userId == comments[i].user_id);
+                comments[i].remove = kloudspeaker.session.user.admin || (userId == comments[i].user_id);
             }
             return comments;
         };
 
         this.onAddComment = function(item, comment, cb) {
-            mollify.service.post("comment/" + item.id, {
+            kloudspeaker.service.post("comment/" + item.id, {
                 comment: comment
             }).done(function(result) {
                 that.updateCommentCount(item, result.count);
@@ -1219,7 +1219,7 @@
         };
 
         this.onRemoveComment = function($list, item, id) {
-            mollify.service.del("comment/" + item.id + "/" + id).done(function(result) {
+            kloudspeaker.service.del("comment/" + item.id + "/" + id).done(function(result) {
                 that.updateCommentCount(item, result.length);
                 that.updateComments($list, item, that.processComments(result));
             });
@@ -1242,11 +1242,11 @@
             $list.removeClass("loading");
 
             if (comments.length === 0) {
-                $list.html("<span class='message'>" + mollify.ui.texts.get("commentsDialogNoComments") + "</span>");
+                $list.html("<span class='message'>" + kloudspeaker.ui.texts.get("commentsDialogNoComments") + "</span>");
                 return;
             }
 
-            mollify.dom.template("comment-template", comments).appendTo($list.empty());
+            kloudspeaker.dom.template("comment-template", comments).appendTo($list.empty());
             $list.find(".comment-content").hover(
                 function() {
                     $(this).addClass("hover");
@@ -1298,29 +1298,29 @@
     /**
      *  Permission plugin
      **/
-    mollify.plugin.PermissionsPlugin = function() {
+    kloudspeaker.plugin.PermissionsPlugin = function() {
         var that = this;
         this._permissionTypes = false;
 
         this.initialize = function() {
-            mollify.events.addEventHandler(function(e) {
-                if (!that._permissionTypes && mollify.session.user) that._permissionTypes = mollify.session.data.permission_types
+            kloudspeaker.events.addEventHandler(function(e) {
+                if (!that._permissionTypes && kloudspeaker.session.user) that._permissionTypes = kloudspeaker.session.data.permission_types
             }, "session/start");
-            that._pathFormatter = new mollify.ui.formatters.FilesystemItemPath();
+            that._pathFormatter = new kloudspeaker.ui.formatters.FilesystemItemPath();
         };
 
         this._formatPermissionName = function(p) {
-            var name = mollify.ui.texts.get('permission_' + p.name);
+            var name = kloudspeaker.ui.texts.get('permission_' + p.name);
             if (p.subject == null && that._permissionTypes.filesystem[p.name])
-                return mollify.ui.texts.get('permission_default', name);
+                return kloudspeaker.ui.texts.get('permission_default', name);
             return name;
         };
 
         this._formatPermissionValue = function(name, val) {
             var values = that._getPermissionValues(name);
             if (values)
-                return mollify.ui.texts.get('permission_' + name + '_value_' + val);
-            return mollify.ui.texts.get('permission_value_' + val);
+                return kloudspeaker.ui.texts.get('permission_' + name + '_value_' + val);
+            return kloudspeaker.ui.texts.get('permission_value_' + val);
         };
 
         this._getPermissionValues = function(name) {
@@ -1336,19 +1336,19 @@
             var originalValues = [];
             var $content = false;
 
-            mollify.ui.dialogs.custom({
+            kloudspeaker.ui.dialogs.custom({
                 resizable: true,
                 initSize: [600, 400],
-                title: mollify.ui.texts.get('pluginPermissionsEditDialogTitle', item.name),
-                content: mollify.dom.template("mollify-tmpl-permission-editor", {
+                title: kloudspeaker.ui.texts.get('pluginPermissionsEditDialogTitle', item.name),
+                content: kloudspeaker.dom.template("kloudspeaker-tmpl-permission-editor", {
                     item: item
                 }),
                 buttons: [{
                     id: "yes",
-                    "title": mollify.ui.texts.get('dialogSave')
+                    "title": kloudspeaker.ui.texts.get('dialogSave')
                 }, {
                     id: "no",
-                    "title": mollify.ui.texts.get('dialogCancel')
+                    "title": kloudspeaker.ui.texts.get('dialogCancel')
                 }],
                 "on-button": function(btn, d) {
                     if (btn.id == 'no') {
@@ -1358,23 +1358,23 @@
                     if (modificationData["new"].length === 0 && modificationData.modified.length === 0 && modificationData.removed.length === 0)
                         return;
 
-                    mollify.service.put("permissions/list", modificationData).done(d.close).fail(d.close);
+                    kloudspeaker.service.put("permissions/list", modificationData).done(d.close).fail(d.close);
                 },
                 "on-show": function(h, $d) {
-                    $content = $d.find("#mollify-pluginpermissions-editor-content");
-                    var $subContents = $content.find(".mollify-pluginpermissions-editor-subcontent").hide();
+                    $content = $d.find("#kloudspeaker-pluginpermissions-editor-content");
+                    var $subContents = $content.find(".kloudspeaker-pluginpermissions-editor-subcontent").hide();
                     var $activeSubContent = false;
                     var activeTab = 0;
                     var selectedPermission = false;
 
                     h.center();
 
-                    mollify.service.get("configuration/users?g=1").done(function(l) {
+                    kloudspeaker.service.get("configuration/users?g=1").done(function(l) {
                         var users = that.processUserData(l);
                         var names = that._permissionTypes.keys.filesystem;
                         var init = 'filesystem_item_access';
                         var onPermissionsModified = function() {
-                            var info = (modificationData["new"].length > 0 || modificationData.modified.length > 0 || modificationData.removed.length > 0) ? "<i class='icon-exclamation-sign '/>&nbsp;" + mollify.ui.texts.get('pluginPermissionsEditDialogUnsaved') : false;
+                            var info = (modificationData["new"].length > 0 || modificationData.modified.length > 0 || modificationData.removed.length > 0) ? "<i class='icon-exclamation-sign '/>&nbsp;" + kloudspeaker.ui.texts.get('pluginPermissionsEditDialogUnsaved') : false;
                             h.setInfo(info);
                         };
                         var getPermissionKey = function(p) {
@@ -1481,7 +1481,7 @@
                         }
 
                         var activateTab = function(i) {
-                            $("#mollify-pluginpermissions-editor-tab > li").removeClass("active").eq(i).addClass("active");
+                            $("#kloudspeaker-pluginpermissions-editor-tab > li").removeClass("active").eq(i).addClass("active");
                             $activeSubContent = $subContents.hide().eq(i).show();
                             activeTab = i;
 
@@ -1494,16 +1494,16 @@
                             activateTab(activeTab);
                         };
 
-                        mollify.ui.controls.select("mollify-pluginpermissions-editor-permission-name", {
+                        kloudspeaker.ui.controls.select("kloudspeaker-pluginpermissions-editor-permission-name", {
                             onChange: onChangePermission,
                             formatter: function(name) {
-                                return mollify.ui.texts.get('permission_' + name);
+                                return kloudspeaker.ui.texts.get('permission_' + name);
                             },
                             values: names,
                             value: init
                         });
 
-                        $("#mollify-pluginpermissions-editor-tab > li").click(function() {
+                        $("#kloudspeaker-pluginpermissions-editor-tab > li").click(function() {
                             var i = $(this).addClass("active").index();
                             activateTab(i);
                         });
@@ -1523,8 +1523,8 @@
 
                         var onActivateUserPermissions = function($sc) {
                             var resetUserPermissions = function() {
-                                $("#mollify-pluginpermissions-editor-user-related-permissions").hide();
-                                $("#mollify-pluginpermissions-editor-user-permissions-description").html("");
+                                $("#kloudspeaker-pluginpermissions-editor-user-related-permissions").hide();
+                                $("#kloudspeaker-pluginpermissions-editor-user-permissions-description").html("");
                             }
                             resetUserPermissions();
 
@@ -1533,12 +1533,12 @@
                                 if (!sel) return;
 
                                 if (sel.user_type == 'a') {
-                                    $("#mollify-pluginpermissions-editor-user-permissions-description").html(mollify.ui.texts.get("pluginPermissionsUserPermissionsAdmin"));
+                                    $("#kloudspeaker-pluginpermissions-editor-user-permissions-description").html(kloudspeaker.ui.texts.get("pluginPermissionsUserPermissionsAdmin"));
                                     return;
                                 }
                                 $sc.addClass("loading");
 
-                                mollify.service.get("permissions/user/" + sel.id + "?e=1&subject=" + item.id + "&name=" + selectedPermission).done(function(p) {
+                                kloudspeaker.service.get("permissions/user/" + sel.id + "?e=1&subject=" + item.id + "&name=" + selectedPermission).done(function(p) {
                                     $sc.removeClass("loading");
 
                                     var permissions = p.permissions.slice(0);
@@ -1548,9 +1548,9 @@
                                 }).fail(h.close);
                             };
 
-                            mollify.ui.controls.select("mollify-pluginpermissions-editor-permission-user", {
+                            kloudspeaker.ui.controls.select("kloudspeaker-pluginpermissions-editor-permission-user", {
                                 onChange: onChangeUser,
-                                none: mollify.ui.texts.get("pluginPermissionsEditNoUser"),
+                                none: kloudspeaker.ui.texts.get("pluginPermissionsEditNoUser"),
                                 values: users.users,
                                 title: "name"
                             });
@@ -1585,7 +1585,7 @@
         };
 
         this.loadPermissions = function(item, name, users) {
-            return mollify.service.get("permissions/list?subject=" + item.id + (name ? "&name=" + name : "") + (users ? "&u=1" : ""));
+            return kloudspeaker.service.get("permissions/list?subject=" + item.id + (name ? "&name=" + name : "") + (users ? "&u=1" : ""));
         };
 
         this.initUserPermissionInspector = function(changes, user, item, permissionName, relatedPermissions, items, userData) {
@@ -1593,11 +1593,11 @@
                 var ep = false;
                 if (relatedPermissions.length > 0) ep = relatedPermissions[0].value;
                 if (ep) {
-                    $("#mollify-pluginpermissions-editor-user-permissions-description").html(mollify.ui.texts.get('pluginPermissionsEffectiveUserPermission', that._formatPermissionValue(permissionName, ep)));
-                    $("#mollify-pluginpermissions-editor-user-related-permissions").show();
+                    $("#kloudspeaker-pluginpermissions-editor-user-permissions-description").html(kloudspeaker.ui.texts.get('pluginPermissionsEffectiveUserPermission', that._formatPermissionValue(permissionName, ep)));
+                    $("#kloudspeaker-pluginpermissions-editor-user-related-permissions").show();
                 } else {
                     var values = that._getPermissionValues(permissionName);
-                    $("#mollify-pluginpermissions-editor-user-permissions-description").html(mollify.ui.texts.get('pluginPermissionsNoEffectiveUserPermission', that._formatPermissionValue(permissionName, values ? values[0] : '0')));
+                    $("#kloudspeaker-pluginpermissions-editor-user-permissions-description").html(kloudspeaker.ui.texts.get('pluginPermissionsNoEffectiveUserPermission', that._formatPermissionValue(permissionName, values ? values[0] : '0')));
                 }
             }
             updateEffectivePermission();
@@ -1612,53 +1612,53 @@
                 updateEffectivePermission();
             };
 
-            var $list = mollify.ui.controls.table("mollify-pluginpermissions-editor-user-permission-list", {
+            var $list = kloudspeaker.ui.controls.table("kloudspeaker-pluginpermissions-editor-user-permission-list", {
                 key: "user_id",
                 onRow: function($r, i) {
                     if (isGroup(i.user_id)) $r.addClass("group");
                 },
                 columns: [{
                     id: "user_id",
-                    title: mollify.ui.texts.get('pluginPermissionsEditColUser'),
+                    title: kloudspeaker.ui.texts.get('pluginPermissionsEditColUser'),
                     renderer: function(i, v, $c) {
                         if (v == '0' && i.subject === '') return;
                         if (v == '0') {
-                            $c.html("<em>" + mollify.ui.texts.get('pluginPermissionsEditDefaultPermission') + "</em>");
+                            $c.html("<em>" + kloudspeaker.ui.texts.get('pluginPermissionsEditDefaultPermission') + "</em>");
                             return;
                         }
                         $c.html(userData.usersById[v].name).addClass("user");
                     }
                 }, {
                     id: "value",
-                    title: mollify.ui.texts.get('pluginPermissionsPermissionValue'),
+                    title: kloudspeaker.ui.texts.get('pluginPermissionsPermissionValue'),
                     formatter: function(item, k) {
                         return that._formatPermissionValue(permissionName, k);
                     }
                 }, {
                     id: "subject",
-                    title: mollify.ui.texts.get('pluginPermissionsEditColSource'),
+                    title: kloudspeaker.ui.texts.get('pluginPermissionsEditColSource'),
                     renderer: function(i, s, $c) {
                         var subject = items[s];
                         if (!subject) {
-                            var n = mollify.ui.texts.get("permission_system_default");
+                            var n = kloudspeaker.ui.texts.get("permission_system_default");
                             if (i.user_id != '0') {
                                 var user = userData.usersById[i.user_id];
-                                n = mollify.ui.texts.get((user.is_group == '1' ? "permission_group_default" : "permission_user_default"));
+                                n = kloudspeaker.ui.texts.get((user.is_group == '1' ? "permission_group_default" : "permission_user_default"));
                             }
                             $c.html("<em>" + n + "</em>");
                         } else {
                             if (subject.id == item.id) {
-                                $c.html('<i class="icon-file-alt"/>&nbsp;' + mollify.ui.texts.get('pluginPermissionsEditColItemCurrent'));
+                                $c.html('<i class="icon-file-alt"/>&nbsp;' + kloudspeaker.ui.texts.get('pluginPermissionsEditColItemCurrent'));
                             } else {
                                 var level = Math.max(item.path.count("/"), item.path.count("\\")) - Math.max(subject.path.count("/"), subject.path.count("\\")) + 1;
-                                $c.html('<i class="icon-file-alt"/>&nbsp;' + mollify.ui.texts.get('pluginPermissionsEditColItemParent', level));
+                                $c.html('<i class="icon-file-alt"/>&nbsp;' + kloudspeaker.ui.texts.get('pluginPermissionsEditColItemParent', level));
                             }
                             $c.tooltip({
                                 placement: "bottom",
                                 html: true,
                                 title: that._pathFormatter.format(subject),
                                 trigger: "hover",
-                                container: "#mollify-pluginpermissions-editor-user-related-permissions"
+                                container: "#kloudspeaker-pluginpermissions-editor-user-related-permissions"
                             });
                         }
                     }
@@ -1666,7 +1666,7 @@
                     id: "remove",
                     title: "",
                     type: "action",
-                    content: mollify.dom.template("mollify-tmpl-permission-editor-listremove").html()
+                    content: kloudspeaker.dom.template("kloudspeaker-tmpl-permission-editor-listremove").html()
                 }],
                 onRowAction: function(id, permission) {
                     changes.remove(permission);
@@ -1712,21 +1712,21 @@
                 }
             };
 
-            $list = mollify.ui.controls.table("mollify-pluginpermissions-editor-permission-list", {
+            $list = kloudspeaker.ui.controls.table("kloudspeaker-pluginpermissions-editor-permission-list", {
                 key: "user_id",
                 onRow: function($r, i) {
                     if (isGroup(i.user_id)) $r.addClass("group");
                 },
                 columns: [{
                     id: "user_id",
-                    title: mollify.ui.texts.get('pluginPermissionsEditColUser'),
+                    title: kloudspeaker.ui.texts.get('pluginPermissionsEditColUser'),
                     renderer: function(i, v, $c) {
-                        var name = (v != '0' ? userData.usersById[v].name : mollify.ui.texts.get('pluginPermissionsEditDefaultPermission'));
+                        var name = (v != '0' ? userData.usersById[v].name : kloudspeaker.ui.texts.get('pluginPermissionsEditDefaultPermission'));
                         $c.html(name).addClass("user");
                     }
                 }, {
                     id: "value",
-                    title: mollify.ui.texts.get('pluginPermissionsPermissionValue'),
+                    title: kloudspeaker.ui.texts.get('pluginPermissionsPermissionValue'),
                     type: "select",
                     options: permissionValues || ['0', '1'],
                     formatter: function(item, k) {
@@ -1740,7 +1740,7 @@
                     id: "remove",
                     title: "",
                     type: "action",
-                    content: mollify.dom.template("mollify-tmpl-permission-editor-listremove").html()
+                    content: kloudspeaker.dom.template("kloudspeaker-tmpl-permission-editor-listremove").html()
                 }],
                 onRowAction: function(id, permission) {
                     changes.remove(permission);
@@ -1749,24 +1749,24 @@
             });
 
             $list.add(permissions);
-            var $newUser = mollify.ui.controls.select("mollify-pluginpermissions-editor-new-user", {
-                none: mollify.ui.texts.get('pluginPermissionsEditNoUser'),
+            var $newUser = kloudspeaker.ui.controls.select("kloudspeaker-pluginpermissions-editor-new-user", {
+                none: kloudspeaker.ui.texts.get('pluginPermissionsEditNoUser'),
                 title: "name",
                 onCreate: function($o, i) {
                     if (isGroup(i.id)) $o.addClass("group");
                 }
             });
             $newUser.add({
-                name: mollify.ui.texts.get('pluginPermissionsEditDefaultPermission'),
+                name: kloudspeaker.ui.texts.get('pluginPermissionsEditDefaultPermission'),
                 id: 0,
                 is_group: 0
             });
             $newUser.add(userData.users);
             $newUser.add(userData.groups);
 
-            var $newPermission = mollify.ui.controls.select("mollify-pluginpermissions-editor-new-permission", {
+            var $newPermission = kloudspeaker.ui.controls.select("kloudspeaker-pluginpermissions-editor-new-permission", {
                 values: permissionValues || ['0', '1'],
-                none: mollify.ui.texts.get('pluginPermissionsEditNoPermission'),
+                none: kloudspeaker.ui.texts.get('pluginPermissionsEditNoPermission'),
                 formatter: function(p) {
                     return that._formatPermissionValue(permissionName, p);
                 }
@@ -1778,7 +1778,7 @@
             };
             resetNew();
 
-            $("#mollify-pluginpermissions-editor-new-add").unbind("click").click(function() {
+            $("#kloudspeaker-pluginpermissions-editor-new-add").unbind("click").click(function() {
                 var selectedUser = $newUser.selected();
                 if (!selectedUser) return;
                 var selectedPermission = $newPermission.selected();
@@ -1790,32 +1790,32 @@
         };
 
         this.renderItemContextDetails = function(el, item, $content) {
-            mollify.dom.template("mollify-tmpl-permission-context").appendTo($content);
-            mollify.ui.process($content, ["localize"]);
+            kloudspeaker.dom.template("kloudspeaker-tmpl-permission-context").appendTo($content);
+            kloudspeaker.ui.process($content, ["localize"]);
 
             that.loadPermissions(item, "filesystem_item_access", true).done(function(p) {
                 var userData = that.processUserData(p.users);
 
-                $("#mollify-pluginpermissions-context-content").removeClass("loading");
+                $("#kloudspeaker-pluginpermissions-context-content").removeClass("loading");
 
-                var $list = mollify.ui.controls.table("mollify-pluginpermissions-context-permission-list", {
+                var $list = kloudspeaker.ui.controls.table("kloudspeaker-pluginpermissions-context-permission-list", {
                     key: "user_id",
                     columns: [{
                         id: "user_id",
-                        title: mollify.ui.texts.get('pluginPermissionsEditColUser'),
+                        title: kloudspeaker.ui.texts.get('pluginPermissionsEditColUser'),
                         formatter: function(i, v) {
-                            return (v != '0' ? userData.usersById[v].name : mollify.ui.texts.get('pluginPermissionsEditDefaultPermission'));
+                            return (v != '0' ? userData.usersById[v].name : kloudspeaker.ui.texts.get('pluginPermissionsEditDefaultPermission'));
                         }
                     }, {
                         id: "value",
-                        title: mollify.ui.texts.get('pluginPermissionsPermissionValue'),
+                        title: kloudspeaker.ui.texts.get('pluginPermissionsPermissionValue'),
                         formatter: function(i, v) {
                             return that._formatPermissionValue(i.name, v);
                         }
                     }]
                 });
                 $list.add(p.permissions);
-                $("#mollify-pluginpermissions-context-edit").click(function() {
+                $("#kloudspeaker-pluginpermissions-context-edit").click(function() {
                     el.close();
                     that.editItemPermissions(item);
                 });
@@ -1825,7 +1825,7 @@
         };
 
         this.onActivateConfigView = function($c, cv) {
-            mollify.service.get("configuration/users?g=1").done(function(l) {
+            kloudspeaker.service.get("configuration/users?g=1").done(function(l) {
                 var users = that.processUserData(l);
 
                 var allTypeKeys = that._permissionTypes.keys.all;
@@ -1862,21 +1862,21 @@
                 };
 
                 var removePermissions = function(list) {
-                    return mollify.service.del("permissions/list/", {
+                    return kloudspeaker.service.del("permissions/list/", {
                         list: list
                     });
                 }
 
-                var listView = new mollify.view.ConfigListView($c, {
+                var listView = new kloudspeaker.view.ConfigListView($c, {
                     actions: [{
                         id: "action-item-permissions",
                         content: '<i class="icon-file"></i>',
-                        tooltip: mollify.ui.texts.get('configAdminPermissionsEditItemPermissionsTooltip'),
+                        tooltip: kloudspeaker.ui.texts.get('configAdminPermissionsEditItemPermissionsTooltip'),
                         callback: function(sel) {
-                            mollify.ui.dialogs.itemSelector({
-                                title: mollify.ui.texts.get('configAdminPermissionsEditItemPermissionsTitle'),
-                                message: mollify.ui.texts.get('configAdminPermissionsEditItemPermissionsMessage'),
-                                actionTitle: mollify.ui.texts.get('ok'),
+                            kloudspeaker.ui.dialogs.itemSelector({
+                                title: kloudspeaker.ui.texts.get('configAdminPermissionsEditItemPermissionsTitle'),
+                                message: kloudspeaker.ui.texts.get('configAdminPermissionsEditItemPermissionsMessage'),
+                                actionTitle: kloudspeaker.ui.texts.get('ok'),
                                 allRoots: true,
                                 handler: {
                                     onSelect: function(i) {
@@ -1894,9 +1894,9 @@
                         cls: "btn-danger",
                         depends: "table-selection",
                         callback: function(sel) {
-                            mollify.ui.dialogs.confirmation({
-                                title: mollify.ui.texts.get("configAdminPermissionsRemoveConfirmationTitle"),
-                                message: mollify.ui.texts.get("configAdminPermissionsRemoveConfirmationMessage", [sel.length]),
+                            kloudspeaker.ui.dialogs.confirmation({
+                                title: kloudspeaker.ui.texts.get("configAdminPermissionsRemoveConfirmationTitle"),
+                                message: kloudspeaker.ui.texts.get("configAdminPermissionsRemoveConfirmationMessage", [sel.length]),
                                 callback: function() {
                                     removePermissions(sel).done(refresh);
                                 }
@@ -1905,7 +1905,7 @@
                     }, {
                         id: "action-edit-generic",
                         content: '<i class="icon-globe"></i>',
-                        tooltip: mollify.ui.texts.get('pluginPermissionsEditDefaultPermissionsAction'),
+                        tooltip: kloudspeaker.ui.texts.get('pluginPermissionsEditDefaultPermissionsAction'),
                         callback: function() {
                             that.editGenericPermissions();
                         }
@@ -1943,21 +1943,21 @@
                             type: "selectrow"
                         }, {
                             id: "name",
-                            title: mollify.ui.texts.get('pluginPermissionsPermissionName'),
+                            title: kloudspeaker.ui.texts.get('pluginPermissionsPermissionName'),
                             sortable: true,
                             formatter: function(item, name) {
                                 return that._formatPermissionName(item);
                             }
                         }, {
                             id: "value",
-                            title: mollify.ui.texts.get('pluginPermissionsPermissionValue'),
+                            title: kloudspeaker.ui.texts.get('pluginPermissionsPermissionValue'),
                             sortable: true,
                             formatter: function(item, k) {
                                 return that._formatPermissionValue(item.name, k);
                             }
                         }, {
                             id: "user_id",
-                            title: mollify.ui.texts.get('pluginPermissionsPermissionUser'),
+                            title: kloudspeaker.ui.texts.get('pluginPermissionsPermissionUser'),
                             sortable: true,
                             formatter: function(item, u) {
                                 if (!u || u == "0")
@@ -1966,7 +1966,7 @@
                             }
                         }, {
                             id: "subject",
-                            title: mollify.ui.texts.get('pluginPermissionsPermissionSubject'),
+                            title: kloudspeaker.ui.texts.get('pluginPermissionsPermissionSubject'),
                             formatter: function(item, s) {
                                 if (!s) return "";
                                 if ((that._permissionTypes.keys.filesystem.indexOf(item.name) >= 0) && queryItems[s]) {
@@ -1979,31 +1979,31 @@
                             id: "remove",
                             title: "",
                             type: "action",
-                            content: mollify.dom.template("mollify-tmpl-permission-editor-listremove").html()
+                            content: kloudspeaker.dom.template("kloudspeaker-tmpl-permission-editor-listremove").html()
                         }],
                         onRowAction: function(id, permission) {
                             removePermissions([permission]).done(refresh);
                         }
                     }
                 });
-                var $options = $c.find(".mollify-configlistview-options");
-                mollify.dom.template("mollify-tmpl-permission-admin-options").appendTo($options);
-                mollify.ui.process($options, ["localize"]);
+                var $options = $c.find(".kloudspeaker-configlistview-options");
+                kloudspeaker.dom.template("kloudspeaker-tmpl-permission-admin-options").appendTo($options);
+                kloudspeaker.ui.process($options, ["localize"]);
 
                 $("#permissions-subject-any").attr('checked', true);
 
-                $optionName = mollify.ui.controls.select("permissions-name", {
+                $optionName = kloudspeaker.ui.controls.select("permissions-name", {
                     values: allTypeKeys,
                     formatter: function(t) {
-                        return mollify.ui.texts.get('permission_' + t);
+                        return kloudspeaker.ui.texts.get('permission_' + t);
                     },
-                    none: mollify.ui.texts.get('pluginPermissionsAdminAny')
+                    none: kloudspeaker.ui.texts.get('pluginPermissionsAdminAny')
                 });
 
-                $optionUser = mollify.ui.controls.select("permissions-user", {
+                $optionUser = kloudspeaker.ui.controls.select("permissions-user", {
                     values: users.all,
                     title: "name",
-                    none: mollify.ui.texts.get('pluginPermissionsAdminAny')
+                    none: kloudspeaker.ui.texts.get('pluginPermissionsAdminAny')
                 });
 
                 var $subjectItemSelector = $("#permissions-subject-filesystem-item-selector");
@@ -2015,10 +2015,10 @@
                 };
                 $("#permissions-subject-filesystem-item-select").click(function(e) {
                     if ($optionSubject.get() == 'filesystem_item') {
-                        mollify.ui.dialogs.itemSelector({
-                            title: mollify.ui.texts.get('pluginPermissionsSelectItemTitle'),
-                            message: mollify.ui.texts.get('pluginPermissionsSelectItemMsg'),
-                            actionTitle: mollify.ui.texts.get('ok'),
+                        kloudspeaker.ui.dialogs.itemSelector({
+                            title: kloudspeaker.ui.texts.get('pluginPermissionsSelectItemTitle'),
+                            message: kloudspeaker.ui.texts.get('pluginPermissionsSelectItemMsg'),
+                            actionTitle: kloudspeaker.ui.texts.get('ok'),
                             handler: {
                                 onSelect: onSelectItem,
                                 canSelect: function(f) {
@@ -2027,10 +2027,10 @@
                             }
                         });
                     } else {
-                        mollify.ui.dialogs.folderSelector({
-                            title: mollify.ui.texts.get('pluginPermissionsSelectFolderTitle'),
-                            message: mollify.ui.texts.get('pluginPermissionsSelectFolderMsg'),
-                            actionTitle: mollify.ui.texts.get('ok'),
+                        kloudspeaker.ui.dialogs.folderSelector({
+                            title: kloudspeaker.ui.texts.get('pluginPermissionsSelectFolderTitle'),
+                            message: kloudspeaker.ui.texts.get('pluginPermissionsSelectFolderMsg'),
+                            actionTitle: kloudspeaker.ui.texts.get('ok'),
                             handler: {
                                 onSelect: onSelectItem,
                                 canSelect: function(f) {
@@ -2041,12 +2041,12 @@
                     }
                     return false;
                 });
-                $optionSubject = mollify.ui.controls.select("permissions-subject", {
+                $optionSubject = kloudspeaker.ui.controls.select("permissions-subject", {
                     values: ['none', 'filesystem_item', 'filesystem_child'],
                     formatter: function(s) {
-                        return mollify.ui.texts.get('pluginPermissionsAdminOptionSubject_' + s);
+                        return kloudspeaker.ui.texts.get('pluginPermissionsAdminOptionSubject_' + s);
                     },
-                    none: mollify.ui.texts.get('pluginPermissionsAdminAny'),
+                    none: kloudspeaker.ui.texts.get('pluginPermissionsAdminAny'),
                     onChange: function(s) {
                         if (s == 'filesystem_item' || s == 'filesystem_child') {
                             selectedSubjectItem = false;
@@ -2069,19 +2069,19 @@
             };
             var $content = false;
 
-            mollify.ui.dialogs.custom({
+            kloudspeaker.ui.dialogs.custom({
                 resizable: true,
                 initSize: [600, 400],
-                title: user ? mollify.ui.texts.get('pluginPermissionsEditDialogTitle', user.name) : mollify.ui.texts.get('pluginPermissionsEditDefaultDialogTitle'),
-                content: mollify.dom.template("mollify-tmpl-permission-generic-editor", {
+                title: user ? kloudspeaker.ui.texts.get('pluginPermissionsEditDialogTitle', user.name) : kloudspeaker.ui.texts.get('pluginPermissionsEditDefaultDialogTitle'),
+                content: kloudspeaker.dom.template("kloudspeaker-tmpl-permission-generic-editor", {
                     user: user
                 }),
                 buttons: [{
                     id: "yes",
-                    "title": mollify.ui.texts.get('dialogSave')
+                    "title": kloudspeaker.ui.texts.get('dialogSave')
                 }, {
                     id: "no",
-                    "title": mollify.ui.texts.get('dialogCancel')
+                    "title": kloudspeaker.ui.texts.get('dialogCancel')
                 }],
                 "on-button": function(btn, d) {
                     if (btn.id == 'no') {
@@ -2092,23 +2092,23 @@
                         return;
 
                     $content.addClass("loading");
-                    mollify.service.put("permissions/list", permissionData).done(function() {
+                    kloudspeaker.service.put("permissions/list", permissionData).done(function() {
                         d.close();
                         if (changeCallback) changeCallback();
                     }).fail(d.close);
                 },
                 "on-show": function(h, $d) {
-                    $content = $d.find("#mollify-pluginpermissions-editor-generic-content");
+                    $content = $d.find("#kloudspeaker-pluginpermissions-editor-generic-content");
                     h.center();
                     var $list = false;
 
-                    mollify.service.get("permissions/user/" + (user ? user.id : '0') + "/generic/").done(function(r) {
+                    kloudspeaker.service.get("permissions/user/" + (user ? user.id : '0') + "/generic/").done(function(r) {
                         var done = function(dp) {
                             $content.removeClass("loading");
 
                             var allTypeKeys = that._permissionTypes.keys.all;
-                            var values = mollify.helpers.mapByKey(r.permissions, "name", "value");
-                            var defaultPermissions = dp ? mollify.helpers.mapByKey(dp.permissions, "name", "value") : {};
+                            var values = kloudspeaker.helpers.mapByKey(r.permissions, "name", "value");
+                            var defaultPermissions = dp ? kloudspeaker.helpers.mapByKey(dp.permissions, "name", "value") : {};
 
                             var permissions = [];
 
@@ -2125,24 +2125,24 @@
 
                             var cols = [{
                                 id: "name",
-                                title: mollify.ui.texts.get('pluginPermissionsPermissionName'),
+                                title: kloudspeaker.ui.texts.get('pluginPermissionsPermissionName'),
                                 formatter: function(item, name) {
                                     if (that._permissionTypes.keys.filesystem.indexOf(name) >= 0) {
-                                        if (!user) return that._formatPermissionName(item) + " (" + mollify.ui.texts.get('permission_system_default') + ")";
-                                        return that._formatPermissionName(item) + " (" + mollify.ui.texts.get(user.is_group == '1' ? 'permission_group_default' : 'permission_user_default') + ")";
+                                        if (!user) return that._formatPermissionName(item) + " (" + kloudspeaker.ui.texts.get('permission_system_default') + ")";
+                                        return that._formatPermissionName(item) + " (" + kloudspeaker.ui.texts.get(user.is_group == '1' ? 'permission_group_default' : 'permission_user_default') + ")";
                                     }
                                     return that._formatPermissionName(item);
                                 }
                             }, {
                                 id: "value",
-                                title: mollify.ui.texts.get('pluginPermissionsPermissionValue'),
+                                title: kloudspeaker.ui.texts.get('pluginPermissionsPermissionValue'),
                                 type: "select",
                                 options: function(item) {
                                     var itemValues = that._permissionTypes.values[item.name];
                                     if (itemValues) return itemValues;
                                     return ["0", "1"];
                                 },
-                                none: mollify.ui.texts.get('permission_value_undefined'),
+                                none: kloudspeaker.ui.texts.get('permission_value_undefined'),
                                 formatter: function(item, k) {
                                     return that._formatPermissionValue(item.name, k);
                                 },
@@ -2164,7 +2164,7 @@
                             if (user) {
                                 cols.push({
                                     id: "default",
-                                    title: mollify.ui.texts.get('permission_system_default'),
+                                    title: kloudspeaker.ui.texts.get('permission_system_default'),
                                     formatter: function(p) {
                                         if (!(p.name in defaultPermissions) || defaultPermissions[p.name] === undefined) return "";
                                         return that._formatPermissionValue(p.name, defaultPermissions[p.name]);
@@ -2172,13 +2172,13 @@
                                 });
                             }
 
-                            $list = mollify.ui.controls.table("mollify-pluginpermissions-editor-generic-permission-list", {
+                            $list = kloudspeaker.ui.controls.table("kloudspeaker-pluginpermissions-editor-generic-permission-list", {
                                 key: "name",
                                 columns: cols
                             });
                             $list.add(permissions);
                         };
-                        if (user) mollify.service.get("permissions/user/0/generic/").done(done);
+                        if (user) kloudspeaker.service.get("permissions/user/0/generic/").done(done);
                         else done();
                     }).fail(h.close);
                 }
@@ -2192,13 +2192,13 @@
 
             var refresh = function() {
                 $c.addClass("loading");
-                mollify.service.get("permissions/user/" + u.id + "/generic/").done(function(l) {
-                    mollify.service.get("permissions/user/0/generic/").done(function(d) {
+                kloudspeaker.service.get("permissions/user/" + u.id + "/generic/").done(function(l) {
+                    kloudspeaker.service.get("permissions/user/0/generic/").done(function(d) {
                         $c.removeClass("loading");
 
-                        defaultPermissions = mollify.helpers.mapByKey(d.permissions, "name", "value");
+                        defaultPermissions = kloudspeaker.helpers.mapByKey(d.permissions, "name", "value");
 
-                        var values = mollify.helpers.mapByKey(l.permissions, "name");
+                        var values = kloudspeaker.helpers.mapByKey(l.permissions, "name");
                         permissions = [];
 
                         $.each(that._permissionTypes.keys.all, function(i, t) {
@@ -2217,19 +2217,19 @@
                 });
             };
 
-            permissionsView = new mollify.view.ConfigListView($c, {
+            permissionsView = new kloudspeaker.view.ConfigListView($c, {
                 title: title,
                 actions: [{
                     id: "action-edit",
                     content: '<i class="icon-user"></i>',
-                    tooltip: mollify.ui.texts.get(u.is_group == '1' ? 'pluginPermissionsEditGroupPermissionsAction' : 'pluginPermissionsEditUserPermissionsAction'),
+                    tooltip: kloudspeaker.ui.texts.get(u.is_group == '1' ? 'pluginPermissionsEditGroupPermissionsAction' : 'pluginPermissionsEditUserPermissionsAction'),
                     callback: function() {
                         that.editGenericPermissions(u, refresh);
                     }
                 }, {
                     id: "action-edit-defaults",
                     content: '<i class="icon-globe"></i>',
-                    tooltip: mollify.ui.texts.get('pluginPermissionsEditDefaultPermissionsAction'),
+                    tooltip: kloudspeaker.ui.texts.get('pluginPermissionsEditDefaultPermissionsAction'),
                     callback: function() {
                         that.editGenericPermissions(false, refresh);
                     }
@@ -2240,22 +2240,22 @@
                     narrow: true,
                     columns: [{
                         id: "name",
-                        title: mollify.ui.texts.get('pluginPermissionsPermissionName'),
+                        title: kloudspeaker.ui.texts.get('pluginPermissionsPermissionName'),
                         formatter: function(p, v) {
                             if (v in that._permissionTypes.keys.filesystem)
-                                return mollify.ui.texts.get('permission_default_' + v);
-                            return mollify.ui.texts.get('permission_' + v);
+                                return kloudspeaker.ui.texts.get('permission_default_' + v);
+                            return kloudspeaker.ui.texts.get('permission_' + v);
                         }
                     }, {
                         id: "value",
-                        title: mollify.ui.texts.get('pluginPermissionsPermissionValue'),
+                        title: kloudspeaker.ui.texts.get('pluginPermissionsPermissionValue'),
                         formatter: function(p, v) {
                             if (v === undefined) return "";
                             return that._formatPermissionValue(p.name, v);
                         }
                     }, {
                         id: "default",
-                        title: mollify.ui.texts.get('permission_system_default'),
+                        title: kloudspeaker.ui.texts.get('permission_system_default'),
                         formatter: function(p) {
                             if (!(p.name in defaultPermissions) || defaultPermissions[p.name] === undefined) return "";
                             return that._formatPermissionValue(p.name, defaultPermissions[p.name]);
@@ -2276,7 +2276,7 @@
             id: "plugin-permissions",
             initialize: that.initialize,
             itemContextHandler: function(item, ctx, data) {
-                if (!mollify.session.user.admin) return false;
+                if (!kloudspeaker.session.user.admin) return false;
 
                 return {
                     details: {
@@ -2299,7 +2299,7 @@
                     return [{
                         viewId: "permissions",
                         admin: true,
-                        title: mollify.ui.texts.get("pluginPermissionsConfigViewNavTitle"),
+                        title: kloudspeaker.ui.texts.get("pluginPermissionsConfigViewNavTitle"),
                         onActivate: that.onActivateConfigView
                     }];
                 }
@@ -2312,7 +2312,7 @@
     /**
      *  Dropbox plugin
      **/
-    mollify.plugin.DropboxPlugin = function() {
+    kloudspeaker.plugin.DropboxPlugin = function() {
         var that = this;
         that.w = 0;
         that.$dbE = false;
@@ -2320,31 +2320,31 @@
         that.itemsByKey = {};
 
         this.initialize = function() {
-            that._pathFormatter = new mollify.ui.formatters.FilesystemItemPath();
-            that.itemContext = new mollify.ui.itemContext();
-            mollify.events.addEventHandler(function(e) {
-                if (e.type == 'filesystem/delete') that.onRemoveItems(mollify.helpers.extractValue(e.payload.items, "id"));
-                //TODO else if (e.type == 'filesystem/rename') that.updateItems(mollify.helpers.extractValue(e.payload.items));
+            that._pathFormatter = new kloudspeaker.ui.formatters.FilesystemItemPath();
+            that.itemContext = new kloudspeaker.ui.itemContext();
+            kloudspeaker.events.addEventHandler(function(e) {
+                if (e.type == 'filesystem/delete') that.onRemoveItems(kloudspeaker.helpers.extractValue(e.payload.items, "id"));
+                //TODO else if (e.type == 'filesystem/rename') that.updateItems(kloudspeaker.helpers.extractValue(e.payload.items));
             });
         };
 
         this.onFileViewActivate = function($container) {
-            mollify.dom.template("mollify-tmpl-mainview-dropbox").appendTo($container);
-            $("#mollify-dropbox-handle").click(function() {
+            kloudspeaker.dom.template("kloudspeaker-tmpl-mainview-dropbox").appendTo($container);
+            $("#kloudspeaker-dropbox-handle").click(function() {
                 that.openDropbox();
             });
 
-            that.$dbE = $("#mollify-dropbox");
-            that.w = $("#mollify-dropbox-content").outerWidth();
+            that.$dbE = $("#kloudspeaker-dropbox");
+            that.w = $("#kloudspeaker-dropbox-content").outerWidth();
 
             var onResize = function() {
-                var y = $("#mollify-mainview-header").height();
+                var y = $("#kloudspeaker-mainview-header").height();
                 that.$dbE.css("top", y + "px").height($(window).height() - y);
             };
             $(window).resize(onResize);
             onResize();
 
-            if (mollify.ui.draganddrop) {
+            if (kloudspeaker.ui.draganddrop) {
                 var dnd = {
                     canDrop: function($e, e, obj) {
                         if (!obj || obj.type != 'filesystemitem') return false;
@@ -2361,12 +2361,12 @@
                         that.onAddItem(item);
                     }
                 };
-                mollify.ui.draganddrop.enableDrop($("#mollify-dropbox-list"), dnd);
-                mollify.ui.draganddrop.enableDrop($("#mollify-dropbox-handle"), dnd);
+                kloudspeaker.ui.draganddrop.enableDrop($("#kloudspeaker-dropbox-list"), dnd);
+                kloudspeaker.ui.draganddrop.enableDrop($("#kloudspeaker-dropbox-handle"), dnd);
             }
 
-            var ab = mollify.ui.controls.dropdown({
-                element: $("#mollify-dropbox-actions"),
+            var ab = kloudspeaker.ui.controls.dropdown({
+                element: $("#kloudspeaker-dropbox-actions"),
                 container: $("body"),
                 hideDelay: 0,
                 dynamic: true,
@@ -2392,7 +2392,7 @@
         };
 
         this.onFileViewDeactivate = function() {
-            $("#mollify-dropbox").remove();
+            $("#kloudspeaker-dropbox").remove();
         };
 
         this.getActions = function(cb) {
@@ -2400,7 +2400,7 @@
                 cb([]);
                 return;
             }
-            var actions = mollify.helpers.getPluginActions(mollify.plugins.getItemCollectionPlugins(that.items, {
+            var actions = kloudspeaker.helpers.getPluginActions(kloudspeaker.plugins.getItemCollectionPlugins(that.items, {
                 src: "dropbox"
             }));
             actions.push({
@@ -2409,7 +2409,7 @@
             actions.push({
                 "title-key": "dropboxEmpty"
             });
-            cb(mollify.helpers.cleanupActions(actions));
+            cb(kloudspeaker.helpers.cleanupActions(actions));
         };
 
         this.openDropbox = function(o) {
@@ -2472,8 +2472,8 @@
         };
 
         this.refreshList = function() {
-            $("#mollify-dropbox-list").empty().append(mollify.dom.template("mollify-tmpl-mainview-dropbox-item", that.items));
-            var $items = $("#mollify-dropbox-list .mollify-dropbox-list-item");
+            $("#kloudspeaker-dropbox-list").empty().append(kloudspeaker.dom.template("kloudspeaker-tmpl-mainview-dropbox-item", that.items));
+            var $items = $("#kloudspeaker-dropbox-list .kloudspeaker-dropbox-list-item");
             $items.click(function(e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -2483,8 +2483,8 @@
                 that.itemContext.open({
                     item: item,
                     element: $i,
-                    container: mollify.App.getElement(),
-                    viewport: mollify.App.getElement()
+                    container: kloudspeaker.App.getElement(),
+                    viewport: kloudspeaker.App.getElement()
                 });
                 return false;
             }).each(function() {
@@ -2497,8 +2497,8 @@
                     trigger: "hover"
                 });
             });
-            if (mollify.ui.draganddrop) {
-                mollify.ui.draganddrop.enableDrag($items, {
+            if (kloudspeaker.ui.draganddrop) {
+                kloudspeaker.ui.draganddrop.enableDrag($items, {
                     onDragStart: function($e, e) {
                         var item = $e.tmplItem().data;
                         return {
@@ -2508,15 +2508,15 @@
                     }
                 });
             }
-            $("#mollify-dropbox-list .mollify-dropbox-list-item > a.item-remove").click(function() {
-                mollify.ui.hideActivePopup();
+            $("#kloudspeaker-dropbox-list .kloudspeaker-dropbox-list-item > a.item-remove").click(function() {
+                kloudspeaker.ui.hideActivePopup();
                 var $t = $(this);
                 that.onRemoveItem($t.tmplItem().data);
             });
         };
 
         this._updateButton = function() {
-            var $btn = $("#mollify-dropbox-actions > button");
+            var $btn = $("#kloudspeaker-dropbox-actions > button");
             if (that.items.length > 0)
                 $btn.removeClass("disabled");
             else
@@ -2559,26 +2559,26 @@
     /**
      *  Share plugin
      **/
-    mollify.plugin.SharePlugin = function() {
+    kloudspeaker.plugin.SharePlugin = function() {
         var that = this;
 
         this.initialize = function() {
-            that._timestampFormatter = new mollify.ui.formatters.Timestamp(mollify.ui.texts.get('shortDateTimeFormat'));
+            that._timestampFormatter = new kloudspeaker.ui.formatters.Timestamp(kloudspeaker.ui.texts.get('shortDateTimeFormat'));
 
-            mollify.App.registerView("share", {
+            kloudspeaker.App.registerView("share", {
                 getView: function(rqParts, urlParams) {
                     if (rqParts.length != 2) return false;
                     var df = $.Deferred();
 
                     var shareId = rqParts[1];
-                    mollify.service.get("public/" + shareId + "/info/").done(function(result) {
+                    kloudspeaker.service.get("public/" + shareId + "/info/").done(function(result) {
                         if (!result || !result.type || (["download", "upload", "prepared_download"].indexOf(result.type) < 0)) {
-                            df.resolve(new mollify.ui.FullErrorView(mollify.ui.texts.get('shareViewInvalidRequest')));
+                            df.resolve(new kloudspeaker.ui.FullErrorView(kloudspeaker.ui.texts.get('shareViewInvalidRequest')));
                             return;
                         }
 
                         if (result.restriction == "private") {
-                            if (!mollify.session || !mollify.session.user) {
+                            if (!kloudspeaker.session || !kloudspeaker.session.user) {
                                 df.resolve(false);
                                 return;
                             }
@@ -2589,7 +2589,7 @@
 
                         df.resolve(that._getShareView(shareId, result));
                     }).fail(function() {
-                        df.resolve(new mollify.ui.FullErrorView(mollify.ui.texts.get('shareViewInvalidRequest')));
+                        df.resolve(new kloudspeaker.ui.FullErrorView(kloudspeaker.ui.texts.get('shareViewInvalidRequest')));
                     });
                     return df.promise();
                 }
@@ -2597,13 +2597,13 @@
         };
 
         this._getShareView = function(id, info) {
-            var serviceUrl = mollify.service.url("public/" + id, true);
+            var serviceUrl = kloudspeaker.service.url("public/" + id, true);
             var urlProvider = {
                 get: function(path, param) {
                     var url = serviceUrl;
                     if (path) url = url + path;
-                    if (param) url = mollify.helpers.urlWithParam(url, param);
-                    return mollify.helpers.noncachedUrl(url);
+                    if (param) url = kloudspeaker.helpers.urlWithParam(url, param);
+                    return kloudspeaker.helpers.noncachedUrl(url);
                 }
             }
 
@@ -2614,7 +2614,7 @@
             } else {
                 return new that.ShareUploadView(id, urlProvider, info.name);
             }
-            return new mollify.ui.FullErrorView(mollify.ui.texts.get('shareViewInvalidRequest'));
+            return new kloudspeaker.ui.FullErrorView(kloudspeaker.ui.texts.get('shareViewInvalidRequest'));
         };
 
         this.ShareAccessPasswordView = function(shareId, info) {
@@ -2624,10 +2624,10 @@
                 var df = $.Deferred();
                 vt._$c = $c;
 
-                mollify.dom.loadContentInto($c, mollify.plugins.url("Share", "public_share_access_password.html"), function() {
-                    $("#mollify-share-access-button").click(vt._onAccess);
-                    $("#mollify-share-access-password").focus();
-                    $("#mollify-share-access-password").bind('keypress', function(e) {
+                kloudspeaker.dom.loadContentInto($c, kloudspeaker.plugins.url("Share", "public_share_access_password.html"), function() {
+                    $("#kloudspeaker-share-access-button").click(vt._onAccess);
+                    $("#kloudspeaker-share-access-password").focus();
+                    $("#kloudspeaker-share-access-password").bind('keypress', function(e) {
                         if ((e.keyCode || e.which) == 13) vt._onAccess();
                     });
                     df.resolve();
@@ -2636,18 +2636,18 @@
             };
 
             this._onAccess = function() {
-                var pw = $("#mollify-share-access-password").val();
+                var pw = $("#kloudspeaker-share-access-password").val();
                 if (!pw || pw.length === 0) return;
                 var key = window.Base64.encode(pw);
 
-                mollify.service.post("public/" + shareId + "/key/", {
+                kloudspeaker.service.post("public/" + shareId + "/key/", {
                     key: key
                 }).done(function(r) {
                     if (!r.result) {
-                        mollify.ui.dialogs.notification({
-                            message: mollify.ui.texts.get('shareAccessPasswordFailed')
+                        kloudspeaker.ui.dialogs.notification({
+                            message: kloudspeaker.ui.texts.get('shareAccessPasswordFailed')
                         });
-                        $("#mollify-share-access-password").focus();
+                        $("#kloudspeaker-share-access-password").focus();
                         return;
                     }
                     //proceed to original view
@@ -2661,11 +2661,11 @@
 
             this.init = function($c) {
                 var df = $.Deferred();
-                mollify.dom.loadContentInto($c, mollify.plugins.url("Share", "public_share_download.html"), function() {
-                    $("#mollify-share-title").text(mollify.ui.texts.get("shareViewDownloadTitle", shareName));
+                kloudspeaker.dom.loadContentInto($c, kloudspeaker.plugins.url("Share", "public_share_download.html"), function() {
+                    $("#kloudspeaker-share-title").text(kloudspeaker.ui.texts.get("shareViewDownloadTitle", shareName));
 
                     setTimeout(function() {
-                        mollify.ui.download(u.get());
+                        kloudspeaker.ui.download(u.get());
                     }, 1000);
                     df.resolve();
                 }, ['localize']);
@@ -2678,19 +2678,19 @@
 
             this.init = function($c) {
                 var df = $.Deferred();
-                mollify.dom.loadContentInto($c, mollify.plugins.url("Share", "public_share_prepared_download.html"), function() {
-                    $("#mollify-share-download-prepare").text(mollify.ui.texts.get("shareViewPreparedDownloadPreparingTitle", shareName));
-                    $("#mollify-share-download").text(mollify.ui.texts.get("shareViewPreparedDownloadDownloadingTitle", shareName));
-                    $("#mollify-share-download-error").text(mollify.ui.texts.get("shareViewPreparedDownloadErrorTitle", shareName));
+                kloudspeaker.dom.loadContentInto($c, kloudspeaker.plugins.url("Share", "public_share_prepared_download.html"), function() {
+                    $("#kloudspeaker-share-download-prepare").text(kloudspeaker.ui.texts.get("shareViewPreparedDownloadPreparingTitle", shareName));
+                    $("#kloudspeaker-share-download").text(kloudspeaker.ui.texts.get("shareViewPreparedDownloadDownloadingTitle", shareName));
+                    $("#kloudspeaker-share-download-error").text(kloudspeaker.ui.texts.get("shareViewPreparedDownloadErrorTitle", shareName));
 
-                    mollify.service.get(u.get("/prepare")).done(function(r) {
-                        $("#mollify-share-download-prepare").hide();
-                        $("#mollify-share-download").show();
-                        mollify.ui.download(u.get(false, "key=" + r.key));
+                    kloudspeaker.service.get(u.get("/prepare")).done(function(r) {
+                        $("#kloudspeaker-share-download-prepare").hide();
+                        $("#kloudspeaker-share-download").show();
+                        kloudspeaker.ui.download(u.get(false, "key=" + r.key));
                     }).fail(function() {
                         this.handled = true;
-                        $("#mollify-share-download-prepare").hide();
-                        $("#mollify-share-download-error").show();
+                        $("#kloudspeaker-share-download-prepare").hide();
+                        $("#kloudspeaker-share-download-error").show();
                     });
                     df.resolve();
                 }, ['localize']);
@@ -2703,18 +2703,18 @@
 
             this.init = function($c) {
                 var df = $.Deferred();
-                var uploadSpeedFormatter = new mollify.ui.formatters.Number(1, mollify.ui.texts.get('dataRateKbps'), mollify.ui.texts.get('decimalSeparator'));
+                var uploadSpeedFormatter = new kloudspeaker.ui.formatters.Number(1, kloudspeaker.ui.texts.get('dataRateKbps'), kloudspeaker.ui.texts.get('decimalSeparator'));
 
-                mollify.dom.loadContentInto($c, mollify.plugins.url("Share", "public_share_upload.html"), function() {
-                    $("#mollify-share-title").text(mollify.ui.texts.get("shareViewUploadTitle", shareName));
-                    vt._uploadProgress = new that.PublicUploaderProgress($("#mollify-share-public-upload-progress"));
+                kloudspeaker.dom.loadContentInto($c, kloudspeaker.plugins.url("Share", "public_share_upload.html"), function() {
+                    $("#kloudspeaker-share-title").text(kloudspeaker.ui.texts.get("shareViewUploadTitle", shareName));
+                    vt._uploadProgress = new that.PublicUploaderProgress($("#kloudspeaker-share-public-upload-progress"));
 
-                    mollify.ui.uploader.initUploadWidget($("#mollify-share-public-uploader"), {
+                    kloudspeaker.ui.uploader.initUploadWidget($("#kloudspeaker-share-public-uploader"), {
                         url: u.get(false, "format=binary"),
-                        dropElement: $("#mollify-share-public"),
+                        dropElement: $("#kloudspeaker-share-public"),
                         handler: {
                             start: function(files, ready) {
-                                vt._uploadProgress.start(mollify.ui.texts.get(files.length > 1 ? "mainviewUploadProgressManyMessage" : "mainviewUploadProgressOneMessage", files.length));
+                                vt._uploadProgress.start(kloudspeaker.ui.texts.get(files.length > 1 ? "mainviewUploadProgressManyMessage" : "mainviewUploadProgressOneMessage", files.length));
                                 ready();
                             },
                             progress: function(pr, br) {
@@ -2724,14 +2724,14 @@
                             },
                             finished: function() {
                                 setTimeout(function() {
-                                    vt._uploadProgress.success(mollify.ui.texts.get('mainviewFileUploadComplete'));
+                                    vt._uploadProgress.success(kloudspeaker.ui.texts.get('mainviewFileUploadComplete'));
                                 }, 1000);
                             },
                             failed: function(e) {
                                 if (e && e.code == 216) {
-                                    vt._uploadProgress.failure(mollify.ui.texts.get('mainviewFileUploadNotAllowed'));
+                                    vt._uploadProgress.failure(kloudspeaker.ui.texts.get('mainviewFileUploadNotAllowed'));
                                 } else {
-                                    vt._uploadProgress.failure(mollify.ui.texts.get('mainviewFileUploadFailed'));
+                                    vt._uploadProgress.failure(kloudspeaker.ui.texts.get('mainviewFileUploadFailed'));
                                 }
                             }
                         }
@@ -2776,9 +2776,9 @@
 
         this.renderItemContextDetails = function(el, item, $content, data) {
             $content.addClass("loading");
-            mollify.templates.load("shares-content", mollify.helpers.noncachedUrl(mollify.plugins.url("Share", "content.html"))).done(function() {
+            kloudspeaker.templates.load("shares-content", kloudspeaker.helpers.noncachedUrl(kloudspeaker.plugins.url("Share", "content.html"))).done(function() {
                 $content.removeClass("loading");
-                mollify.dom.template("mollify-tmpl-shares", {
+                kloudspeaker.dom.template("kloudspeaker-tmpl-shares", {
                     item: item
                 }).appendTo($content);
                 that.loadShares(item).done(function(shares) {
@@ -2788,8 +2788,8 @@
         };
 
         this.loadShares = function(item) {
-            if (!item) return mollify.service.get("share/all/");
-            return mollify.service.get("share/items/" + item.id).done(function(result) {
+            if (!item) return kloudspeaker.service.get("share/all/");
+            return kloudspeaker.service.get("share/items/" + item.id).done(function(result) {
                 that.refreshShares(result);
             });
         };
@@ -2807,14 +2807,14 @@
         }
 
         this.initContent = function(item, shares, $c) {
-            var title = item.shareTitle ? item.shareTitle : mollify.ui.texts.get(item.is_file ? 'shareDialogShareFileTitle' : 'shareDialogShareFolderTitle');
+            var title = item.shareTitle ? item.shareTitle : kloudspeaker.ui.texts.get(item.is_file ? 'shareDialogShareFileTitle' : 'shareDialogShareFolderTitle');
             $("#share-item-title").html(title);
             $("#share-item-name").html(item.name);
             $("#share-dialog-content").removeClass("loading");
             $("#share-new").click(function() {
                 that.onAddShare(item);
             });
-            that._context = mollify.ui.controls.slidePanel($("#share-list"), {
+            that._context = kloudspeaker.ui.controls.slidePanel($("#share-list"), {
                 relative: true
             });
 
@@ -2822,14 +2822,14 @@
         };
 
         this.getShareLink = function(share) {
-            return mollify.App.getPageUrl("share/" + share.id);
+            return kloudspeaker.App.getPageUrl("share/" + share.id);
         };
 
         this.updateShareList = function(item) {
             $("#share-items").empty();
 
             if (that.shares.length === 0) {
-                $("#share-items").html('<div class="no-share-items">' + mollify.ui.texts.get("shareDialogNoShares") + '</div>');
+                $("#share-items").html('<div class="no-share-items">' + kloudspeaker.ui.texts.get("shareDialogNoShares") + '</div>');
                 return;
             }
 
@@ -2847,9 +2847,9 @@
                 }
             };
 
-            mollify.dom.template("share-template", that.shares, opt).appendTo("#share-items");
-            mollify.ui.process($("#share-list"), ["localize"]);
-            if (!mollify.ui.clipboard) {
+            kloudspeaker.dom.template("share-template", that.shares, opt).appendTo("#share-items");
+            kloudspeaker.ui.process($("#share-list"), ["localize"]);
+            if (!kloudspeaker.ui.clipboard) {
                 $(".share-link-copy").hide();
             } else {
                 var h = {
@@ -2863,7 +2863,7 @@
                 }
                 $.each($(".share-link-copy"), function(i, e) {
                     var share = $(e).tmplItem().data;
-                    mollify.ui.clipboard.enableCopy($(e), that.getShareLink(share), h);
+                    kloudspeaker.ui.clipboard.enableCopy($(e), that.getShareLink(share), h);
                 });
             }
 
@@ -2900,7 +2900,7 @@
         this.openContextContent = function(toolbarId, contentTemplateId, tmplData) {
             /*var $c = $("#share-context").empty();*/
             var $c = that._context.getContentElement().empty();
-            mollify.dom.template(contentTemplateId, tmplData).appendTo($c);
+            kloudspeaker.dom.template(contentTemplateId, tmplData).appendTo($c);
 
             that._context.show(false, 280);
             /*$("#share-context-container").animate({
@@ -2942,7 +2942,7 @@
                         var s = that.getShare(share.id);
                         s.name = v.name;
                         s.active = v.active;
-                        s.expiration = mollify.helpers.formatInternalTime(v.expiration);
+                        s.expiration = kloudspeaker.helpers.formatInternalTime(v.expiration);
                         s.restriction = v.restriction ? v.restriction.type : false;
                         that.updateShareList(item);
                     }).fail(that.d.close);
@@ -2954,9 +2954,9 @@
         }
 
         this._initShareEditor = function(share, $c, o) {
-            mollify.ui.process($c, ["localize"]);
-            mollify.ui.controls.datepicker("share-validity-expirationdate-value", {
-                format: mollify.ui.texts.get('shortDateTimeFormat'),
+            kloudspeaker.ui.process($c, ["localize"]);
+            kloudspeaker.ui.controls.datepicker("share-validity-expirationdate-value", {
+                format: kloudspeaker.ui.texts.get('shortDateTimeFormat'),
                 time: true
             });
 
@@ -2975,15 +2975,15 @@
                 $("#share-access-norestriction").attr('checked', true);
 
             if (share && share.expiration)
-                $("#share-validity-expirationdate-value").data("mollify-datepicker").set(mollify.helpers.parseInternalTime(share.expiration));
+                $("#share-validity-expirationdate-value").data("kloudspeaker-datepicker").set(kloudspeaker.helpers.parseInternalTime(share.expiration));
 
-            if (oldRestrictionPw) $("#share-access-public-password-value").attr("placeholder", mollify.ui.texts.get("shareDialogShareAccessChangePwTitle"));
-            else $("#share-access-public-password-value").attr("placeholder", mollify.ui.texts.get("shareDialogShareAccessEnterPwTitle"));
+            if (oldRestrictionPw) $("#share-access-public-password-value").attr("placeholder", kloudspeaker.ui.texts.get("shareDialogShareAccessChangePwTitle"));
+            else $("#share-access-public-password-value").attr("placeholder", kloudspeaker.ui.texts.get("shareDialogShareAccessEnterPwTitle"));
 
             var getValues = function() {
                 var name = $("#share-general-name").val();
                 var active = $("#share-general-active").is(":checked");
-                var expiration = $("#share-validity-expirationdate-value").data("mollify-datepicker").get();
+                var expiration = $("#share-validity-expirationdate-value").data("kloudspeaker-datepicker").get();
 
                 var restriction = false;
                 if ($("#share-access-private-loggedin").is(":checked")) restriction = {
@@ -3024,18 +3024,18 @@
         };
 
         this.onOpenShares = function(item) {
-            mollify.templates.load("shares-content", mollify.helpers.noncachedUrl(mollify.plugins.url("Share", "content.html"))).done(function() {
-                mollify.ui.dialogs.custom({
+            kloudspeaker.templates.load("shares-content", kloudspeaker.helpers.noncachedUrl(kloudspeaker.plugins.url("Share", "content.html"))).done(function() {
+                kloudspeaker.ui.dialogs.custom({
                     resizable: true,
                     initSize: [600, 470],
-                    title: item.shareTitle ? item.shareTitle : mollify.ui.texts.get(item.is_file ? 'shareDialogShareFileTitle' : 'shareDialogShareFolderTitle'),
-                    content: mollify.dom.template("mollify-tmpl-shares", {
+                    title: item.shareTitle ? item.shareTitle : kloudspeaker.ui.texts.get(item.is_file ? 'shareDialogShareFileTitle' : 'shareDialogShareFolderTitle'),
+                    content: kloudspeaker.dom.template("kloudspeaker-tmpl-shares", {
                         item: item,
                         bubble: false
                     }),
                     buttons: [{
                         id: "no",
-                        "title": mollify.ui.texts.get('dialogClose')
+                        "title": kloudspeaker.ui.texts.get('dialogClose')
                     }],
                     "on-button": function(btn, d) {
                         d.close();
@@ -3052,10 +3052,10 @@
         };
 
         this.addShare = function(item, name, expiration, active, restriction) {
-            return mollify.service.post("share/", {
+            return kloudspeaker.service.post("share/", {
                 item: item.id,
                 name: name,
-                expiration: mollify.helpers.formatInternalTime(expiration),
+                expiration: kloudspeaker.helpers.formatInternalTime(expiration),
                 active: active,
                 restriction: restriction
             }).done(function(result) {
@@ -3065,17 +3065,17 @@
         }
 
         this.editShare = function(id, name, expiration, active, restriction) {
-            return mollify.service.put("share/" + id, {
+            return kloudspeaker.service.put("share/" + id, {
                 id: id,
                 name: name,
-                expiration: mollify.helpers.formatInternalTime(expiration),
+                expiration: kloudspeaker.helpers.formatInternalTime(expiration),
                 active: active,
                 restriction: restriction
             });
         }
 
         this.removeShare = function(item, share) {
-            return mollify.service.del("share/" + share.id).done(function(result) {
+            return kloudspeaker.service.del("share/" + share.id).done(function(result) {
                 var i = that.shareIds.indexOf(share.id);
                 that.shareIds.splice(i, 1);
                 that.shares.splice(i, 1);
@@ -3084,15 +3084,15 @@
         }
 
         this.removeAllItemShares = function(item) {
-            return mollify.service.del("share/items/" + item.id);
+            return kloudspeaker.service.del("share/items/" + item.id);
         }
 
         this.getActionValidationMessages = function(action, items, validationData) {
             var messages = [];
             $.each(items, function(i, itm) {
                 var msg;
-                if (itm.reason == 'item_shared') msg = mollify.ui.texts.get("pluginShareActionValidationDeleteShared", itm.item.name);
-                else if (itm.reason == 'item_shared_others') msg = mollify.ui.texts.get("pluginShareActionValidationDeleteSharedOthers", itm.item.name);
+                if (itm.reason == 'item_shared') msg = kloudspeaker.ui.texts.get("pluginShareActionValidationDeleteShared", itm.item.name);
+                else if (itm.reason == 'item_shared_others') msg = kloudspeaker.ui.texts.get("pluginShareActionValidationDeleteSharedOthers", itm.item.name);
                 else return;
 
                 messages.push({
@@ -3110,20 +3110,20 @@
             if (!itemData) return "<div id='item-share-info-" + item.id + "' class='filelist-item-share-info empty'></div>";
             if (itemData.own > 0)
                 return "<div id='item-share-info-" + item.id + "' class='filelist-item-share-info'><i class='icon-external-link'></i>&nbsp;" + itemData.own + "</div>";
-            return "<div id='item-share-info-" + item.id + "' class='filelist-item-share-info others' title='" + mollify.ui.texts.get("pluginShareFilelistColOtherShared") + "'><i class='icon-external-link'></i></div>";
+            return "<div id='item-share-info-" + item.id + "' class='filelist-item-share-info others' title='" + kloudspeaker.ui.texts.get("pluginShareFilelistColOtherShared") + "'><i class='icon-external-link'></i></div>";
         };
 
         this._updateListCellContent = function(item, data) {};
 
         this.showShareBubble = function(item, cell) {
-            that.d = mollify.ui.controls.dynamicBubble({
+            that.d = kloudspeaker.ui.controls.dynamicBubble({
                 element: cell,
                 title: item.name,
-                container: $("#mollify-filelist-main")
+                container: $("#kloudspeaker-filelist-main")
             });
 
-            mollify.templates.load("shares-content", mollify.helpers.noncachedUrl(mollify.plugins.url("Share", "content.html"))).done(function() {
-                that.d.content(mollify.dom.template("mollify-tmpl-shares", {
+            kloudspeaker.templates.load("shares-content", kloudspeaker.helpers.noncachedUrl(kloudspeaker.plugins.url("Share", "content.html"))).done(function() {
+                that.d.content(kloudspeaker.dom.template("kloudspeaker-tmpl-shares", {
                     item: item,
                     bubble: true
                 }));
@@ -3144,11 +3144,11 @@
                 cv.showLoading(true);
 
                 that.loadShares().done(function(l) {
-                    shares = l.shares[mollify.session.user.id];
+                    shares = l.shares[kloudspeaker.session.user.id];
                     invalid = l.invalid;
 
                     items = [];
-                    $.each(mollify.helpers.getKeys(l.items), function(i, k) {
+                    $.each(kloudspeaker.helpers.getKeys(l.items), function(i, k) {
                         items.push(l.items[k]);
                     });
                     $.each(l.nonfs, function(i, itm) {
@@ -3169,7 +3169,7 @@
                 return (invalid.indexOf(i.id) < 0);
             };
 
-            listView = new mollify.view.ConfigListView($c, {
+            listView = new kloudspeaker.view.ConfigListView($c, {
                 table: {
                     key: "id",
                     columns: [{
@@ -3181,19 +3181,19 @@
                         }
                     }, {
                         id: "name",
-                        title: mollify.ui.texts.get('fileListColumnTitleName')
+                        title: kloudspeaker.ui.texts.get('fileListColumnTitleName')
                     }, {
                         id: "path",
-                        title: mollify.ui.texts.get('pluginShareConfigViewPathTitle'),
+                        title: kloudspeaker.ui.texts.get('pluginShareConfigViewPathTitle'),
                         formatter: function(item) {
                             if (item.customType || !item.path) return "";
-                            var p = (mollify.filesystem.rootsById[item.root_id] ? mollify.filesystem.rootsById[item.root_id].name : item.root_id) + ":";
+                            var p = (kloudspeaker.filesystem.rootsById[item.root_id] ? kloudspeaker.filesystem.rootsById[item.root_id].name : item.root_id) + ":";
                             var path = item.path.substring(0, item.path.length - (item.name.length + (item.is_file ? 0 : 1)));
                             return p + "/" + path;
                         }
                     }, {
                         id: "count",
-                        title: mollify.ui.texts.get('pluginShareConfigViewCountTitle'),
+                        title: kloudspeaker.ui.texts.get('pluginShareConfigViewCountTitle'),
                         formatter: function(item) {
                             return shares[item.id].length;
                         }
@@ -3218,7 +3218,7 @@
                             var shareTitle = false;
                             if (item.customType) {
                                 // TODO register type handlers from plugins
-                                if (item.customType == 'ic') shareTitle = mollify.ui.texts.get("pluginItemCollectionShareTitle");
+                                if (item.customType == 'ic') shareTitle = kloudspeaker.ui.texts.get("pluginItemCollectionShareTitle");
                             }
                             that.onOpenShares({
                                 id: item.id,
@@ -3258,10 +3258,10 @@
         };
 
         this.onActivateConfigAdminView = function($c, cv) {
-            var pathFormatter = new mollify.ui.formatters.FilesystemItemPath();
+            var pathFormatter = new kloudspeaker.ui.formatters.FilesystemItemPath();
 
-            mollify.templates.load("shares-content", mollify.helpers.noncachedUrl(mollify.plugins.url("Share", "content.html"))).done(function() {
-                mollify.service.get("configuration/users").done(function(l) {
+            kloudspeaker.templates.load("shares-content", kloudspeaker.helpers.noncachedUrl(kloudspeaker.plugins.url("Share", "content.html"))).done(function() {
+                kloudspeaker.service.get("configuration/users").done(function(l) {
                     var users = that.processUserData(l);
 
                     var shares = false;
@@ -3297,21 +3297,21 @@
                         });
                     };
 
-                    var currentTime = mollify.helpers.formatInternalTime(new Date());
+                    var currentTime = kloudspeaker.helpers.formatInternalTime(new Date());
 
-                    listView = new mollify.view.ConfigListView($c, {
+                    listView = new kloudspeaker.view.ConfigListView($c, {
                         actions: [{
                             id: "action-remove",
                             content: '<i class="icon-trash"></i>',
                             cls: "btn-danger",
                             depends: "table-selection",
                             callback: function(sel) {
-                                mollify.ui.dialogs.confirmation({
-                                    title: mollify.ui.texts.get("pluginShareConfigRemoveShareTitle"),
-                                    message: mollify.ui.texts.get("pluginShareConfigRemoveShareMessage", [sel.length]),
+                                kloudspeaker.ui.dialogs.confirmation({
+                                    title: kloudspeaker.ui.texts.get("pluginShareConfigRemoveShareTitle"),
+                                    message: kloudspeaker.ui.texts.get("pluginShareConfigRemoveShareMessage", [sel.length]),
                                     callback: function() {
-                                        mollify.service.del("share/list/", {
-                                            list: mollify.helpers.extractValue(sel, "id")
+                                        kloudspeaker.service.del("share/list/", {
+                                            list: kloudspeaker.helpers.extractValue(sel, "id")
                                         }).done(refresh);
                                     }
                                 });
@@ -3320,10 +3320,10 @@
                             id: "action-activate",
                             content: '<i class="icon-check"></i>',
                             depends: "table-selection",
-                            tooltip: mollify.ui.texts.get('pluginShareConfigViewShareActivate'),
+                            tooltip: kloudspeaker.ui.texts.get('pluginShareConfigViewShareActivate'),
                             callback: function(sel) {
-                                mollify.service.put("share/list/", {
-                                    ids: mollify.helpers.extractValue(sel, "id"),
+                                kloudspeaker.service.put("share/list/", {
+                                    ids: kloudspeaker.helpers.extractValue(sel, "id"),
                                     active: true
                                 }).done(refresh);
                             }
@@ -3331,10 +3331,10 @@
                             id: "action-deactivate",
                             content: '<i class="icon-check-empty"></i>',
                             depends: "table-selection",
-                            tooltip: mollify.ui.texts.get('pluginShareConfigViewShareDeactivate'),
+                            tooltip: kloudspeaker.ui.texts.get('pluginShareConfigViewShareDeactivate'),
                             callback: function(sel) {
-                                mollify.service.put("share/list/", {
-                                    ids: mollify.helpers.extractValue(sel, "id"),
+                                kloudspeaker.service.put("share/list/", {
+                                    ids: kloudspeaker.helpers.extractValue(sel, "id"),
                                     active: false
                                 }).done(refresh);
                             }
@@ -3391,49 +3391,49 @@
                                 id: "restriction",
                                 title: "",
                                 formatter: function(s) {
-                                    if (s.restriction == 'private') return '<i class="icon-user" title="' + mollify.ui.texts.get('shareDialogShareAccessLoggedInTitle') + '" />';
-                                    else if (s.restriction == 'pw') return '<i class="icon-lock" title="' + mollify.ui.texts.get('shareDialogShareAccessPasswordTitle').replace(':', '') + '" />';
-                                    else return '<i class="icon-globe" title="' + mollify.ui.texts.get('shareDialogShareAccessNoRestrictionTitle') + '" />';
+                                    if (s.restriction == 'private') return '<i class="icon-user" title="' + kloudspeaker.ui.texts.get('shareDialogShareAccessLoggedInTitle') + '" />';
+                                    else if (s.restriction == 'pw') return '<i class="icon-lock" title="' + kloudspeaker.ui.texts.get('shareDialogShareAccessPasswordTitle').replace(':', '') + '" />';
+                                    else return '<i class="icon-globe" title="' + kloudspeaker.ui.texts.get('shareDialogShareAccessNoRestrictionTitle') + '" />';
                                 }
                             }, {
                                 id: "user_id",
-                                title: mollify.ui.texts.get('pluginShareConfigViewUserTitle'),
+                                title: kloudspeaker.ui.texts.get('pluginShareConfigViewUserTitle'),
                                 formatter: function(s) {
                                     return users.usersById[s.user_id].name;
                                 }
                             }, {
                                 id: "name",
-                                title: mollify.ui.texts.get('pluginShareConfigViewShareNameTitle')
+                                title: kloudspeaker.ui.texts.get('pluginShareConfigViewShareNameTitle')
                             }, {
                                 id: "item_name",
-                                title: mollify.ui.texts.get('pluginShareConfigViewItemNameTitle'),
+                                title: kloudspeaker.ui.texts.get('pluginShareConfigViewItemNameTitle'),
                                 valueMapper: function(s) {
                                     if (s.invalid) return ""; //TODO
                                     return items[s.item_id].name;
                                 }
                             }, {
                                 id: "path",
-                                title: mollify.ui.texts.get('pluginShareConfigViewPathTitle'),
+                                title: kloudspeaker.ui.texts.get('pluginShareConfigViewPathTitle'),
                                 formatter: function(s) {
                                     if (s.invalid) return ""; //TODO
 
                                     var item = items[s.item_id];
                                     if (item.customType || !item.path) return "";
 
-                                    var p = (mollify.filesystem.rootsById[item.root_id] ? mollify.filesystem.rootsById[item.root_id].name : item.root_id) + ":";
+                                    var p = (kloudspeaker.filesystem.rootsById[item.root_id] ? kloudspeaker.filesystem.rootsById[item.root_id].name : item.root_id) + ":";
                                     var path = item.path.substring(0, item.path.length - (item.name.length + (item.is_file ? 0 : 1)));
                                     return p + "/" + path;
                                 }
                             }, {
                                 id: "expiration",
-                                title: mollify.ui.texts.get('pluginShareConfigViewExpirationTitle'),
+                                title: kloudspeaker.ui.texts.get('pluginShareConfigViewExpirationTitle'),
                                 formatter: function(s) {
                                     if (!s.expiration) return "";
                                     return that._timestampFormatter.format(s.expiration);
                                 }
                             }, {
                                 id: "active",
-                                title: mollify.ui.texts.get('pluginShareConfigViewActiveTitle'),
+                                title: kloudspeaker.ui.texts.get('pluginShareConfigViewActiveTitle'),
                                 formatter: function(s) {
                                     if (s.active == "1") return '<i class="icon-check"/>';
                                     else return '<i class="icon-check-empty"/>';
@@ -3455,19 +3455,19 @@
                                 if (id == "edit") {
                                     var _editor = false;
 
-                                    mollify.ui.dialogs.custom({
+                                    kloudspeaker.ui.dialogs.custom({
                                         resizable: true,
                                         initSize: [600, 400],
                                         title: s.id, //TODO
-                                        content: mollify.dom.template("share-context-addedit-template", {
+                                        content: kloudspeaker.dom.template("share-context-addedit-template", {
                                             editDialog: true
                                         }),
                                         buttons: [{
                                             id: "yes",
-                                            "title": mollify.ui.texts.get('dialogSave')
+                                            "title": kloudspeaker.ui.texts.get('dialogSave')
                                         }, {
                                             id: "no",
-                                            "title": mollify.ui.texts.get('dialogCancel')
+                                            "title": kloudspeaker.ui.texts.get('dialogCancel')
                                         }],
                                         "on-button": function(btn, d) {
                                             if (btn.id == 'no') {
@@ -3485,19 +3485,19 @@
                                         }
                                     });
                                 } else if (id == "remove") {
-                                    mollify.service.del("share/" + s.id).done(refresh);
+                                    kloudspeaker.service.del("share/" + s.id).done(refresh);
                                 }
                             }
                         }
                     });
-                    var $options = $c.find(".mollify-configlistview-options");
-                    mollify.dom.template("mollify-tmpl-share-admin-options").appendTo($options);
-                    mollify.ui.process($options, ["localize"]);
+                    var $options = $c.find(".kloudspeaker-configlistview-options");
+                    kloudspeaker.dom.template("kloudspeaker-tmpl-share-admin-options").appendTo($options);
+                    kloudspeaker.ui.process($options, ["localize"]);
 
-                    var $optionUser = mollify.ui.controls.select("share-user", {
+                    var $optionUser = kloudspeaker.ui.controls.select("share-user", {
                         values: users.users,
                         title: "name",
-                        none: mollify.ui.texts.get('pluginShareAdminAny')
+                        none: kloudspeaker.ui.texts.get('pluginShareAdminAny')
                     });
 
                     var $itemSelector = $("#share-filesystem-item-selector");
@@ -3509,10 +3509,10 @@
                     };
                     $("#share-filesystem-item-select").click(function(e) {
                         if ($optionItem.get() == 'filesystem_item') {
-                            mollify.ui.dialogs.itemSelector({
-                                title: mollify.ui.texts.get('pluginShareSelectItemTitle'),
-                                message: mollify.ui.texts.get('pluginShareSelectItemMsg'),
-                                actionTitle: mollify.ui.texts.get('ok'),
+                            kloudspeaker.ui.dialogs.itemSelector({
+                                title: kloudspeaker.ui.texts.get('pluginShareSelectItemTitle'),
+                                message: kloudspeaker.ui.texts.get('pluginShareSelectItemMsg'),
+                                actionTitle: kloudspeaker.ui.texts.get('ok'),
                                 handler: {
                                     onSelect: onSelectItem,
                                     canSelect: function(f) {
@@ -3521,10 +3521,10 @@
                                 }
                             });
                         } else {
-                            mollify.ui.dialogs.folderSelector({
-                                title: mollify.ui.texts.get('pluginShareSelectFolderTitle'),
-                                message: mollify.ui.texts.get('pluginShareSelectFolderMsg'),
-                                actionTitle: mollify.ui.texts.get('ok'),
+                            kloudspeaker.ui.dialogs.folderSelector({
+                                title: kloudspeaker.ui.texts.get('pluginShareSelectFolderTitle'),
+                                message: kloudspeaker.ui.texts.get('pluginShareSelectFolderMsg'),
+                                actionTitle: kloudspeaker.ui.texts.get('ok'),
                                 handler: {
                                     onSelect: onSelectItem,
                                     canSelect: function(f) {
@@ -3535,12 +3535,12 @@
                         }
                         return false;
                     });
-                    var $optionItem = mollify.ui.controls.select("share-item", {
+                    var $optionItem = kloudspeaker.ui.controls.select("share-item", {
                         values: ['none', 'filesystem_item', 'filesystem_child'],
                         formatter: function(s) {
-                            return mollify.ui.texts.get('pluginShareAdminOptionItem_' + s);
+                            return kloudspeaker.ui.texts.get('pluginShareAdminOptionItem_' + s);
                         },
-                        none: mollify.ui.texts.get('pluginShareAdminAny'),
+                        none: kloudspeaker.ui.texts.get('pluginShareAdminAny'),
                         onChange: function(s) {
                             if (s == 'filesystem_item' || s == 'filesystem_child') {
                                 selectedItem = false;
@@ -3569,14 +3569,14 @@
                 views: function() {
                     var views = [{
                         viewId: "shares",
-                        title: mollify.ui.texts.get("pluginShareConfigViewNavTitle"),
+                        title: kloudspeaker.ui.texts.get("pluginShareConfigViewNavTitle"),
                         onActivate: that.onActivateConfigView
                     }];
 
-                    if (mollify.session.user.admin) views.push({
+                    if (kloudspeaker.session.user.admin) views.push({
                         viewId: "allshares",
                         admin: true,
-                        title: mollify.ui.texts.get("pluginShareConfigViewNavTitle"),
+                        title: kloudspeaker.ui.texts.get("pluginShareConfigViewNavTitle"),
                         onActivate: that.onActivateConfigAdminView
                     });
 
@@ -3605,7 +3605,7 @@
                 }
             },
             itemContextHandler: function(item, ctx, data) {
-                if (!mollify.filesystem.hasPermission(item, "share_item")) return false;
+                if (!kloudspeaker.filesystem.hasPermission(item, "share_item")) return false;
 
                 return {
                     actions: [{
@@ -3632,11 +3632,11 @@
     /**
      *  Registration -plugin
      **/
-    mollify.plugin.RegistrationPlugin = function() {
+    kloudspeaker.plugin.RegistrationPlugin = function() {
         var that = this;
 
         this.initialize = function() {
-            mollify.App.registerView("registration", {
+            kloudspeaker.App.registerView("registration", {
                 getView: function(rqParts, urlParams) {
                     if (rqParts.length != 2) return false;
 
@@ -3645,8 +3645,8 @@
                     } else if (rqParts[1] == "confirm") {
                         return new that.ConfirmRegistrationView(urlParams);
                     } else if (rqParts[1] == "approve") {
-                        if (!mollify.session || !mollify.session.user) return false;
-                        if (!mollify.session.user.admin && !mollify.session.user.hasPermission('manage_user_registrations')) return false;
+                        if (!kloudspeaker.session || !kloudspeaker.session.user) return false;
+                        if (!kloudspeaker.session.user.admin && !kloudspeaker.session.user.hasPermission('manage_user_registrations')) return false;
                         return new that.ApproveRegistrationView(urlParams);
                     }
                     return false;
@@ -3658,7 +3658,7 @@
             var vt = this;
 
             this.init = function($c) {
-                return mollify.dom.loadContentInto($c, mollify.plugins.url("Registration", "registration_create.html"), function() {
+                return kloudspeaker.dom.loadContentInto($c, kloudspeaker.plugins.url("Registration", "registration_create.html"), function() {
                     $("#register-new-button").click(vt.onRegister);
                     $(".control-group input").bind('keypress', function(e) {
                         if ((e.keyCode || e.which) == 13) vt.onRegister();
@@ -3701,25 +3701,25 @@
                     return;
                 }
 
-                mollify.service.post("registration/create", {
+                kloudspeaker.service.post("registration/create", {
                     name: name,
                     password: window.Base64.encode(pw),
                     email: email,
                     hint: hint || '',
                     data: null
                 }).done(function() {
-                    $("#mollify-registration-form").hide();
-                    $("#mollify-registration-main").addClass("wide");
-                    $("#mollify-registration-success").show();
+                    $("#kloudspeaker-registration-form").hide();
+                    $("#kloudspeaker-registration-main").addClass("wide");
+                    $("#kloudspeaker-registration-success").show();
                 }).fail(function(er) {
                     this.handled = true;
                     if (er.code == 301)
-                        mollify.ui.dialogs.error({
-                            message: mollify.ui.texts.get('registrationFailedDuplicateNameOrEmail')
+                        kloudspeaker.ui.dialogs.error({
+                            message: kloudspeaker.ui.texts.get('registrationFailedDuplicateNameOrEmail')
                         });
                     else
-                        mollify.ui.dialogs.error({
-                            message: mollify.ui.texts.get('registrationFailed')
+                        kloudspeaker.ui.dialogs.error({
+                            message: kloudspeaker.ui.texts.get('registrationFailed')
                         });
                 });
             }
@@ -3729,10 +3729,10 @@
             var vt = this;
 
             this.init = function($c) {
-                return mollify.dom.loadContentInto($c, mollify.plugins.url("Registration", "registration_confirm.html"), function() {
+                return kloudspeaker.dom.loadContentInto($c, kloudspeaker.plugins.url("Registration", "registration_confirm.html"), function() {
                     if (!urlParams.email || urlParams.email.length === 0) {
-                        $("#mollify-registration-main").addClass("complete").empty().append(mollify.dom.template("mollify-tmpl-registration-errormessage", {
-                            message: mollify.ui.texts.get('registrationInvalidConfirm')
+                        $("#kloudspeaker-registration-main").addClass("complete").empty().append(kloudspeaker.dom.template("kloudspeaker-tmpl-registration-errormessage", {
+                            message: kloudspeaker.ui.texts.get('registrationInvalidConfirm')
                         }));
                         return;
                     }
@@ -3741,7 +3741,7 @@
                     if (urlParams.key && urlParams.key.length > 0) {
                         vt._confirm(vt._email, urlParams.key);
                     } else {
-                        $("#mollify-registration-confirm-form").show();
+                        $("#kloudspeaker-registration-confirm-form").show();
                         $("#registration-confirm-email").val(vt._email);
                         $("#register-confirm-button").click(vt.onConfirm);
                         $(".control-group input").bind('keypress', function(e) {
@@ -3767,28 +3767,28 @@
             };
 
             this._confirm = function(email, key, fromForm) {
-                $("#mollify-registration-main").addClass("loading");
-                mollify.service.post("registration/confirm", {
+                $("#kloudspeaker-registration-main").addClass("loading");
+                kloudspeaker.service.post("registration/confirm", {
                     email: email,
                     key: key
                 }).done(function(r) {
-                    $("#mollify-registration-confirm-form").hide();
-                    $("#mollify-registration-main").removeClass("loading").addClass("wide");
+                    $("#kloudspeaker-registration-confirm-form").hide();
+                    $("#kloudspeaker-registration-main").removeClass("loading").addClass("wide");
 
                     if (!r.require_approval)
-                        $("#mollify-registration-confirm-success").show();
+                        $("#kloudspeaker-registration-confirm-success").show();
                     else
-                        $("#mollify-registration-confirm-success-wait-approval").show();
+                        $("#kloudspeaker-registration-confirm-success-wait-approval").show();
                 }).fail(function(error) {
-                    $("#mollify-registration-main").removeClass("loading");
+                    $("#kloudspeaker-registration-main").removeClass("loading");
                     this.handled = true;
                     if (fromForm)
-                        mollify.ui.dialogs.error({
-                            message: mollify.ui.texts.get('registrationConfirmFailed')
+                        kloudspeaker.ui.dialogs.error({
+                            message: kloudspeaker.ui.texts.get('registrationConfirmFailed')
                         });
                     else {
-                        $("#mollify-registration-main").addClass("wide").empty().append(mollify.dom.template("mollify-tmpl-registration-errormessage", {
-                            message: mollify.ui.texts.get('registrationConfirmFailed')
+                        $("#kloudspeaker-registration-main").addClass("wide").empty().append(kloudspeaker.dom.template("kloudspeaker-tmpl-registration-errormessage", {
+                            message: kloudspeaker.ui.texts.get('registrationConfirmFailed')
                         }));
                     }
                 });
@@ -3799,23 +3799,23 @@
             var vt = this;
 
             this.init = function($c) {
-                return mollify.dom.loadContentInto($c, mollify.plugins.url("Registration", "registration_approval.html"), function() {
+                return kloudspeaker.dom.loadContentInto($c, kloudspeaker.plugins.url("Registration", "registration_approval.html"), function() {
                     if (!urlParams.id || urlParams.id.length === 0) {
-                        $("#mollify-registration-main").addClass("complete").empty().append(mollify.dom.template("mollify-tmpl-registration-errormessage", {
-                            message: mollify.ui.texts.get('registrationInvalidApproval')
+                        $("#kloudspeaker-registration-main").addClass("complete").empty().append(kloudspeaker.dom.template("kloudspeaker-tmpl-registration-errormessage", {
+                            message: kloudspeaker.ui.texts.get('registrationInvalidApproval')
                         }));
                         return;
                     }
 
-                    $("#mollify-registration-main").addClass("loading");
-                    mollify.service.post("registration/approve/" + urlParams.id, {}).done(function(r) {
-                        $("#mollify-registration-main").removeClass("loading");
-                        $("#mollify-registration-approval-success").show().find("p").html(mollify.ui.texts.get('registrationApprovalSuccessMessage', [r.name, r.email]));
+                    $("#kloudspeaker-registration-main").addClass("loading");
+                    kloudspeaker.service.post("registration/approve/" + urlParams.id, {}).done(function(r) {
+                        $("#kloudspeaker-registration-main").removeClass("loading");
+                        $("#kloudspeaker-registration-approval-success").show().find("p").html(kloudspeaker.ui.texts.get('registrationApprovalSuccessMessage', [r.name, r.email]));
                     }).fail(function(error) {
-                        $("#mollify-registration-main").removeClass("loading");
+                        $("#kloudspeaker-registration-main").removeClass("loading");
                         this.handled = true;
-                        $("#mollify-registration-main").empty().append(mollify.dom.template("mollify-tmpl-registration-errormessage", {
-                            message: mollify.ui.texts.get('registrationApprovalFailed')
+                        $("#kloudspeaker-registration-main").empty().append(kloudspeaker.dom.template("kloudspeaker-tmpl-registration-errormessage", {
+                            message: kloudspeaker.ui.texts.get('registrationApprovalFailed')
                         }));
                     });
                 }, ['localize']);
@@ -3827,8 +3827,8 @@
             initialize: that.initialize,
 
             show: function() {
-                mollify.App.openPage('registration/new');
+                kloudspeaker.App.openPage('registration/new');
             }
         };
     }
-}(window.jQuery, window.mollify);
+}(window.jQuery, window.kloudspeaker);

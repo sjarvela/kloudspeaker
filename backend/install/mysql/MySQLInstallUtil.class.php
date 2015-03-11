@@ -3,10 +3,10 @@
 /**
  * MySQLInstallUtil.class.php
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
 class MySQLInstallUtil {
@@ -22,7 +22,7 @@ class MySQLInstallUtil {
 
 	public function checkPermissions() {
 		mysqli_report(MYSQLI_REPORT_ERROR);
-		$table = $this->db->table("mollify_install_test");
+		$table = $this->db->table("kloudspeaker_install_test");
 
 		// first cleanup, if test table was left
 		try {

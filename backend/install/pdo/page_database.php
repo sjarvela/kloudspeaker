@@ -3,10 +3,10 @@
 /**
  * page_database.php
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
 include "install/installation_page.php";
@@ -15,12 +15,12 @@ include "install/installation_page.php";
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 
 <html>
-	<?php pageHeader("Mollify Installation", "init");?>
+	<?php pageHeader("kloudspeaker Installation", "init");?>
 
 	<?php pageBody("1/2 Database Information");?>
 
 	<p>
-		Mollify will be installed in following database:
+		kloudspeaker will be installed in following database:
 		<ul>
 			<li><b>PDO connection string:</b> <code><?php echo $installer->db()->str();?></code></li>
 			<li><b>User:</b> <code><?php echo $installer->db()->user();?></code></li>

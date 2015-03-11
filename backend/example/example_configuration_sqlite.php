@@ -1,6 +1,6 @@
 <?php
 
-/* For configuration instructions, see ReadMe.txt or wiki page at https://github.com/sjarvela/mollify/wiki/Installation */
+/* For configuration instructions, see ReadMe.txt or wiki page at https://github.com/sjarvela/kloudspeaker/wiki/Installation */
 
 $CONFIGURATION = array(
 	"db" => array(

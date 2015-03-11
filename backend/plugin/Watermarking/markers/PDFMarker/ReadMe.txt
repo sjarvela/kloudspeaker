@@ -1,4 +1,4 @@
-PDFMarker is extension for Mollify Watermarker plugin, and is itself released under GPLv2 license (http://www.mollify.org/license.php).
+PDFMarker is extension for kloudspeaker Watermarker plugin, and is itself released under GPLv2 license (http://www.kloudspeaker.org/license.php).
 
 PDFMarker uses two libraries: “FPDF” (http://www.fpdf.org/#p-64) and “FPDI” (http://www.setasign.com/products/fpdi/about/)
 

@@ -1,27 +1,27 @@
 /**
  * plugin.js
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 	 
-!function($, mollify) {
+!function($, kloudspeaker) {
 
 	"use strict"; // jshint ;_;
 
-	mollify.view.config.admin.EventLogging = {
+	kloudspeaker.view.config.admin.EventLogging = {
 		AllEventsView : function() {
 			var that = this;
 			this.viewId = "events";
 
 			this.init = function(s, cv) {
 				that._cv = cv;
-				that.title = mollify.ui.texts.get("pluginEventLoggingAdminNavTitle");
+				that.title = kloudspeaker.ui.texts.get("pluginEventLoggingAdminNavTitle");
 				
-				that._timestampFormatter = new mollify.ui.formatters.Timestamp(mollify.ui.texts.get('shortDateTimeFormat'));
-				mollify.service.get("events/types/").done(function(t) {
+				that._timestampFormatter = new kloudspeaker.ui.formatters.Timestamp(kloudspeaker.ui.texts.get('shortDateTimeFormat'));
+				kloudspeaker.service.get("events/types/").done(function(t) {
 					that._types = [];
 					that._typeTexts = t;
 					for (var k in t) {
@@ -33,9 +33,9 @@
 
 			this.onActivate = function($c) {
 				that._cv.showLoading(true);
-				that._details = mollify.ui.controls.slidePanel($("#mollify-mainview-viewcontent"), { resizable: true });
+				that._details = kloudspeaker.ui.controls.slidePanel($("#kloudspeaker-mainview-viewcontent"), { resizable: true });
 				
-				mollify.service.get("configuration/users/").done(function(users) {
+				kloudspeaker.service.get("configuration/users/").done(function(users) {
 					that._cv.showLoading(false);
 
 					var listView = false;
@@ -53,8 +53,8 @@
 						var user = $optionUser.get();
 						
 						var params = {};
-						if (start) params.start_time = mollify.helpers.formatInternalTime(start);
-						if (end) params.end_time = mollify.helpers.formatInternalTime(end);
+						if (start) params.start_time = kloudspeaker.helpers.formatInternalTime(start);
+						if (end) params.end_time = kloudspeaker.helpers.formatInternalTime(end);
 						if (user) params.user = user.name;
 						if (tp) params.type = tp;
 						
@@ -66,7 +66,7 @@
 						listView.table.refresh().done(function(){ that._cv.showLoading(false); });
 					}
 		
-					listView = new mollify.view.ConfigListView($c, {
+					listView = new kloudspeaker.view.ConfigListView($c, {
 						actions: [
 							{ id: "action-refresh", content:'<i class="icon-refresh"></i>', callback: refresh }
 						],
@@ -84,11 +84,11 @@
 							defaultSort: { id: "time", asc: false },
 							columns: [
 								{ type:"selectrow" },	//TODO icon based on event type
-								{ id: "id", title: mollify.ui.texts.get('configAdminTableIdTitle'), sortable: true },
-								{ id: "type", title: mollify.ui.texts.get('pluginEventLoggingEventTypeTitle'), sortable: true },
-								{ id: "user", title: mollify.ui.texts.get('pluginEventLoggingUserTitle'), sortable: true },
-								{ id: "time", title: mollify.ui.texts.get('pluginEventLoggingTimeTitle'), formatter: that._timestampFormatter, sortable: true },
-								{ id: "ip", title: mollify.ui.texts.get('pluginEventLoggingIPTitle'), sortable: true }
+								{ id: "id", title: kloudspeaker.ui.texts.get('configAdminTableIdTitle'), sortable: true },
+								{ id: "type", title: kloudspeaker.ui.texts.get('pluginEventLoggingEventTypeTitle'), sortable: true },
+								{ id: "user", title: kloudspeaker.ui.texts.get('pluginEventLoggingUserTitle'), sortable: true },
+								{ id: "time", title: kloudspeaker.ui.texts.get('pluginEventLoggingTimeTitle'), formatter: that._timestampFormatter, sortable: true },
+								{ id: "ip", title: kloudspeaker.ui.texts.get('pluginEventLoggingIPTitle'), sortable: true }
 							],
 							onHilight: function(e) {
 								if (e) {
@@ -100,18 +100,18 @@
 							}
 						}
 					});
-					var $options = $c.find(".mollify-configlistview-options");
-					mollify.templates.load("eventlogging-content", mollify.helpers.noncachedUrl(mollify.plugins.adminUrl("EventLogging", "content.html"))).done(function() {
-						mollify.dom.template("mollify-tmpl-eventlogging-options").appendTo($options);
-						mollify.ui.process($options, ["localize"]);
+					var $options = $c.find(".kloudspeaker-configlistview-options");
+					kloudspeaker.templates.load("eventlogging-content", kloudspeaker.helpers.noncachedUrl(kloudspeaker.plugins.adminUrl("EventLogging", "content.html"))).done(function() {
+						kloudspeaker.dom.template("kloudspeaker-tmpl-eventlogging-options").appendTo($options);
+						kloudspeaker.ui.process($options, ["localize"]);
 						
-						$optionType = mollify.ui.controls.select("eventlogging-event-type", {
+						$optionType = kloudspeaker.ui.controls.select("eventlogging-event-type", {
 							values: that._types.concat(["custom"]),
 							formatter: function(v) {
-								if (v == "custom") return mollify.ui.texts.get('pluginEventLoggingAdminEventTypeCustom');
+								if (v == "custom") return kloudspeaker.ui.texts.get('pluginEventLoggingAdminEventTypeCustom');
 								return that._typeTexts[v] + " ("+v+")";
 							},
-							none: mollify.ui.texts.get('pluginEventLoggingAdminAny'),
+							none: kloudspeaker.ui.texts.get('pluginEventLoggingAdminAny'),
 							onChange: function(t) {
 								if (t == "custom")
 									$("#eventlogging-event-type-custom").show().val("").focus();
@@ -119,17 +119,17 @@
 									$("#eventlogging-event-type-custom").hide();
 							}
 						});
-						$optionUser = mollify.ui.controls.select("eventlogging-user", {
+						$optionUser = kloudspeaker.ui.controls.select("eventlogging-user", {
 							values: users,
 							formatter: function(u) { return u.name; },
-							none: mollify.ui.texts.get('pluginEventLoggingAdminAny')
+							none: kloudspeaker.ui.texts.get('pluginEventLoggingAdminAny')
 						});
-						$optionStart = mollify.ui.controls.datepicker("eventlogging-start", {
-							format: mollify.ui.texts.get('shortDateTimeFormat'),
+						$optionStart = kloudspeaker.ui.controls.datepicker("eventlogging-start", {
+							format: kloudspeaker.ui.texts.get('shortDateTimeFormat'),
 							time: true
 						});
-						$optionEnd = mollify.ui.controls.datepicker("eventlogging-end", {
-							format: mollify.ui.texts.get('shortDateTimeFormat'),
+						$optionEnd = kloudspeaker.ui.controls.datepicker("eventlogging-end", {
+							format: kloudspeaker.ui.texts.get('shortDateTimeFormat'),
 							time: true
 						});
 						refresh();
@@ -146,21 +146,21 @@
 						d.push({title: p[0], value: p[1]});
 					});
 				}
-				mollify.dom.template("mollify-tmpl-config-eventlogging-eventdetails", {event: e, details: d}, {
+				kloudspeaker.dom.template("kloudspeaker-tmpl-config-eventlogging-eventdetails", {event: e, details: d}, {
 					formatTimestamp: that._timestampFormatter.format,
 					formatItem: function(e) { return e.item.replace(/,/g, "<br/>"); }
 				}).appendTo($e);
-				mollify.ui.process($e, ["localize"]);
+				kloudspeaker.ui.process($e, ["localize"]);
 			}
 		}
 	}
 
-	mollify.admin.plugins.EventLogging = {
+	kloudspeaker.admin.plugins.EventLogging = {
 		resources : {
 			texts: true
 		},
 		views: [
-			new mollify.view.config.admin.EventLogging.AllEventsView()
+			new kloudspeaker.view.config.admin.EventLogging.AllEventsView()
 		]
 	};
-}(window.jQuery, window.mollify);
+}(window.jQuery, window.kloudspeaker);

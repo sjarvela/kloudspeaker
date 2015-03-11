@@ -3,10 +3,10 @@
 /**
  * UpdateController.class.php
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
 class UpdateController {
@@ -23,7 +23,7 @@ class UpdateController {
 		}
 
 		$this->installer->processor()->createEnvironment($this->installer->db());
-		//if (!$this->installer->processor()->authentication()->isAdmin()) die("Mollify Updater requires administrator user");
+		//if (!$this->installer->processor()->authentication()->isAdmin()) die("kloudspeaker Updater requires administrator user");
 
 		if ($this->installer->isCurrentVersionInstalled() and $this->arePluginsUptodate()) {
 			$this->installer->processor()->showPage("current_installed");
@@ -105,7 +105,7 @@ class UpdateController {
 		}
 
 		if (!in_array($current, $versionHistory)) {
-			$this->installer->processor()->setError("Updater error", "Mollify updater does not contain the update required to update to current version, <a href='https://github.com/sjarvela/mollify/issues'>report a new updater issue</a>");
+			$this->installer->processor()->setError("Updater error", "kloudspeaker updater does not contain the update required to update to current version, <a href='https://github.com/sjarvela/kloudspeaker/issues'>report a new updater issue</a>");
 			$this->installer->processor()->showPage("update_error");
 		}
 
@@ -125,7 +125,7 @@ class UpdateController {
 			$stepFrom = $stepTo;
 		}
 
-		return "Mollify updated to " . $this->versionString($current);
+		return "kloudspeaker updated to " . $this->versionString($current);
 	}
 
 	private function updatePlugin($id, $plugin) {
@@ -182,9 +182,9 @@ class UpdateController {
 		$systemCurrent = $this->installer->currentVersion();
 
 		if (strcmp($systemInstalled, $systemCurrent) != 0) {
-			$result .= 'Mollify system requires an update to version <b>' . $this->versionString($systemCurrent) . '</b>';
+			$result .= 'kloudspeaker system requires an update to version <b>' . $this->versionString($systemCurrent) . '</b>';
 		} else {
-			$result .= 'Mollify system is up-to-date.';
+			$result .= 'kloudspeaker system is up-to-date.';
 		}
 
 		$installedPlugins = array();

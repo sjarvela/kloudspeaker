@@ -1,30 +1,30 @@
 <?php
 
 /**
- * MollifyExternalInterface.class.php
+ * kloudspeakerExternalInterface.class.php
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
 require_once "configuration.php";
 global $CONFIGURATION;
 if (!isset($CONFIGURATION)) {
-	die("Mollify not configured");
+	die("kloudspeaker not configured");
 }
 
-function MollifyExternalInterface() {
+function kloudspeakerExternalInterface() {
 	global $CONFIGURATION;
-	return new MollifyExternalInterface($CONFIGURATION);
+	return new kloudspeakerExternalInterface($CONFIGURATION);
 }
 
 class VoidResponseHandler {
 	public function addListener($l) {}
 }
 
-class MollifyExternalInterface {
+class kloudspeakerExternalInterface {
 	private $configuration;
 	private $settings;
 	private $authentication;

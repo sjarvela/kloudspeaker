@@ -1,17 +1,17 @@
 /**
  * configview.js
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
-! function($, mollify) {
+! function($, kloudspeaker) {
 
     "use strict";
 
-    mollify.view.MainViewConfigView = function() {
+    kloudspeaker.view.MainViewConfigView = function() {
         var that = this;
         this.viewId = "admin";
 
@@ -20,12 +20,12 @@
         this._adminViewsLoaded = false;
 
         this.init = function(mv) {
-            that.title = mollify.ui.texts.get('configviewMenuTitle');
+            that.title = kloudspeaker.ui.texts.get('configviewMenuTitle');
             that.icon = "icon-cogs";
 
-            that._views.push(new mollify.view.config.user.AccountView(mv));
+            that._views.push(new kloudspeaker.view.config.user.AccountView(mv));
 
-            $.each(mollify.plugins.getConfigViewPlugins(), function(i, p) {
+            $.each(kloudspeaker.plugins.getConfigViewPlugins(), function(i, p) {
                 if (!p.configViewHandler.views) return;
 
                 var views = p.configViewHandler.views();
@@ -33,7 +33,7 @@
 
                 $.each(views, function(i, v) {
                     if (v.admin) {
-                        if (mollify.session.user.admin || (v.requiresPermission && mollify.session.user.hasPermission(v.requiresPermission)))
+                        if (kloudspeaker.session.user.admin || (v.requiresPermission && kloudspeaker.session.user.hasPermission(v.requiresPermission)))
                             that._adminViews.push(v);
                     } else
                         that._views.push(v);
@@ -44,8 +44,8 @@
         this.onResize = function() {}
 
         this.onActivate = function(h) {
-            mollify.templates.load("configview", mollify.templates.url("configview.html")).done(function() {
-                mollify.dom.template("mollify-tmpl-configview").appendTo(h.content);
+            kloudspeaker.templates.load("configview", kloudspeaker.templates.url("configview.html")).done(function() {
+                kloudspeaker.dom.template("kloudspeaker-tmpl-configview").appendTo(h.content);
 
                 that.showLoading(true);
 
@@ -61,7 +61,7 @@
                 });
 
                 that._userNav = h.addNavBar({
-                    title: mollify.ui.texts.get("configViewUserNavTitle"),
+                    title: kloudspeaker.ui.texts.get("configViewUserNavTitle"),
                     items: navBarItems
                 });
 
@@ -73,18 +73,18 @@
                     that._adminViewsLoaded = true;
 
                     // default admin views
-                    if (mollify.session.user.admin) {
-                        that._adminViews.unshift(new mollify.view.config.admin.FoldersView());
-                        that._adminViews.unshift(new mollify.view.config.admin.GroupsView());
-                        that._adminViews.unshift(new mollify.view.config.admin.UsersView());
+                    if (kloudspeaker.session.user.admin) {
+                        that._adminViews.unshift(new kloudspeaker.view.config.admin.FoldersView());
+                        that._adminViews.unshift(new kloudspeaker.view.config.admin.GroupsView());
+                        that._adminViews.unshift(new kloudspeaker.view.config.admin.UsersView());
                     }
 
                     var plugins = [];
-                    for (var k in mollify.session.plugins) {
-                        if (!mollify.session.plugins[k] || !mollify.session.plugins[k].admin) continue;
+                    for (var k in kloudspeaker.session.plugins) {
+                        if (!kloudspeaker.session.plugins[k] || !kloudspeaker.session.plugins[k].admin) continue;
                         plugins.push(k);
                     }
-                    mollify.admin = {
+                    kloudspeaker.admin = {
                         plugins: []
                     };
                     that._loadAdminPlugins(plugins).done(function() {
@@ -97,12 +97,12 @@
         this._loadAdminPlugins = function(ids) {
             var df = $.Deferred();
             var l = [];
-            if (mollify.session.user.admin)
-                l.push(mollify.service.get("configuration/settings").done(function(s) {
+            if (kloudspeaker.session.user.admin)
+                l.push(kloudspeaker.service.get("configuration/settings").done(function(s) {
                     that._settings = s;
                 }));
             for (var i = 0, j = ids.length; i < j; i++) {
-                l.push(mollify.dom.importScript(mollify.plugins.url(ids[i], "plugin.js", true)));
+                l.push(kloudspeaker.dom.importScript(kloudspeaker.plugins.url(ids[i], "plugin.js", true)));
             }
 
             $.when.apply($, l).done(function() {
@@ -110,20 +110,20 @@
 
                 var addView = function(i, v) {
                     if (v.requiresPermission) {
-                        if (!mollify.session.user.admin && !mollify.session.user.hasPermission(v.requiresPermission)) return;
+                        if (!kloudspeaker.session.user.admin && !kloudspeaker.session.user.hasPermission(v.requiresPermission)) return;
                     } else {
-                        if (!mollify.session.user.admin) return;
+                        if (!kloudspeaker.session.user.admin) return;
                     }
                     that._adminViews.push(v);
                 };
-                for (var pk in mollify.admin.plugins) {
-                    var p = mollify.admin.plugins[pk];
+                for (var pk in kloudspeaker.admin.plugins) {
+                    var p = kloudspeaker.admin.plugins[pk];
                     if (!p || !p.views) continue;
 
                     if (p.resources && p.resources.texts)
-                        o.push(mollify.ui.texts.loadPlugin(pk));
+                        o.push(kloudspeaker.ui.texts.loadPlugin(pk));
                     if (p.resources && p.resources.css)
-                        o.push(mollify.dom.importCss(mollify.plugins.url(pk, "plugin.css", true)));
+                        o.push(kloudspeaker.dom.importCss(kloudspeaker.plugins.url(pk, "plugin.css", true)));
                     $.each(p.views, addView);
                 }
 
@@ -150,7 +150,7 @@
                 });
 
                 that._adminNav = h.addNavBar({
-                    title: mollify.ui.texts.get("configViewAdminNavTitle"),
+                    title: kloudspeaker.ui.texts.get("configViewAdminNavTitle"),
                     items: navBarItems
                 });
             }
@@ -208,13 +208,13 @@
             that.showLoading(false);
 
             that._activeView = v;
-            if (!noStore && that._activeView.viewId) mollify.App.storeView("admin/" + that._activeView.viewId);
-            $("#mollify-configview-header").html(v.title);
+            if (!noStore && that._activeView.viewId) kloudspeaker.App.storeView("admin/" + that._activeView.viewId);
+            $("#kloudspeaker-configview-header").html(v.title);
             v.onActivate(that._getContentElement().empty(), that);
         }
 
         this._getContentElement = function() {
-            return $("#mollify-configview-content");
+            return $("#kloudspeaker-configview-content");
         }
 
         this.onDeactivate = function() {
@@ -222,28 +222,28 @@
         }
 
         this.showLoading = function(s) {
-            if (s) that._getContentElement().find(".mollify-configlistview").addClass("loading");
-            else that._getContentElement().find(".mollify-configlistview").removeClass("loading");
+            if (s) that._getContentElement().find(".kloudspeaker-configlistview").addClass("loading");
+            else that._getContentElement().find(".kloudspeaker-configlistview").removeClass("loading");
         }
     }
 
-    mollify.view.ConfigListView = function($e, o) {
-        mollify.dom.template("mollify-tmpl-configlistview", {
+    kloudspeaker.view.ConfigListView = function($e, o) {
+        kloudspeaker.dom.template("kloudspeaker-tmpl-configlistview", {
             title: o.title,
             actions: o.actions || false
         }).appendTo($e);
-        var $table = $e.find(".mollify-configlistview-table");
-        var table = mollify.ui.controls.table($table, o.table);
+        var $table = $e.find(".kloudspeaker-configlistview-table");
+        var table = kloudspeaker.ui.controls.table($table, o.table);
         var enableAction = function(id, e) {
             if (e)
-                $e.find("#mollify-configlistview-action-" + id).removeClass("disabled");
+                $e.find("#kloudspeaker-configlistview-action-" + id).removeClass("disabled");
             else
-                $e.find("#mollify-configlistview-action-" + id).addClass("disabled");
+                $e.find("#kloudspeaker-configlistview-action-" + id).addClass("disabled");
         };
         if (o.actions) {
             $.each(o.actions, function(i, a) {
                 if (a.depends) enableAction(a.id, false);
-                if (a.tooltip) mollify.ui.controls.tooltip($("#mollify-configlistview-action-" + a.id), {
+                if (a.tooltip) kloudspeaker.ui.controls.tooltip($("#kloudspeaker-configlistview-action-" + a.id), {
                     title: a.tooltip
                 });
             });
@@ -260,7 +260,7 @@
                     else if (a.depends == "table-selection-many") enableAction(a.id, many);
                 });
             });
-            $e.find(".mollify-configlistview-actions > .mollify-configlistview-action").click(function() {
+            $e.find(".kloudspeaker-configlistview-actions > .kloudspeaker-configlistview-action").click(function() {
                 if ($(this).hasClass("disabled")) return;
                 var action = $(this).tmplItem().data;
                 if (!action.callback) return;
@@ -277,32 +277,32 @@
         };
     }
 
-    mollify.view.config = {
+    kloudspeaker.view.config = {
         user: {},
         admin: {}
     };
 
     /* Account */
-    mollify.view.config.user.AccountView = function(mv) {
+    kloudspeaker.view.config.user.AccountView = function(mv) {
         var that = this;
         this.viewId = "account";
-        this.title = mollify.ui.texts.get("configUserAccountNavTitle");
+        this.title = kloudspeaker.ui.texts.get("configUserAccountNavTitle");
 
         this.onActivate = function($c) {
-            mollify.dom.template("mollify-tmpl-config-useraccountview", mollify.session).appendTo($c);
-            mollify.ui.process($c, ["localize"]);
+            kloudspeaker.dom.template("kloudspeaker-tmpl-config-useraccountview", kloudspeaker.session).appendTo($c);
+            kloudspeaker.ui.process($c, ["localize"]);
             $("#user-account-change-password-btn").click(mv.changePassword);
         }
     }
 
     /* Users */
-    mollify.view.config.admin.UsersView = function() {
+    kloudspeaker.view.config.admin.UsersView = function() {
         var that = this;
         this.viewId = "users";
 
         this.init = function(opt, cv) {
             that._cv = cv;
-            that.title = mollify.ui.texts.get("configAdminUsersNavTitle");
+            that.title = kloudspeaker.ui.texts.get("configAdminUsersNavTitle");
 
             that._authenticationOptions = opt.authentication_methods;
             that._authFormatter = function(am) {
@@ -310,14 +310,14 @@
             }
             that._defaultAuthMethod = opt.authentication_methods[0];
             that._langFormatter = function(l) {
-                return mollify.ui.texts.get('language_' + l);
+                return kloudspeaker.ui.texts.get('language_' + l);
             }
         }
 
         this.onActivate = function($c) {
             var users = false;
             var listView = false;
-            that._details = mollify.ui.controls.slidePanel($("#mollify-mainview-viewcontent"), {
+            that._details = kloudspeaker.ui.controls.slidePanel($("#kloudspeaker-mainview-viewcontent"), {
                 resizable: true
             });
 
@@ -326,10 +326,10 @@
                     criteria: {}
                 };
 
-                var name = $("#mollify-admin-user-searchoptions-name").val();
+                var name = $("#kloudspeaker-admin-user-searchoptions-name").val();
                 if (name && name.length > 0) params.criteria.name = name;
 
-                var email = $("#mollify-admin-user-searchoptions-email").val();
+                var email = $("#kloudspeaker-admin-user-searchoptions-email").val();
                 if (email && email.length > 0) params.criteria.email = email;
 
                 return params;
@@ -347,7 +347,7 @@
                 refresh();
             };
 
-            listView = new mollify.view.ConfigListView($c, {
+            listView = new kloudspeaker.view.ConfigListView($c, {
                 actions: [{
                     id: "action-add",
                     content: '<i class="icon-plus"></i>',
@@ -360,9 +360,9 @@
                     cls: "btn-danger",
                     depends: "table-selection",
                     callback: function(sel) {
-                        mollify.ui.dialogs.confirmation({
-                            title: mollify.ui.texts.get("configAdminUsersRemoveUsersConfirmationTitle"),
-                            message: mollify.ui.texts.get("configAdminUsersRemoveUsersConfirmationMessage", [sel.length]),
+                        kloudspeaker.ui.dialogs.confirmation({
+                            title: kloudspeaker.ui.texts.get("configAdminUsersRemoveUsersConfirmationTitle"),
+                            message: kloudspeaker.ui.texts.get("configAdminUsersRemoveUsersConfirmationMessage", [sel.length]),
                             callback: function() {
                                 that._removeUsers(sel).done(updateUsers);
                             }
@@ -400,31 +400,31 @@
                         content: '<i class="icon-user"></i>'
                     }, {
                         id: "id",
-                        title: mollify.ui.texts.get('configAdminTableIdTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
                     }, {
                         id: "name",
-                        title: mollify.ui.texts.get('configAdminUsersNameTitle'),
+                        title: kloudspeaker.ui.texts.get('configAdminUsersNameTitle'),
                         sortable: true
                     }, {
                         id: "user_type",
-                        title: mollify.ui.texts.get('configAdminUsersTypeTitle'),
+                        title: kloudspeaker.ui.texts.get('configAdminUsersTypeTitle'),
                         sortable: true,
                         valueMapper: function(item, type) {
-                            if (type == null) return mollify.ui.texts.get("configAdminUsersTypeNormal");
-                            return mollify.ui.texts.get("configAdminUsersType_" + type.toLowerCase());
+                            if (type == null) return kloudspeaker.ui.texts.get("configAdminUsersTypeNormal");
+                            return kloudspeaker.ui.texts.get("configAdminUsersType_" + type.toLowerCase());
                         }
                     }, {
                         id: "email",
-                        title: mollify.ui.texts.get('configAdminUsersEmailTitle'),
+                        title: kloudspeaker.ui.texts.get('configAdminUsersEmailTitle'),
                         sortable: true
                     }, {
                         id: "edit",
-                        title: mollify.ui.texts.get('configAdminActionEditTitle'),
+                        title: kloudspeaker.ui.texts.get('configAdminActionEditTitle'),
                         type: "action",
                         content: '<i class="icon-edit"></i>'
                     }, {
                         id: "pw",
-                        title: mollify.ui.texts.get('configAdminUsersActionChangePasswordTitle'),
+                        title: kloudspeaker.ui.texts.get('configAdminUsersActionChangePasswordTitle'),
                         type: "action",
                         content: '<i class="icon-key"></i>',
                         enabled: function(u) {
@@ -434,23 +434,23 @@
                         }
                     }, {
                         id: "remove",
-                        title: mollify.ui.texts.get('configAdminActionRemoveTitle'),
+                        title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'),
                         type: "action",
                         content: '<i class="icon-trash"></i>'
                     }],
                     onRowAction: function(id, u) {
                         if (id == "edit") {
-                            mollify.service.get("configuration/users/" + u.id).done(function(user) {
+                            kloudspeaker.service.get("configuration/users/" + u.id).done(function(user) {
                                 that.onAddEditUser(user, updateUsers);
                             });
                         } else if (id == "pw") {
                             that.onChangePassword(u);
                         } else if (id == "remove") {
-                            mollify.ui.dialogs.confirmation({
-                                title: mollify.ui.texts.get("configAdminUsersRemoveUserConfirmationTitle"),
-                                message: mollify.ui.texts.get("configAdminUsersRemoveUserConfirmationMessage", [u.name]),
+                            kloudspeaker.ui.dialogs.confirmation({
+                                title: kloudspeaker.ui.texts.get("configAdminUsersRemoveUserConfirmationTitle"),
+                                message: kloudspeaker.ui.texts.get("configAdminUsersRemoveUserConfirmationMessage", [u.name]),
                                 callback: function() {
-                                    mollify.service.del("configuration/users/" + u.id).done(updateUsers);
+                                    kloudspeaker.service.del("configuration/users/" + u.id).done(updateUsers);
                                 }
                             });
                         }
@@ -468,14 +468,14 @@
 
             that._cv.showLoading(true);
 
-            var $options = $c.find(".mollify-configlistview-options");
-            mollify.dom.template("mollify-tmpl-config-admin-user-searchoptions").appendTo($options);
-            mollify.ui.process($options, ["localize"]);
+            var $options = $c.find(".kloudspeaker-configlistview-options");
+            kloudspeaker.dom.template("kloudspeaker-tmpl-config-admin-user-searchoptions").appendTo($options);
+            kloudspeaker.ui.process($options, ["localize"]);
 
-            var gp = mollify.service.get("configuration/usergroups").done(function(g) {
+            var gp = kloudspeaker.service.get("configuration/usergroups").done(function(g) {
                 that._allGroups = g;
             });
-            var fp = mollify.service.get("configuration/folders").done(function(f) {
+            var fp = kloudspeaker.service.get("configuration/folders").done(function(f) {
                 that._allFolders = f;
             });
             $.when(gp, fp).done(refresh);
@@ -486,19 +486,19 @@
             var $name = false;
             var $password = false;
 
-            mollify.ui.dialogs.custom({
+            kloudspeaker.ui.dialogs.custom({
                 resizable: true,
                 initSize: [600, 200],
-                title: mollify.ui.texts.get('configAdminUsersChangePasswordDialogTitle', u.name),
-                content: mollify.dom.template("mollify-tmpl-config-admin-userchangepassworddialog", {
+                title: kloudspeaker.ui.texts.get('configAdminUsersChangePasswordDialogTitle', u.name),
+                content: kloudspeaker.dom.template("kloudspeaker-tmpl-config-admin-userchangepassworddialog", {
                     user: u
                 }),
                 buttons: [{
                     id: "yes",
-                    "title": mollify.ui.texts.get('dialogSave')
+                    "title": kloudspeaker.ui.texts.get('dialogSave')
                 }, {
                     id: "no",
-                    "title": mollify.ui.texts.get('dialogCancel')
+                    "title": kloudspeaker.ui.texts.get('dialogCancel')
                 }],
                 "on-button": function(btn, d) {
                     if (btn.id == 'no') {
@@ -509,14 +509,14 @@
                     var password = $password.val();
                     if (!password || password.length === 0) return;
 
-                    mollify.service.put("configuration/users/" + u.id + "/password", {
+                    kloudspeaker.service.put("configuration/users/" + u.id + "/password", {
                         "new": window.Base64.encode(password)
                     }).done(d.close).done(cb);
                 },
                 "on-show": function(h, $d) {
-                    $("#change-password-title").text(mollify.ui.texts.get('configAdminUsersChangePasswordTitle', u.name));
+                    $("#change-password-title").text(kloudspeaker.ui.texts.get('configAdminUsersChangePasswordTitle', u.name));
 
-                    $content = $d.find("#mollify-config-admin-userchangepassworddialog-content");
+                    $content = $d.find("#kloudspeaker-config-admin-userchangepassworddialog-content");
                     $password = $d.find("#passwordField");
                     $("#generatePasswordBtn").click(function() {
                         $password.val(that._generatePassword());
@@ -534,12 +534,12 @@
         };
 
         this._showUserDetails = function(u, $e, allGroups, allFolders) {
-            mollify.dom.template("mollify-tmpl-config-admin-userdetails", {
+            kloudspeaker.dom.template("kloudspeaker-tmpl-config-admin-userdetails", {
                 user: u
             }).appendTo($e);
-            mollify.ui.process($e, ["localize"]);
-            var $groups = $e.find(".mollify-config-admin-userdetails-groups");
-            var $folders = $e.find(".mollify-config-admin-userdetails-folders");
+            kloudspeaker.ui.process($e, ["localize"]);
+            var $groups = $e.find(".kloudspeaker-config-admin-userdetails-groups");
+            var $folders = $e.find(".kloudspeaker-config-admin-userdetails-folders");
             var foldersView = false;
             var groupsView = false;
             var permissionsView = false;
@@ -548,7 +548,7 @@
 
             var updateGroups = function() {
                 $groups.addClass("loading");
-                mollify.service.get("configuration/users/" + u.id + "/groups/").done(function(l) {
+                kloudspeaker.service.get("configuration/users/" + u.id + "/groups/").done(function(l) {
                     $groups.removeClass("loading");
                     groups = l;
                     groupsView.table.set(groups);
@@ -556,22 +556,22 @@
             };
             var updateFolders = function() {
                 $folders.addClass("loading");
-                mollify.service.get("configuration/users/" + u.id + "/folders/").done(function(l) {
+                kloudspeaker.service.get("configuration/users/" + u.id + "/folders/").done(function(l) {
                     $folders.removeClass("loading");
                     folders = l;
                     foldersView.table.set(folders);
                 });
             };
             var onAddUserFolders = function() {
-                var currentIds = mollify.helpers.extractValue(folders, "id");
-                var selectable = mollify.helpers.filter(allFolders, function(f) {
+                var currentIds = kloudspeaker.helpers.extractValue(folders, "id");
+                var selectable = kloudspeaker.helpers.filter(allFolders, function(f) {
                     return currentIds.indexOf(f.id) < 0;
                 });
                 //if (selectable.length === 0) return;
 
-                mollify.ui.dialogs.select({
-                    title: mollify.ui.texts.get('configAdminUserAddFolderTitle'),
-                    message: mollify.ui.texts.get('configAdminUserAddFolderMessage'),
+                kloudspeaker.ui.dialogs.select({
+                    title: kloudspeaker.ui.texts.get('configAdminUserAddFolderTitle'),
+                    message: kloudspeaker.ui.texts.get('configAdminUserAddFolderMessage'),
                     key: "id",
                     initSize: [600, 400],
                     columns: [{
@@ -581,17 +581,17 @@
                         content: '<i class="icon-folder"></i>'
                     }, {
                         id: "id",
-                        title: mollify.ui.texts.get('configAdminTableIdTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
                     }, {
                         id: "name",
-                        title: mollify.ui.texts.get('configAdminUsersFolderDefaultNameTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminUsersFolderDefaultNameTitle')
                     }, {
                         id: "user_name",
-                        title: mollify.ui.texts.get('configAdminUsersFolderNameTitle'),
+                        title: kloudspeaker.ui.texts.get('configAdminUsersFolderNameTitle'),
                         type: "input"
                     }, {
                         id: "path",
-                        title: mollify.ui.texts.get('configAdminFoldersPathTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminFoldersPathTitle')
                     }],
                     list: selectable,
                     onSelect: function(sel, o) {
@@ -605,20 +605,20 @@
                                 folder.name = name;
                             folders.push(folder);
                         });
-                        mollify.service.post("configuration/users/" + u.id + "/folders/", folders).done(updateFolders);
+                        kloudspeaker.service.post("configuration/users/" + u.id + "/folders/", folders).done(updateFolders);
                     }
                 });
             };
             var onAddUserGroups = function() {
-                var currentIds = mollify.helpers.extractValue(groups, "id");
-                var selectable = mollify.helpers.filter(allGroups, function(f) {
+                var currentIds = kloudspeaker.helpers.extractValue(groups, "id");
+                var selectable = kloudspeaker.helpers.filter(allGroups, function(f) {
                     return currentIds.indexOf(f.id) < 0;
                 });
                 //if (selectable.length === 0) return;
 
-                mollify.ui.dialogs.select({
-                    title: mollify.ui.texts.get('configAdminUserAddGroupTitle'),
-                    message: mollify.ui.texts.get('configAdminUserAddGroupMessage'),
+                kloudspeaker.ui.dialogs.select({
+                    title: kloudspeaker.ui.texts.get('configAdminUserAddGroupTitle'),
+                    message: kloudspeaker.ui.texts.get('configAdminUserAddGroupMessage'),
                     key: "id",
                     initSize: [600, 400],
                     columns: [{
@@ -628,23 +628,23 @@
                         content: '<i class="icon-folder"></i>'
                     }, {
                         id: "id",
-                        title: mollify.ui.texts.get('configAdminTableIdTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
                     }, {
                         id: "name",
-                        title: mollify.ui.texts.get('configAdminUsersGroupNameTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminUsersGroupNameTitle')
                     }, {
                         id: "description",
-                        title: mollify.ui.texts.get('configAdminGroupsDescriptionTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminGroupsDescriptionTitle')
                     }],
                     list: selectable,
                     onSelect: function(sel, o) {
-                        mollify.service.post("configuration/users/" + u.id + "/groups/", mollify.helpers.extractValue(sel, "id")).done(updateGroups);
+                        kloudspeaker.service.post("configuration/users/" + u.id + "/groups/", kloudspeaker.helpers.extractValue(sel, "id")).done(updateGroups);
                     }
                 });
             };
 
-            foldersView = new mollify.view.ConfigListView($e.find(".mollify-config-admin-userdetails-folders"), {
-                title: mollify.ui.texts.get('configAdminUsersFoldersTitle'),
+            foldersView = new kloudspeaker.view.ConfigListView($e.find(".kloudspeaker-config-admin-userdetails-folders"), {
+                title: kloudspeaker.ui.texts.get('configAdminUsersFoldersTitle'),
                 actions: [{
                     id: "action-add",
                     content: '<i class="icon-plus"></i>',
@@ -655,8 +655,8 @@
                     cls: "btn-danger",
                     depends: "table-selection",
                     callback: function(sel) {
-                        mollify.service.del("configuration/users/" + u.id + "/folders/", {
-                            ids: mollify.helpers.extractValue(sel, "id")
+                        kloudspeaker.service.del("configuration/users/" + u.id + "/folders/", {
+                            ids: kloudspeaker.helpers.extractValue(sel, "id")
                         }).done(updateFolders);
                     }
                 }],
@@ -673,34 +673,34 @@
                         content: '<i class="icon-folder"></i>'
                     }, {
                         id: "id",
-                        title: mollify.ui.texts.get('configAdminTableIdTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
                     }, {
                         id: "name",
-                        title: mollify.ui.texts.get('configAdminUsersFolderNameTitle'),
+                        title: kloudspeaker.ui.texts.get('configAdminUsersFolderNameTitle'),
                         formatter: function(f, v) {
                             var n = f.name;
                             if (n && n.length > 0) return n;
-                            return mollify.ui.texts.get('configAdminUsersFolderDefaultName', f.default_name);
+                            return kloudspeaker.ui.texts.get('configAdminUsersFolderDefaultName', f.default_name);
                         }
                     }, {
                         id: "path",
-                        title: mollify.ui.texts.get('configAdminFoldersPathTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminFoldersPathTitle')
                     }, {
                         id: "remove",
-                        title: mollify.ui.texts.get('configAdminActionRemoveTitle'),
+                        title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'),
                         type: "action",
                         content: '<i class="icon-trash"></i>'
                     }],
                     onRowAction: function(id, f) {
                         if (id == "remove") {
-                            mollify.service.del("configuration/users/" + u.id + "/folders/" + f.id).done(updateFolders);
+                            kloudspeaker.service.del("configuration/users/" + u.id + "/folders/" + f.id).done(updateFolders);
                         }
                     }
                 }
             });
 
-            groupsView = new mollify.view.ConfigListView($e.find(".mollify-config-admin-userdetails-groups"), {
-                title: mollify.ui.texts.get('configAdminUsersGroupsTitle'),
+            groupsView = new kloudspeaker.view.ConfigListView($e.find(".kloudspeaker-config-admin-userdetails-groups"), {
+                title: kloudspeaker.ui.texts.get('configAdminUsersGroupsTitle'),
                 actions: [{
                     id: "action-add",
                     content: '<i class="icon-plus"></i>',
@@ -711,8 +711,8 @@
                     cls: "btn-danger",
                     depends: "table-selection",
                     callback: function(sel) {
-                        mollify.service.del("configuration/users/" + u.id + "/groups/", {
-                            ids: mollify.helpers.extractValue(sel, "id")
+                        kloudspeaker.service.del("configuration/users/" + u.id + "/groups/", {
+                            ids: kloudspeaker.helpers.extractValue(sel, "id")
                         }).done(updateGroups);
                     }
                 }],
@@ -729,25 +729,25 @@
                         content: '<i class="icon-user"></i>'
                     }, {
                         id: "id",
-                        title: mollify.ui.texts.get('configAdminTableIdTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
                     }, {
                         id: "name",
-                        title: mollify.ui.texts.get('configAdminUsersGroupNameTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminUsersGroupNameTitle')
                     }, {
                         id: "remove",
-                        title: mollify.ui.texts.get('configAdminActionRemoveTitle'),
+                        title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'),
                         type: "action",
                         content: '<i class="icon-trash"></i>'
                     }],
                     onRowAction: function(id, g) {
                         if (id == "remove") {
-                            mollify.service.del("configuration/users/" + u.id + "/groups/" + g.id).done(updateGroups);
+                            kloudspeaker.service.del("configuration/users/" + u.id + "/groups/" + g.id).done(updateGroups);
                         }
                     }
                 }
             });
 
-            mollify.plugins.get('plugin-permissions').getUserConfigPermissionsListView($e.find(".mollify-config-admin-userdetails-permissions"), mollify.ui.texts.get('configAdminUsersPermissionsTitle'), u);
+            kloudspeaker.plugins.get('plugin-permissions').getUserConfigPermissionsListView($e.find(".kloudspeaker-config-admin-userdetails-permissions"), kloudspeaker.ui.texts.get('configAdminUsersPermissionsTitle'), u);
 
             updateGroups();
             updateFolders();
@@ -777,8 +777,8 @@
         }
 
         this._removeUsers = function(users) {
-            return mollify.service.del("configuration/users", {
-                ids: mollify.helpers.extractValue(users, "id")
+            return kloudspeaker.service.del("configuration/users", {
+                ids: kloudspeaker.helpers.extractValue(users, "id")
             });
         }
 
@@ -791,22 +791,22 @@
             var $authentication = false;
             var $language = false;
             var $expiration = false;
-            var showLanguages = (mollify.settings.language.options && mollify.settings.language.options.length > 1);
+            var showLanguages = (kloudspeaker.settings.language.options && kloudspeaker.settings.language.options.length > 1);
 
-            mollify.ui.dialogs.custom({
+            kloudspeaker.ui.dialogs.custom({
                 resizable: true,
                 initSize: [600, 400],
-                title: mollify.ui.texts.get(u ? 'configAdminUsersUserDialogEditTitle' : 'configAdminUsersUserDialogAddTitle'),
-                content: mollify.dom.template("mollify-tmpl-config-admin-userdialog", {
+                title: kloudspeaker.ui.texts.get(u ? 'configAdminUsersUserDialogEditTitle' : 'configAdminUsersUserDialogAddTitle'),
+                content: kloudspeaker.dom.template("kloudspeaker-tmpl-config-admin-userdialog", {
                     user: u,
                     showLanguages: showLanguages
                 }),
                 buttons: [{
                     id: "yes",
-                    "title": mollify.ui.texts.get('dialogSave')
+                    "title": kloudspeaker.ui.texts.get('dialogSave')
                 }, {
                     id: "no",
-                    "title": mollify.ui.texts.get('dialogCancel')
+                    "title": kloudspeaker.ui.texts.get('dialogCancel')
                 }],
                 "on-button": function(btn, d) {
                     if (btn.id == 'no') {
@@ -816,7 +816,7 @@
                     var username = $name.val();
                     var email = $email.val();
                     var type = $type.selected();
-                    var expiration = mollify.helpers.formatInternalTime($expiration.get());
+                    var expiration = kloudspeaker.helpers.formatInternalTime($expiration.get());
                     var auth = $authentication.selected();
                     if (!username || username.length === 0) return;
                     var lang = null;
@@ -835,18 +835,18 @@
                     };
 
                     if (u) {
-                        mollify.service.put("configuration/users/" + u.id, user).done(d.close).done(cb);
+                        kloudspeaker.service.put("configuration/users/" + u.id, user).done(d.close).done(cb);
                     } else {
                         var pwRequired = (effectiveAuth === 'pw');
                         var password = $password.val();
                         if (pwRequired && (!password || password.length === 0)) return;
 
                         user.password = password ? window.Base64.encode(password) : '';
-                        mollify.service.post("configuration/users", user).done(d.close).done(cb);
+                        kloudspeaker.service.post("configuration/users", user).done(d.close).done(cb);
                     }
                 },
                 "on-show": function(h, $d) {
-                    $content = $d.find("#mollify-config-admin-userdialog-content");
+                    $content = $d.find("#kloudspeaker-config-admin-userdialog-content");
                     $name = $d.find("#usernameField");
                     $email = $d.find("#emailField");
                     $password = $d.find("#passwordField");
@@ -854,26 +854,26 @@
                         $password.val(that._generatePassword());
                         return false;
                     });
-                    $type = mollify.ui.controls.select("typeField", {
+                    $type = kloudspeaker.ui.controls.select("typeField", {
                         values: ['a'],
-                        none: mollify.ui.texts.get('configAdminUsersTypeNormal'),
+                        none: kloudspeaker.ui.texts.get('configAdminUsersTypeNormal'),
                         formatter: function(t) {
-                            return mollify.ui.texts.get('configAdminUsersType_' + t);
+                            return kloudspeaker.ui.texts.get('configAdminUsersType_' + t);
                         }
                     });
-                    $authentication = mollify.ui.controls.select("authenticationField", {
+                    $authentication = kloudspeaker.ui.controls.select("authenticationField", {
                         values: that._authenticationOptions,
-                        none: mollify.ui.texts.get('configAdminUsersUserDialogAuthDefault', that._defaultAuthMethod),
+                        none: kloudspeaker.ui.texts.get('configAdminUsersUserDialogAuthDefault', that._defaultAuthMethod),
                         formatter: that._authFormatter
                     });
                     if (showLanguages)
-                        $language = mollify.ui.controls.select("languageField", {
-                            values: mollify.settings.language.options,
-                            none: mollify.ui.texts.get('configAdminUsersUserDialogLangDefault', (mollify.settings.language["default"] || 'en')),
+                        $language = kloudspeaker.ui.controls.select("languageField", {
+                            values: kloudspeaker.settings.language.options,
+                            none: kloudspeaker.ui.texts.get('configAdminUsersUserDialogLangDefault', (kloudspeaker.settings.language["default"] || 'en')),
                             formatter: that._langFormatter
                         });
-                    $expiration = mollify.ui.controls.datepicker("expirationField", {
-                        format: mollify.ui.texts.get('shortDateTimeFormat'),
+                    $expiration = kloudspeaker.ui.controls.datepicker("expirationField", {
+                        format: kloudspeaker.ui.texts.get('shortDateTimeFormat'),
                         time: true
                     });
 
@@ -882,7 +882,7 @@
                         $email.val(u.email || "");
                         $type.select(u.user_type ? u.user_type.toLowerCase() : null);
                         $authentication.select(u.auth ? u.auth.toLowerCase() : null);
-                        $expiration.set(mollify.helpers.parseInternalTime(u.expiration));
+                        $expiration.set(kloudspeaker.helpers.parseInternalTime(u.expiration));
                         if (showLanguages && u.lang) $language.select(u.lang);
                     } else {
                         $type.select(null);
@@ -896,33 +896,33 @@
     }
 
     /* Groups */
-    mollify.view.config.admin.GroupsView = function() {
+    kloudspeaker.view.config.admin.GroupsView = function() {
         var that = this;
         this.viewId = "groups";
 
         this.init = function(s, cv) {
             that._cv = cv;
-            that.title = mollify.ui.texts.get("configAdminGroupsNavTitle");
+            that.title = kloudspeaker.ui.texts.get("configAdminGroupsNavTitle");
         }
 
         this.onActivate = function($c) {
             var groups = false;
             var listView = false;
-            that._details = mollify.ui.controls.slidePanel($("#mollify-mainview-viewcontent"), {
+            that._details = kloudspeaker.ui.controls.slidePanel($("#kloudspeaker-mainview-viewcontent"), {
                 resizable: true
             });
 
             var updateGroups = function() {
                 that._details.hide();
                 that._cv.showLoading(true);
-                mollify.service.get("configuration/usergroups/").done(function(l) {
+                kloudspeaker.service.get("configuration/usergroups/").done(function(l) {
                     that._cv.showLoading(false);
                     groups = l;
                     listView.table.set(groups);
                 });
             };
 
-            listView = new mollify.view.ConfigListView($c, {
+            listView = new kloudspeaker.view.ConfigListView($c, {
                 actions: [{
                     id: "action-add",
                     content: '<i class="icon-plus"></i>',
@@ -935,9 +935,9 @@
                     cls: "btn-danger",
                     depends: "table-selection",
                     callback: function(sel) {
-                        mollify.ui.dialogs.confirmation({
-                            title: mollify.ui.texts.get("configAdminGroupsRemoveGroupsConfirmationTitle"),
-                            message: mollify.ui.texts.get("configAdminGroupsRemoveGroupsConfirmationMessage", [sel.length]),
+                        kloudspeaker.ui.dialogs.confirmation({
+                            title: kloudspeaker.ui.texts.get("configAdminGroupsRemoveGroupsConfirmationTitle"),
+                            message: kloudspeaker.ui.texts.get("configAdminGroupsRemoveGroupsConfirmationMessage", [sel.length]),
                             callback: function() {
                                 that._removeGroups(sel).done(updateGroups);
                             }
@@ -962,21 +962,21 @@
                         content: '<i class="icon-user"></i>'
                     }, {
                         id: "id",
-                        title: mollify.ui.texts.get('configAdminTableIdTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
                     }, {
                         id: "name",
-                        title: mollify.ui.texts.get('configAdminGroupsNameTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminGroupsNameTitle')
                     }, {
                         id: "description",
-                        title: mollify.ui.texts.get('configAdminGroupsDescriptionTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminGroupsDescriptionTitle')
                     }, {
                         id: "edit",
-                        title: mollify.ui.texts.get('configAdminActionEditTitle'),
+                        title: kloudspeaker.ui.texts.get('configAdminActionEditTitle'),
                         type: "action",
                         content: '<i class="icon-edit"></i>'
                     }, {
                         id: "remove",
-                        title: mollify.ui.texts.get('configAdminActionRemoveTitle'),
+                        title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'),
                         type: "action",
                         content: '<i class="icon-trash"></i>'
                     }],
@@ -984,11 +984,11 @@
                         if (id == "edit") {
                             that.onAddEditGroup(g, updateGroups);
                         } else if (id == "remove") {
-                            mollify.ui.dialogs.confirmation({
-                                title: mollify.ui.texts.get("configAdminGroupsRemoveGroupConfirmationTitle"),
-                                message: mollify.ui.texts.get("configAdminGroupsRemoveGroupConfirmationMessage", [g.name]),
+                            kloudspeaker.ui.dialogs.confirmation({
+                                title: kloudspeaker.ui.texts.get("configAdminGroupsRemoveGroupConfirmationTitle"),
+                                message: kloudspeaker.ui.texts.get("configAdminGroupsRemoveGroupConfirmationMessage", [g.name]),
                                 callback: function() {
-                                    mollify.service.del("configuration/usergroups/" + g.id).done(updateGroups);
+                                    kloudspeaker.service.del("configuration/usergroups/" + g.id).done(updateGroups);
                                 }
                             });
                         }
@@ -1006,10 +1006,10 @@
             updateGroups();
 
             that._cv.showLoading(true);
-            var up = mollify.service.get("configuration/users").done(function(u) {
+            var up = kloudspeaker.service.get("configuration/users").done(function(u) {
                 that._allUsers = u;
             });
-            var fp = mollify.service.get("configuration/folders").done(function(f) {
+            var fp = kloudspeaker.service.get("configuration/folders").done(function(f) {
                 that._allFolders = f;
             });
             $.when(up, fp).done(function() {
@@ -1022,12 +1022,12 @@
         };
 
         this._showGroupDetails = function(g, $e, allUsers, allFolders) {
-            mollify.dom.template("mollify-tmpl-config-admin-groupdetails", {
+            kloudspeaker.dom.template("kloudspeaker-tmpl-config-admin-groupdetails", {
                 group: g
             }).appendTo($e);
-            mollify.ui.process($e, ["localize"]);
-            var $users = $e.find(".mollify-config-admin-groupdetails-users");
-            var $folders = $e.find(".mollify-config-admin-groupdetails-folders");
+            kloudspeaker.ui.process($e, ["localize"]);
+            var $users = $e.find(".kloudspeaker-config-admin-groupdetails-users");
+            var $folders = $e.find(".kloudspeaker-config-admin-groupdetails-folders");
             var foldersView = false;
             var usersView = false;
             var folders = false;
@@ -1035,7 +1035,7 @@
 
             var updateUsers = function() {
                 $users.addClass("loading");
-                mollify.service.get("configuration/usergroups/" + g.id + "/users/").done(function(l) {
+                kloudspeaker.service.get("configuration/usergroups/" + g.id + "/users/").done(function(l) {
                     $users.removeClass("loading");
                     users = l;
                     usersView.table.set(users);
@@ -1043,22 +1043,22 @@
             };
             var updateFolders = function() {
                 $folders.addClass("loading");
-                mollify.service.get("configuration/users/" + g.id + "/folders/").done(function(l) {
+                kloudspeaker.service.get("configuration/users/" + g.id + "/folders/").done(function(l) {
                     $folders.removeClass("loading");
                     folders = l;
                     foldersView.table.set(folders);
                 });
             };
             var onAddGroupUsers = function() {
-                var currentIds = mollify.helpers.extractValue(users, "id");
-                var selectable = mollify.helpers.filter(allUsers, function(u) {
+                var currentIds = kloudspeaker.helpers.extractValue(users, "id");
+                var selectable = kloudspeaker.helpers.filter(allUsers, function(u) {
                     return u.is_group == 0 && currentIds.indexOf(u.id) < 0;
                 });
                 //if (selectable.length === 0) return;
 
-                mollify.ui.dialogs.select({
-                    title: mollify.ui.texts.get('configAdminGroupAddUserTitle'),
-                    message: mollify.ui.texts.get('configAdminGroupAddUserMessage'),
+                kloudspeaker.ui.dialogs.select({
+                    title: kloudspeaker.ui.texts.get('configAdminGroupAddUserTitle'),
+                    message: kloudspeaker.ui.texts.get('configAdminGroupAddUserMessage'),
                     key: "id",
                     initSize: [600, 400],
                     columns: [{
@@ -1068,27 +1068,27 @@
                         content: '<i class="icon-folder"></i>'
                     }, {
                         id: "id",
-                        title: mollify.ui.texts.get('configAdminTableIdTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
                     }, {
                         id: "name",
-                        title: mollify.ui.texts.get('configAdminUsersNameTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminUsersNameTitle')
                     }],
                     list: selectable,
                     onSelect: function(sel, o) {
-                        mollify.service.post("configuration/usergroups/" + g.id + "/users/", mollify.helpers.extractValue(sel, "id")).done(updateUsers);
+                        kloudspeaker.service.post("configuration/usergroups/" + g.id + "/users/", kloudspeaker.helpers.extractValue(sel, "id")).done(updateUsers);
                     }
                 });
             };
             var onAddGroupFolders = function() {
-                var currentIds = mollify.helpers.extractValue(folders, "id");
-                var selectable = mollify.helpers.filter(allFolders, function(f) {
+                var currentIds = kloudspeaker.helpers.extractValue(folders, "id");
+                var selectable = kloudspeaker.helpers.filter(allFolders, function(f) {
                     return currentIds.indexOf(f.id) < 0;
                 });
                 //if (selectable.length === 0) return;
 
-                mollify.ui.dialogs.select({
-                    title: mollify.ui.texts.get('configAdminGroupAddFolderTitle'),
-                    message: mollify.ui.texts.get('configAdminGroupAddFolderMessage'),
+                kloudspeaker.ui.dialogs.select({
+                    title: kloudspeaker.ui.texts.get('configAdminGroupAddFolderTitle'),
+                    message: kloudspeaker.ui.texts.get('configAdminGroupAddFolderMessage'),
                     key: "id",
                     initSize: [600, 400],
                     columns: [{
@@ -1098,17 +1098,17 @@
                         content: '<i class="icon-folder"></i>'
                     }, {
                         id: "id",
-                        title: mollify.ui.texts.get('configAdminTableIdTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
                     }, {
                         id: "name",
-                        title: mollify.ui.texts.get('configAdminUsersFolderDefaultNameTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminUsersFolderDefaultNameTitle')
                     }, {
                         id: "user_name",
-                        title: mollify.ui.texts.get('configAdminUsersFolderNameTitle'),
+                        title: kloudspeaker.ui.texts.get('configAdminUsersFolderNameTitle'),
                         type: "input"
                     }, {
                         id: "path",
-                        title: mollify.ui.texts.get('configAdminFoldersPathTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminFoldersPathTitle')
                     }],
                     list: selectable,
                     onSelect: function(sel, o) {
@@ -1122,13 +1122,13 @@
                                 folder.name = name;
                             folders.push(folder);
                         });
-                        mollify.service.post("configuration/users/" + g.id + "/folders/", folders).done(updateFolders);
+                        kloudspeaker.service.post("configuration/users/" + g.id + "/folders/", folders).done(updateFolders);
                     }
                 });
             };
 
-            foldersView = new mollify.view.ConfigListView($folders, {
-                title: mollify.ui.texts.get('configAdminGroupsFoldersTitle'),
+            foldersView = new kloudspeaker.view.ConfigListView($folders, {
+                title: kloudspeaker.ui.texts.get('configAdminGroupsFoldersTitle'),
                 actions: [{
                     id: "action-add",
                     content: '<i class="icon-plus"></i>',
@@ -1139,8 +1139,8 @@
                     cls: "btn-danger",
                     depends: "table-selection",
                     callback: function(sel) {
-                        mollify.service.del("configuration/users/" + g.id + "/folders/", {
-                            ids: mollify.helpers.extractValue(sel, "id")
+                        kloudspeaker.service.del("configuration/users/" + g.id + "/folders/", {
+                            ids: kloudspeaker.helpers.extractValue(sel, "id")
                         }).done(updateFolders);
                     }
                 }],
@@ -1157,34 +1157,34 @@
                         content: '<i class="icon-folder"></i>'
                     }, {
                         id: "id",
-                        title: mollify.ui.texts.get('configAdminTableIdTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
                     }, {
                         id: "name",
-                        title: mollify.ui.texts.get('configAdminUsersFolderNameTitle'),
+                        title: kloudspeaker.ui.texts.get('configAdminUsersFolderNameTitle'),
                         valueMapper: function(f, v) {
                             var n = f.name;
                             if (n && n.length > 0) return n;
-                            return mollify.ui.texts.get('configAdminUsersFolderDefaultName', f.default_name);
+                            return kloudspeaker.ui.texts.get('configAdminUsersFolderDefaultName', f.default_name);
                         }
                     }, {
                         id: "path",
-                        title: mollify.ui.texts.get('configAdminFoldersPathTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminFoldersPathTitle')
                     }, {
                         id: "remove",
-                        title: mollify.ui.texts.get('configAdminActionRemoveTitle'),
+                        title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'),
                         type: "action",
                         content: '<i class="icon-trash"></i>'
                     }],
                     onRowAction: function(id, f) {
                         if (id == "remove") {
-                            mollify.service.del("configuration/users/" + g.id + "/folders/" + f.id).done(updateFolders);
+                            kloudspeaker.service.del("configuration/users/" + g.id + "/folders/" + f.id).done(updateFolders);
                         }
                     }
                 }
             });
 
-            usersView = new mollify.view.ConfigListView($users, {
-                title: mollify.ui.texts.get('configAdminGroupsUsersTitle'),
+            usersView = new kloudspeaker.view.ConfigListView($users, {
+                title: kloudspeaker.ui.texts.get('configAdminGroupsUsersTitle'),
                 actions: [{
                     id: "action-add",
                     content: '<i class="icon-plus"></i>',
@@ -1195,7 +1195,7 @@
                     cls: "btn-danger",
                     depends: "table-selection",
                     callback: function(sel) {
-                        mollify.service.post("configuration/usergroups/" + g.id + "/remove_users/", mollify.helpers.extractValue(sel, "id")).done(updateUsers);
+                        kloudspeaker.service.post("configuration/usergroups/" + g.id + "/remove_users/", kloudspeaker.helpers.extractValue(sel, "id")).done(updateUsers);
                     }
                 }],
                 table: {
@@ -1206,33 +1206,33 @@
                         type: "selectrow"
                     }, {
                         id: "id",
-                        title: mollify.ui.texts.get('configAdminTableIdTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
                     }, {
                         id: "name",
-                        title: mollify.ui.texts.get('configAdminUsersNameTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminUsersNameTitle')
                     }, {
                         id: "remove",
-                        title: mollify.ui.texts.get('configAdminActionRemoveTitle'),
+                        title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'),
                         type: "action",
                         content: '<i class="icon-trash"></i>'
                     }],
                     onRowAction: function(id, u) {
                         if (id == "remove") {
-                            mollify.service.post("configuration/usergroups/" + g.id + "/remove_users/", [u.id]).done(updateUsers);
+                            kloudspeaker.service.post("configuration/usergroups/" + g.id + "/remove_users/", [u.id]).done(updateUsers);
                         }
                     }
                 }
             });
 
-            mollify.plugins.get('plugin-permissions').getUserConfigPermissionsListView($e.find(".mollify-config-admin-groupdetails-permissions"), mollify.ui.texts.get('configAdminGroupsPermissionsTitle'), g);
+            kloudspeaker.plugins.get('plugin-permissions').getUserConfigPermissionsListView($e.find(".kloudspeaker-config-admin-groupdetails-permissions"), kloudspeaker.ui.texts.get('configAdminGroupsPermissionsTitle'), g);
 
             updateUsers();
             updateFolders();
         }
 
         this._removeGroups = function(groups) {
-            return mollify.service.del("configuration/usergroups", {
-                ids: mollify.helpers.extractValue(groups, "id")
+            return kloudspeaker.service.del("configuration/usergroups", {
+                ids: kloudspeaker.helpers.extractValue(groups, "id")
             });
         }
 
@@ -1241,19 +1241,19 @@
             var $name = false;
             var $description = false;
 
-            mollify.ui.dialogs.custom({
+            kloudspeaker.ui.dialogs.custom({
                 resizable: true,
                 initSize: [600, 400],
-                title: mollify.ui.texts.get(g ? 'configAdminGroupsDialogEditTitle' : 'configAdminGroupsDialogAddTitle'),
-                content: mollify.dom.template("mollify-tmpl-config-admin-groupdialog", {
+                title: kloudspeaker.ui.texts.get(g ? 'configAdminGroupsDialogEditTitle' : 'configAdminGroupsDialogAddTitle'),
+                content: kloudspeaker.dom.template("kloudspeaker-tmpl-config-admin-groupdialog", {
                     group: g
                 }),
                 buttons: [{
                     id: "yes",
-                    "title": mollify.ui.texts.get('dialogSave')
+                    "title": kloudspeaker.ui.texts.get('dialogSave')
                 }, {
                     id: "no",
-                    "title": mollify.ui.texts.get('dialogCancel')
+                    "title": kloudspeaker.ui.texts.get('dialogCancel')
                 }],
                 "on-button": function(btn, d) {
                     if (btn.id == 'no') {
@@ -1270,13 +1270,13 @@
                     };
 
                     if (g) {
-                        mollify.service.put("configuration/usergroups/" + g.id, group).done(d.close).done(cb);
+                        kloudspeaker.service.put("configuration/usergroups/" + g.id, group).done(d.close).done(cb);
                     } else {
-                        mollify.service.post("configuration/usergroups", group).done(d.close).done(cb);
+                        kloudspeaker.service.post("configuration/usergroups", group).done(d.close).done(cb);
                     }
                 },
                 "on-show": function(h, $d) {
-                    $content = $d.find("#mollify-config-admin-groupdialog-content");
+                    $content = $d.find("#kloudspeaker-config-admin-groupdialog-content");
                     $name = $d.find("#nameField");
                     $description = $d.find("#descriptionField");
 
@@ -1293,34 +1293,34 @@
     }
 
     /* Folders */
-    mollify.view.config.admin.FoldersView = function() {
+    kloudspeaker.view.config.admin.FoldersView = function() {
         var that = this;
         this.viewId = "folders";
 
         this.init = function(s, cv) {
             that._cv = cv;
             that._settings = s;
-            that.title = mollify.ui.texts.get("configAdminFoldersNavTitle");
+            that.title = kloudspeaker.ui.texts.get("configAdminFoldersNavTitle");
         }
 
         this.onActivate = function($c) {
             var folders = false;
             var listView = false;
-            that._details = mollify.ui.controls.slidePanel($("#mollify-mainview-viewcontent"), {
+            that._details = kloudspeaker.ui.controls.slidePanel($("#kloudspeaker-mainview-viewcontent"), {
                 resizable: true
             });
 
             var updateFolders = function() {
                 that._cv.showLoading(true);
 
-                mollify.service.get("configuration/folders/").done(function(l) {
+                kloudspeaker.service.get("configuration/folders/").done(function(l) {
                     that._cv.showLoading(false);
                     folders = l;
                     listView.table.set(folders);
                 });
             };
 
-            listView = new mollify.view.ConfigListView($c, {
+            listView = new kloudspeaker.view.ConfigListView($c, {
                 actions: [{
                     id: "action-add",
                     content: '<i class="icon-plus"></i>',
@@ -1333,9 +1333,9 @@
                     cls: "btn-danger",
                     depends: "table-selection",
                     callback: function(sel) {
-                        mollify.ui.dialogs.confirmation({
-                            title: mollify.ui.texts.get("configAdminFoldersRemoveFoldersConfirmationTitle"),
-                            message: mollify.ui.texts.get("configAdminFoldersRemoveFoldersConfirmationMessage", [sel.length]),
+                        kloudspeaker.ui.dialogs.confirmation({
+                            title: kloudspeaker.ui.texts.get("configAdminFoldersRemoveFoldersConfirmationTitle"),
+                            message: kloudspeaker.ui.texts.get("configAdminFoldersRemoveFoldersConfirmationMessage", [sel.length]),
                             callback: function() {
                                 that._removeFolders(sel).done(updateFolders);
                             }
@@ -1360,21 +1360,21 @@
                         content: '<i class="icon-folder-close"></i>'
                     }, {
                         id: "id",
-                        title: mollify.ui.texts.get('configAdminTableIdTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
                     }, {
                         id: "name",
-                        title: mollify.ui.texts.get('configAdminFoldersNameTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminFoldersNameTitle')
                     }, {
                         id: "path",
-                        title: mollify.ui.texts.get('configAdminFoldersPathTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminFoldersPathTitle')
                     }, {
                         id: "edit",
-                        title: mollify.ui.texts.get('configAdminActionEditTitle'),
+                        title: kloudspeaker.ui.texts.get('configAdminActionEditTitle'),
                         type: "action",
                         content: '<i class="icon-edit"></i>'
                     }, {
                         id: "remove",
-                        title: mollify.ui.texts.get('configAdminActionRemoveTitle'),
+                        title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'),
                         type: "action",
                         content: '<i class="icon-trash"></i>'
                     }],
@@ -1382,17 +1382,17 @@
                         if (id == "edit") {
                             that.onAddEditFolder(f, updateFolders);
                         } else if (id == "remove") {
-                            mollify.ui.dialogs.confirmation({
-                                title: mollify.ui.texts.get("configAdminFoldersRemoveFolderConfirmationTitle"),
-                                message: mollify.ui.texts.get("configAdminFoldersRemoveFolderConfirmationMessage", [f.name]),
+                            kloudspeaker.ui.dialogs.confirmation({
+                                title: kloudspeaker.ui.texts.get("configAdminFoldersRemoveFolderConfirmationTitle"),
+                                message: kloudspeaker.ui.texts.get("configAdminFoldersRemoveFolderConfirmationMessage", [f.name]),
                                 options: {
-                                    deleteContents: mollify.ui.texts.get("configAdminFoldersRemoveFolderContentConfirmation")
+                                    deleteContents: kloudspeaker.ui.texts.get("configAdminFoldersRemoveFolderContentConfirmation")
                                 },
                                 callback: function(opts) {
                                     var p = "configuration/folders/" + f.id;
                                     if (opts.deleteContents) p += '?delete=true'
-                                    mollify.service.del(p).done(function(f) {
-                                        mollify.filesystem.updateRoots(f.folders, f.roots);
+                                    kloudspeaker.service.del(p).done(function(f) {
+                                        kloudspeaker.filesystem.updateRoots(f.folders, f.roots);
                                         updateFolders();
                                     });
                                 }
@@ -1412,7 +1412,7 @@
             updateFolders();
 
             that._cv.showLoading(true);
-            var gp = mollify.service.get("configuration/usersgroups").done(function(r) {
+            var gp = kloudspeaker.service.get("configuration/usersgroups").done(function(r) {
                 that._allUsers = r.users;
                 that._allGroups = r.groups;
                 that._cv.showLoading(false);
@@ -1424,33 +1424,33 @@
         };
 
         this._showFolderDetails = function(f, $e, allUsers, allGroups) {
-            mollify.dom.template("mollify-tmpl-config-admin-folderdetails", {
+            kloudspeaker.dom.template("kloudspeaker-tmpl-config-admin-folderdetails", {
                 folder: f
             }).appendTo($e);
-            mollify.ui.process($e, ["localize"]);
-            var $usersAndGroups = $e.find(".mollify-config-admin-folderdetails-usersandgroups");
+            kloudspeaker.ui.process($e, ["localize"]);
+            var $usersAndGroups = $e.find(".kloudspeaker-config-admin-folderdetails-usersandgroups");
             var usersAndGroupsView = false;
             var usersAndGroups = false;
             var allUsersAndGroups = allUsers.concat(allGroups);
 
             var updateUsersAndGroups = function() {
                 $usersAndGroups.addClass("loading");
-                mollify.service.get("configuration/folders/" + f.id + "/users/").done(function(l) {
+                kloudspeaker.service.get("configuration/folders/" + f.id + "/users/").done(function(l) {
                     $usersAndGroups.removeClass("loading");
                     usersAndGroups = l;
                     usersAndGroupsView.table.set(l);
                 });
             };
             var onAddUserGroup = function() {
-                var currentIds = mollify.helpers.extractValue(usersAndGroups, "id");
-                var selectable = mollify.helpers.filter(allUsersAndGroups, function(ug) {
+                var currentIds = kloudspeaker.helpers.extractValue(usersAndGroups, "id");
+                var selectable = kloudspeaker.helpers.filter(allUsersAndGroups, function(ug) {
                     return currentIds.indexOf(ug.id) < 0;
                 });
                 //if (selectable.length === 0) return;
 
-                mollify.ui.dialogs.select({
-                    title: mollify.ui.texts.get('configAdminFolderAddUserTitle'),
-                    message: mollify.ui.texts.get('configAdminFolderAddUserMessage'),
+                kloudspeaker.ui.dialogs.select({
+                    title: kloudspeaker.ui.texts.get('configAdminFolderAddUserTitle'),
+                    message: kloudspeaker.ui.texts.get('configAdminFolderAddUserMessage'),
                     key: "id",
                     initSize: [600, 400],
                     columns: [{
@@ -1462,23 +1462,23 @@
                         }
                     }, {
                         id: "id",
-                        title: mollify.ui.texts.get('configAdminTableIdTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
                     }, {
                         id: "name",
-                        title: mollify.ui.texts.get('configAdminUserDialogUsernameTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminUserDialogUsernameTitle')
                     }],
                     list: selectable,
                     onSelect: function(sel, o) {
-                        mollify.service.post("configuration/folders/" + f.id + "/users/", mollify.helpers.extractValue(sel, "id")).done(function(f) {
-                            mollify.filesystem.updateRoots(f.folders, f.roots);
+                        kloudspeaker.service.post("configuration/folders/" + f.id + "/users/", kloudspeaker.helpers.extractValue(sel, "id")).done(function(f) {
+                            kloudspeaker.filesystem.updateRoots(f.folders, f.roots);
                             updateUsersAndGroups()
                         });
                     }
                 });
             }
 
-            usersAndGroupsView = new mollify.view.ConfigListView($usersAndGroups, {
-                title: mollify.ui.texts.get('configAdminFolderUsersTitle'),
+            usersAndGroupsView = new kloudspeaker.view.ConfigListView($usersAndGroups, {
+                title: kloudspeaker.ui.texts.get('configAdminFolderUsersTitle'),
                 actions: [{
                     id: "action-add",
                     content: '<i class="icon-plus"></i>',
@@ -1489,8 +1489,8 @@
                     cls: "btn-danger",
                     depends: "table-selection",
                     callback: function(sel) {
-                        mollify.service.post("configuration/folders/" + f.id + "/remove_users/", mollify.helpers.extractValue(sel, "id")).done(function(f) {
-                            mollify.filesystem.updateRoots(f.folders, f.roots);
+                        kloudspeaker.service.post("configuration/folders/" + f.id + "/remove_users/", kloudspeaker.helpers.extractValue(sel, "id")).done(function(f) {
+                            kloudspeaker.filesystem.updateRoots(f.folders, f.roots);
                             updateUsersAndGroups();
                         });
                     }
@@ -1510,19 +1510,19 @@
                         }
                     }, {
                         id: "id",
-                        title: mollify.ui.texts.get('configAdminTableIdTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
                     }, {
                         id: "name",
-                        title: mollify.ui.texts.get('configAdminUserDialogUsernameTitle')
+                        title: kloudspeaker.ui.texts.get('configAdminUserDialogUsernameTitle')
                     }, {
                         id: "remove",
-                        title: mollify.ui.texts.get('configAdminActionRemoveTitle'),
+                        title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'),
                         type: "action",
                         content: '<i class="icon-trash"></i>'
                     }],
                     onRowAction: function(id, u) {
                         if (id == "remove") {
-                            mollify.service.post("configuration/folders/" + f.id + "/remove_users/", [u.id]).done(updateUsersAndGroups);
+                            kloudspeaker.service.post("configuration/folders/" + f.id + "/remove_users/", [u.id]).done(updateUsersAndGroups);
                         }
                     }
                 }
@@ -1532,8 +1532,8 @@
         }
 
         this._removeFolders = function(f) {
-            return mollify.service.del("configuration/folders", {
-                ids: mollify.helpers.extractValue(f, "id")
+            return kloudspeaker.service.del("configuration/folders", {
+                ids: kloudspeaker.helpers.extractValue(f, "id")
             });
         }
 
@@ -1552,19 +1552,19 @@
             var $name = false;
             var $path = false;
 
-            mollify.ui.dialogs.custom({
+            kloudspeaker.ui.dialogs.custom({
                 resizable: true,
                 initSize: [500, 300],
-                title: mollify.ui.texts.get(f ? 'configAdminFoldersFolderDialogEditTitle' : 'configAdminFoldersFolderDialogAddTitle'),
-                content: mollify.dom.template("mollify-tmpl-config-admin-folderdialog", {
+                title: kloudspeaker.ui.texts.get(f ? 'configAdminFoldersFolderDialogEditTitle' : 'configAdminFoldersFolderDialogAddTitle'),
+                content: kloudspeaker.dom.template("kloudspeaker-tmpl-config-admin-folderdialog", {
                     folder: f
                 }),
                 buttons: [{
                     id: "yes",
-                    "title": mollify.ui.texts.get('dialogSave')
+                    "title": kloudspeaker.ui.texts.get('dialogSave')
                 }, {
                     id: "no",
-                    "title": mollify.ui.texts.get('dialogCancel')
+                    "title": kloudspeaker.ui.texts.get('dialogCancel')
                 }],
                 "on-button": function(btn, d) {
                     if (btn.id == 'no') {
@@ -1597,27 +1597,27 @@
                         if (e.code == 105 && !f) {
                             this.handled = true;
 
-                            mollify.ui.dialogs.confirmation({
-                                title: mollify.ui.texts.get('configAdminFoldersFolderDialogAddTitle'),
-                                message: mollify.ui.texts.get('configAdminFoldersFolderDialogAddFolderDoesNotExist'),
+                            kloudspeaker.ui.dialogs.confirmation({
+                                title: kloudspeaker.ui.texts.get('configAdminFoldersFolderDialogAddTitle'),
+                                message: kloudspeaker.ui.texts.get('configAdminFoldersFolderDialogAddFolderDoesNotExist'),
                                 callback: function() {
                                     folder.create = true;
                                     if (!f)
-                                        mollify.service.post("configuration/folders", folder).done(d.close).done(cb);
+                                        kloudspeaker.service.post("configuration/folders", folder).done(d.close).done(cb);
                                     else
-                                        mollify.service.put("configuration/folders/" + f.id, folder).done(d.close).done(cb);
+                                        kloudspeaker.service.put("configuration/folders/" + f.id, folder).done(d.close).done(cb);
                                 }
                             });
                         }
                     };
                     if (f) {
-                        mollify.service.put("configuration/folders/" + f.id, folder).done(d.close).done(cb).fail(onFail);
+                        kloudspeaker.service.put("configuration/folders/" + f.id, folder).done(d.close).done(cb).fail(onFail);
                     } else {
-                        mollify.service.post("configuration/folders", folder).done(d.close).done(cb).fail(onFail);
+                        kloudspeaker.service.post("configuration/folders", folder).done(d.close).done(cb).fail(onFail);
                     }
                 },
                 "on-show": function(h, $d) {
-                    $content = $d.find("#mollify-config-admin-folderdialog-content");
+                    $content = $d.find("#kloudspeaker-config-admin-folderdialog-content");
                     $name = $d.find("#nameField");
                     $path = $d.find("#pathField");
 
@@ -1633,4 +1633,4 @@
         }
     }
 
-}(window.jQuery, window.mollify);
+}(window.jQuery, window.kloudspeaker);

@@ -1,15 +1,15 @@
 <?php
 
 /**
- * MollifyZipArchive.class.php
+ * kloudspeakerZipArchive.class.php
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
-class MollifyZipArchive implements MollifyCompressor {
+class kloudspeakerZipArchive implements kloudspeakerCompressor {
 	private $env;
 	private $name;
 	private $zip;
@@ -20,7 +20,7 @@ class MollifyZipArchive implements MollifyCompressor {
 		}
 
 		$this->env = $env;
-		$this->name = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . uniqid('Mollify', true) . 'zip';
+		$this->name = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . uniqid('kloudspeaker', true) . 'zip';
 		$this->zip = new ZipArchive();
 		if ($this->zip->open($this->name, ZIPARCHIVE::CREATE) !== TRUE) {
 			throw new ServiceException("REQUEST_FAILED", "Could not create zip " . $this->name);

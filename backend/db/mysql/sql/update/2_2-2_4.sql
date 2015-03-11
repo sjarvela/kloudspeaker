@@ -9,7 +9,7 @@ CREATE TABLE `{TABLE_PREFIX}permission` (
   `subject` char(255) NOT NULL DEFAULT '',
   `value` char(32) NOT NULL,
   PRIMARY KEY (`name`,`user_id`,`subject`)
-) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Mollify permissions';
+) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'kloudspeaker permissions';
 
 INSERT INTO `{TABLE_PREFIX}permission` (name, user_id, subject, value) SELECT 'filesystem_item_access' as name, user_id, item_id as subject, permission as value FROM `{TABLE_PREFIX}item_permission`;
 

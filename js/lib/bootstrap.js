@@ -660,12 +660,12 @@
   * ========================= */
 
   var toggle = '[data-toggle=dropdown]'
-    , Dropdown = function (element, options) {	//mollify
-    	element.options = options	//mollify
+    , Dropdown = function (element, options) {	//kloudspeaker
+    	element.options = options	//kloudspeaker
         var $el = $(element).on('click.dropdown.data-api', this.toggle)
         $('html').on('click.dropdown.data-api', function () {
           $el.parent().removeClass('open')
-          if (element.options && element.options.onhide) element.options.onhide()	//mollify
+          if (element.options && element.options.onhide) element.options.onhide()	//kloudspeaker
         })
       }
 
@@ -692,9 +692,9 @@
           $('<div class="dropdown-backdrop"/>').insertBefore($(this)).on('click', clearMenus)
         }
         $parent.toggleClass('open')
-        if (this.options && this.options.onshow) this.options.onshow($parent)	//mollify
+        if (this.options && this.options.onshow) this.options.onshow($parent)	//kloudspeaker
       } else {
-	    if (this.options && this.options.onhide) this.options.onhide()	//mollify
+	    if (this.options && this.options.onhide) this.options.onhide()	//kloudspeaker
       }
 
       $this.focus()
@@ -778,8 +778,8 @@
     return this.each(function () {
       var $this = $(this)
         , data = $this.data('dropdown')
-        , options = $.extend({}, $this.data(), typeof option == 'object' && option)	//mollify
-      if (!data) $this.data('dropdown', (data = new Dropdown(this, options)))	// mollify
+        , options = $.extend({}, $this.data(), typeof option == 'object' && option)	//kloudspeaker
+      if (!data) $this.data('dropdown', (data = new Dropdown(this, options)))	// kloudspeaker
       if (typeof option == 'string') data[option].call($this)
     })
   }

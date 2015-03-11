@@ -2,13 +2,13 @@
 /**
  * PermissionsDao.class.php
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
-class Mollify_PermissionsDao {
+class kloudspeaker_PermissionsDao {
 	private $env;
 	private $db;
 
@@ -138,7 +138,7 @@ class Mollify_PermissionsDao {
 		if ($parentPermission != NULL and array_key_exists($name, $parentPermission)) {
 			$all[] = array(
 				"subject" => $parent->id(),
-				"value" => $parentPermission[$name]
+				"value" => $parentPermission[$name],
 			);
 		}
 

@@ -1,13 +1,13 @@
 <?php
 
-/* For configuration instructions, see ReadMe.txt or wiki page at https://github.com/sjarvela/mollify/wiki/Installation */
+/* For configuration instructions, see ReadMe.txt or wiki page at https://github.com/sjarvela/kloudspeaker/wiki/Installation */
 
 $CONFIGURATION = array(
 	"db" => array(
 		"type" => "mysql",
-		"database" => "mollify",
-		"user" => "mollify",
-		"password" => "mollify",
+		"database" => "kloudspeaker",
+		"user" => "kloudspeaker",
+		"password" => "kloudspeaker",
 		"charset" => "utf8",
 	),
 	"timezone" => "Europe/Helsinki", // change this to match your timezone

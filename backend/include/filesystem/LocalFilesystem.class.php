@@ -3,13 +3,13 @@
 /**
  * LocalFilesystem.class.php
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
-class LocalFilesystem extends MollifyFilesystem {
+class LocalFilesystem extends kloudspeakerFilesystem {
 	const FS_TYPE = "local";
 
 	private $rootPath;
@@ -51,7 +51,7 @@ class LocalFilesystem extends MollifyFilesystem {
 	}
 
 	public function type() {
-		return MollifyFilesystem::TYPE_LOCAL;
+		return kloudspeakerFilesystem::TYPE_LOCAL;
 	}
 
 	public function createItem($id, $path) {

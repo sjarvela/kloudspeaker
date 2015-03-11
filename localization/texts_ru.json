@@ -481,7 +481,7 @@
 		"pluginNotificatorNotificationAddUserTitle": "Добавить получателя",
 		"pluginNotificatorNotificationAddUserMessage": "Выберите пользователей, которые будут получать уведомление:",
 		"pluginNotificatorNotificationEditMessageVariablesTitle": "Переменные",
-		"pluginNotificatorNotificationEditMessageVariablesTxt": "Список переменных ищите здесь: https://code.google.com/p/mollify/wiki/NotificatorPlugin",
+		"pluginNotificatorNotificationEditMessageVariablesTxt": "Список переменных ищите здесь: https://code.google.com/p/kloudspeaker/wiki/NotificatorPlugin",
 		"pluginNotificatorNotificationEventUsersTitle": "Пользователи-триггеры",
 		"pluginNotificatorNotificationAddEventUserTitle": "Добавление пользователей-триггеров",
 		"pluginNotificatorNotificationAddEventUserMessage": "Выберите пользователей, на действия которых надо вызывать уведомления:",

@@ -1,21 +1,19 @@
 /**
  * ui.js
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
-! function($, mollify) {
+! function($, kloudspeaker) {
 
     "use strict";
 
-    //var t = mollify;
-
     /* TEXTS */
-    mollify.ui.texts = {};
-    var tt = mollify.ui.texts;
+    kloudspeaker.ui.texts = {};
+    var tt = kloudspeaker.ui.texts;
 
     tt.locale = null;
     tt._dict = {};
@@ -39,13 +37,13 @@
     tt.loadPlugin = function(pluginId) {
         if (tt._pluginTextsLoaded.indexOf(pluginId) >= 0) return $.Deferred().resolve();
 
-        return tt._load(mollify.plugins.getLocalizationUrl(pluginId), $.Deferred()).done(function() {
+        return tt._load(kloudspeaker.plugins.getLocalizationUrl(pluginId), $.Deferred()).done(function() {
             tt._pluginTextsLoaded.push(pluginId);
         });
     };
 
     tt._load = function(u, df) {
-        var url = mollify.resourceUrl(u);
+        var url = kloudspeaker.resourceUrl(u);
         if (!url) return df.resolve();
 
         $.ajax({
@@ -61,7 +59,7 @@
             try {
                 t = JSON.parse(r);
             } catch (e) {
-                new mollify.ui.FullErrorView('<b>Localization file syntax error</b> (<code>' + url + '</code>)', '<code>' + e.message + '</code>').show();
+                new kloudspeaker.ui.FullErrorView('<b>Localization file syntax error</b> (<code>' + url + '</code>)', '<code>' + e.message + '</code>').show();
                 return;
             }
             if (!tt.locale)
@@ -75,7 +73,7 @@
             df.resolve(t.locale);
         }).fail(function(e) {
             if (e.status == 404) {
-                new mollify.ui.FullErrorView('Localization file missing: <code>' + url + '</code>', 'Either create the file or use <a href="https://code.google.com/p/mollify/wiki/ClientResourceMap">client resource map</a> to load it from different location, or to ignore it').show();
+                new kloudspeaker.ui.FullErrorView('Localization file missing: <code>' + url + '</code>', 'Either create the file or use <a href="https://code.google.com/p/kloudspeaker/wiki/ClientResourceMap">client resource map</a> to load it from different location, or to ignore it').show();
                 return;
             }
             df.reject();
@@ -110,7 +108,7 @@
 
     /* FORMATTERS */
 
-    mollify.ui.formatters = {
+    kloudspeaker.ui.formatters = {
         ByteSize: function(nf) {
             this.format = function(b) {
                 if (!window.def(b)) return "";
@@ -122,26 +120,26 @@
                 } else if (typeof(b) !== "number") return "";
 
                 if (bytes < 1024)
-                    return (bytes == 1 ? mollify.ui.texts.get('sizeOneByte') : mollify.ui.texts.get('sizeInBytes', nf.format(bytes)));
+                    return (bytes == 1 ? kloudspeaker.ui.texts.get('sizeOneByte') : kloudspeaker.ui.texts.get('sizeInBytes', nf.format(bytes)));
 
                 if (bytes < (1024 * 1024)) {
                     var kilobytes = bytes / 1024;
-                    return (kilobytes == 1 ? mollify.ui.texts.get('sizeOneKilobyte') : mollify.ui.texts.get('sizeInKilobytes', nf.format(kilobytes)));
+                    return (kilobytes == 1 ? kloudspeaker.ui.texts.get('sizeOneKilobyte') : kloudspeaker.ui.texts.get('sizeInKilobytes', nf.format(kilobytes)));
                 }
 
                 if (bytes < (1024 * 1024 * 1024)) {
                     var megabytes = bytes / (1024 * 1024);
-                    return mollify.ui.texts.get('sizeInMegabytes', nf.format(megabytes));
+                    return kloudspeaker.ui.texts.get('sizeInMegabytes', nf.format(megabytes));
                 }
 
                 var gigabytes = bytes / (1024 * 1024 * 1024);
-                return mollify.ui.texts.get('sizeInGigabytes', nf.format(gigabytes));
+                return kloudspeaker.ui.texts.get('sizeInGigabytes', nf.format(gigabytes));
             };
         },
         Timestamp: function(fmt) {
             this.format = function(ts) {
                 if (ts == null) return "";
-                if (typeof(ts) === 'string') ts = mollify.helpers.parseInternalTime(ts);
+                if (typeof(ts) === 'string') ts = kloudspeaker.helpers.parseInternalTime(ts);
                 return ts.toString(fmt);
             };
         },
@@ -160,12 +158,12 @@
         FilesystemItemPath: function() {
             this.format = function(item) {
                 if (!item) return "";
-                return (mollify.filesystem.rootsById[item.root_id] ? mollify.filesystem.rootsById[item.root_id].name : item.root_id) + (item.path.length > 0 ? ":&nbsp;" + item.path : "");
+                return (kloudspeaker.filesystem.rootsById[item.root_id] ? kloudspeaker.filesystem.rootsById[item.root_id].name : item.root_id) + (item.path.length > 0 ? ":&nbsp;" + item.path : "");
             }
         }
     };
 
-    mollify.ui.parsers = {
+    kloudspeaker.ui.parsers = {
         Number: function(precision) {
             this.parse = function(v) {
                 if (!v || typeof(v) !== 'string') return null;
@@ -189,33 +187,33 @@
     };
 
     /* UI */
-    mollify.ui.uploader = false;
-    mollify.ui.draganddrop = false;
-    mollify.ui._activePopup = false;
+    kloudspeaker.ui.uploader = false;
+    kloudspeaker.ui.draganddrop = false;
+    kloudspeaker.ui._activePopup = false;
 
-    mollify.ui.initialize = function() {
+    kloudspeaker.ui.initialize = function() {
         var list = [];
-        list.push(mollify.ui.initializeLang());
+        list.push(kloudspeaker.ui.initializeLang());
 
         // add invisible download frame
-        $("body").append('<div style="width: 0px; height: 0px; overflow: hidden;"><iframe id="mollify-download-frame" src=""></iframe></div>');
+        $("body").append('<div style="width: 0px; height: 0px; overflow: hidden;"><iframe id="kloudspeaker-download-frame" src=""></iframe></div>');
 
         $(window).click(function(e) {
             // hide popups when clicked outside
-            if (mollify.ui._activePopup) {
-                if (e && e.toElement && mollify.ui._activePopup.element) {
-                    var popupElement = mollify.ui._activePopup.element();
+            if (kloudspeaker.ui._activePopup) {
+                if (e && e.toElement && kloudspeaker.ui._activePopup.element) {
+                    var popupElement = kloudspeaker.ui._activePopup.element();
                     if (popupElement.has($(e.toElement)).length > 0) return;
                 }
-                mollify.ui.hideActivePopup();
+                kloudspeaker.ui.hideActivePopup();
             }
         });
-        list.push(mollify.templates.load("dialogs.html"));
+        list.push(kloudspeaker.templates.load("dialogs.html"));
 
-        if (!mollify.ui.draganddrop) mollify.ui.draganddrop = (window.Modernizr.draganddrop) ? new mollify.MollifyHTML5DragAndDrop() : new mollify.MollifyJQueryDragAndDrop();
-        if (!mollify.ui.uploader) mollify.ui.uploader = new mollify.MollifyHTML5Uploader();
-        if (!mollify.ui.clipboard) new mollify.ZeroClipboard(function(cb) {
-            mollify.ui.clipboard = cb;
+        if (!kloudspeaker.ui.draganddrop) kloudspeaker.ui.draganddrop = (window.Modernizr.draganddrop) ? new kloudspeaker.HTML5DragAndDrop() : new kloudspeaker.JQueryDragAndDrop();
+        if (!kloudspeaker.ui.uploader) kloudspeaker.ui.uploader = new kloudspeaker.HTML5Uploader();
+        if (!kloudspeaker.ui.clipboard) new kloudspeaker.ZeroClipboard(function(cb) {
+            kloudspeaker.ui.clipboard = cb;
         });
 
         var df = $.Deferred();
@@ -223,66 +221,66 @@
         return df;
     };
 
-    mollify.ui.initializeLang = function() {
+    kloudspeaker.ui.initializeLang = function() {
         var df = $.Deferred();
-        var lang = (mollify.session.user && mollify.session.user.lang) ? mollify.session.user.lang : (mollify.settings.language["default"] || 'en');
+        var lang = (kloudspeaker.session.user && kloudspeaker.session.user.lang) ? kloudspeaker.session.user.lang : (kloudspeaker.settings.language["default"] || 'en');
 
-        if (mollify.ui.texts.locale && mollify.ui.texts.locale == lang) return df.resolve();
+        if (kloudspeaker.ui.texts.locale && kloudspeaker.ui.texts.locale == lang) return df.resolve();
 
-        var pluginTextsLoaded = mollify.ui.texts._pluginTextsLoaded;
-        if (mollify.ui.texts.locale) {
-            mollify.App.getElement().removeClass("lang-" + mollify.ui.texts.locale);
-            mollify.ui.texts.clear();
+        var pluginTextsLoaded = kloudspeaker.ui.texts._pluginTextsLoaded;
+        if (kloudspeaker.ui.texts.locale) {
+            kloudspeaker.App.getElement().removeClass("lang-" + kloudspeaker.ui.texts.locale);
+            kloudspeaker.ui.texts.clear();
         }
 
         var list = [];
-        list.push(mollify.ui.texts.load(lang).done(function(locale) {
+        list.push(kloudspeaker.ui.texts.load(lang).done(function(locale) {
             $("html").attr("lang", locale);
-            mollify.App.getElement().addClass("lang-" + locale);
+            kloudspeaker.App.getElement().addClass("lang-" + locale);
         }));
 
         if (pluginTextsLoaded) {
             $.each(pluginTextsLoaded, function(i, id) {
-                list.push(mollify.ui.texts.loadPlugin(id));
+                list.push(kloudspeaker.ui.texts.loadPlugin(id));
             });
         }
         $.when.apply($, list).done(df.resolve).fail(df.reject);
         return df;
     };
 
-    mollify.ui.hideActivePopup = function() {
-        if (mollify.ui._activePopup) mollify.ui._activePopup.hide();
-        mollify.ui._activePopup = false;
+    kloudspeaker.ui.hideActivePopup = function() {
+        if (kloudspeaker.ui._activePopup) kloudspeaker.ui._activePopup.hide();
+        kloudspeaker.ui._activePopup = false;
     };
 
-    mollify.ui.activePopup = function(p) {
-        if (p === undefined) return mollify.ui._activePopup;
-        if (mollify.ui._activePopup) {
-            if (p.parentPopupId && mollify.ui._activePopup.id == p.parentPopupId) return;
-            mollify.ui._activePopup.hide();
+    kloudspeaker.ui.activePopup = function(p) {
+        if (p === undefined) return kloudspeaker.ui._activePopup;
+        if (kloudspeaker.ui._activePopup) {
+            if (p.parentPopupId && kloudspeaker.ui._activePopup.id == p.parentPopupId) return;
+            kloudspeaker.ui._activePopup.hide();
         }
-        mollify.ui._activePopup = p;
-        if (!mollify.ui._activePopup.id) mollify.ui._activePopup.id = new Date().getTime();
-        return mollify.ui._activePopup.id;
+        kloudspeaker.ui._activePopup = p;
+        if (!kloudspeaker.ui._activePopup.id) kloudspeaker.ui._activePopup.id = new Date().getTime();
+        return kloudspeaker.ui._activePopup.id;
     };
 
-    mollify.ui.isActivePopup = function(id) {
-        return (mollify.ui._activePopup && mollify.ui._activePopup.id == id);
+    kloudspeaker.ui.isActivePopup = function(id) {
+        return (kloudspeaker.ui._activePopup && kloudspeaker.ui._activePopup.id == id);
     };
 
-    mollify.ui.removeActivePopup = function(id) {
-        if (!id || !mollify.ui.isActivePopup(id)) return;
-        mollify.ui._activePopup = false;
+    kloudspeaker.ui.removeActivePopup = function(id) {
+        if (!id || !kloudspeaker.ui.isActivePopup(id)) return;
+        kloudspeaker.ui._activePopup = false;
     };
 
-    mollify.ui.download = function(url) {
-        if (mollify.App.mobile)
+    kloudspeaker.ui.download = function(url) {
+        if (kloudspeaker.App.mobile)
             window.open(url);
         else
-            $("#mollify-download-frame").attr("src", url);
+            $("#kloudspeaker-download-frame").attr("src", url);
     };
 
-    mollify.ui.itemContext = function(o) {
+    kloudspeaker.ui.itemContext = function(o) {
         var ict = {};
         ict._activeItemContext = false;
 
@@ -294,7 +292,7 @@
             var folder = spec.folder;
 
             var popupId = "mainview-itemcontext-" + item.id;
-            if (mollify.ui.isActivePopup(popupId)) {
+            if (kloudspeaker.ui.isActivePopup(popupId)) {
                 return;
             }
 
@@ -307,13 +305,13 @@
             if (item.id == openedId) return;
 
             var $cont = $t || $e.parent();
-            var html = mollify.dom.template("mollify-tmpl-main-itemcontext", item, {})[0].outerHTML;
+            var html = kloudspeaker.dom.template("kloudspeaker-tmpl-main-itemcontext", item, {})[0].outerHTML;
             $e.popover({
                 title: item.name,
                 html: true,
                 placement: 'bottom',
                 trigger: 'manual',
-                template: '<div class="popover mollify-itemcontext-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+                template: '<div class="popover kloudspeaker-itemcontext-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
                 content: html,
                 container: $cont
             }).bind("shown", function(e) {
@@ -324,9 +322,9 @@
                     }
                 };
                 api.close = api.hide;
-                mollify.ui.activePopup(api);
+                kloudspeaker.ui.activePopup(api);
 
-                var $el = $("#mollify-itemcontext-" + item.id);
+                var $el = $("#kloudspeaker-itemcontext-" + item.id);
                 var $pop = $el.closest(".popover");
                 var maxRight = $c.outerWidth();
                 var popLeft = $pop.offset().left - $cont.offset().left;
@@ -342,9 +340,9 @@
                 $pop.find(".arrow").css("left", arrowPos + "px");
 
                 $pop.find(".popover-title").append($('<button type="button" class="close">×</button>').click(api.close));
-                var $content = $el.find(".mollify-itemcontext-content");
+                var $content = $el.find(".kloudspeaker-itemcontext-content");
 
-                mollify.filesystem.itemDetails(item, mollify.plugins.getItemContextRequestData(item)).done(function(d) {
+                kloudspeaker.filesystem.itemDetails(item, kloudspeaker.plugins.getItemContextRequestData(item)).done(function(d) {
                     if (!d) {
                         $t.hide();
                         return;
@@ -353,10 +351,10 @@
                     var ctx = {
                         details: d,
                         hasPermission: function(name, required) {
-                            return mollify.helpers.hasPermission(d.permissions, name, required);
+                            return kloudspeaker.helpers.hasPermission(d.permissions, name, required);
                         },
                         hasParentPermission: function(name, required) {
-                            return mollify.helpers.hasPermission(d.parent_permissions, name, required);
+                            return kloudspeaker.helpers.hasPermission(d.parent_permissions, name, required);
                         },
                         folder: spec.folder,
                         folder_writable: spec.folder_writable
@@ -366,37 +364,37 @@
                 });
             }).bind("hidden", function() {
                 $e.unbind("shown").unbind("hidden");
-                mollify.ui.removeActivePopup(popupId);
+                kloudspeaker.ui.removeActivePopup(popupId);
             });
             $e.popover('show');
         };
 
         ict.renderItemContext = function(cApi, $e, item, ctx) {
-            var df = mollify.features.hasFeature("descriptions");
+            var df = kloudspeaker.features.hasFeature("descriptions");
             var dp = ctx.hasPermission("edit_description");
             var descriptionEditable = df && dp;
             var showDescription = descriptionEditable || !!ctx.details.metadata.description;
 
-            var plugins = mollify.plugins.getItemContextPlugins(item, ctx);
-            var actions = mollify.helpers.getPluginActions(plugins);
-            var primaryActions = mollify.helpers.getPrimaryActions(actions);
-            var secondaryActions = mollify.helpers.getSecondaryActions(actions);
+            var plugins = kloudspeaker.plugins.getItemContextPlugins(item, ctx);
+            var actions = kloudspeaker.helpers.getPluginActions(plugins);
+            var primaryActions = kloudspeaker.helpers.getPrimaryActions(actions);
+            var secondaryActions = kloudspeaker.helpers.getSecondaryActions(actions);
 
             var o = {
                 item: item,
                 details: ctx.details,
                 showDescription: showDescription,
                 description: ctx.details.metadata.description || '',
-                session: mollify.session,
+                session: kloudspeaker.session,
                 plugins: plugins,
                 primaryActions: primaryActions
             };
 
-            $e.removeClass("loading").empty().append(mollify.dom.template("mollify-tmpl-main-itemcontext-content", o, {
+            $e.removeClass("loading").empty().append(kloudspeaker.dom.template("kloudspeaker-tmpl-main-itemcontext-content", o, {
                 title: function(o) {
                     var a = o;
                     if (a.type == 'submenu') a = a.primary;
-                    return a.title ? a.title : mollify.ui.texts.get(a['title-key']);
+                    return a.title ? a.title : kloudspeaker.ui.texts.get(a['title-key']);
                 }
             }));
             $e.click(function(e) {
@@ -404,14 +402,14 @@
                 e.preventDefault();
                 return false;
             });
-            mollify.ui.process($e, ["localize"]);
+            kloudspeaker.ui.process($e, ["localize"]);
 
             if (descriptionEditable) {
-                mollify.ui.controls.editableLabel({
-                    element: $("#mollify-itemcontext-description"),
-                    hint: mollify.ui.texts.get('itemcontextDescriptionHint'),
+                kloudspeaker.ui.controls.editableLabel({
+                    element: $("#kloudspeaker-itemcontext-description"),
+                    hint: kloudspeaker.ui.texts.get('itemcontextDescriptionHint'),
                     onedit: function(desc) {
-                        mollify.service.put("filesystem/" + item.id + "/description/", {
+                        kloudspeaker.service.put("filesystem/" + item.id + "/description/", {
                             description: desc
                         });
                     }
@@ -419,11 +417,11 @@
             }
 
             if (primaryActions) {
-                var $pae = $e.find(".mollify-itemcontext-primary-action-button");
+                var $pae = $e.find(".kloudspeaker-itemcontext-primary-action-button");
                 $pae.each(function(i, $b) {
                     var a = primaryActions[i];
                     if (a.type == 'submenu') {
-                        mollify.ui.controls.dropdown({
+                        kloudspeaker.ui.controls.dropdown({
                             element: $b,
                             items: a.items,
                             hideDelay: 0,
@@ -448,17 +446,17 @@
             }
 
             if (plugins) {
-                var $selectors = $("#mollify-itemcontext-details-selectors");
-                var $content = $("#mollify-itemcontext-details-content");
+                var $selectors = $("#kloudspeaker-itemcontext-details-selectors");
+                var $content = $("#kloudspeaker-itemcontext-details-content");
                 var contents = {};
                 var onSelectDetails = function(id) {
-                    $(".mollify-itemcontext-details-selector").removeClass("active");
-                    $("#mollify-itemcontext-details-selector-" + id).addClass("active");
-                    $content.find(".mollify-itemcontext-plugin-content").hide();
+                    $(".kloudspeaker-itemcontext-details-selector").removeClass("active");
+                    $("#kloudspeaker-itemcontext-details-selector-" + id).addClass("active");
+                    $content.find(".kloudspeaker-itemcontext-plugin-content").hide();
 
                     var $c = contents[id] ? contents[id] : false;
                     if (!$c) {
-                        $c = $('<div class="mollify-itemcontext-plugin-content"></div>');
+                        $c = $('<div class="kloudspeaker-itemcontext-plugin-content"></div>');
                         plugins[id].details["on-render"](cApi, $c, ctx);
                         contents[id] = $c;
                         $content.append($c);
@@ -477,8 +475,8 @@
 
                     if (!firstPlugin) firstPlugin = id;
 
-                    var title = plugin.details.title ? plugin.details.title : (plugin.details["title-key"] ? mollify.ui.texts.get(plugin.details["title-key"]) : id);
-                    var selector = mollify.dom.template("mollify-tmpl-main-itemcontext-details-selector", {
+                    var title = plugin.details.title ? plugin.details.title : (plugin.details["title-key"] ? kloudspeaker.ui.texts.get(plugin.details["title-key"]) : id);
+                    var selector = kloudspeaker.dom.template("kloudspeaker-tmpl-main-itemcontext-details-selector", {
                         id: id,
                         title: title,
                         data: plugin
@@ -488,8 +486,8 @@
                 if (firstPlugin) onSelectDetails(firstPlugin);
             }
 
-            mollify.ui.controls.dropdown({
-                element: $e.find("#mollify-itemcontext-secondary-actions"),
+            kloudspeaker.ui.controls.dropdown({
+                element: $e.find("#kloudspeaker-itemcontext-secondary-actions"),
                 items: secondaryActions,
                 hideDelay: 0,
                 style: 'submenu',
@@ -510,37 +508,37 @@
 
     /**/
 
-    mollify.ui.assign = function(h, id, c) {
+    kloudspeaker.ui.assign = function(h, id, c) {
         if (!h || !id || !c) return;
         if (!h.controls) h.controls = {};
         h.controls[id] = c;
     };
 
-    mollify.ui.process = function($e, ids, handler) {
+    kloudspeaker.ui.process = function($e, ids, handler) {
         $.each(ids, function(i, k) {
-            if (mollify.ui.handlers[k]) mollify.ui.handlers[k]($e, handler);
+            if (kloudspeaker.ui.handlers[k]) kloudspeaker.ui.handlers[k]($e, handler);
         });
     };
 
-    mollify.ui.handlers = {
+    kloudspeaker.ui.handlers = {
         localize: function(p, h) {
             p.find(".localized").each(function() {
                 var $t = $(this);
                 var key = $t.attr('title-key');
                 if (key) {
-                    $t.attr("title", mollify.ui.texts.get(key));
+                    $t.attr("title", kloudspeaker.ui.texts.get(key));
                     $t.removeAttr('title-key');
                 }
 
                 key = $t.attr('text-key');
                 if (key) {
-                    $t.prepend(mollify.ui.texts.get(key));
+                    $t.prepend(kloudspeaker.ui.texts.get(key));
                     $t.removeAttr('text-key');
                 }
             });
             p.find("input.hintbox").each(function() {
                 var $this = $(this);
-                var hint = mollify.ui.texts.get($this.attr('hint-key'));
+                var hint = kloudspeaker.ui.texts.get($this.attr('hint-key'));
                 $this.attr("placeholder", hint).removeAttr("hint-key");
             }); //.placeholder();
         },
@@ -567,30 +565,30 @@
         bubble: function(p, h) {
             p.find(".bubble-trigger").each(function() {
                 var $t = $(this);
-                var b = mollify.ui.controls.bubble({
+                var b = kloudspeaker.ui.controls.bubble({
                     element: $t,
                     handler: h
                 });
-                mollify.ui.assign(h, $t.attr('id'), b);
+                kloudspeaker.ui.assign(h, $t.attr('id'), b);
             });
         },
 
         radio: function(p, h) {
-            p.find(".mollify-radio").each(function() {
+            p.find(".kloudspeaker-radio").each(function() {
                 var $t = $(this);
-                var r = mollify.ui.controls.radio($t, h);
-                mollify.ui.assign(h, $t.attr('id'), r);
+                var r = kloudspeaker.ui.controls.radio($t, h);
+                kloudspeaker.ui.assign(h, $t.attr('id'), r);
             });
         }
     };
 
-    mollify.ui.window = {
+    kloudspeaker.ui.window = {
         open: function(url) {
             window.open(url);
         }
     };
 
-    mollify.ui.actions = {
+    kloudspeaker.ui.actions = {
         handleDenied: function(action, data, msgTitleDenied, msgTitleAccept) {
             var df = $.Deferred();
             var handlers = [];
@@ -603,7 +601,7 @@
                 return null;
             };
             for (var k in data.items) {
-                var plugin = mollify.plugins.get(k);
+                var plugin = kloudspeaker.plugins.get(k);
                 if (!plugin || !plugin.actionValidationHandler) return false;
 
                 var handler = plugin.actionValidationHandler();
@@ -631,31 +629,31 @@
             }
             if (nonAcceptable.length === 0) {
                 // retry with accept keys
-                mollify.ui.dialogs.confirmActionAccept(msgTitleAccept, validationMessages, function() {
+                kloudspeaker.ui.dialogs.confirmActionAccept(msgTitleAccept, validationMessages, function() {
                     df.resolve(acceptKeys);
                 }, df.reject);
             } else {
-                mollify.ui.dialogs.showActionDeniedMessage(msgTitleDenied, nonAcceptable);
+                kloudspeaker.ui.dialogs.showActionDeniedMessage(msgTitleDenied, nonAcceptable);
                 df.reject();
             }
             return df;
         }
     };
 
-    mollify.ui.preloadImages = function(a) {
+    kloudspeaker.ui.preloadImages = function(a) {
         $.each(a, function() {
             $('<img/>')[0].src = this;
         });
     };
 
-    mollify.ui.FullErrorView = function(title, msg) {
+    kloudspeaker.ui.FullErrorView = function(title, msg) {
         this.show = function() {
-            this.init(mollify.App.getElement());
+            this.init(kloudspeaker.App.getElement());
         };
 
         this.init = function($c) {
-            if (mollify.App._initialized)
-                mollify.dom.template("mollify-tmpl-fullpage-error", {
+            if (kloudspeaker.App._initialized)
+                kloudspeaker.dom.template("kloudspeaker-tmpl-fullpage-error", {
                     title: title,
                     message: msg
                 }).appendTo($c.empty());
@@ -675,13 +673,13 @@
                 return;
             }
             if (item.title) return;
-            if (item["title-key"]) item.title = mollify.ui.texts.get(item['title-key']);
+            if (item["title-key"]) item.title = kloudspeaker.ui.texts.get(item['title-key']);
         });
     };
     var createPopupItems = function(itemList) {
         var list = itemList || [];
         processPopupActions(list);
-        return mollify.dom.template("mollify-tmpl-popupmenu", {
+        return kloudspeaker.dom.template("kloudspeaker-tmpl-popupmenu", {
             items: list
         });
     };
@@ -710,7 +708,7 @@
         });
     };
 
-    mollify.ui.controls = {
+    kloudspeaker.ui.controls = {
         dropdown: function(a) {
             var $e = $(a.element);
             var $mnu = false;
@@ -721,7 +719,7 @@
                 if (!$mnu) return;
                 if (a.onHide) a.onHide();
                 $mnu.parent().removeClass("open");
-                mollify.ui.removeActivePopup(popupId);
+                kloudspeaker.ui.removeActivePopup(popupId);
             };
             var onItem = function(i, cbr) {
                 hidePopup();
@@ -749,7 +747,7 @@
                 onshow: function($p) {
                     if (!$mnu) $mnu = $($p.find(".dropdown-menu")[0]);
                     if (!a.parentPopupId)
-                        popupId = mollify.ui.activePopup(api);
+                        popupId = kloudspeaker.ui.activePopup(api);
                     if (!popupItems) $mnu.addClass("loading");
                     if (a.onShow) a.onShow(api, popupItems);
                 },
@@ -765,12 +763,12 @@
             var popupId = false;
             var $e = $(a.element);
             var pos = $e.offset();
-            var $mnu = $('<div class="mollify-popupmenu" style="position: absolute; top: ' + (pos.top + $e.outerHeight()) + 'px; left:' + pos.left + 'px;"></div>');
+            var $mnu = $('<div class="kloudspeaker-popupmenu" style="position: absolute; top: ' + (pos.top + $e.outerHeight()) + 'px; left:' + pos.left + 'px;"></div>');
             var popupitems = a.items;
             var hidePopup = function() {
                 if (a.onHide) a.onHide();
                 $mnu.remove();
-                mollify.ui.removeActivePopup(popupId);
+                kloudspeaker.ui.removeActivePopup(popupId);
             };
             var onItem = function(i, cbr) {
                 hidePopup();
@@ -780,7 +778,7 @@
             if (!a.items) $mnu.addClass("loading");
             $mnu.append(createPopupItems(a.items).css("display", "block"));
             if (a.style) $mnu.addClass(a.style);
-            mollify.App.getElement().append($mnu); //.on('click', hidePopup);
+            kloudspeaker.App.getElement().append($mnu); //.on('click', hidePopup);
 
             var api = {
                 hide: hidePopup,
@@ -790,7 +788,7 @@
                 }
             };
             if (a.items) initPopupItems($mnu, a.items, onItem);
-            popupId = mollify.ui.activePopup(api);
+            popupId = kloudspeaker.ui.activePopup(api);
             return api;
         },
 
@@ -813,7 +811,7 @@
                 },
                 close: this.hide
             };
-            var $el = $('<div class="popover mollify-bubble-popover ' + (o.cls || '') + '"><div class="arrow"></div><div class="popover-inner"><div class="popover-content"><p></p></div></div></div>');
+            var $el = $('<div class="popover kloudspeaker-bubble-popover ' + (o.cls || '') + '"><div class="arrow"></div><div class="popover-inner"><div class="popover-content"><p></p></div></div></div>');
             $e.popover({
                 title: false,
                 html: true,
@@ -823,7 +821,7 @@
                 content: html
             }).bind("shown", function(e) {
                 $tip = $el;
-                mollify.ui.activePopup(api);
+                kloudspeaker.ui.activePopup(api);
                 /*$tip.click(function(e) {
 					e.preventDefault();
 					return false;
@@ -835,7 +833,7 @@
                 if (o.handler && o.handler.onShowBubble) o.handler.onShowBubble(actionId, api);
             }).bind("hidden", function() {
                 //$e.unbind("shown").unbind("hidden");
-                mollify.ui.removeActivePopup(api.id);
+                kloudspeaker.ui.removeActivePopup(api.id);
             });
             $e.click(function(e) {
                 e.preventDefault();
@@ -894,7 +892,7 @@
                 position: pos
             };
             api.close = api.hide;
-            var $el = $('<div class="popover mollify-bubble-popover ' + (o.cls || '') + '"><div class="arrow"></div>' + (o.title ? '<h3 class="popover-title"></h3>' : '') + '<div class="popover-content"></div></div>');
+            var $el = $('<div class="popover kloudspeaker-bubble-popover ' + (o.cls || '') + '"><div class="arrow"></div>' + (o.title ? '<h3 class="popover-title"></h3>' : '') + '<div class="popover-content"></div></div>');
 
             $e.popover({
                 title: o.title ? o.title : false,
@@ -907,7 +905,7 @@
             }).bind("shown", function(e) {
                 $tip = $el;
 
-                mollify.ui.activePopup(api);
+                kloudspeaker.ui.activePopup(api);
                 $tip.click(function(e) {
                     e.stopPropagation();
                 });
@@ -915,11 +913,11 @@
                     $tip.find(".popover-title").append($('<button type="button" class="close">×</button>').click(function() {
                         api.close();
                     }));
-                mollify.ui.handlers.localize($tip);
+                kloudspeaker.ui.handlers.localize($tip);
                 if (o.handler && o.handler.onRenderBubble) o.handler.onRenderBubble(api);
             }).bind("hidden", function() {
                 $e.unbind("shown").unbind("hidden");
-                mollify.ui.removeActivePopup(api.id);
+                kloudspeaker.ui.removeActivePopup(api.id);
             });
             $e.popover('show');
 
@@ -930,7 +928,7 @@
             var $e = (typeof(id) == 'string') ? $("#" + id) : $(id);
             if ($e.length === 0 || !o.columns) return false;
 
-            if ($e.hasClass("mollify-table")) {
+            if ($e.hasClass("kloudspeaker-table")) {
                 //already initialized, create new element
                 var $n = $("<table></table>").insertAfter($e).attr("id", $e.attr("id"));
                 $e.remove();
@@ -938,8 +936,8 @@
             }
 
             var selectionChangedCb = $.Callbacks();
-            $e.addClass("mollify-table");
-            if (o.id) $e.addClass("mollify-table-" + o.id);
+            $e.addClass("kloudspeaker-table");
+            if (o.id) $e.addClass("kloudspeaker-table-" + o.id);
             if (o.onSelectionChanged) selectionChangedCb.add(o.onSelectionChanged);
             $e.addClass("table");
             if (o.narrow) $e.addClass("table-condensed");
@@ -989,7 +987,7 @@
                 $p.append($('<li class="page-btn page-next' + ((current >= pages) ? ' disabled' : '') + '"><a href="javascript:void(0);">&raquo;</a></li>'));
             };
             if (o.remote && o.remote.paging) {
-                var $ctrl = o.remote.paging.controls || $("<div class='mollify-table-pager'></div>").insertAfter($e);
+                var $ctrl = o.remote.paging.controls || $("<div class='kloudspeaker-table-pager'></div>").insertAfter($e);
                 $pagingControls = $('<div class="pagination"><ul></ul></div>').appendTo($ctrl);
                 $ctrl.delegate(".page-btn > a", "click", function(e) {
                     if (!dataInfo) return;
@@ -1026,7 +1024,7 @@
             };
             var getSelectedRows = function() {
                 var sel = [];
-                $e.find(".mollify-tableselect:checked").each(function(i, e) {
+                $e.find(".kloudspeaker-tableselect:checked").each(function(i, e) {
                     var item = $(e).parent().parent()[0].data;
                     sel.push(item);
                 });
@@ -1034,20 +1032,20 @@
             };
             var setRowSelected = function(item, sel) {
                 var $row = findRow(item);
-                $row.find(".mollify-tableselect").prop("checked", sel);
+                $row.find(".kloudspeaker-tableselect").prop("checked", sel);
                 selectionChangedCb.fire();
             };
             var updateSelectHeader = function() {
                 var count = $l.children().length;
                 var all = (count > 0 && getSelectedRows().length == count);
                 if (all)
-                    $e.find(".mollify-tableselect-header").prop("checked", true);
+                    $e.find(".kloudspeaker-tableselect-header").prop("checked", true);
                 else
-                    $e.find(".mollify-tableselect-header").prop("checked", false);
+                    $e.find(".kloudspeaker-tableselect-header").prop("checked", false);
             };
             selectionChangedCb.add(updateSelectHeader);
             var selectAll = function(s) {
-                $e.find(".mollify-tableselect").prop("checked", s);
+                $e.find(".kloudspeaker-tableselect").prop("checked", s);
             };
             var $h = $("<tr></tr>").appendTo($("<thead></thead>").appendTo($e));
             var firstSortable = false;
@@ -1061,12 +1059,12 @@
                 var $th;
                 var col = o.columns[i];
                 if (col.type == 'selectrow') {
-                    $th = $('<input class="mollify-tableselect-header" type="checkbox"></input>').click(thClick);
+                    $th = $('<input class="kloudspeaker-tableselect-header" type="checkbox"></input>').click(thClick);
                 } else {
                     $th = $("<th>" + (col.type == 'action' ? "" : (col.title ? col.title : "")) + "</th>");
                     $th[0].colId = col.id;
                     if (col.sortable) {
-                        $th.append("<span class='mollify-tableheader-sort'></span>").addClass("sortable");
+                        $th.append("<span class='kloudspeaker-tableheader-sort'></span>").addClass("sortable");
                         if (!firstSortable) firstSortable = col.id;
                     }
                 }
@@ -1081,9 +1079,9 @@
             };
             if (o.defaultSort) sortKey = o.defaultSort;
             var updateSort = function() {
-                $e.find("th.sortable > .mollify-tableheader-sort").empty();
+                $e.find("th.sortable > .kloudspeaker-tableheader-sort").empty();
                 if (!sortKey) return;
-                var $col = $("th.col-" + sortKey.id + " > .mollify-tableheader-sort");
+                var $col = $("th.col-" + sortKey.id + " > .kloudspeaker-tableheader-sort");
                 $col.html("<i class='" + (sortKey.asc ? "icon-caret-up" : "icon-caret-down") + "'></i>");
             };
             $e.delegate("th.sortable", "click", function(e) {
@@ -1105,12 +1103,12 @@
 
             var $l = $("<tbody></tbody>").appendTo($e);
             var $eh = false;
-            if (o.emptyHint) $eh = $("<tr class='mollify-table-empty-hint'><td colspan='" + o.columns.length + "'>" + o.emptyHint + "</td></tr>");
-            $e.delegate(".mollify-tableselect", "change", function(e) {
+            if (o.emptyHint) $eh = $("<tr class='kloudspeaker-table-empty-hint'><td colspan='" + o.columns.length + "'>" + o.emptyHint + "</td></tr>");
+            $e.delegate(".kloudspeaker-tableselect", "change", function(e) {
                 selectionChangedCb.fire();
                 return false;
             });
-            $e.delegate("a.mollify-tableaction", "click", function(e) {
+            $e.delegate("a.kloudspeaker-tableaction", "click", function(e) {
                 var $cell = $(this).parent();
                 var $row = $cell.parent();
                 var colId = $cell[0].colId;
@@ -1122,19 +1120,19 @@
             });
             if (o.hilight) {
                 $e.delegate("tr", "click", function(e) {
-                    if (e.target && $(e.target).hasClass("mollify-tableselect")) return;
+                    if (e.target && $(e.target).hasClass("kloudspeaker-tableselect")) return;
 
                     var $t = $(this);
                     var item = $t[0].data;
                     if (!item) return;
                     if ($t.hasClass("info")) {
                         $t.removeClass("info");
-                        $t.find(".mollify-tableselect").prop("checked", false);
+                        $t.find(".kloudspeaker-tableselect").prop("checked", false);
                         item = null;
                     } else {
                         $e.find("tr").removeClass("info");
                         selectAll(false);
-                        $t.find(".mollify-tableselect").prop("checked", true);
+                        $t.find(".kloudspeaker-tableselect").prop("checked", true);
                         $t.addClass("info");
                     }
                     selectionChangedCb.fire();
@@ -1147,13 +1145,13 @@
                 var v = item[col.id];
                 if (col.cellClass) $cell.addClass(col.cellClass);
                 if (col.type == 'selectrow') {
-                    var $sel = $('<input class="mollify-tableselect" type="checkbox"></input>').appendTo($cell.empty());
+                    var $sel = $('<input class="kloudspeaker-tableselect" type="checkbox"></input>').appendTo($cell.empty());
                 } else if (col.type == 'action') {
                     var html = '';
                     if (!col.enabled || col.enabled(item)) {
                         html = col.content;
                         if (col.formatter) html = col.formatter(item, v);
-                        if (html) $("<a class='mollify-tableaction mollify-tableaction-" + col.id + "' title='" + col.title + "'></a>").html(html).appendTo($cell.empty());
+                        if (html) $("<a class='kloudspeaker-tableaction kloudspeaker-tableaction-" + col.id + "' title='" + col.title + "'></a>").html(html).appendTo($cell.empty());
                     }
                 } else if (col.type == "input") {
                     var $s = $cell[0].ctrl;
@@ -1189,7 +1187,7 @@
                             };
                         }
 
-                        $sl = mollify.ui.controls.select($("<select></select>").appendTo($cell), {
+                        $sl = kloudspeaker.ui.controls.select($("<select></select>").appendTo($cell), {
                             values: selOptions,
                             title: col.title,
                             none: noneOption,
@@ -1319,7 +1317,7 @@
                         var p = o.remote.queryParams(dataInfo);
                         if (p) queryParams = $.extend(queryParams, p);
                     }
-                    var pr = mollify.service.post(o.remote.path, queryParams).done(function(r) {
+                    var pr = kloudspeaker.service.post(o.remote.path, queryParams).done(function(r) {
                         if (o.remote.paging) {
                             dataInfo = {
                                 start: r.start,
@@ -1448,26 +1446,26 @@
             if (!e) return false;
             if (!o) o = {};
             var $e = (typeof(e) === "string") ? $("#" + e) : e;
-            if (!$.fn.datetimepicker.dates.mollify) {
-                $.fn.datetimepicker.dates.mollify = {
-                    days: mollify.ui.texts.get('days'),
-                    daysShort: mollify.ui.texts.get('daysShort'),
-                    daysMin: mollify.ui.texts.get('daysMin'),
-                    months: mollify.ui.texts.get('months'),
-                    monthsShort: mollify.ui.texts.get('monthsShort'),
-                    today: mollify.ui.texts.get('today'),
-                    weekStart: mollify.ui.texts.get('weekStart')
+            if (!$.fn.datetimepicker.dates.kloudspeaker) {
+                $.fn.datetimepicker.dates.kloudspeaker = {
+                    days: kloudspeaker.ui.texts.get('days'),
+                    daysShort: kloudspeaker.ui.texts.get('daysShort'),
+                    daysMin: kloudspeaker.ui.texts.get('daysMin'),
+                    months: kloudspeaker.ui.texts.get('months'),
+                    monthsShort: kloudspeaker.ui.texts.get('monthsShort'),
+                    today: kloudspeaker.ui.texts.get('today'),
+                    weekStart: kloudspeaker.ui.texts.get('weekStart')
                 };
             }
             var val = o.value || null;
-            var fmt = o.format || mollify.ui.texts.get('shortDateTimeFormat');
+            var fmt = o.format || kloudspeaker.ui.texts.get('shortDateTimeFormat');
             fmt = fmt.replace(/\b[h]\b/, "hh");
             fmt = fmt.replace(/\b[M]\b/, "MM");
             fmt = fmt.replace(/\b[d]\b/, "dd");
             fmt = fmt.replace("tt", "PP");
             var $dp = $e.datetimepicker({
                 format: fmt,
-                language: "mollify",
+                language: "kloudspeaker",
                 pickTime: o.time || true,
                 pickSeconds: (fmt.indexOf('s') >= 0)
             }).on("changeDate", function(ev) {
@@ -1488,7 +1486,7 @@
                     picker.setDate(val);
                 }
             };
-            $dp.data("mollify-datepicker", api);
+            $dp.data("kloudspeaker-datepicker", api);
             return api;
         },
 
@@ -1553,9 +1551,9 @@
 
         slidePanel: function($e, o) {
             if (!$e) return;
-            var $p = mollify.dom.template("mollify-tmpl-slidepanel").appendTo($e);
+            var $p = kloudspeaker.dom.template("kloudspeaker-tmpl-slidepanel").appendTo($e);
             if (o.relative) $p.addClass("relative");
-            var $content = $p.find(".mollify-slidepanel-content");
+            var $content = $p.find(".kloudspeaker-slidepanel-content");
             if (o.resizable) {
                 $p.resizable({
                     handles: "n"
@@ -1602,11 +1600,11 @@
 
     /* DIALOGS */
 
-    mollify.ui.dialogs = {};
-    var dh = mollify.ui.dialogs;
+    kloudspeaker.ui.dialogs = {};
+    var dh = kloudspeaker.ui.dialogs;
 
     dh._dialogDefaults = {
-        title: "Mollify"
+        title: "Kloudspeaker"
     };
 
     dh.closeActiveDialog = function() {
@@ -1617,7 +1615,7 @@
     dh.info = function(spec) {
         dh.custom({
             title: spec.title,
-            content: $("#mollify-tmpl-dialog-info").tmpl({
+            content: $("#kloudspeaker-tmpl-dialog-info").tmpl({
                 message: spec.message
             }),
             buttons: [{
@@ -1630,14 +1628,14 @@
                 if (spec.callback) spec.callback();
             }
         });
-        /*var dlg = $("#mollify-tmpl-dialog-info").tmpl($.extend(spec, dialogDefaults)).dialog({
+        /*var dlg = $("#kloudspeaker-tmpl-dialog-info").tmpl($.extend(spec, dialogDefaults)).dialog({
 			modal: true,
 			resizable: false,
 			height: 'auto',
 			minHeight: 50
 		});
-		mollify.ui.handlers.localize(dlg);
-		dlg.find("#mollify-info-dialog-close-button").click(function() { dlg.dialog('destroy'); dlg.remove(); });*/
+		kloudspeaker.ui.handlers.localize(dlg);
+		dlg.find("#kloudspeaker-info-dialog-close-button").click(function() { dlg.dialog('destroy'); dlg.remove(); });*/
     };
 
     dh.showActionDeniedMessage = function(title, reasons) {
@@ -1647,8 +1645,8 @@
             msg = msg + "<li>" + reasons[i] + "</li>";
         }
         msg = msg + "</ul></p>";
-        mollify.ui.dialogs.error({
-            title: mollify.ui.texts.get('errorDialogTitle'),
+        kloudspeaker.ui.dialogs.error({
+            title: kloudspeaker.ui.texts.get('errorDialogTitle'),
             message: msg
         });
     }
@@ -1661,7 +1659,7 @@
         }
         msg = msg + "</ul></p>";
         dh.custom({
-            title: mollify.ui.texts.get('errorDialogTitle'),
+            title: kloudspeaker.ui.texts.get('errorDialogTitle'),
             content: msg,
             buttons: [{
                 id: "yes",
@@ -1682,13 +1680,13 @@
 
     dh.showError = function(error) {
         var msg = 'errorDialogMessage_' + error.code;
-        if (!mollify.ui.texts.has(msg)) msg = 'errorDialogUnknownError';
-        if (mollify.session.user && mollify.session.user.admin && error.trace) {
+        if (!kloudspeaker.ui.texts.has(msg)) msg = 'errorDialogUnknownError';
+        if (kloudspeaker.session.user && kloudspeaker.session.user.admin && error.trace) {
             dh.custom({
-                title: mollify.ui.texts.get('errorDialogTitle'),
-                content: $("#mollify-tmpl-dialog-error-debug").tmpl({
-                    title: mollify.ui.texts.get('errorDialogTitle'),
-                    message: mollify.ui.texts.get(msg),
+                title: kloudspeaker.ui.texts.get('errorDialogTitle'),
+                content: $("#kloudspeaker-tmpl-dialog-error-debug").tmpl({
+                    title: kloudspeaker.ui.texts.get('errorDialogTitle'),
+                    message: kloudspeaker.ui.texts.get(msg),
                     debug: error.trace.join("<br/>")
                 }),
                 buttons: [{
@@ -1701,9 +1699,9 @@
                 }
             });
         } else {
-            mollify.ui.dialogs.error({
-                title: mollify.ui.texts.get('errorDialogTitle'),
-                message: mollify.ui.texts.get(msg)
+            kloudspeaker.ui.dialogs.error({
+                title: kloudspeaker.ui.texts.get('errorDialogTitle'),
+                message: kloudspeaker.ui.texts.get(msg)
             });
         }
     };
@@ -1713,7 +1711,7 @@
         dh.custom({
             title: spec.title,
             initSize: spec.initSize,
-            content: $("#mollify-tmpl-dialog-select").tmpl({
+            content: $("#kloudspeaker-tmpl-dialog-select").tmpl({
                 message: spec.message
             }),
             buttons: [{
@@ -1736,8 +1734,8 @@
                 }
             },
             "on-show": function(h, $dlg) {
-                var $table = $($dlg.find(".mollify-selectdialog-table")[0]);
-                table = mollify.ui.controls.table($table, {
+                var $table = $($dlg.find(".kloudspeaker-selectdialog-table")[0]);
+                table = kloudspeaker.ui.controls.table($table, {
                     key: spec.key,
                     selectOnEdit: true,
                     columns: [{
@@ -1752,7 +1750,7 @@
     dh.error = function(spec) {
         dh.custom({
             title: spec.title,
-            content: $("#mollify-tmpl-dialog-error").tmpl({
+            content: $("#kloudspeaker-tmpl-dialog-error").tmpl({
                 message: spec.message
             }),
             buttons: [{
@@ -1771,7 +1769,7 @@
         var opts = false;
         if (spec.options) {
             opts = [];
-            $.each(mollify.helpers.getKeys(spec.options), function(i, k) {
+            $.each(kloudspeaker.helpers.getKeys(spec.options), function(i, k) {
                 opts.push({
                     key: k,
                     title: spec.options[k]
@@ -1780,7 +1778,7 @@
         }
         dh.custom({
             title: spec.title,
-            content: $("#mollify-tmpl-dialog-confirmation").tmpl({
+            content: $("#kloudspeaker-tmpl-dialog-confirmation").tmpl({
                 message: spec.message,
                 options: opts
             }),
@@ -1793,7 +1791,7 @@
             }],
             "on-button": function(btn, d, $d) {
                 var checkedOpts = {};
-                $d.find("input.mollify-confirmation-option:checked").each(function() {
+                $d.find("input.kloudspeaker-confirmation-option:checked").each(function() {
                     checkedOpts[$(this).attr('id').substring(28)] = true;
                 });
                 d.close();
@@ -1806,7 +1804,7 @@
         var $input = false;
         dh.custom({
             title: spec.title,
-            content: $("#mollify-tmpl-dialog-input").tmpl({
+            content: $("#kloudspeaker-tmpl-dialog-input").tmpl({
                 message: spec.message
             }),
             buttons: [{
@@ -1826,7 +1824,7 @@
                 if (btn.id === 'yes') spec.handler.onInput($input.val());
             },
             "on-show": function(h, $dlg) {
-                $input = $dlg.find(".mollify-inputdialog-input");
+                $input = $dlg.find(".kloudspeaker-inputdialog-input");
                 if (spec.defaultValue) $input.val(spec.defaultValue);
                 $input.focus();
             }
@@ -1835,7 +1833,7 @@
 
     dh.wait = function(spec) {
         var $trg = (spec && spec.target) ? $("#" + spec.target) : $("body");
-        var w = mollify.dom.template("mollify-tmpl-wait", $.extend(spec, dh._dialogDefaults)).appendTo($trg).show();
+        var w = kloudspeaker.dom.template("kloudspeaker-tmpl-wait", $.extend(spec, dh._dialogDefaults)).appendTo($trg).show();
         return {
             close: function() {
                 w.remove();
@@ -1844,11 +1842,11 @@
     };
 
     dh.notification = function(spec) {
-        if (mollify.App.activeView && mollify.App.activeView.onNotification && mollify.App.activeView.onNotification(spec)) return;
+        if (kloudspeaker.App.activeView && kloudspeaker.App.activeView.onNotification && kloudspeaker.App.activeView.onNotification(spec)) return;
 
-        var $trg = (spec && spec.target) ? ((typeof spec.target === 'string') ? $("#" + spec.target) : spec.target) : $("#mollify-notification-container");
+        var $trg = (spec && spec.target) ? ((typeof spec.target === 'string') ? $("#" + spec.target) : spec.target) : $("#kloudspeaker-notification-container");
         if ($trg.length === 0) $trg = $("body");
-        var notification = mollify.dom.template("mollify-tmpl-notification", $.extend(spec, dh._dialogDefaults)).hide().appendTo($trg).fadeIn(300);
+        var notification = kloudspeaker.dom.template("kloudspeaker-tmpl-notification", $.extend(spec, dh._dialogDefaults)).hide().appendTo($trg).fadeIn(300);
         setTimeout(function() {
             notification.fadeOut(300);
             if (spec["on-finish"]) spec["on-finish"]();
@@ -1863,9 +1861,9 @@
             $d.css("left", "50%");
         };
         var s = spec;
-        if (s['title-key']) s.title = mollify.ui.texts.get(s['title-key']);
+        if (s['title-key']) s.title = kloudspeaker.ui.texts.get(s['title-key']);
 
-        var $dlg = $("#mollify-tmpl-dialog-custom").tmpl($.extend(dh._dialogDefaults, s), {
+        var $dlg = $("#kloudspeaker-tmpl-dialog-custom").tmpl($.extend(dh._dialogDefaults, s), {
             getContent: function() {
                 if (spec.html) return spec.html;
                 if (spec.content) {
@@ -1877,13 +1875,13 @@
             },
             getButtonTitle: function(b) {
                 if (b.title) return b.title;
-                if (b["title-key"]) return mollify.ui.texts.get(b["title-key"]);
+                if (b["title-key"]) return kloudspeaker.ui.texts.get(b["title-key"]);
                 return "";
             }
         });
         if (spec.element) $dlg.find(".modal-body").append(spec.element);
 
-        mollify.ui.handlers.localize($dlg);
+        kloudspeaker.ui.handlers.localize($dlg);
         $dlg.on('hidden', function(e) {
             if (e.target != $dlg[0]) return;
             $dlg.remove();
@@ -1960,7 +1958,7 @@
             allRoots: false
         }, s);
         var selectedItem = false;
-        var content = $("#mollify-tmpl-dialog-itemselector").tmpl({
+        var content = $("#kloudspeaker-tmpl-dialog-itemselector").tmpl({
             message: spec.message
         });
         var $selector = false;
@@ -1970,14 +1968,14 @@
             if (loaded[parent ? parent.id : "root"]) return;
 
             $selector.addClass("loading");
-            mollify.filesystem.items(parent, spec.allowFiles, spec.allRoots).done(function(r) {
+            kloudspeaker.filesystem.items(parent, spec.allowFiles, spec.allRoots).done(function(r) {
                 $selector.removeClass("loading");
                 loaded[parent ? parent.id : "root"] = true;
 
                 var all = r.files ? (r.folders.concat(r.files)) : r.folders;
 
                 if (!all || all.length === 0) {
-                    if ($e) $e.find(".mollify-itemselector-folder-indicator").empty();
+                    if ($e) $e.find(".kloudspeaker-itemselector-folder-indicator").empty();
                     return;
                 }
 
@@ -1991,14 +1989,14 @@
                     //generate array for template to iterate
                     for (var i = 0; i < level; i++) levels.push({});
                 }
-                var c = $("#mollify-tmpl-dialog-itemselector-item").tmpl(all, {
+                var c = $("#kloudspeaker-tmpl-dialog-itemselector-item").tmpl(all, {
                     cls: (level === 0 ? 'root' : ''),
                     levels: levels
                 });
                 if ($e) {
                     $e.after(c);
                     $e.addClass("loaded");
-                    if ($e) $e.find(".mollify-itemselector-folder-indicator").find("i").removeClass("icon-caret-right").addClass("icon-caret-down");
+                    if ($e) $e.find(".kloudspeaker-itemselector-folder-indicator").find("i").removeClass("icon-caret-right").addClass("icon-caret-down");
                 } else {
                     $selector.append(c);
                 }
@@ -2028,14 +2026,14 @@
 
             },
             "on-show": function(h, $dlg) {
-                $selector = $dlg.find(".mollify-itemselector-tree");
-                $selector.on("click", ".mollify-itemselector-folder-indicator", function(e) {
+                $selector = $dlg.find(".kloudspeaker-itemselector-tree");
+                $selector.on("click", ".kloudspeaker-itemselector-folder-indicator", function(e) {
                     var $e = $(this).parent();
                     var p = $e.tmplItem().data;
                     load($e, p);
                     return false;
                 });
-                $selector.on("click", ".mollify-itemselector-item", function(e) {
+                $selector.on("click", ".kloudspeaker-itemselector-item", function(e) {
                     var $e = $(this);
                     var p = $(this).tmplItem().data;
                     if (p.is_file && !spec.allowFiles) return;
@@ -2043,7 +2041,7 @@
 
                     if (spec.handler.canSelect(p)) {
                         selectedItem = p;
-                        $(".mollify-itemselector-item").removeClass("selected");
+                        $(".kloudspeaker-itemselector-item").removeClass("selected");
                         $e.addClass("selected");
                     }
                 });
@@ -2053,20 +2051,20 @@
     };
 
     dh.tableView = function(o) {
-        mollify.ui.dialogs.custom({
+        kloudspeaker.ui.dialogs.custom({
             resizable: true,
             initSize: [600, 400],
             title: o.title,
-            content: mollify.dom.template("mollify-tmpl-tableview"),
+            content: kloudspeaker.dom.template("kloudspeaker-tmpl-tableview"),
             buttons: o.buttons,
             "on-button": function(btn, d) {
                 o.onButton(btn, d);
             },
             "on-show": function(h, $d) {
-                var $content = $d.find("#mollify-tableview-content");
+                var $content = $d.find("#kloudspeaker-tableview-content");
 
                 h.center();
-                var table = mollify.ui.controls.table("mollify-tableview-list", {
+                var table = kloudspeaker.ui.controls.table("kloudspeaker-tableview-list", {
                     key: o.table.key,
                     columns: o.table.columns,
                     onRowAction: function(id, obj) {
@@ -2081,7 +2079,7 @@
 
     /* DRAG&DROP */
 
-    mollify.MollifyHTML5DragAndDrop = function() {
+    kloudspeaker.HTML5DragAndDrop = function() {
         var t = this;
         t.dragObj = false;
         t.dragEl = false;
@@ -2106,20 +2104,20 @@
         // preload drag images		
         setTimeout(function() {
             var dragImages = [];
-            for (var key in mollify.settings.dnd.dragimages) {
-                if (!mollify.settings.dnd.dragimages.hasOwnProperty(key)) continue;
-                var img = mollify.settings.dnd.dragimages[key];
+            for (var key in kloudspeaker.settings.dnd.dragimages) {
+                if (!kloudspeaker.settings.dnd.dragimages.hasOwnProperty(key)) continue;
+                var img = kloudspeaker.settings.dnd.dragimages[key];
                 if (!img) continue;
                 if (dragImages.indexOf(img) >= 0) continue;
                 dragImages.push(img);
             }
-            if (dragImages) mollify.ui.preloadImages(dragImages);
+            if (dragImages) kloudspeaker.ui.preloadImages(dragImages);
         }, 0);
 
         var api = {
             enableDragToDesktop: function(item, e) {
                 if (!item) return;
-                var info = mollify.getItemDownloadInfo(item);
+                var info = kloudspeaker.getItemDownloadInfo(item);
                 if (info) e.originalEvent.dataTransfer.setData('DownloadURL', ['application/octet-stream', info.name, info.url].join(':'));
             },
 
@@ -2151,9 +2149,9 @@
                     t.dragEl.addClass("dragged");
                     e.originalEvent.dataTransfer.effectAllowed = "copyMove";
 
-                    if (mollify.settings.dnd.dragimages[dragImageType]) {
+                    if (kloudspeaker.settings.dnd.dragimages[dragImageType]) {
                         var img = document.createElement("img");
-                        img.src = mollify.settings.dnd.dragimages[dragImageType];
+                        img.src = kloudspeaker.settings.dnd.dragimages[dragImageType];
                         e.originalEvent.dataTransfer.setDragImage(img, 0, 0);
                     }
                     return;
@@ -2201,7 +2199,7 @@
         return api;
     };
 
-    mollify.MollifyJQueryDragAndDrop = function() {
+    kloudspeaker.JQueryDragAndDrop = function() {
         return {
             enableDragToDesktop: function(item, e) {
                 //not supported
@@ -2221,7 +2219,7 @@
         };
     };
 
-    mollify.ZeroClipboard = function(cb) {
+    kloudspeaker.ZeroClipboard = function(cb) {
         if (!cb || !window.ZeroClipboard) return false;
         window.ZeroClipboard.setDefaults({
             moviePath: 'js/lib/ZeroClipboard.swf',
@@ -2235,41 +2233,41 @@
         clip.on('load', function(client) {
             var api = {
                 enableCopy: function($e, text, l) {
-                    var clip = $e.data("mollify-zeroclipboard");
+                    var clip = $e.data("kloudspeaker-zeroclipboard");
                     if (!clip) {
                         clip = new window.ZeroClipboard($e);
-                        $e.data("mollify-zeroclipboard", clip);
-                        if (l) $e.data("mollify-zeroclipboard-listener", l);
+                        $e.data("kloudspeaker-zeroclipboard", clip);
+                        if (l) $e.data("kloudspeaker-zeroclipboard-listener", l);
                     }
-                    if (text) $e.data("mollify-zeroclipboard-text", text);
+                    if (text) $e.data("kloudspeaker-zeroclipboard-text", text);
                 }
             };
             cb(api);
         });
         clip.on('dataRequested', function() {
             var $t = $(this);
-            var l = $t.data("mollify-zeroclipboard-listener");
+            var l = $t.data("kloudspeaker-zeroclipboard-listener");
             var copied = false;
             if (l && l.onGetText)
                 copied = l.onGetText($t);
             if (!copied)
-                copied = $t.data("mollify-zeroclipboard-text");
+                copied = $t.data("kloudspeaker-zeroclipboard-text");
             if (copied) clip.setText(copied);
         });
         clip.on('mouseover', function() {
             var $t = $(this);
-            var l = $t.data("mollify-zeroclipboard-listener");
+            var l = $t.data("kloudspeaker-zeroclipboard-listener");
             if (l && l.onMouseOver) l.onMouseOver($t, clip);
         });
         clip.on('mouseout', function() {
             var $t = $(this);
-            var l = $t.data("mollify-zeroclipboard-listener");
+            var l = $t.data("kloudspeaker-zeroclipboard-listener");
             if (l && l.onMouseOut) l.onMouseOut($t);
         });
         clip.on('complete', function(client, args) {
             var $t = $(this);
-            var l = $t.data("mollify-zeroclipboard-listener");
+            var l = $t.data("kloudspeaker-zeroclipboard-listener");
             if (l && l.onCopy) l.onCopy($t, args.text);
         });
     };
-}(window.jQuery, window.mollify);
+}(window.jQuery, window.kloudspeaker);

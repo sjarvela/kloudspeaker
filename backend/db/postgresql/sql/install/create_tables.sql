@@ -10,7 +10,7 @@ CREATE TABLE `{TABLE_PREFIX}user` (
   `is_group` TINYINT(1) NOT NULL,
   `expiration` bigint(11) NULL,
   PRIMARY KEY (`id`)
-) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Mollify users and groups';
+) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'kloudspeaker users and groups';
 
 CREATE TABLE `{TABLE_PREFIX}user_group` (
   `user_id` int(11) NOT NULL,
@@ -18,32 +18,32 @@ CREATE TABLE `{TABLE_PREFIX}user_group` (
   PRIMARY KEY (`user_id`, `group_id`),
   KEY `fk_ug_user` (`user_id`),
   KEY `fk_ug_group` (`group_id`)
-) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Mollify user groups';
+) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'kloudspeaker user groups';
 
 CREATE TABLE `{TABLE_PREFIX}folder` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(255) NOT NULL,
   `path` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Mollify published folders';
+) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'kloudspeaker published folders';
 
 CREATE TABLE `{TABLE_PREFIX}item_id` (
   `id` char(13) NOT NULL UNIQUE,
   `path` char(255) NOT NULL UNIQUE
-) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Mollify item ids';
+) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'kloudspeaker item ids';
 
 CREATE TABLE `{TABLE_PREFIX}item_description` (
   `item_id` char(255) NOT NULL,
   `description` varchar(512) NOT NULL,
   PRIMARY KEY (`item_id`)
-) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Mollify item descriptions';
+) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'kloudspeaker item descriptions';
 
 CREATE TABLE `{TABLE_PREFIX}item_permission` (
   `user_id` int(11) NULL DEFAULT 0,
   `item_id` char(255) NOT NULL,
   `permission` char(2) NOT NULL,
   PRIMARY KEY (`user_id`,`item_id`)
-) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Mollify item permissions';
+) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'kloudspeaker item permissions';
 
 CREATE TABLE `{TABLE_PREFIX}user_folder` (
   `user_id` int(11) NOT NULL,
@@ -51,13 +51,13 @@ CREATE TABLE `{TABLE_PREFIX}user_folder` (
   `name` varchar(255) NULL,
   PRIMARY KEY (`user_id`,`folder_id`),
   KEY `fk_uf_folder` (`folder_id`)
-) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Mollify user published folders';
+) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'kloudspeaker user published folders';
 
 CREATE TABLE `{TABLE_PREFIX}parameter` (
   `name` char(255) NOT NULL,
   `value` char(255) NOT NULL,
   PRIMARY KEY (`name`)
-) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Mollify parameters';
+) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'kloudspeaker parameters';
 
 CREATE TABLE `{TABLE_PREFIX}event_log` (
   `id` int(11) NOT NULL auto_increment,
@@ -68,7 +68,7 @@ CREATE TABLE `{TABLE_PREFIX}event_log` (
   `item` varchar(512) NULL,
   `details` varchar(1024) NULL,
   PRIMARY KEY (`id`)
-) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Mollify event log';
+) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'kloudspeaker event log';
 
 CREATE TABLE `{TABLE_PREFIX}session` (
   `id` char(32) NOT NULL,
@@ -77,11 +77,11 @@ CREATE TABLE `{TABLE_PREFIX}session` (
   `last_access` bigint(11) NOT NULL,
   `ip` varchar(128) NULL,
   PRIMARY KEY (`id`)
-) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Mollify sessions';
+) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'kloudspeaker sessions';
 
 CREATE TABLE `{TABLE_PREFIX}session_data` (
   `session_id` char(32) NOT NULL,
   `name` char(64) NOT NULL,
   `value` varchar(128) NULL,
   PRIMARY KEY (`session_id`, `name`)
-) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Mollify session data';
+) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'kloudspeaker session data';

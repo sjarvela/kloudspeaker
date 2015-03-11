@@ -3,10 +3,10 @@
 /**
  * FilesystemController.class.php
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
 require_once "include/event/EventHandler.class.php";
@@ -37,7 +37,7 @@ class FilesystemController {
 	public $allowFilesystems = FALSE;
 
 	function __construct($env) {
-		require_once "MollifyFilesystem.class.php";
+		require_once "kloudspeakerFilesystem.class.php";
 		require_once "LocalFilesystem.class.php";
 		require_once "FilesystemItem.class.php";
 		require_once "BaseSearcher.class.php";
@@ -48,7 +48,7 @@ class FilesystemController {
 
 		$this->env = $env;
 		$this->idProvider = new ItemIdProvider($env);
-		$this->metadata = new Mollify_MetadataController($env);
+		$this->metadata = new kloudspeaker_MetadataController($env);
 
 		$this->allowedUploadTypes = $env->settings()->setting('allowed_file_upload_types');
 		$this->forbiddenUploadTypes = $env->settings()->setting('forbidden_file_upload_types');
@@ -477,7 +477,7 @@ class FilesystemController {
 	}
 
 	public function ignoredItems($filesystem, $path) {
-		return array('mollify.dsc', 'mollify.uac'); //TODO get from settings and/or configuration etc
+		return array('kloudspeaker.dsc', 'kloudspeaker.uac'); //TODO get from settings and/or configuration etc
 	}
 
 	public function items($folder) {

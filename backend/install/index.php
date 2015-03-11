@@ -3,17 +3,17 @@
 /**
  * index.php
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
 $MAIN_PAGE = "install";
 $installer = NULL;
 
 set_include_path(realpath('../') . PATH_SEPARATOR . get_include_path());
-require_once "MollifyInstallProcessor.class.php";
+require_once "kloudspeakerInstallProcessor.class.php";
 require_once "install/DefaultInstaller.class.php";
 
 chdir("..");

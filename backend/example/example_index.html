@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Example Mollify Page</title>		
+		<title>Example kloudspeaker Page</title>		
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=Edge">
 		
-		<link rel="stylesheet" href="css/mollify.min.css">
+		<link rel="stylesheet" href="css/kloudspeaker.min.css">
 
-		<!-- "Full" includes mollify, jQuery and all the other libs required -->
-		<script type="text/javascript" language="javascript" src="js/mollify.full.min.js"></script>
+		<!-- "Full" includes kloudspeaker, jQuery and all the other libs required -->
+		<script type="text/javascript" language="javascript" src="js/kloudspeaker.full.min.js"></script>
 
 		<!-- If you don't want to use full package, you can load them separately -->
 		<!--script type="text/javascript" language="javascript" src="js/lib/jquery.min.js"></script>
@@ -23,11 +23,11 @@
 		<script type="text/javascript" language="javascript" src="js/lib/ZeroClipboard.js"></script>
 		<script type="text/javascript" language="javascript" src="js/lib/modernizr.js"></script>
 		<script type="text/javascript" language="javascript" src="js/lib/date.js"></script>
-		<script type="text/javascript" language="javascript" src="js/mollify.js"></script-->
+		<script type="text/javascript" language="javascript" src="js/kloudspeaker.js"></script-->
 		
 		<script type="text/javascript">
 			$(document).ready(function(){	
-				mollify.App.init({
+				kloudspeaker.App.init({
 					"language": {
 						default: "en"
 					},
@@ -38,7 +38,7 @@
 							"file-modified": { width: 150 }
 						}
 					}}, [
-						new mollify.plugin.ItemDetailsPlugin({
+						new kloudspeaker.plugin.ItemDetailsPlugin({
 							"jpg,tiff": {
 								"metadata-created": {},
 								"last-modified" : {},
@@ -51,8 +51,8 @@
 								"size": {}
 							}
 						}),
-						new mollify.plugin.FileViewerEditorPlugin(),
-						new mollify.plugin.DropboxPlugin()
+						new kloudspeaker.plugin.FileViewerEditorPlugin(),
+						new kloudspeaker.plugin.DropboxPlugin()
 					]
 				);
 			});
@@ -60,6 +60,6 @@
 	</head>
 
 	<body>
-		<div id="mollify"></div>
+		<div id="kloudspeaker"></div>
 	</body>
 </html>

@@ -2,13 +2,13 @@
 /**
  * MetadataDao.class.php
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
-class Mollify_MetadataDao {
+class kloudspeaker_MetadataDao {
 	private $env;
 	private $db;
 

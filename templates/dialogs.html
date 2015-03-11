@@ -1,12 +1,12 @@
-<script id="mollify-tmpl-dialog-info" type="text/x-jquery-tmpl">
+<script id="kloudspeaker-tmpl-dialog-info" type="text/x-jquery-tmpl">
 	<p>${message}</p>
 </script>
 
-<script id="mollify-tmpl-dialog-error" type="text/x-jquery-tmpl">
+<script id="kloudspeaker-tmpl-dialog-error" type="text/x-jquery-tmpl">
 	<p>{{html $item.data.message}}</p>
 </script>
 
-<script id="mollify-tmpl-dialog-confirmation" type="text/x-jquery-tmpl">
+<script id="kloudspeaker-tmpl-dialog-confirmation" type="text/x-jquery-tmpl">
 	<p>${message}</p>
 	{{if options}}
 		<p>
@@ -14,7 +14,7 @@
 			<div class="controls">
 				{{each options}}
 					<label class="checkbox inline">
-						<input type="checkbox" id="mollify-confirmation-option-${key}" class="mollify-confirmation-option"><span>${title}</span>
+						<input type="checkbox" id="kloudspeaker-confirmation-option-${key}" class="kloudspeaker-confirmation-option"><span>${title}</span>
 					</label>
 				{{/each}}
 			</div>
@@ -23,32 +23,32 @@
 	{{/if}}
 </script>
 
-<script id="mollify-tmpl-notification" type="text/x-jquery-tmpl"> 
-	<div class="mollify-notification">
-		<div class="mollify-notification-content">${message}</div>
+<script id="kloudspeaker-tmpl-notification" type="text/x-jquery-tmpl"> 
+	<div class="kloudspeaker-notification">
+		<div class="kloudspeaker-notification-content">${message}</div>
 	</div>
 </script>
 
-<script id="mollify-tmpl-dialog-select" type="text/x-jquery-tmpl">
+<script id="kloudspeaker-tmpl-dialog-select" type="text/x-jquery-tmpl">
 	<p>${message}</p>
-	<table class="mollify-selectdialog-table"></table>
+	<table class="kloudspeaker-selectdialog-table"></table>
 </script>
 
-<script id="mollify-tmpl-wait" type="text/x-jquery-tmpl"> 
-	<div class="mollify-wait"></div>
+<script id="kloudspeaker-tmpl-wait" type="text/x-jquery-tmpl"> 
+	<div class="kloudspeaker-wait"></div>
 </script>
 
-<script id="mollify-tmpl-slidepanel" type="text/x-jquery-tmpl"> 
-	<div class="mollify-slidepanel-container">
+<script id="kloudspeaker-tmpl-slidepanel" type="text/x-jquery-tmpl"> 
+	<div class="kloudspeaker-slidepanel-container">
 		<button type="button" class="close">×</button>
-		<div class="mollify-slidepanel-content-container">
-			<div class="mollify-slidepanel-content"></div>
+		<div class="kloudspeaker-slidepanel-content-container">
+			<div class="kloudspeaker-slidepanel-content"></div>
 		</div>
 	</div>
 </script>
 
-<script id="mollify-tmpl-dialog-custom" type="text/x-jquery-tmpl">
-	<div class="mollify-dialog modal">
+<script id="kloudspeaker-tmpl-dialog-custom" type="text/x-jquery-tmpl">
+	<div class="kloudspeaker-dialog modal">
 		<div class="modal-header">
 			<h3>${title}</h3>
 		</div>
@@ -57,78 +57,78 @@
 		<div class="modal-footer">
 			<div class="info"></div>
 			{{each buttons}}
-			<a id="mollify-custom-dialog-button-${id}" class="mollify-custom-dialog-button btn ${cls}">${$item.getButtonTitle($value)}</a>
+			<a id="kloudspeaker-custom-dialog-button-${id}" class="kloudspeaker-custom-dialog-button btn ${cls}">${$item.getButtonTitle($value)}</a>
 			{{/each}}
 		</div>
 	</div>
 </script>
 
-<script id="mollify-tmpl-dialog-error-debug" type="text/x-jquery-tmpl">
+<script id="kloudspeaker-tmpl-dialog-error-debug" type="text/x-jquery-tmpl">
 	<p>{{html $item.data.message}}</p>
 	<p class="well debug">{{html $item.data.debug}}</p>
 </script>
 
-<script id="mollify-tmpl-dialog-input" type="text/x-jquery-tmpl">
-	<div class="mollify-inputdialog">
-		<div class="mollify-inputdialog-message">{{html $item.data.message}}</div>
-		<input class="mollify-inputdialog-input">
+<script id="kloudspeaker-tmpl-dialog-input" type="text/x-jquery-tmpl">
+	<div class="kloudspeaker-inputdialog">
+		<div class="kloudspeaker-inputdialog-message">{{html $item.data.message}}</div>
+		<input class="kloudspeaker-inputdialog-input">
 	</div>
 </script>
 
-<script id="mollify-tmpl-dialog-itemselector" type="text/x-jquery-tmpl">
-	<div class="mollify-itemselector">
-		<div class="mollify-itemselector-message">{{html $item.data.message}}</div>
-		<div class="mollify-itemselector-tree well well-large">
+<script id="kloudspeaker-tmpl-dialog-itemselector" type="text/x-jquery-tmpl">
+	<div class="kloudspeaker-itemselector">
+		<div class="kloudspeaker-itemselector-message">{{html $item.data.message}}</div>
+		<div class="kloudspeaker-itemselector-tree well well-large">
 		</div>
 	</div>
 </script>
 
-<script id="mollify-tmpl-dialog-itemselector-item" type="text/x-jquery-tmpl">
-	<div class="mollify-itemselector-item ${$item.cls} {{if $item.data.is_file}}file{{else}}folder{{/if}}">
-		<div class="mollify-itemselector-item-indentation">
+<script id="kloudspeaker-tmpl-dialog-itemselector-item" type="text/x-jquery-tmpl">
+	<div class="kloudspeaker-itemselector-item ${$item.cls} {{if $item.data.is_file}}file{{else}}folder{{/if}}">
+		<div class="kloudspeaker-itemselector-item-indentation">
 			{{each $item.levels}}
-			<div class="mollify-itemselector-item-indentation-step"></div>
+			<div class="kloudspeaker-itemselector-item-indentation-step"></div>
 			{{/each}}
 		</div>
 		{{if !$item.data.is_file}}
-		<div class="mollify-itemselector-folder-indicator"><i class="icon-caret-right"></i></div>
+		<div class="kloudspeaker-itemselector-folder-indicator"><i class="icon-caret-right"></i></div>
 		{{/if}}
-		<div class="mollify-itemselector-item-name">${name}</div>
+		<div class="kloudspeaker-itemselector-item-name">${name}</div>
 	</div>
 </script>
 
-<script id="mollify-tmpl-popupmenu" type="text/x-jquery-tmpl">
+<script id="kloudspeaker-tmpl-popupmenu" type="text/x-jquery-tmpl">
 	<ul class="dropdown-menu">
-	{{tmpl(items) "#mollify-tmpl-popupmenu-item"}}
+	{{tmpl(items) "#kloudspeaker-tmpl-popupmenu-item"}}
 	</ul>
 </script>
 
-<script id="mollify-tmpl-popupmenu-item" type="text/x-jquery-tmpl">
+<script id="kloudspeaker-tmpl-popupmenu-item" type="text/x-jquery-tmpl">
 	{{if $item.data.type == 'separator' || $item.data.title == '-'}}
 	<li class="dropdown-item divider"/>
 	{{else $item.data.type == 'submenu'}}
 		<li class="dropdown-submenu">
 			<a tabindex="-1" href="#">${$item.data.title || $item.data.primary.title}</a>
-			{{tmpl($item.data) "#mollify-tmpl-popupmenu"}}
+			{{tmpl($item.data) "#kloudspeaker-tmpl-popupmenu"}}
 		</li>
 	{{else}}
 	<li class="dropdown-item"><a href="#">{{if $item.data.icon}}<i class="icon-${$item.data.icon}"></i>&nbsp;&nbsp;{{/if}}${$item.data.title}</a></li>
 	{{/if}}
 </script>
 
-<script id="mollify-tmpl-tableview" type="text/x-jquery-tmpl">
-	<div id="mollify-tableview-content" class="loading">
-		<div id="mollify-tableview-header">
+<script id="kloudspeaker-tmpl-tableview" type="text/x-jquery-tmpl">
+	<div id="kloudspeaker-tableview-content" class="loading">
+		<div id="kloudspeaker-tableview-header">
 		</div>
 
-		<table id="mollify-tableview-list" class="table">
+		<table id="kloudspeaker-tableview-list" class="table">
 		</table>
 	</div>
 </script>
 
-<script id="mollify-tmpl-fullpage-error" type="text/x-jquery-tmpl">
-	<div class="mollify-fullpage-form-bg">
-		<div id="mollify-registration-main" class="container mollify-fullpage-form center wide">
+<script id="kloudspeaker-tmpl-fullpage-error" type="text/x-jquery-tmpl">
+	<div class="kloudspeaker-fullpage-form-bg">
+		<div id="kloudspeaker-registration-main" class="container kloudspeaker-fullpage-form center wide">
 			<h2><i class="icon-exclamation-sign"></i>&nbsp;&nbsp;{{html title}}</h2>
 			<p>{{html message}}</p>
 		</div>

@@ -1,10 +1,10 @@
 /**
  * install.js
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
 jQuery.fn.exists = function(){ return ($(this).length > 0); }

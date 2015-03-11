@@ -1,10 +1,10 @@
 /*!
- * Mollify Gruntfile
+ * Kloudspeaker Gruntfile
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspekaer.org/license.php
  */
 
 module.exports = function(grunt) {
@@ -24,7 +24,7 @@ module.exports = function(grunt) {
 
         // Metadata.
         pkg: pkg,
-        banner: '/*!\n' + ' * Mollify v<%= pkg.version %> (<%= pkg.homepage %>)\n' + ' * Copyright 2008-<%= grunt.template.today("yyyy") %> <%= pkg.author %>\n' + ' * Licensed under <%= _.pluck(pkg.licenses, "type") %> (<%= _.pluck(pkg.licenses, "url") %>)\n' + ' */\n',
+        banner: '/*!\n' + ' * Kloudspeaker v<%= pkg.version %> (<%= pkg.homepage %>)\n' + ' * Copyright 2015-<%= grunt.template.today("yyyy") %> <%= pkg.author %>\n' + ' * Licensed under <%= _.pluck(pkg.licenses, "type") %> (<%= _.pluck(pkg.licenses, "url") %>)\n' + ' */\n',
 
         // Task configuration.
         clean: {
@@ -72,7 +72,7 @@ module.exports = function(grunt) {
                 banner: '<%= banner %>\n',
                 stripBanners: false
             },
-            mollify: {
+            kloudspeaker: {
                 src: [
                     'js/init.js',
                     'js/ui.js',
@@ -118,17 +118,17 @@ module.exports = function(grunt) {
         },
 
         uglify: {
-            mollify: {
+            kloudspeaker: {
                 options: {
                     banner: '<%= banner %>',
                     report: 'min'
                 },
                 files: [{
-                    src: 'dist/js/mollify.js',
-                    dest: 'dist/js/mollify.min.js'
+                    src: 'dist/js/kloudspeaker.js',
+                    dest: 'dist/js/kloudspeaker.min.js'
                 }, {
-                    src: 'dist/js/mollify.full.js',
-                    dest: 'dist/js/mollify.full.min.js'
+                    src: 'dist/js/kloudspeaker.full.js',
+                    dest: 'dist/js/kloudspeaker.full.min.js'
                 }]
             }
         },
@@ -242,12 +242,12 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: 'dist/',
                     src: ['**', '!<%= pkg.name %>_<%= pkg.version %>.zip'],
-                    dest: 'mollify/'
+                    dest: 'kloudspeaker/'
                 }]
             },
             dav: {
                 options: {
-                    archive: 'dist/mollify_webdav.zip'
+                    archive: 'dist/kloudspeaker_webdav.zip'
                 },
                 files: [{
                     expand: true,

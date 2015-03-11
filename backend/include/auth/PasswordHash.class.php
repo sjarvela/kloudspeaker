@@ -3,13 +3,13 @@ require_once "vendor/phpass/PasswordHash.php";
 /**
  * PasswordHash.class.php
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
-class Mollify_PasswordHash {
+class kloudspeaker_PasswordHash {
 	private static $hash_cost_log2 = 8;
 	private static $hash_portable = FALSE;
 

@@ -1,15 +1,15 @@
 <?php
 
 /**
- * MollifyZipNative.class.php
+ * kloudspeakerZipNative.class.php
  *
- * Copyright 2008- Samuli Järvelä
+ * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.mollify.org/license.php
+ * License: http://www.kloudspeaker.com/license.php
  */
 
-class MollifyZipNative implements MollifyCompressor {
+class kloudspeakerZipNative implements kloudspeakerCompressor {
 	private static $availableCommands = NULL;
 
 	private static function availableCommands() {
@@ -79,7 +79,7 @@ class MollifyZipNative implements MollifyCompressor {
 
 	function __construct($env) {
 		$this->env = $env;
-		$this->name = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('Mollify', true) . 'zip';
+		$this->name = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('kloudspeaker', true) . 'zip';
 		$this->cmd = self::command('application/zip');
 		if ($this->cmd == NULL) {
 			throw new ServiceException("INVALID_CONFIGURATION", "No native zip library found");
