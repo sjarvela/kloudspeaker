@@ -8,7 +8,7 @@
  * License: http://www.kloudspeaker.com/license.php
  */
 
-class kloudspeaker_MetadataDao {
+class Kloudspeaker_MetadataDao {
 	private $env;
 	private $db;
 

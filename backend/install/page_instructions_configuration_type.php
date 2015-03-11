@@ -16,9 +16,9 @@ global $CONFIGURATION;
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 
 <html>
-	<?php pageHeader("kloudspeaker Installation");?>
+	<?php pageHeader("Kloudspeaker Installation");?>
 
-	<?php pageBody("Welcome to kloudspeaker installation");?>
+	<?php pageBody("Welcome to Kloudspeaker installation");?>
 
 	<?php if (isset($CONFIGURATION["db"]) && isset($CONFIGURATION["db"]["type"])) {?>
 		<p>
@@ -33,7 +33,7 @@ global $CONFIGURATION;
 
 	<?php if (!isset($CONFIGURATION) || !isset($CONFIGURATION["db"]) || !isset($CONFIGURATION["db"]["type"])) {?>
 	<p>
-		To continue with kloudspeaker installation, you have to setup the configuration.
+		To continue with Kloudspeaker installation, you have to setup the configuration.
 	</p>
 	<?php }?>
 

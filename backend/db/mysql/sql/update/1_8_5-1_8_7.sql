@@ -7,11 +7,11 @@ CREATE TABLE `{TABLE_PREFIX}session` (
   `last_access` bigint(11) NOT NULL,
   `ip` varchar(128) NULL,
   PRIMARY KEY (`id`)
-) COLLATE utf8_general_ci COMMENT = 'kloudspeaker sessions';
+) COLLATE utf8_general_ci COMMENT = 'Kloudspeaker sessions';
 
 CREATE TABLE `{TABLE_PREFIX}session_data` (
   `session_id` char(32) NOT NULL,
   `name` char(64) NOT NULL,
   `value` varchar(128) NULL,
   PRIMARY KEY (`session_id`, `name`)
-) COLLATE utf8_general_ci COMMENT = 'kloudspeaker session data';
+) COLLATE utf8_general_ci COMMENT = 'Kloudspeaker session data';

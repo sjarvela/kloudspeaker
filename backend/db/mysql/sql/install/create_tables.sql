@@ -9,7 +9,7 @@ CREATE TABLE `{TABLE_PREFIX}user` (
   `is_group` TINYINT(1) NOT NULL,
   `expiration` bigint(11) NULL,
   PRIMARY KEY (`id`)
-) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'kloudspeaker users and groups';
+) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Kloudspeaker users and groups';
 
 CREATE TABLE `{TABLE_PREFIX}user_auth` (
   `user_id` int(11) NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE `{TABLE_PREFIX}user_auth` (
   `hint` char(128) NULL,
   PRIMARY KEY (`user_id`),
   KEY `fk_ua_user` (`user_id`)
-) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'kloudspeaker user auth';
+) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Kloudspeaker user auth';
 
 CREATE TABLE `{TABLE_PREFIX}user_group` (
   `user_id` int(11) NOT NULL,
@@ -28,7 +28,7 @@ CREATE TABLE `{TABLE_PREFIX}user_group` (
   PRIMARY KEY (`user_id`, `group_id`),
   KEY `fk_ug_user` (`user_id`),
   KEY `fk_ug_group` (`group_id`)
-) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'kloudspeaker user groups';
+) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Kloudspeaker user groups';
 
 CREATE TABLE `{TABLE_PREFIX}folder` (
   `id` int(11) NOT NULL auto_increment,
@@ -36,12 +36,12 @@ CREATE TABLE `{TABLE_PREFIX}folder` (
   `name` varchar(255) NOT NULL,
   `path` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'kloudspeaker published folders';
+) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Kloudspeaker published folders';
 
 CREATE TABLE `{TABLE_PREFIX}item_id` (
   `id` char(13) NOT NULL UNIQUE,
   `path` char(255) NOT NULL UNIQUE
-) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'kloudspeaker item ids';
+) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Kloudspeaker item ids';
 
 CREATE TABLE `{TABLE_PREFIX}permission` (
   `name` char(64) NOT NULL,
@@ -49,7 +49,7 @@ CREATE TABLE `{TABLE_PREFIX}permission` (
   `subject` char(255) NOT NULL DEFAULT '',
   `value` char(32) NOT NULL,
   PRIMARY KEY (`name`,`user_id`,`subject`)
-) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'kloudspeaker permissions';
+) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Kloudspeaker permissions';
 
 CREATE TABLE `{TABLE_PREFIX}user_folder` (
   `user_id` int(11) NOT NULL,
@@ -57,13 +57,13 @@ CREATE TABLE `{TABLE_PREFIX}user_folder` (
   `name` varchar(255) NULL,
   PRIMARY KEY (`user_id`,`folder_id`),
   KEY `fk_uf_folder` (`folder_id`)
-) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'kloudspeaker user published folders';
+) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Kloudspeaker user published folders';
 
 CREATE TABLE `{TABLE_PREFIX}parameter` (
   `name` char(255) NOT NULL,
   `value` char(255) NOT NULL,
   PRIMARY KEY (`name`)
-) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'kloudspeaker parameters';
+) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Kloudspeaker parameters';
 
 CREATE TABLE `{TABLE_PREFIX}event_log` (
   `id` int(11) NOT NULL auto_increment,
@@ -74,7 +74,7 @@ CREATE TABLE `{TABLE_PREFIX}event_log` (
   `item` varchar(512) NULL,
   `details` varchar(1024) NULL,
   PRIMARY KEY (`id`)
-) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'kloudspeaker event log';
+) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Kloudspeaker event log';
 
 CREATE TABLE `{TABLE_PREFIX}session` (
   `id` char(32) NOT NULL,
@@ -83,18 +83,18 @@ CREATE TABLE `{TABLE_PREFIX}session` (
   `last_access` bigint(11) NOT NULL,
   `ip` varchar(128) NULL,
   PRIMARY KEY (`id`)
-) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'kloudspeaker sessions';
+) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Kloudspeaker sessions';
 
 CREATE TABLE `{TABLE_PREFIX}session_data` (
   `session_id` char(32) NOT NULL,
   `name` char(64) NOT NULL,
   `value` varchar(128) NULL,
   PRIMARY KEY (`session_id`, `name`)
-) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'kloudspeaker session data';
+) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Kloudspeaker session data';
 
 CREATE TABLE `{TABLE_PREFIX}metadata` (
   `item_id` char(32) NOT NULL,
   `md_key` char(128) NOT NULL,
   `md_value` varchar(512) NULL,
   PRIMARY KEY (`item_id`, `md_key`)
-) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'kloudspeaker metadata';
+) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Kloudspeaker metadata';

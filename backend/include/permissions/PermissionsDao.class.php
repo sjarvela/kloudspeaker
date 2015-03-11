@@ -8,7 +8,7 @@
  * License: http://www.kloudspeaker.com/license.php
  */
 
-class kloudspeaker_PermissionsDao {
+class Kloudspeaker_PermissionsDao {
 	private $env;
 	private $db;
 
@@ -138,7 +138,7 @@ class kloudspeaker_PermissionsDao {
 		if ($parentPermission != NULL and array_key_exists($name, $parentPermission)) {
 			$all[] = array(
 				"subject" => $parent->id(),
-				"value" => $parentPermission[$name],
+				"value" => $parentPermission[$name]
 			);
 		}
 

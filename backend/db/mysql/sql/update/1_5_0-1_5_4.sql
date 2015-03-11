@@ -8,4 +8,4 @@ CREATE TABLE `{TABLE_PREFIX}event_log` (
   `item` varchar(512) NULL,
   `details` varchar(1024) NULL,
   PRIMARY KEY (`id`)
-) COLLATE utf8_general_ci COMMENT = 'kloudspeaker event log';
+) COLLATE utf8_general_ci COMMENT = 'Kloudspeaker event log';

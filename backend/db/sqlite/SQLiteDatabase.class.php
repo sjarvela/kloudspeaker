@@ -9,7 +9,7 @@
  * License: http://www.kloudspeaker.com/license.php
  */
 
-class kloudspeakerSQLiteDatabase {
+class KloudspeakerSQLiteDatabase {
 	private $file;
 	private $db = NULL;
 	private $transaction = FALSE;
@@ -20,7 +20,7 @@ class kloudspeakerSQLiteDatabase {
 		}
 
 		$file = $conf["file"];
-		$db = new kloudspeakerSQLiteDatabase($file);
+		$db = new KloudspeakerSQLiteDatabase($file);
 		$db->connect();
 		return $db;
 	}

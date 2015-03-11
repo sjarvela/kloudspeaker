@@ -102,7 +102,7 @@ class WatermarkingManager {
 	}
 
 	private function getTempFile($item, $type) {
-		return rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . uniqid('kloudspeaker', true) . $type;
+		return rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . uniqid('Kloudspeaker', true) . $type;
 	}
 
 	private function getMarker($t, $def) {

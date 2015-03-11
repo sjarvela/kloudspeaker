@@ -1,7 +1,7 @@
 <?php
 
 /**
- * kloudspeakerExternalInterface.class.php
+ * KloudspeakerExternalInterface.class.php
  *
  * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
@@ -12,19 +12,19 @@
 require_once "configuration.php";
 global $CONFIGURATION;
 if (!isset($CONFIGURATION)) {
-	die("kloudspeaker not configured");
+	die("Kloudspeaker not configured");
 }
 
-function kloudspeakerExternalInterface() {
+function KloudspeakerExternalInterface() {
 	global $CONFIGURATION;
-	return new kloudspeakerExternalInterface($CONFIGURATION);
+	return new KloudspeakerExternalInterface($CONFIGURATION);
 }
 
 class VoidResponseHandler {
 	public function addListener($l) {}
 }
 
-class kloudspeakerExternalInterface {
+class KloudspeakerExternalInterface {
 	private $configuration;
 	private $settings;
 	private $authentication;

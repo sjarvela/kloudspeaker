@@ -15,12 +15,12 @@ include "install/installation_page.php";
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 
 <html>
-	<?php pageHeader("kloudspeaker Installation", "init");?>
+	<?php pageHeader("Kloudspeaker Installation", "init");?>
 
 	<?php pageBody("1/2 Database Information");?>
 
 	<p>
-		kloudspeaker will be installed in following SQLite database: <code><?php echo realpath($installer->db()->file());?></code>
+		Kloudspeaker will be installed in following SQLite database: <code><?php echo realpath($installer->db()->file());?></code>
 	</p>
 	<p>
 		If this configuration is correct, click "Continue Installation". Otherwise, modify the configuration file and click "Refresh Configuration".

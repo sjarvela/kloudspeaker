@@ -15,12 +15,12 @@ include "install/installation_page.php";
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 
 <html>
-	<?php pageHeader("kloudspeaker Installation", "init");?>
+	<?php pageHeader("Kloudspeaker Installation", "init");?>
 
 	<?php pageBody("2/2 Administrator User");?>
 
 	<h4>
-		kloudspeaker requires an administrator user
+		Kloudspeaker requires an administrator user
 	</h4>
 	<p>
 		<form id="admin-user" role="form">

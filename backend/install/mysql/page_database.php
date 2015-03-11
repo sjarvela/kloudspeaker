@@ -15,12 +15,12 @@ include "install/installation_page.php";
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 
 <html>
-	<?php pageHeader("kloudspeaker Installation");?>
+	<?php pageHeader("Kloudspeaker Installation");?>
 
 	<?php pageBody("1/2 Database Information");?>
 
 	<p>
-		kloudspeaker will be installed in following database:
+		Kloudspeaker will be installed in following database:
 		<ul>
 			<li><b>Host name:</b> <code><?php echo $installer->db()->host();?></code></li>
 			<li><b>Database name:</b> <code><?php echo $installer->db()->database();?></code></li>

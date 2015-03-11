@@ -28,8 +28,8 @@ class Request {
 		$uri = self::getUri();
 		$ip = self::getIp();
 
-		if (isset($_SERVER['HTTP_kloudspeaker_HTTP_METHOD'])) {
-			$method = strtolower($_SERVER['HTTP_kloudspeaker_HTTP_METHOD']);
+		if (isset($_SERVER['HTTP_KLOUDSPEAKER_HTTP_METHOD'])) {
+			$method = strtolower($_SERVER['HTTP_KLOUDSPEAKER_HTTP_METHOD']);
 		}
 
 		$p = stripos($uri, "?");
@@ -49,7 +49,7 @@ class Request {
 
 		$data = self::getData($method, $raw, $params);
 
-		return new Request(self::getkloudspeakerSessionId($params), $method, $uri, $ip, $parts, $params, $data);
+		return new Request(self::getKloudspeakerSessionId($params), $method, $uri, $ip, $parts, $params, $data);
 	}
 
 	private static function getUri() {
@@ -87,13 +87,13 @@ class Request {
 		}
 	}
 
-	private static function getkloudspeakerSessionId($params) {
+	private static function getKloudspeakerSessionId($params) {
 		if (isset($params['session'])) {
 			return $params["session"];
 		}
 
-		if (isset($_SERVER['HTTP_kloudspeaker_SESSION_ID'])) {
-			return $_SERVER['HTTP_kloudspeaker_SESSION_ID'];
+		if (isset($_SERVER['HTTP_KLOUDSPEAKER_SESSION_ID'])) {
+			return $_SERVER['HTTP_KLOUDSPEAKER_SESSION_ID'];
 		}
 
 		return NULL;

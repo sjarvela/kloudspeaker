@@ -9,7 +9,7 @@
  * License: http://www.kloudspeaker.com/license.php
  */
 
-require_once "install/kloudspeakerInstallProcessor.class.php";
+require_once "install/KloudspeakerInstallProcessor.class.php";
 require_once "include/ServiceEnvironment.class.php";
 require_once "db/mysql/DatabaseUtil.class.php";
 require_once "install/mysql/MySQLInstallUtil.class.php";
@@ -23,7 +23,7 @@ class MySQLInstaller {
 
 	public function __construct($settings, $type = "install") {
 		$this->settings = $settings;
-		$this->processor = new kloudspeakerInstallProcessor($type, "mysql", $settings);
+		$this->processor = new KloudspeakerInstallProcessor($type, "mysql", $settings);
 		$this->configured = isset($settings["db"]["user"], $settings["db"]["password"]);
 	}
 
@@ -65,21 +65,21 @@ class MySQLInstaller {
 		try {
 			$this->db->selectDb();
 		} catch (ServiceException $e) {
-			Logging::logDebug('kloudspeaker not installed');
+			Logging::logDebug('Kloudspeaker not installed');
 			return FALSE;
 		}
 
 		try {
 			$ver = $this->dbUtil->installedVersion();
 		} catch (ServiceException $e) {
-			Logging::logDebug('kloudspeaker not installed');
+			Logging::logDebug('Kloudspeaker not installed');
 			return FALSE;
 		}
 
 		if ($ver != NULL) {
-			Logging::logDebug('kloudspeaker installed version: ' . $ver);
+			Logging::logDebug('Kloudspeaker installed version: ' . $ver);
 		} else {
-			Logging::logDebug('kloudspeaker not installed');
+			Logging::logDebug('Kloudspeaker not installed');
 		}
 
 		return $ver != NULL;
@@ -168,12 +168,12 @@ class MySQLInstaller {
 
 	private function checkSystem() {
 		if (!function_exists('mysql_connect')) {
-			$this->processor->setError("MySQL not detected", "kloudspeaker cannot be installed to this system when MySQL is not available. Check your system configuration or choose different configuration type.");
+			$this->processor->setError("MySQL not detected", "Kloudspeaker cannot be installed to this system when MySQL is not available. Check your system configuration or choose different configuration type.");
 			$this->processor->showPage("install_error");
 		}
 
 		if (!function_exists('mysqli_multi_query')) {
-			$this->processor->setError("MySQL Improved (mysqli) not detected", "kloudspeaker installer cannot continue without <a href='http://www.php.net/manual/en/mysqli.overview.php' target='_blank'>MySQL Improved</a> installed. Either check your configuration to install or enable this, or install kloudspeaker manually (see instructions <a href='https://github.com/sjarvela/kloudspeaker/wiki/Installation' target='_blank'>here</a>).");
+			$this->processor->setError("MySQL Improved (mysqli) not detected", "Kloudspeaker installer cannot continue without <a href='http://www.php.net/manual/en/mysqli.overview.php' target='_blank'>MySQL Improved</a> installed. Either check your configuration to install or enable this, or install Kloudspeaker manually (see instructions <a href='https://github.com/sjarvela/kloudspeaker/wiki/Installation' target='_blank'>here</a>).");
 			$this->processor->showPage("install_error");
 		}
 	}
@@ -185,7 +185,7 @@ class MySQLInstaller {
 
 		$this->processor->createEnvironment($this->db);
 		if (!$this->processor->authentication()->isAdmin()) {
-			die("kloudspeaker Installer requires administrator user");
+			die("Kloudspeaker Installer requires administrator user");
 		}
 
 		$this->processor->showPage("installed");

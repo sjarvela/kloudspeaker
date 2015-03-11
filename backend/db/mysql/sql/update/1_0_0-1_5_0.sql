@@ -11,4 +11,4 @@ CREATE TABLE `{TABLE_PREFIX}user_group` (
   PRIMARY KEY (`user_id`, `group_id`),
   KEY `fk_ug_user` (`user_id`),
   KEY `fk_ug_group` (`group_id`)
-) COLLATE utf8_general_ci COMMENT = 'kloudspeaker user groups';
+) COLLATE utf8_general_ci COMMENT = 'Kloudspeaker user groups';

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * kloudspeakerInstallProcessor.class.php
+ * KloudspeakerInstallProcessor.class.php
  *
  * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
@@ -9,7 +9,7 @@
  * License: http://www.kloudspeaker.com/license.php
  */
 
-class kloudspeakerInstallProcessor {
+class KloudspeakerInstallProcessor {
 	protected $type;
 	protected $pageRoot;
 	private $settingsVar;
@@ -64,7 +64,7 @@ class kloudspeakerInstallProcessor {
 		$this->configuration->initialize($this);
 		$this->features = new Features($this->settings);
 		$this->cookies = new Cookie($this->settings);
-		$this->passwordHash = new kloudspeaker_PasswordHash($this->settings);
+		$this->passwordHash = new Kloudspeaker_PasswordHash($this->settings);
 		$this->resources = new ResourceLoader($this);
 
 		$this->plugins->setup();
@@ -253,7 +253,7 @@ class kloudspeakerInstallProcessor {
 	}
 
 	public function __toString() {
-		return "kloudspeakerInstaller";
+		return "KloudspeakerInstaller";
 	}
 }
 ?>

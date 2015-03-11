@@ -5,4 +5,4 @@ ALTER TABLE `{TABLE_PREFIX}user_folder` ADD `path_prefix` varchar(255) NULL AFTE
 CREATE TABLE `{TABLE_PREFIX}item_id` (
   `id` char(13) NOT NULL UNIQUE,
   `path` char(255) NOT NULL UNIQUE
-) COLLATE utf8_general_ci COMMENT = 'kloudspeaker item ids';
+) COLLATE utf8_general_ci COMMENT = 'Kloudspeaker item ids';

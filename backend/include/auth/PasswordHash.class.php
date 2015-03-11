@@ -9,7 +9,7 @@ require_once "vendor/phpass/PasswordHash.php";
  * License: http://www.kloudspeaker.com/license.php
  */
 
-class kloudspeaker_PasswordHash {
+class Kloudspeaker_PasswordHash {
 	private static $hash_cost_log2 = 8;
 	private static $hash_portable = FALSE;
 

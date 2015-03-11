@@ -1,7 +1,7 @@
 <?php
 
 /**
- * kloudspeakerZipNative.class.php
+ * KloudspeakerZipNative.class.php
  *
  * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
@@ -9,7 +9,7 @@
  * License: http://www.kloudspeaker.com/license.php
  */
 
-class kloudspeakerZipNative implements kloudspeakerCompressor {
+class KloudspeakerZipNative implements KloudspeakerCompressor {
 	private static $availableCommands = NULL;
 
 	private static function availableCommands() {
@@ -79,7 +79,7 @@ class kloudspeakerZipNative implements kloudspeakerCompressor {
 
 	function __construct($env) {
 		$this->env = $env;
-		$this->name = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('kloudspeaker', true) . 'zip';
+		$this->name = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('Kloudspeaker', true) . 'zip';
 		$this->cmd = self::command('application/zip');
 		if ($this->cmd == NULL) {
 			throw new ServiceException("INVALID_CONFIGURATION", "No native zip library found");

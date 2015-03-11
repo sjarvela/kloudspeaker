@@ -9,7 +9,7 @@
  * License: http://www.kloudspeaker.com/license.php
  */
 
-class LocalFilesystem extends kloudspeakerFilesystem {
+class LocalFilesystem extends KloudspeakerFilesystem {
 	const FS_TYPE = "local";
 
 	private $rootPath;
@@ -51,7 +51,7 @@ class LocalFilesystem extends kloudspeakerFilesystem {
 	}
 
 	public function type() {
-		return kloudspeakerFilesystem::TYPE_LOCAL;
+		return KloudspeakerFilesystem::TYPE_LOCAL;
 	}
 
 	public function createItem($id, $path) {

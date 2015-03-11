@@ -1,7 +1,7 @@
 <?php
 
 /**
- * kloudspeakerZipRaw.class.php
+ * KloudspeakerZipRaw.class.php
  *
  * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
@@ -11,14 +11,14 @@
 
 @include_once 'zip.lib.php';
 
-class kloudspeakerZipRaw implements kloudspeakerCompressor {
+class KloudspeakerZipRaw implements KloudspeakerCompressor {
 	private $env;
 	private $name;
 	private $zip;
 
 	function __construct($env) {
 		$this->env = $env;
-		$this->name = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . uniqid('kloudspeaker', true) . 'zip';
+		$this->name = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . uniqid('Kloudspeaker', true) . 'zip';
 		$this->zip = new zipfile();
 	}
 

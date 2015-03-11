@@ -10,14 +10,14 @@
 
 require_once "MetadataDao.class.php";
 
-class kloudspeaker_MetadataController {
+class Kloudspeaker_MetadataController {
 	private $env;
 	private $dao;
 	private $_cache = array();
 
 	public function __construct($env) {
 		$this->env = $env;
-		$this->dao = new kloudspeaker_MetadataDao($this->env);
+		$this->dao = new Kloudspeaker_MetadataDao($this->env);
 	}
 
 	public function initialize() {

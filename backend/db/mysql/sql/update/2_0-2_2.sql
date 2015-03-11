@@ -11,6 +11,6 @@ CREATE TABLE `{TABLE_PREFIX}user_auth` (
   `a1hash` char(128) NULL,
   PRIMARY KEY (`user_id`),
   KEY `fk_ua_user` (`user_id`)
-) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'kloudspeaker user auth';
+) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Kloudspeaker user auth';
 
 INSERT INTO `{TABLE_PREFIX}user_auth` (user_id, type, salt, hash) SELECT id as user_id, auth as type, '-' as salt, '-' as hash FROM `{TABLE_PREFIX}user`;

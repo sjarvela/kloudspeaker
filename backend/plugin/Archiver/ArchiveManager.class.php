@@ -81,17 +81,17 @@ class ArchiveManager {
 	}
 
 	private function getCompressor() {
-		require_once 'kloudspeakerCompressor.class.php';
+		require_once 'KloudspeakerCompressor.class.php';
 
 		if ($this->compressor == NULL || strcasecmp($this->compressor, "ziparchive") === 0) {
-			require_once 'zip/kloudspeakerZipArchive.class.php';
-			return new kloudspeakerZipArchive($this->env);
+			require_once 'zip/KloudspeakerZipArchive.class.php';
+			return new KloudspeakerZipArchive($this->env);
 		} else if (strcasecmp($this->compressor, "native") === 0) {
-			require_once 'zip/kloudspeakerZipNative.class.php';
-			return new kloudspeakerZipNative($this->env);
+			require_once 'zip/KloudspeakerZipNative.class.php';
+			return new KloudspeakerZipNative($this->env);
 		} else if (strcasecmp($this->compressor, "raw") === 0) {
-			require_once 'zip/kloudspeakerZipRaw.class.php';
-			return new kloudspeakerZipRaw($this->env);
+			require_once 'zip/KloudspeakerZipRaw.class.php';
+			return new KloudspeakerZipRaw($this->env);
 		}
 
 		throw new ServiceException("INVALID_CONFIGURATION", "Unsupported compressor configured: " . $this->compressor);

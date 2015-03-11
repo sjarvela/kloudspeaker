@@ -23,7 +23,7 @@ class UpdateController {
 		}
 
 		$this->installer->processor()->createEnvironment($this->installer->db());
-		//if (!$this->installer->processor()->authentication()->isAdmin()) die("kloudspeaker Updater requires administrator user");
+		//if (!$this->installer->processor()->authentication()->isAdmin()) die("Kloudspeaker Updater requires administrator user");
 
 		if ($this->installer->isCurrentVersionInstalled() and $this->arePluginsUptodate()) {
 			$this->installer->processor()->showPage("current_installed");
@@ -105,7 +105,7 @@ class UpdateController {
 		}
 
 		if (!in_array($current, $versionHistory)) {
-			$this->installer->processor()->setError("Updater error", "kloudspeaker updater does not contain the update required to update to current version, <a href='https://github.com/sjarvela/kloudspeaker/issues'>report a new updater issue</a>");
+			$this->installer->processor()->setError("Updater error", "Kloudspeaker updater does not contain the update required to update to current version, <a href='https://github.com/sjarvela/kloudspeaker/issues'>report a new updater issue</a>");
 			$this->installer->processor()->showPage("update_error");
 		}
 
@@ -125,7 +125,7 @@ class UpdateController {
 			$stepFrom = $stepTo;
 		}
 
-		return "kloudspeaker updated to " . $this->versionString($current);
+		return "Kloudspeaker updated to " . $this->versionString($current);
 	}
 
 	private function updatePlugin($id, $plugin) {
@@ -182,9 +182,9 @@ class UpdateController {
 		$systemCurrent = $this->installer->currentVersion();
 
 		if (strcmp($systemInstalled, $systemCurrent) != 0) {
-			$result .= 'kloudspeaker system requires an update to version <b>' . $this->versionString($systemCurrent) . '</b>';
+			$result .= 'Kloudspeaker system requires an update to version <b>' . $this->versionString($systemCurrent) . '</b>';
 		} else {
-			$result .= 'kloudspeaker system is up-to-date.';
+			$result .= 'Kloudspeaker system is up-to-date.';
 		}
 
 		$installedPlugins = array();

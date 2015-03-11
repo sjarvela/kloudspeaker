@@ -9,7 +9,7 @@
  * License: http://www.kloudspeaker.com/license.php
  */
 
-require_once "install/kloudspeakerInstallProcessor.class.php";
+require_once "install/KloudspeakerInstallProcessor.class.php";
 require_once "include/ServiceEnvironment.class.php";
 require_once "db/sqlite/DatabaseUtil.class.php";
 require_once "install/sqlite/SQLiteInstallUtil.class.php";
@@ -22,7 +22,7 @@ class SQLiteInstaller {
 
 	public function __construct($settings, $type = "install") {
 		$this->type = $settings["db"]["type"];
-		$this->processor = new kloudspeakerInstallProcessor($type, "sqlite", $settings);
+		$this->processor = new KloudspeakerInstallProcessor($type, "sqlite", $settings);
 
 		$this->configured = isset($settings["db"]["file"]);
 		$this->db = $this->createDB($settings["db"]["file"]);
@@ -40,10 +40,10 @@ class SQLiteInstaller {
 	private function createDB($file) {
 		if (strcasecmp($this->type, "sqlite3") == 0) {
 			require_once "db/sqlite/SQLite3Database.class.php";
-			return new kloudspeakerSQLite3Database($file);
+			return new KloudspeakerSQLite3Database($file);
 		}
 		require_once "db/sqlite/SQLiteDatabase.class.php";
-		return new kloudspeakerSQLiteDatabase($file);
+		return new KloudspeakerSQLiteDatabase($file);
 	}
 
 	public function util() {
@@ -74,14 +74,14 @@ class SQLiteInstaller {
 		try {
 			$ver = $this->dbUtil->installedVersion();
 		} catch (ServiceException $e) {
-			Logging::logDebug('kloudspeaker not installed');
+			Logging::logDebug('Kloudspeaker not installed');
 			return FALSE;
 		}
 
 		if ($ver != NULL) {
-			Logging::logDebug('kloudspeaker installed version: ' . $ver);
+			Logging::logDebug('Kloudspeaker installed version: ' . $ver);
 		} else {
-			Logging::logDebug('kloudspeaker not installed');
+			Logging::logDebug('Kloudspeaker not installed');
 		}
 
 		return $ver != NULL;
@@ -155,14 +155,14 @@ class SQLiteInstaller {
 			try {
 				new SQLite3(":memory:"); //try to create SQLite3 instance to see if it is installed
 			} catch (Exception $e) {
-				$this->processor->setError("SQLite not detected", "kloudspeaker cannot be installed to this system when SQLite is not available. Check your system configuration or choose different configuration type.");
+				$this->processor->setError("SQLite not detected", "Kloudspeaker cannot be installed to this system when SQLite is not available. Check your system configuration or choose different configuration type.");
 				$this->processor->showPage("install_error");
 			}
 			return;
 		}
 
 		if (!function_exists('sqlite_open')) {
-			$this->processor->setError("SQLite not detected", "kloudspeaker cannot be installed to this system when SQLite is not available. Check your system configuration or choose different configuration type.");
+			$this->processor->setError("SQLite not detected", "Kloudspeaker cannot be installed to this system when SQLite is not available. Check your system configuration or choose different configuration type.");
 			$this->processor->showPage("install_error");
 		}
 	}
@@ -174,7 +174,7 @@ class SQLiteInstaller {
 
 		$this->processor->createEnvironment($this->db);
 		if (!$this->processor->authentication()->isAdmin()) {
-			die("kloudspeaker Installer requires administrator user");
+			die("Kloudspeaker Installer requires administrator user");
 		}
 
 		$this->processor->showPage("installed");

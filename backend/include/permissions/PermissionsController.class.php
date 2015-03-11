@@ -10,7 +10,7 @@
 
 require_once "PermissionsDao.class.php";
 
-class kloudspeaker_PermissionsController {
+class Kloudspeaker_PermissionsController {
 	private $env;
 	private $dao;
 	private $genericPermissions = array();
@@ -21,7 +21,7 @@ class kloudspeaker_PermissionsController {
 
 	public function __construct($env) {
 		$this->env = $env;
-		$this->dao = new kloudspeaker_PermissionsDao($this->env);
+		$this->dao = new Kloudspeaker_PermissionsDao($this->env);
 	}
 
 	public function initialize() {
@@ -418,9 +418,9 @@ class kloudspeaker_PermissionsController {
 
 			"keys" => array(
 				"generic" => array_keys($types["generic"]),
-				"filesystem" => array_keys($types["filesystem"]),
+				"filesystem" => array_keys($types["filesystem"])
 			),
-			"values" => array_merge($types["generic"], $types["filesystem"]),
+			"values" => array_merge($types["generic"], $types["filesystem"])
 		);
 		$t["keys"]["all"] = array_merge($t["keys"]["generic"], $t["keys"]["filesystem"]);
 

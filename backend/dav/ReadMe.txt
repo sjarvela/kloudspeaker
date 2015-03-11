@@ -1,9 +1,9 @@
-kloudspeaker DAV plugin is based on SabreDAV framework from Rooftop Solutions (http://code.google.com/p/sabredav/), which is released under New BSD License (http://www.opensource.org/licenses/bsd-license.php).
+Kloudspeaker DAV plugin is based on SabreDAV framework from Rooftop Solutions (http://code.google.com/p/sabredav/), which is released under New BSD License (http://www.opensource.org/licenses/bsd-license.php).
 
 INSTALLATION
 ============
 
-	Copy folder "dav" under kloudspeaker backend folder, and continue with configuration.
+	Copy folder "dav" under Kloudspeaker backend folder, and continue with configuration.
 
 CONFIGURATION
 =============
@@ -23,7 +23,7 @@ CONFIGURATION
 
 2) Script location
 
-	If dav folder needs to be located somewhere else than under kloudspeaker backend, modify "index.php" and update variables $kloudspeaker_BACKEND_ROOT and $BASE_URI (see previous chapter) accordingly.
+	If dav folder needs to be located somewhere else than under Kloudspeaker backend, modify "index.php" and update variables $KLOUDSPEAKER_BACKEND_ROOT and $BASE_URI (see previous chapter) accordingly.
 
 3) Authentication
 

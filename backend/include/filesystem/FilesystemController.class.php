@@ -37,7 +37,7 @@ class FilesystemController {
 	public $allowFilesystems = FALSE;
 
 	function __construct($env) {
-		require_once "kloudspeakerFilesystem.class.php";
+		require_once "KloudspeakerFilesystem.class.php";
 		require_once "LocalFilesystem.class.php";
 		require_once "FilesystemItem.class.php";
 		require_once "BaseSearcher.class.php";
@@ -48,7 +48,7 @@ class FilesystemController {
 
 		$this->env = $env;
 		$this->idProvider = new ItemIdProvider($env);
-		$this->metadata = new kloudspeaker_MetadataController($env);
+		$this->metadata = new Kloudspeaker_MetadataController($env);
 
 		$this->allowedUploadTypes = $env->settings()->setting('allowed_file_upload_types');
 		$this->forbiddenUploadTypes = $env->settings()->setting('forbidden_file_upload_types');

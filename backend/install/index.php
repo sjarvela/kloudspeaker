@@ -13,7 +13,7 @@ $MAIN_PAGE = "install";
 $installer = NULL;
 
 set_include_path(realpath('../') . PATH_SEPARATOR . get_include_path());
-require_once "kloudspeakerInstallProcessor.class.php";
+require_once "KloudspeakerInstallProcessor.class.php";
 require_once "install/DefaultInstaller.class.php";
 
 chdir("..");

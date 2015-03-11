@@ -1,7 +1,7 @@
 <?php
 
 /**
- * kloudspeakerCompressor.class.php
+ * KloudspeakerCompressor.class.php
  *
  * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
@@ -9,7 +9,7 @@
  * License: http://www.kloudspeaker.com/license.php
  */
 
-interface kloudspeakerCompressor {
+interface KloudspeakerCompressor {
 	function acceptFolders();
 
 	function add($name, $path, $size = 0);

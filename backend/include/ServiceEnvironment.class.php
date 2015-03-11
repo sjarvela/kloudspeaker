@@ -54,10 +54,10 @@ class ServiceEnvironment {
 		$this->authentication = new Authentication($this);
 		$this->eventHandler = new EventHandler($this);
 		$this->filesystem = new FilesystemController($this);
-		$this->permissions = new kloudspeaker_PermissionsController($this);
+		$this->permissions = new Kloudspeaker_PermissionsController($this);
 		$this->plugins = new PluginController($this);
 		$this->resources = new ResourceLoader($this);
-		$this->passwordHash = new kloudspeaker_PasswordHash($this->settings);
+		$this->passwordHash = new Kloudspeaker_PasswordHash($this->settings);
 
 		if ($settings->hasSetting('timezone')) {
 			date_default_timezone_set($settings->setting('timezone'));
@@ -67,7 +67,7 @@ class ServiceEnvironment {
 
 	private function createMailSender() {
 		require_once $this->settings->setting("mail_sender_class");
-		return new kloudspeaker_MailSender($this);
+		return new Kloudspeaker_MailSender($this);
 	}
 
 	private function createUrlRetriever() {

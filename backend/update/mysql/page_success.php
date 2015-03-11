@@ -19,11 +19,11 @@ function version($ver) {
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 
 <html>
-	<?php pageHeader("kloudspeaker Update");?>
+	<?php pageHeader("Kloudspeaker Update");?>
 	<?php pageBody("Update Complete");?>
 
 	<p>
-		kloudspeaker was successfully updated with following updates:
+		Kloudspeaker was successfully updated with following updates:
 		<ul>
 <?php
 $updates = $installer->data("updates");

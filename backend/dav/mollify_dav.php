@@ -1,6 +1,6 @@
 <?php
 // DON'T MODIFY THIS FILE
-set_include_path('lib/' . PATH_SEPARATOR . $kloudspeaker_BACKEND_ROOT . PATH_SEPARATOR . get_include_path());
+set_include_path('lib/' . PATH_SEPARATOR . $KLOUDSPEAKER_BACKEND_ROOT . PATH_SEPARATOR . get_include_path());
 
 require_once "configuration.php";
 require_once "include/Logging.class.php";
@@ -9,7 +9,7 @@ require_once "include/Util.class.php";
 global $CONFIGURATION;
 Logging::initialize($CONFIGURATION);
 
-require_once "include/kloudspeakerBackend.class.php";
+require_once "include/KloudspeakerBackend.class.php";
 require_once "include/configuration/ConfigurationDao.class.php";
 require_once "include/Settings.class.php";
 require_once "include/Request.class.php";
@@ -91,7 +91,7 @@ class WebDavSession extends Session {
 	public function removeAllSessionBefore($time) {}
 }
 
-class kloudspeaker_DAV_Request {
+class Kloudspeaker_DAV_Request {
 	private $windowsClient = FALSE;
 
 	public function init($rq) {
@@ -132,7 +132,7 @@ function checkUploadSize() {
 	}
 }
 
-class kloudspeaker_DAV_Root extends Sabre_DAV_Directory {
+class Kloudspeaker_DAV_Root extends Sabre_DAV_Directory {
 	private $env;
 	private $roots;
 
@@ -144,18 +144,18 @@ class kloudspeaker_DAV_Root extends Sabre_DAV_Directory {
 	function getChildren() {
 		$children = array();
 		foreach ($this->roots as $root) {
-			$children[] = new kloudspeaker_DAV_Folder($this->env, $root);
+			$children[] = new Kloudspeaker_DAV_Folder($this->env, $root);
 		}
 
 		return $children;
 	}
 
 	function getName() {
-		return "kloudspeaker";
+		return "Kloudspeaker";
 	}
 }
 
-class kloudspeaker_DAV_Folder extends Sabre_DAV_Directory {
+class Kloudspeaker_DAV_Folder extends Sabre_DAV_Directory {
 	private $env;
 	private $folder;
 
@@ -175,10 +175,10 @@ class kloudspeaker_DAV_Folder extends Sabre_DAV_Directory {
 
 	private function createItem($item) {
 		if ($item->isFile()) {
-			return new kloudspeaker_DAV_File($this->env, $item);
+			return new Kloudspeaker_DAV_File($this->env, $item);
 		}
 
-		return new kloudspeaker_DAV_Folder($this->env, $item);
+		return new Kloudspeaker_DAV_Folder($this->env, $item);
 	}
 
 	public function createFile($name, $data = null) {
@@ -223,7 +223,7 @@ class kloudspeaker_DAV_Folder extends Sabre_DAV_Directory {
 	}
 }
 
-class kloudspeaker_DAV_File extends Sabre_DAV_File {
+class Kloudspeaker_DAV_File extends Sabre_DAV_File {
 	private $env;
 	private $file;
 
@@ -305,7 +305,7 @@ class kloudspeaker_DAV_File extends Sabre_DAV_File {
 	}
 }
 
-class kloudspeaker_DAV_Server extends Sabre_DAV_Server {
+class Kloudspeaker_DAV_Server extends Sabre_DAV_Server {
 	public function exec() {
 		Logging::logDebug("WebDAV request: " . Util::array2str($this->httpRequest->getHeaders()));
 		parent::exec();
@@ -320,7 +320,7 @@ try {
 
 	$env = new ServiceEnvironment($db, $session, new VoidResponseHandler(), $conf, $settings);
 	$env->plugins()->setup();
-	$rq = new kloudspeaker_DAV_Request();
+	$rq = new Kloudspeaker_DAV_Request();
 	$env->initialize($rq);
 
 	if (isset($BASIC_AUTH) and $BASIC_AUTH == TRUE) {
@@ -384,7 +384,7 @@ try {
 
 	$session->init($user);
 
-	$dav = new kloudspeaker_DAV_Server(new kloudspeaker_DAV_Root($env));
+	$dav = new Kloudspeaker_DAV_Server(new Kloudspeaker_DAV_Root($env));
 	$rq->init($dav->httpRequest);
 
 	$dav->setBaseUri($BASE_URI);

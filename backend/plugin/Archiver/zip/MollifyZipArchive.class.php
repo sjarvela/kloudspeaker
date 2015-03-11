@@ -1,7 +1,7 @@
 <?php
 
 /**
- * kloudspeakerZipArchive.class.php
+ * KloudspeakerZipArchive.class.php
  *
  * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
@@ -9,7 +9,7 @@
  * License: http://www.kloudspeaker.com/license.php
  */
 
-class kloudspeakerZipArchive implements kloudspeakerCompressor {
+class KloudspeakerZipArchive implements KloudspeakerCompressor {
 	private $env;
 	private $name;
 	private $zip;
@@ -20,7 +20,7 @@ class kloudspeakerZipArchive implements kloudspeakerCompressor {
 		}
 
 		$this->env = $env;
-		$this->name = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . uniqid('kloudspeaker', true) . 'zip';
+		$this->name = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . uniqid('Kloudspeaker', true) . 'zip';
 		$this->zip = new ZipArchive();
 		if ($this->zip->open($this->name, ZIPARCHIVE::CREATE) !== TRUE) {
 			throw new ServiceException("REQUEST_FAILED", "Could not create zip " . $this->name);
