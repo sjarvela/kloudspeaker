@@ -1,0 +1,93 @@
+<script id="mollify-tmpl-plugin-notificator-notificationdetails" type="text/x-jquery-tmpl">
+	<div id="mollify-notificator-notificationdetails-content">
+		<legend>${notification.name}</legend>
+				
+		<div class="mollify-notificator-notificationdetails-section">
+			<div class="mollify-notificator-notificationdetails-events">
+			</div>
+		</div>
+
+		<div class="mollify-notificator-notificationdetails-section">
+			<div class="mollify-notificator-notificationdetails-eventusersgroups">
+			</div>
+		</div>
+
+		<div class="mollify-notificator-notificationdetails-section">
+			<div class="mollify-notificator-notificationdetails-usersgroups">
+			</div>
+		</div>
+
+		<div class="mollify-notificator-notificationdetails-section">		
+			<div class="mollify-notificator-notificationdetails-message-title">
+				<h4 class="localized" text-key="pluginNotificatorNotificationMessageTitle"></h4>
+				<a class="mollify-notificator-notificationdetails-editmessage btn" href="javascript: void(0);" class="btn"><i class="icon-edit"></i></a>
+			</div>
+			
+			<div class="mollify-notificator-notificationdetails-messagetitle"></div>
+			
+			<div class="mollify-notificator-notificationdetails-message well">
+			</div>
+		</div>
+	</div>
+</script>
+
+<script id="mollify-tmpl-notificator-editmessage" type="text/x-jquery-tmpl">
+	<div class="mollify-notificator-editmessage-dialog">
+		<form class="form-horizontal">
+			<div class="control-group">
+				<label class="control-label localized" text-key="pluginNotificatorNotificationEditMessageTitle"></label>
+				<div class="controls">
+					<input type="text" id="titleField">
+				</div>
+			</div>
+
+			<div class="control-group">
+				<label class="control-label localized" text-key="pluginNotificatorNotificationEditMessageMsg"></label>
+				<div class="controls">
+					<textarea id="messageField" rows="5"></textarea>
+				</div>
+			</div>
+			
+			<div class="accordion" id="mollify-notificator-editmessage-variables">
+				<div class="accordion-group">
+					<div class="accordion-heading">
+						<a class="accordion-toggle localized" text-key="pluginNotificatorNotificationEditMessageVariablesTitle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo"></a>
+					</div>
+					<div id="collapseTwo" class="accordion-body collapse">
+						<div class="accordion-inner localized" text-key="pluginNotificatorNotificationEditMessageVariablesTxt"></div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</script>
+
+<script id="mollify-tmpl-notificator-filtereditor" type="text/x-jquery-tmpl">
+	<div id="mollify-notificator-filtereditor-content" class="loading">
+		<div id="mollify-notificator-filtereditor-event">
+			<span class="name">${event.type}</span>
+		</div>
+		<table id="mollify-notificator-filtereditor-list" class="table">
+		</table>
+		
+		<h4 class="localized" text-key="pluginNotificatorNotificationNewFilter"></h4>
+		<div id="mollify-notificator-filtereditor-new">
+			<select id="mollify-notificator-filtereditor-new-type"></select>
+			<div id="mollify-notificator-filtereditor-new-value"></div>			
+			<button id="mollify-notificator-filtereditor-new-add" class="btn btn-success"><i class="icon-plus"></i></button>
+		</div>
+	</div>
+</script>
+
+<script id="mollify-tmpl-notificator-filtereditor-listremove" type="text/x-jquery-tmpl">
+	<div><i class='icon-trash'></i></div>
+</script>
+
+<script id="mollify-tmpl-notificator-filtereditor-folder" type="text/x-jquery-tmpl">
+	<input type="text" class="mollify-notificator-filtereditor-folder-value" disabled></input>
+	<button class="mollify-notificator-filtereditor-folder-select" class="btn">...</button>
+</script>
+
+<script id="mollify-tmpl-notificator-filtereditor-string" type="text/x-jquery-tmpl">
+	<input type="text" class="mollify-notificator-filtereditor-string-value"></input>
+</script>

@@ -1,0 +1,256 @@
+<script id="mollify-tmpl-configview" type="text/x-jquery-tmpl">
+	<div id="mollify-configview">
+		<h2 id="mollify-configview-header"></h2>
+		
+		<div id="mollify-configview-content">
+		</div>
+	</div>
+</script>
+
+<script id="mollify-tmpl-configlistview" type="text/x-jquery-tmpl">
+	<div class="mollify-configlistview">
+		<div class="mollify-configlistview-header">
+			{{if title}}
+			<div class="mollify-configlistview-title">${title}</div>
+			{{/if}}
+			{{if actions}}
+			<div class="mollify-configlistview-actions">
+				{{tmpl(actions) "#mollify-tmpl-configlistview-action"}}
+			</div>
+			{{/if}}
+			<div class="mollify-configlistview-options"></div>
+		</div>
+		<table class="mollify-configlistview-table"></table>
+	</div>
+</script>
+
+<script id="mollify-tmpl-configlistview-action" type="text/x-jquery-tmpl">
+	<a id="mollify-configlistview-action-${id}" class="mollify-configlistview-action btn ${cls}">{{if content}}{{html content}}{{/if}}{{if title}}${title}{{/if}}</a>
+</script>
+
+<script id="mollify-tmpl-config-useraccountview" type="text/x-jquery-tmpl">
+	<div id="mollify-config-useraccountview">
+		<form class="form-horizontal">
+			<div class="control-group">
+				<label class="control-label localized" text-key="configUserAccountUsernameTitle"></label>
+				<div class="controls">
+					<span class="uneditable-input">${user.name}</span>
+				</div>
+			</div>
+			
+			{{if features['change_password'] && user.auth == 'pw' && user.hasPermission("change_password")}}
+			<div class="control-group">
+				<label class="control-label localized" text-key="configUserAccountPasswordTitle"></label>
+				<div class="controls">
+					<a id="user-account-change-password-btn" class="btn localized" href="javascript: void(0);" text-key="configUserAccountPasswordAction"></a>
+				</div>
+			</div>
+			{{/if}}
+		</form>
+	</div>
+</script>
+
+<script id="mollify-tmpl-config-admin-user-searchoptions" type="text/x-jquery-tmpl">
+	<div class="mollify-admin-user-searchoptions accordion">
+		<div class="accordion-group">
+			<div class="accordion-heading">
+				<a class="accordion-toggle localized" data-toggle="collapse" href="#userSearchOptions" text-key="configAdminUserSearchOptionsTitle"></a>
+			</div>
+			<div id="userSearchOptions" class="accordion-body collapse">
+				<div class="accordion-inner">
+		      
+					<form class="form-horizontal">
+						<div class="control-group">
+							<label class="control-label localized" for="mollify-admin-user-searchoptions-name" text-key="configAdminUserSearchOptionsNameTitle"></label>
+							<div class="controls">
+								<input id="mollify-admin-user-searchoptions-name" type="text"></input>
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label localized" for="mollify-admin-user-searchoptions-email" text-key="configAdminUserSearchOptionsEmailTitle"></label>
+							<div class="controls">
+								<input id="mollify-admin-user-searchoptions-email" type="text"></input>
+							</div>
+						</div>
+					</form>
+		
+				</div>
+			</div>
+		</div>
+	</div>
+</script>
+
+<script id="mollify-tmpl-config-admin-userdialog" type="text/x-jquery-tmpl">
+	<div id="mollify-config-admin-userdialog-content">
+		<form class="form-horizontal">
+			<div class="control-group">
+				<label class="control-label localized" text-key="configAdminUserDialogUsernameTitle"></label>
+				<div class="controls">
+					<input type="text" id="usernameField">
+				</div>
+			</div>
+
+			{{if showLanguages}}
+			<div class="control-group">
+				<label class="control-label localized" text-key="configAdminUserDialogLanguageTitle"></label>
+				<div class="controls">
+					<select id="languageField">
+					</select>
+				</div>
+			</div>
+			{{/if}}
+
+			<div class="control-group">
+				<label class="control-label localized" text-key="configAdminUserDialogEmailTitle"></label>
+				<div class="controls">
+					<input type="text" id="emailField">
+				</div>
+			</div>
+			
+			{{if !user}}
+			<div class="control-group">
+				<label class="control-label localized" text-key="configAdminUserDialogPasswordTitle"></label>
+				<div class="controls">
+					<input type="text" id="passwordField">
+					<a id="generatePasswordBtn" class="btn localized" text-key="configAdminUserDialogGeneratePassword" href="javascript: void(0)"></a>
+				</div>
+			</div>
+			{{/if}}
+			
+			<div class="control-group">
+				<label class="control-label localized" text-key="configAdminUserDialogTypeTitle"></label>
+				<div class="controls">
+					<select id="typeField">
+					</select>
+				</div>
+			</div>
+			
+			<div class="control-group">
+				<label class="control-label localized" text-key="configAdminUserDialogAuthenticationTitle"></label>
+				<div class="controls">
+					<select id="authenticationField">
+					</select>
+				</div>
+			</div>
+			
+			<div class="control-group">
+				<label class="control-label localized" text-key="configAdminUserDialogExpirationTitle"></label>
+				<div class="controls">
+					<div id="expirationField" class="input-append">
+					    <input id="expirationFieldInput" type="text"></input>
+					    <span class="add-on">
+					      <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+					    </span>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</script>
+
+<script id="mollify-tmpl-config-admin-userchangepassworddialog" type="text/x-jquery-tmpl">
+	<div id="mollify-config-admin-userchangepassworddialog-content">
+		<form class="form-horizontal">
+			<div class="control-group">
+				<label class="control-label localized" text-key="configAdminUserDialogPasswordTitle"></label>
+				<div class="controls">
+					<input type="text" id="passwordField">
+					<a id="generatePasswordBtn" class="btn localized" text-key="configAdminUserDialogGeneratePassword" href="javascript: void(0)"></a>
+				</div>
+			</div>
+		</form>
+	</div>
+</script>
+
+<script id="mollify-tmpl-config-admin-userdetails" type="text/x-jquery-tmpl">
+	<div id="mollify-config-admin-userdetails-content">
+		<legend>${user.name}</legend>
+		
+		<div class="mollify-config-admin-userdetails-section">
+			<div class="mollify-config-admin-userdetails-folders">
+			</div>
+		</div>
+
+		<div class="mollify-config-admin-userdetails-section">
+			<div class="mollify-config-admin-userdetails-groups">
+			</div>
+		</div>
+		
+		<div class="mollify-config-admin-userdetails-section">
+			<div class="mollify-config-admin-userdetails-permissions">
+			</div>
+		</div>
+	</div>
+</script>
+
+<script id="mollify-tmpl-config-admin-groupdetails" type="text/x-jquery-tmpl">
+	<div id="mollify-config-admin-groupdetails-content">
+		<legend>${group.name}</legend>
+		
+		<div class="mollify-config-admin-groupdetails-section">
+			<div class="mollify-config-admin-groupdetails-users">
+			</div>
+		</div>
+
+		<div class="mollify-config-admin-groupdetails-section">
+			<div class="mollify-config-admin-groupdetails-folders">
+			</div>
+		</div>
+		
+		<div class="mollify-config-admin-groupdetails-section">
+			<div class="mollify-config-admin-groupdetails-permissions">
+			</div>
+		</div>
+	</div>
+</script>
+
+<script id="mollify-tmpl-config-admin-folderdialog" type="text/x-jquery-tmpl">
+	<div id="mollify-config-admin-folderdialog-content">
+		<form class="form-horizontal">
+			<div class="control-group">
+				<label class="control-label localized" text-key="configAdminFolderDialogNameTitle"></label>
+				<div class="controls">
+					<input type="text" id="nameField">
+				</div>
+			</div>
+			
+			<div class="control-group">
+				<label class="control-label localized" text-key="configAdminFolderDialogPathTitle"></label>
+				<div class="controls">
+					<input type="text" id="pathField">
+				</div>
+			</div>
+		</form>
+	</div>
+</script>
+
+<script id="mollify-tmpl-config-admin-folderdetails" type="text/x-jquery-tmpl">
+	<div id="mollify-config-admin-folderdetails-content">
+		<legend>${folder.name}</legend>
+		
+		<div class="mollify-config-admin-folderdetails-section">
+			<div class="mollify-config-admin-folderdetails-usersandgroups">
+			</div>
+		</div>
+	</div>
+</script>
+
+<script id="mollify-tmpl-config-admin-groupdialog" type="text/x-jquery-tmpl">
+	<div id="mollify-config-admin-groupdialog-content">
+		<form class="form-horizontal">
+			<div class="control-group">
+				<label class="control-label localized" text-key="configAdminGroupDialogNameTitle"></label>
+				<div class="controls">
+					<input type="text" id="nameField">
+				</div>
+			</div>
+			
+			<div class="control-group">
+				<label class="control-label localized" text-key="configAdminGroupsDescriptionTitle"></label>
+				<div class="controls">
+					<input type="text" id="descriptionField">
+				</div>
+			</div>
+		</form>
+	</div>
+</script>

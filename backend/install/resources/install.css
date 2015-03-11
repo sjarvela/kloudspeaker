@@ -1,0 +1,32 @@
+#content {
+	margin-top: 75px;
+}
+
+.bs-callout {
+	margin: 20px 0;
+	padding: 20px;
+	border-left: 3px solid #eee;
+}
+
+.bs-callout-danger {
+	background-color: #fdf7f7;
+	border-color: #d9534f;
+}
+
+.bs-callout-warning {
+	background-color: #fcf8f2;
+	border-color: #f0ad4e;
+}
+
+.bs-callout code {
+	white-space: normal;
+}
+
+.footer {
+	padding-top: 40px;
+	padding-bottom: 40px;
+	margin-top: 60px;
+	color: #777;
+	text-align: center;
+	border-top: 1px solid #e5e5e5;
+}

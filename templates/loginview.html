@@ -1,0 +1,47 @@
+<div id="mollify-login-main" class="mollify-fullpage-form-bg">
+	<div id="mollify-login-data" class="container mollify-fullpage-form center">
+		<div class="mollify-logo"></div>
+		
+		<legend class="localized" text-key="loginDialogTitle"></legend>
+
+		<div class="control-group">
+			<div class="controls">
+				<input id="mollify-login-name" type="text" class="hintbox" hint-key="loginDialogUsername"></input>
+			</div>
+		</div>
+
+		<div class="control-group">
+			<div class="controls">
+				<input id="mollify-login-password" type="password" class="hintbox" hint-key="loginDialogPassword"></input>
+			</div>
+		</div>
+			
+		<div class="control-group">
+			<div class="controls">
+				<label id="mollify-login-remember" class="checkbox inline">
+					<input id="mollify-login-remember-cb" type="checkbox" /><span class="localized" text-key="loginDialogRememberMe"></span>
+				</label>
+			</div>
+		</div>
+
+		<div class="control-group">
+			<div class="controls">
+				<a id="mollify-login-button" class="localized btn btn-large btn-primary primary-action" text-key="loginDialogLoginButton"></a>
+			</div>
+		</div>
+		
+		<div id="mollify-login-links">
+			<a href="javascript:void(0)" id="mollify-login-forgot-password" class="mollify-login-link link localized bubble-trigger" text-key="loginDialogResetPassword" style="display:none"></a>
+			<div id="mollify-login-forgot-password-bubble" style="display:none">
+				<div id="mollify-login-forgot-password-content" class="bubble-content">
+					<input id="mollify-login-forgot-email" type="text" class="hintbox" hint-key="resetPasswordPopupMessage"></input>
+					<a id="mollify-login-forgot-button" class="localized btn btn-small" text-key="resetPasswordPopupButton"></a>
+					<a id="mollify-login-forgot-button-hint" class="localized btn btn-small" text-key="sendPasswordHintPopupButton" style="display: none"></a>
+				</div>
+			</div>
+			<a href="javascript:void(0)" id="mollify-login-register" class="mollify-login-link link localized" text-key="loginDialogRegister" style="display:none"></a>
+		</div>
+	</div>
+	
+	<div id="mollify-notification-container" class="mollify-loginview-notification-container"></div>
+</div>

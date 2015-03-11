@@ -1,0 +1,519 @@
+<div id="mollify-mainview-header" class="navbar navbar-inverse navbar-fixed-top">
+	<div class="navbar-inner">
+		<div class="container-fluid">
+			<button type="button" id="mollify-mainview-navcollapse" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+      
+			<div id="mollify-mainview-logo" class="brand"></div>
+			
+			<div class="nav-collapse collapse navbar-responsive-collapse">
+				<ul id="mollify-mainview-menu" class="mollify-mainview-menubar nav pull-left"></ul>				
+				<ul id="mollify-mainview-user" class="nav pull-right"></ul>
+				<div id="mollify-mainview-viewtools" class="navbar-form form-inline pull-right"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="mollify-mainview-main" class="container-fluid">
+	<div id="mollify-mainview-content" class="row-fluid">
+		<div id="mollify-mainview-navlist-container" class="span3">
+			<div id="mollify-mainview-navlist-parent" class="well affix"></div>
+		</div>
+		
+		<div id="mollify-mainview-viewcontent" class="span9">
+		</div>
+	</div>
+</div>
+
+<script id="mollify-tmpl-main-notification" type="text/x-jquery-tmpl">
+	<div class="mollify-mainview-notification alert {{if type}}alert-${type}{{/if}} {{if cls}}${cls}{{/if}}">
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+		${message}
+	</div>
+</script>
+
+<script id="mollify-tmpl-main-username" type="text/x-jquery-tmpl">
+	{{if user}}
+	<li id="mollify-username-dropdown" class="dropdown">
+		<a href="#" class="dropdown-toggle">${user.name}&nbsp;<b class="caret"></b></a>
+	</li>
+	{{/if}}
+</script>
+
+<script id="mollify-tmpl-main-changepassword" type="text/x-jquery-tmpl">
+	<div id="mollify-mainview-changepassword">
+		<div id="mollify-mainview-changepassword-old" class="control-group">
+			<input class="hintbox mollify-mainview-changepassword-input" type="password" hint-key="mainviewChangePasswordOld"></input>
+			<span class="help-inline"></span>
+		</div>
+		<div id="mollify-mainview-changepassword-new1" class="control-group">
+			<input class="hintbox mollify-mainview-changepassword-input" type="password" hint-key="mainviewChangePasswordNew"></input>
+			<span class="help-inline"></span>
+		</div>
+		<div id="mollify-mainview-changepassword-new2" class="control-group">
+			<input class="hintbox mollify-mainview-changepassword-input" type="password" hint-key="mainviewChangePasswordVerify"></input>
+			<span class="help-inline"></span>
+		</div>
+		<div id="mollify-mainview-changepassword-hint" class="control-group">
+			<input class="hintbox mollify-mainview-changepassword-input" type="text" hint-key="mainviewChangePasswordHint" maxlength="128"></input>
+			<span class="help-inline"></span>
+		</div>
+	</div>
+</script>
+
+<script id="mollify-tmpl-main-menubar" type="text/x-jquery-tmpl">
+	<li class="mollify-mainview-menubar-item" title="${title}"><a href="javascript: void(0);">{{if icon}}<span class="mollify-mainview-menubar-item-icon"><i class="${icon}"></i></span>{{/if}}<span class="mollify-mainview-menubar-item-title">${title}</span></a></li>
+</script>
+
+<script id="mollify-tmpl-main-navbar" type="text/x-jquery-tmpl">
+	<ul class="mollify-mainview-navbar nav nav-list">
+		<li class="nav-header localized">${title}</li>
+		{{tmpl(items) "#mollify-tmpl-main-navbar-item"}}
+    </ul>
+</script>
+
+<script id="mollify-tmpl-main-navbar-item" type="text/x-jquery-tmpl">
+	<li class="mollify-mainview-navbar-item"><a href="javascript: void(0);">${title}</a></li>
+</script>
+
+<script id="mollify-tmpl-fileview" type="text/x-jquery-tmpl">
+	<div id="mollify-folderview">
+		<div id="mollify-folderview-detachholder"></div>
+		
+		<div id="mollify-folderview-header">
+			<div id="mollify-folderview-header-content"></div>
+			<div id="mollify-folderview-header-items"></div>
+		</div>
+		
+		<div id="mollify-folderview-items">
+		</div>
+		
+		<div id="mollify-mainview-progress" style="display: none">
+			<div class="title"></div>
+			<div class="speed"></div>
+			<div class="progress progress-striped active">
+				<div class="bar" style="width: 0%;"></div>
+			</div>
+		</div>
+	</div>
+</script>
+
+<script id="mollify-tmpl-fileview-tools" type="text/x-jquery-tmpl">
+	<div id="mollify-fileview-style-options" class="mollify-radio">
+		<button id="mollify-fileview-style-list" class="btn btn-inverse btn-flat fileview-style-option"><i class="icon-list-ul"></i></a>
+		<button id="mollify-fileview-style-small-icons" class="btn btn-inverse btn-flat fileview-style-option"><i class="icon-th"></i></a>
+		<button id="mollify-fileview-style-large-icons" class="btn btn-inverse btn-flat fileview-style-option"><i class="icon-th-large"></i></a>
+	</div>
+	<div id="mollify-fileview-search" class="input-append">
+		<input id="mollify-fileview-search-input" class="hintbox" type="text" hint-key="mainViewSearch">
+		<button class="btn" type="button"><i class="icon-search"></i></button>
+	</div>
+</script>
+
+<script id="mollify-tmpl-fileview-header" type="text/x-jquery-tmpl">
+	<div>
+		<div id="mollify-fileview-folder-tools"></div>
+		<div id="mollify-fileview-folder-actions"></div>
+	</div>
+	<div id="mollify-folder-name" class="mollify-folderview-title page-header no-detached"><h2>${folder.name}</h2><div id="mollify-fileview-folder-info"></div></div>
+	<div id="mollify-folder-description" class="no-detached"></div>
+</script>
+
+<script id="mollify-tmpl-fileview-header-custom" type="text/x-jquery-tmpl">
+	<div class="mollify-fileview-header-custom">
+		<div id="mollify-folder-name" class="mollify-folderview-title page-header"><h2>${name || folder.name}</h2></div>
+		<div>
+			<div id="mollify-fileview-folder-tools"></div>
+			<div id="mollify-fileview-folder-actions"></div>
+		</div>
+	</div>
+</script>
+
+<script id="mollify-tmpl-fileview-folder-hierarchy" type="text/x-jquery-tmpl">
+	<ul id="mollify-fileview-folder-hierarchy" class="breadcrumb">
+		<li id="mollify-folder-hierarchy-item-root">
+			<div class="btn-group">
+				<a class="dropdown-toggle" href="javascript: void(0);"></a>
+			</div>
+			<span class="divider">/</span>
+		</li>
+		{{tmpl(items) "#mollify-tmpl-fileview-folder-hierarchy-item"}}
+	</ul>
+</script>
+
+<script id="mollify-tmpl-fileview-folder-hierarchy-item" type="text/x-jquery-tmpl">
+	<li id="mollify-folder-hierarchy-item-${id}" class="mollify-folder-hierarchy-item"><a href="javascript: void(0);">${name}</a> <span class="divider">/</span></li>
+</script>
+
+<script id="mollify-tmpl-fileview-foldertools-action" type="text/x-jquery-tmpl">
+	<div class="btn-group {{if ($item.data.style)}}${style}{{/if}}">
+	{{if ($item.data.dropdown && $item.data.action)}}
+		<button class="btn btn-flat">
+			{{if icon}}
+			<i class="${icon}"></i>
+			{{else}}
+			${$item.title()}
+			{{/if}}
+		</button>
+
+		<button class="btn btn-flat dropdown-toggle" data-toggle="dropdown">
+			<b class="caret"></b>
+		</button>
+	{{/if}}
+	{{if ($item.data.dropdown && !$item.data.action)}}
+		<a class="btn btn-flat dropdown-toggle" href="#">
+			{{if icon}}
+			<i class="${icon}"></i>
+			{{else}}
+			${$item.title()}
+			{{/if}}
+			&nbsp;<b class="caret"></b>
+		</a>
+	{{/if}}
+	{{if (!$item.data.dropdown)}}
+		<button class="btn btn-flat foldertool">
+			{{if icon}}
+			<i class="${icon}"></i>
+			{{else}}
+			${$item.title()}
+			{{/if}}
+		</button>
+	{{/if}}
+	</div>
+</script>
+
+<script id="mollify-tmpl-main-createfolder-bubble" type="text/x-jquery-tmpl">
+	<div id="mollify-mainview-createfolder-content">
+		<span id="mollify-mainview-createfolder-title" class="localized" text-key="mainviewCreateFolderTitle"></span>
+		<div id="mollify-mainview-createfolder-name" class="input-append pull-right">
+			<input id="mollify-mainview-createfolder-name-input" class="hintbox" type="text" hint-key="mainviewCreateFolderName">
+			<button id="mollify-mainview-createfolder-button" class="btn" type="button"><i class="icon-arrow-right"></i></button>
+		</div>
+	</div>
+</script>
+
+<script id="mollify-tmpl-main-addfile-bubble" type="text/x-jquery-tmpl">
+	<div id="mollify-mainview-addfile">
+		<div id="mollify-mainview-addfile-upload" class="mollify-mainview-addfile-section">
+			<div id="mollify-uploader-widget">
+				<span class="mollify-uploader-widget-title localized" text-key="uploaderWidgetTitle"></span>
+			</div>
+		</div>
+		
+		<div id="mollify-mainview-addfile-retrieve" class="mollify-mainview-addfile-section">
+			<span id="mollify-mainview-addfile-retrieve-title" class="localized" text-key="mainviewRetrieveFileTitle"></span>
+			<div class="input-append pull-right">
+				<input id="mollify-mainview-addfile-retrieve-url-input" class="hintbox" type="text" hint-key="mainviewRetrieveUrlTitle">
+				<button id="mollify-mainview-addfile-retrieve-button" class="btn" type="button"><i class="icon-arrow-right"></i></button>
+			</div>
+		</div>
+	</div>
+</script>
+
+<script id="mollify-tmpl-main-rootfolders" type="text/x-jquery-tmpl">
+	<div class="mollify-folderview-title root-list"><h2 class="localized" text-key="mainViewRootsTitle"></h2></div>
+	<div id="mollify-fileview-folder-actions" class="root-list"></div>
+</script>
+
+<script id="mollify-tmpl-main-searchresults" type="text/x-jquery-tmpl">
+	<div id="mollify-folder-name" class="mollify-folderview-title page-header">
+		<h2><span id="mollify-searchresults-title-text"></span></h2>
+		<div id="mollify-fileview-folder-actions"></div>
+	</div>
+	<div id="mollify-searchresults-desc"><span id="mollify-searchresults-desc-text"></span></div>
+</script>
+
+<script id="mollify-tmpl-filelist-header" type="text/x-jquery-tmpl">
+	<div id="${listId}-header" class="mollify-filelist-header">
+		<div id="${listId}-header-cols" class="mollify-filelist-header-cols">
+			<div class="mollify-filelist-col mollify-filelist-col-sel mollify-filelist-col-header"></div>
+			<div class="mollify-filelist-col mollify-filelist-col-icon mollify-filelist-col-header"></div>
+		</div>
+	</div>
+</script>
+
+<script id="mollify-tmpl-filelist" type="text/x-jquery-tmpl">
+	<div id="${listId}" class="mollify-filelist">
+		<div id="${listId}-items" class="mollify-filelist-items"></div>
+	</div>
+</script>
+
+<script id="mollify-tmpl-filelist-headercol" type="text/x-jquery-tmpl">
+	<div id="mollify-filelist-col-header-${id}" class="mollify-filelist-col mollify-filelist-col-${id} mollify-filelist-col-header">
+		<div class="mollify-filelist-col-header-title">${$item.title($data)}</div>
+		<div class="mollify-filelist-col-sort-indicator"></div>
+	</div>
+</script>
+
+<script id="mollify-tmpl-filelist-item" type="text/x-jquery-tmpl">
+	<div id="mollify-filelist-item-${id}" class="mollify-filelist-item ${$item.typeClass($data)}" unselectable="on">
+		<div class="mollify-filelist-col mollify-filelist-col-sel">
+			<i class="mollify-filelist-item-sel unselected icon-check-empty"></i>
+			<i class="mollify-filelist-item-sel selected icon-check"></i>
+		</div>
+		<div class="mollify-filelist-col mollify-filelist-col-icon">
+			<div class="mollify-filelist-item-icon"></div>
+		</div>
+		{{each(c,col) $item.cols}}
+			<div class="mollify-filelist-col mollify-filelist-col-${col.id}" style="${$item.itemColStyle($data, col)}" title="${$item.itemColTitle($data, col)}">{{html $item.col($data, col)}}</div>
+		{{/each}}
+	</div>
+</script>
+
+<script id="mollify-tmpl-iconview" type="text/x-jquery-tmpl">
+	<div id="${viewId}" class="mollify-iconview">
+	</div>
+</script>
+
+<script id="mollify-tmpl-iconview-item" type="text/x-jquery-tmpl">
+	<div id="mollify-iconview-item-${id}" title="${name}" class="mollify-iconview-item ${$item.typeClass($data)}">
+		{{if $item.showThumb($data)}}
+		<div class="mollify-iconview-item-icon-thumb"><img src="${$item.thumbUrl($data)}"></img></div>
+		{{else}}
+		<div class="mollify-iconview-item-icon"></div>
+		{{/if}}
+		<div class="mollify-iconview-item-label">${name}</div>
+		<div class="mollify-iconview-item-info"><i class="icon-info-sign"></i></div>
+		<div class="mollify-iconview-item-sel">
+			<i class="mollify-iconview-item-sel-option unselected icon-check-empty"></i>
+			<i class="mollify-iconview-item-sel-option selected icon-check"></i>
+		</div>
+	</div>
+</script>
+
+<script id="mollify-tmpl-main-itemcontext" type="text/x-jquery-tmpl">
+	<div id="mollify-itemcontext-${id}" class="mollify-itemcontext">
+		<div class="mollify-itemcontext-content loading"></div>
+	</div>
+</script>
+
+<script id="mollify-tmpl-main-itemcontext-content" type="text/x-jquery-tmpl">
+	{{if showDescription}}
+	<div id="mollify-itemcontext-description">
+		${description}
+	</div>
+	{{/if}}
+	<div id="mollify-itemcontext-actions" class="btn-toolbar">
+		{{if primaryActions}}
+		{{each primaryActions}}
+		{{if type == 'submenu'}}
+		<div class="btn-group">
+			<li class="mollify-itemcontext-primary-action-button">
+				<button class="btn btn-primary dropdown-toggle">${$item.title($value)}&nbsp;<b class="caret"></b></button>
+			</li>
+		</div>
+		{{else}}
+		<div class="btn-group">
+			<button class="mollify-itemcontext-primary-action-button btn btn-primary">${$item.title($value)}</button>
+		</div>
+		{{/if}}
+		{{/each}}
+		{{/if}}
+		
+		<div class="btn-group">
+			<li id="mollify-itemcontext-secondary-actions">
+				<button class="btn dropdown-toggle localized" text-key="secondaryActions">&nbsp;<b class="caret"></b></button>
+			</li>
+		</div>
+	</div>
+	<div id="mollify-itemcontext-details">
+		<ul id="mollify-itemcontext-details-selectors" class="nav nav-tabs">
+		</ul>
+		<div id="mollify-itemcontext-details-content">
+		</div>
+	</div>
+</script>
+
+<script id="mollify-tmpl-main-itemcontext-details-section" type="text/x-jquery-tmpl">
+	<div id="mollify-itemcontext-details-${id}" class="mollify-itemcontext-details">
+	</div>
+</script>
+
+<script id="mollify-tmpl-main-itemcontext-details-selector" type="text/x-jquery-tmpl">
+	<li id="mollify-itemcontext-details-selector-${id}" class="mollify-itemcontext-details-selector"><a href="javascript: void(0);">${title}</a></li>
+</script>
+
+<script id="mollify-tmpl-fileviewereditor-popup" type="text/x-jquery-tmpl">
+	<div class="lightbox hide fade" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class='lightbox-header'>
+			<button type="button" class="close" aria-hidden="true">&times;</button>
+		</div>
+		<div class='lightbox-content'>
+			<div class="carousel slide">
+			  <div class="carousel-inner">
+			  	{{each items}}
+			    	<div id="mollify-fileviewereditor-viewer-item-${$value.item.id}" class="mollify-fileviewereditor-viewer-item item {{if $value.init}}active{{/if}}">
+			    		<div class="mollify-fileviewereditor-viewer-item-content loading">
+			    		</div>
+			    		<div class="carousel-caption">
+			    			<h4>${$value.item.name}</h4>
+			    			<div class="mollify-fileviewereditor-viewer-tools">
+			    				{{if $value.full}}
+			    				<a href="javascript: void(0);" class="mollify-fileviewereditor-viewer-item-viewinnewwindow localized" text-key="fileViewerEditorViewInNewWindowTitle"></a>
+			    				{{/if}}
+			    				{{if $value.edit}}
+			    				<a href="javascript: void(0);" class="mollify-fileviewereditor-viewer-item-edit localized" text-key="fileViewerEditorViewEditTitle"></a>
+			    				{{/if}}
+			    			</div>
+			    		</div>
+			    	</div>
+			    {{/each}}
+			  </div>
+			  {{if ($item.data.items.length > 1)}}
+			  <a class="carousel-control left" href="javascript: void(0);">&lsaquo;</a>
+			  <a class="carousel-control right" href="javascript: void(0);">&rsaquo;</a>
+			  {{/if}}
+			</div>
+		</div>
+	</div>
+</script>
+
+<script id="mollify-tmpl-permission-editor" type="text/x-jquery-tmpl">
+	<div id="mollify-pluginpermissions-editor-content">
+		<div class="mollify-pluginpermissions-editor-permission-selector">
+			<h4 class="localized" text-key="pluginPermissionsEditDialogPermissionName"></h4><select id="mollify-pluginpermissions-editor-permission-name"></select>
+		</div>
+				
+		<ul id="mollify-pluginpermissions-editor-tab" class="nav nav-tabs">
+			<li id="mollify-pluginpermissions-editor-item-permissions">
+				<a href="javascript: void(0)" class="localized" text-key="pluginPermissionsEditDialogItemPermissions"></a>
+			</li>
+			<li id="mollify-pluginpermissions-editor-user-permissions">
+				<a href="javascript: void(0)" class="localized" text-key="pluginPermissionsEditDialogUserPermissions"></a>
+			</li>
+		</ul>
+		
+		<div id="mollify-pluginpermissions-editor-subcontent-container">
+			<div id="mollify-pluginpermissions-editor-subcontent-by-permission" class="mollify-pluginpermissions-editor-subcontent">
+				<table id="mollify-pluginpermissions-editor-permission-list" class="table">
+				</table>
+				<p>
+					<h5 class="localized" text-key="pluginPermissionsEditNewTitle"></h5>
+				</p>
+				<div id="mollify-pluginpermissions-editor-new">
+					<select id="mollify-pluginpermissions-editor-new-user">
+					</select>
+					<select id="mollify-pluginpermissions-editor-new-permission">
+					</select>
+					<button id="mollify-pluginpermissions-editor-new-add" class="btn btn-success"><i class="icon-plus"></i></button>
+				</div>
+			</div>
+			
+			<div id="mollify-pluginpermissions-editor-subcontent-by-user" class="mollify-pluginpermissions-editor-subcontent">
+				<div class="mollify-pluginpermissions-editor-user-selector">
+					<h5 class="localized" text-key="pluginPermissionsEditDialogUserPermissionsSelectUser"></h5>
+					<select id="mollify-pluginpermissions-editor-permission-user"></select>
+				</div>
+				
+				<p>
+					<span id="mollify-pluginpermissions-editor-user-permissions-description"></span>
+				</p>
+
+				<div id="mollify-pluginpermissions-editor-user-related-permissions" style="display: none">
+					<h5 class="localized" text-key="pluginPermissionsEffectiveUserRelatedPermissions"></h5>				
+					<table id="mollify-pluginpermissions-editor-user-permission-list" class="table">
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</script>
+
+<script id="mollify-tmpl-permission-context" type="text/x-jquery-tmpl">
+	<div id="mollify-pluginpermissions-context-content" class="loading">
+		<table id="mollify-pluginpermissions-context-permission-list" class="table">
+		</table>
+		<p>
+			<button id="mollify-pluginpermissions-context-edit" class="btn btn-primary localized" text-key="pluginPermissionsContextEditAction"></button>
+		</p
+	</div>
+</script>
+
+<script id="mollify-tmpl-permission-editor-listremove" type="text/x-jquery-tmpl">
+	<div><i class='icon-trash'></i></div>
+</script>
+
+<script id="mollify-tmpl-permission-generic-editor" type="text/x-jquery-tmpl">
+	<div id="mollify-pluginpermissions-editor-generic-content" class="loading">
+
+		<table id="mollify-pluginpermissions-editor-generic-permission-list" class="table">
+		</table>
+	</div>
+</script>
+
+<script id="mollify-tmpl-permission-admin-options" type="text/x-jquery-tmpl">
+	<div class="mollify-permission-admin-options accordion">
+		<div class="accordion-group">
+			<div class="accordion-heading">
+				<a class="accordion-toggle localized" data-toggle="collapse" href="#permissionOptions" text-key="pluginPermissionsAdminOptionsTitle"></a>
+			</div>
+			<div id="permissionOptions" class="accordion-body">
+				<div class="accordion-inner">
+		      
+					<form class="form-horizontal">
+						<div class="control-group">
+							<label class="control-label localized" for="permissions-name" text-key="pluginPermissionsAdminOptionName"></label>
+							<div class="controls">
+								<select id="permissions-name"></select>
+							</div>
+						</div>
+						
+						<div class="control-group">
+							<label class="control-label localized" for="permissions-user" text-key="pluginPermissionsAdminOptionUser"></label>
+							<div class="controls">
+								<select id="permissions-user"></select>
+							</div>
+						</div>
+						
+						<div class="control-group">
+							<label class="control-label localized" for="permissions-subject-option" text-key="pluginPermissionsAdminOptionSubject"></label>
+							<div class="controls">
+								<select id="permissions-subject"></select>
+								<div id="permissions-subject-filesystem-item-selector" style="display:none">
+									<input id="permissions-subject-filesystem-item-value" type="text" disabled></input>
+									<button id="permissions-subject-filesystem-item-select" class="btn">...</button>
+								</div>
+							</div>
+						</div>
+					</form>
+		
+				</div>
+			</div>
+		</div>
+	</div>
+</script>
+
+<script id="mollify-tmpl-mainview-dropbox" type="text/x-jquery-tmpl">
+	<div id="mollify-dropbox" class="closed">
+		<div id="mollify-dropbox-handle">
+			<div id="mollify-dropbox-handle-icon-open" class="mollify-dropbox-handle-icon">
+				<i class="icon-caret-left"></i>
+			</div>
+			<div id="mollify-dropbox-handle-icon-close" class="mollify-dropbox-handle-icon">
+				<i class="icon-caret-right"></i>
+			</div>
+		</div>
+		<div id="mollify-dropbox-container">
+			<div id="mollify-dropbox-content">
+				<div id="mollify-dropbox-list" class="well">
+				</div>
+				<div class="btn-group">
+					<li id="mollify-dropbox-actions">
+						<button class="btn dropdown-toggle"><i class="icon-cog"></i>&nbsp;<b class="caret"></b></button>
+					</li>
+				</div>
+			</div>
+		</div>
+	</div>
+</script>
+
+<script id="mollify-tmpl-mainview-dropbox-item" type="text/x-jquery-tmpl">
+	<div class="mollify-dropbox-list-item {{if is_file}}file{{else}}folder{{/if}}">
+		<div class="item-icon"></div>
+		<div class="item-label">${name}</div>
+		<a class="item-remove" href="javascript: void(0);"><i class="icon-trash"></i></a>
+	</div>
+</script>

@@ -1,0 +1,34 @@
+/* @override http://localhost:8888/mollify/install/resources/style.css */
+
+@import "../../resources/style.css";
+
+.user-data {
+	clear: both;
+}
+
+.user-data .title {
+	margin-left: 1px;
+	padding-top: 8px;
+}
+
+.user-data input {
+	float: left;
+	background-color: #f3f3f3;
+	border: 1px solid #aaacac;
+	height: 16px;
+	margin-top: 4px;
+}
+
+.user-data .validation-hint {
+	height: 17px;
+	float: left;
+	width: 200px;
+	padding-top: 7px;
+	padding-left: 4px;
+	font-style: italic;
+	color: #fea691;
+}
+
+.user-data.invalid input {
+	background-color: #edf4bf;
+}

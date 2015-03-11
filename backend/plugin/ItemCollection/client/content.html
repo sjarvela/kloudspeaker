@@ -1,0 +1,51 @@
+<table cellspacing=0 cellpadding=0 style="width:100%; height:100%">
+	<tr height="1%">
+		<td width="50%">
+			<div class="itemcollection-title localized" text-key="itemCollectionsTitleCollections"></div>
+		</td>
+		<td width="50%">
+			<div class="itemcollection-title localized" text-key="itemCollectionsTitleItems"></div>
+		</td>
+	</tr>
+	<tr height="98%">
+		<td width="50%">
+			<div id="itemcollection-list">
+				<div id="itemcollection-list-items"></div>
+			</div>
+		</td>
+		<td width="50%">
+			<div id="itemcollection-items-container">
+				<div id="itemcollection-items">
+					<div class="empty-message localized" text-key="itemCollectionsItemsListEmpty"></div>
+				</div>
+			</div>
+		</td>
+	</tr>
+	<tr height="1%">
+		<td align='left' style='vertical-align: top'>
+			<div class="itemcollection-dialog-buttons">
+				<button id="itemcollections-dialog-close" class="gwt-Button itemcollections-dialog-button localized" type="button" text-key="dialogCloseButton"></button>
+			</div>
+		</td>
+	</tr>
+</table>
+
+<script id="itemcollection-template" type="text/x-jquery-tmpl">
+	<div id="itemcollection-${id}" class="itemcollection">
+		<div class="itemcollection-info">
+			<div class="itemcollection-name">${name}</div>
+		</div>
+		<div class="itemcollection-actions">
+			<div class="itemcollection-action itemcollection-action-share localized" text-key="itemCollectionsDialogShareTitle"></div>
+			<div class="itemcollection-action itemcollection-action-remove localized" text-key="itemCollectionsDialogRemoveTitle"></div>
+		</div>
+	</div>
+</script>
+
+<script id="itemcollectionitem-template" type="text/x-jquery-tmpl">
+	<div id="itemcollectionitem-${id}" class="itemcollectionitem">
+		<div class="itemcollectionitem-info">
+			<div class="itemcollectionitem-name">${path} (${$item.root()})</div>
+		</div>
+	</div>
+</script>

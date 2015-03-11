@@ -1,0 +1,151 @@
+<script id="mollify-tmpl-shares" type="text/x-jquery-tmpl">
+	{{if !bubble}}
+	<div id="share-header">
+		<div id="share-item-path"></div>
+		<div id="share-item-name"></div>
+	</div>
+	{{/if}}
+	
+	<div id="share-list" class="well">
+		<div id="share-items-container">
+			<div id="share-items"><div class="loading"></div></div>
+			<a id="share-new" class="btn btn-primary"><i class="icon-plus"></i>&nbsp;<span class="localized" text-key="shareDialogShareAddTitle"></span></a>
+		</div>
+		<!--div id="share-context-container">
+			<div id="share-context"></div>
+		</div-->
+	</div>
+</script>
+
+<script id="share-template" type="text/x-jquery-tmpl">
+	<div id="share-${id}" class="${$item.itemClass()}">
+		<div class="share-info">
+			<div class="share-icon">
+				{{if restriction == 'private'}}
+				<i class="icon-user"></i>
+				{{else restriction == 'pw'}}
+				<i class="icon-lock"></i>
+				{{else}}
+				<i class="icon-globe"></i>
+				{{/if}}
+			</div>
+			<div class="share-name">{{html name || '<span class="localized" text-key="shareDialogUnnamedShareTitle"></span>'}}</div>
+		</div>
+		{{if active}}
+		<ul class="share-actions nav nav-pills">
+			<li class="share-link-toggle-item"><a class="share-link-toggle" href="javascript: void(0);"><i class="icon-external-link"></i>&nbsp;<span class="localized" text-key="shareDialogItemLinkTitle"></span></a></li>
+			<li><a class="share-link-copy" href="javascript: void(0);"><i class="icon-copy"></i>&nbsp;<span class="localized" text-key="shareDialogShareLinkCopyToClipboard"></span></a></li>
+			<li><a class="share-edit share-tool" href="javascript: void(0);"><i class="icon-edit"></i>&nbsp;<span class="localized" text-key="shareDialogShareEditButton"></span></a></li>
+			<li><a class="share-remove share-tool" href="javascript: void(0);"><i class="icon-trash"></i>&nbsp;<span class="localized" text-key="shareDialogShareRemoveButton"></span></a></li>
+		</ul>
+		<div class="share-link-content">
+			<div class="share-link-instructions localized" text-key="shareDialogShareLinkInstructions"></div>
+			<div class="share-link"><input type="text" readonly="yes" title="${$item.link()}" value="${$item.link()}"></input></div>
+		</div>
+		{{else}}
+		<div class="share-inactive-title localized" text-key="shareDialogItemInactiveLinkTitle"></div>
+		<ul class="share-actions nav nav-pills">
+			<li><a class="share-edit share-tool" href="javascript: void(0);"><i class="icon-edit"></i>&nbsp;<span class="localized" text-key="shareDialogShareEditButton"></span></a></li>
+			<li><a class="share-remove share-tool" href="javascript: void(0);"><i class="icon-trash"></i>&nbsp;<span class="localized" text-key="shareDialogShareRemoveButton"></span></a></li>
+		</ul>
+		{{/if}}
+	</div>
+</script>
+
+<script id="share-context-addedit-template" type="text/x-jquery-tmpl">
+	<form class="form-horizontal">
+		{{if !$item.data.editDialog}}
+		<legend class="primary localized" text-key="{{if $item.data.edit}}shareDialogShareEditTitle{{else}}shareDialogShareCreateNewTitle{{/if}}"></legend>
+		{{/if}}
+
+		<div class="control-group">
+			<label class="control-label localized" for="share-general-name" text-key="shareDialogShareNameTitle"></label>
+			<div class="controls">
+				<input id="share-general-name" type="text"></input>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label localized" for="share-general-active" text-key="shareDialogShareActiveTitle"></label>
+			<div class="controls">
+				<input id="share-general-active" type="checkbox"></input>
+			</div>
+		</div>
+		
+		<legend class="localized" text-key="shareDialogShareValidityTitle"></legend>
+		<div class="control-group">
+			<label class="control-label localized" for="share-validity-expirationdate-value" text-key="shareDialogShareExpirationTitle"></label>
+			<div class="controls">
+				<div id="share-validity-expirationdate-value" class="option-value input-append">
+				    <input id="share-validity-expirationdate-value-input" type="text"></input>
+				    <span class="add-on">
+				      <i data-time-icon="icon-time" data-date-icon="icon-calendar">
+				      </i>
+				    </span>
+				</div>
+			</div>
+		</div>
+		
+		<legend class="localized" text-key="shareDialogShareAccessTitle"></legend>
+		<div class="control-group">
+			<label class="control-label localized" for="shareAccess" text-key="shareDialogShareAccessRestrictionTitle"></label>
+			<div class="controls">
+				<label class="radio">
+					<input type="radio" name="shareAccess" id="share-access-norestriction" value="no">
+					<span class="localized" text-key="shareDialogShareAccessNoRestrictionTitle"></span>
+				</label>
+				<label class="radio">
+					<input type="radio" name="shareAccess" id="share-access-public-password" value="pw">
+					<span class="localized" text-key="shareDialogShareAccessPasswordTitle"></span>
+				</label>
+				<input id="share-access-public-password-value" type="text"></input>
+				<label class="radio">
+					<input type="radio" name="shareAccess" id="share-access-private-loggedin" value="login">
+					<span class="localized" text-key="shareDialogShareAccessLoggedInTitle"></span>
+				</label>
+			</div>
+		</div>
+	</form>
+	
+	{{if !$item.data.editDialog}}
+	<div id="context-buttons">
+		<button id="share-addedit-btn-ok" class="btn btn-primary localized" text-key="shareDialogSave"></button>
+		<button id="share-addedit-btn-cancel" class="btn localized" text-key="shareDialogCancel"></button>
+	</div>
+	{{/if}}
+</script>
+
+<script id="mollify-tmpl-share-admin-options" type="text/x-jquery-tmpl">
+	<div class="mollify-share-admin-options accordion">
+		<div class="accordion-group">
+			<div class="accordion-heading">
+				<a class="accordion-toggle localized" data-toggle="collapse" href="#shareOptions" text-key="pluginShareAdminOptionsTitle"></a>
+			</div>
+			<div id="shareOptions" class="accordion-body">
+				<div class="accordion-inner">
+		      
+					<form class="form-horizontal">
+						
+						<div class="control-group">
+							<label class="control-label localized" for="share-user" text-key="pluginPermissionsAdminOptionUser"></label>
+							<div class="controls">
+								<select id="share-user"></select>
+							</div>
+						</div>
+						
+						<div class="control-group">
+							<label class="control-label localized" for="share-item-option" text-key="pluginShareAdminOptionItem"></label>
+							<div class="controls">
+								<select id="share-item"></select>
+								<div id="share-filesystem-item-selector" style="display:none">
+									<input id="share-filesystem-item-value" type="text" disabled></input>
+									<button id="share-filesystem-item-select" class="btn">...</button>
+								</div>
+							</div>
+						</div>
+					</form>
+		
+				</div>
+			</div>
+		</div>
+	</div>
+</script>

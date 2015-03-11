@@ -1,0 +1,184 @@
+.filelist-item-share-info {
+	
+}
+
+.filelist-item-share-info.others {
+	color: #cecece;
+}
+
+#share-header {
+	margin: 0 0 8px 0;	
+}
+
+#share-list {
+	position: relative;
+	height: 254px;
+	margin: 0;
+	overflow: hidden;
+	min-width: 200px;
+}
+
+#share-items-container {
+	overflow-x: hidden;
+	overflow-y: auto;
+	height: 100%;
+}
+
+#share-items {
+	width: 100%;
+	min-height: 212px;
+}
+
+.no-share-items {
+	width: 530px;
+	float: left;
+	font-size: 23px;
+	color: #c6c6c6;
+	text-align: center;
+	height: 200px;
+	line-height: 200px;
+}
+
+.item-share {
+	position: relative;
+	width: 530px;
+	border-bottom: 1px dotted #adadad;
+	float: left;
+}
+
+.item-share.active, .item-share.hover {
+	background-color: #f8f8f8;
+}
+
+.share-info {
+	width: 100%;
+	float: left;
+	margin: 8px 0 0 8px;
+}
+
+.share-icon, .share-name {
+	float: left;
+}
+
+.share-name {
+	margin: 0 0 0 8px;
+}
+
+.item-share.unnamed .share-name {
+	font-style: italic;
+	color: cecece;
+}
+
+.item-share.inactive {
+	color: #d2d2d2;
+}
+
+.share-inactive-title {
+	position: absolute;
+	top: 0;
+	right: 0;
+	margin: 8px;
+}
+
+.share-link-content {
+	float: left;
+	display: none;
+	margin: 0 8px 8px 8px;
+}
+
+.share-link input {
+	width: 480px;
+}
+
+.share-actions {
+	float: left;
+	margin: 0 0 4px 4px;
+	font-size: 12px;
+}
+
+ul.share-actions a {
+	color: #92b5c6;
+	padding: 4px;
+}
+
+ul.share-actions a.share-tool {
+	visibility: hidden;
+}
+
+.item-share.hover ul.share-actions a {
+	visibility: visible;
+}
+
+.share-actions .share-remove {
+	color: #f689a5;
+}
+
+ul.share-actions a:hover {
+	color: #333333;
+}
+
+ul.share-actions a.share-link-copy:hover {
+	color: #92b5c6;
+	background-color: transparent;
+	cursor: default;
+}
+
+ul.share-actions a.hover {
+	color: #333333;
+	background-color: #eeeeee;
+	cursor: pointer;
+}
+
+#share-new {
+	height: 20px;
+	margin: 8px 0 0 0;
+}
+
+#share-context-container {
+	height: 260px;
+	position: absolute;
+	overflow: auto;
+	top: 300px;
+	width: 530px;
+	background-color: #f5f5f5;
+}
+
+.share-link-instructions {
+	font-size: 12px;
+	color: #898989;
+	margin: 0 0 4px 4px;
+}
+
+#share-context {
+	background-color: #f8f8f8;
+}
+
+#share-context .control-group {
+	margin-bottom: 8px;
+}
+
+#share-context legend + .control-group {
+	margin-top: 8px;	
+}
+
+#share-context legend {
+	font-size: 14px;
+	margin-bottom: 8px;
+	line-height: 30px;
+}
+
+#share-context legend.primary {
+	font-size: 19px;
+	font-weight: bold;
+}
+
+#share-access-public-password-value {
+	margin-left: 20px;
+}
+
+#share-access-public-password-value.error {
+	border-color: #b94a48;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+	-moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+	box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}

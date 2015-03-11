@@ -1,0 +1,111 @@
+<!--
+	Copyright (c) 2008- Samuli Järvelä
+
+	All rights reserved. This program and the accompanying materials
+	are made available under the terms of the Eclipse Public License v1.0
+	which accompanies this distribution, and is available at
+	http://www.eclipse.org/legal/epl-v10.html. If redistributing this code,
+	this entire header must remain intact.
+-->
+
+<div id="notificator-view">
+	<div class="toolbar">
+		<button id="button-add-notification" class="ui-state-default ui-corner-all">Add</button>
+		<button id="button-remove-notification" class="ui-state-default ui-state-disabled ui-corner-all">Remove</button>
+		<button id="button-refresh" class="ui-state-default ui-corner-all">Refresh</button>
+	</div>
+	<table id="notifications-list">
+	</table>
+	<div id="notification-details" class="configuration-details">
+	</div>
+</div>
+
+<div id="add-edit-notification-dialog" style="display:none">
+	<div class='form-data' id='data-notification-name'>
+		<div class='title'>Name:</div>
+		<input id='notification-name' class='form-data-value' type='text' name='name' value=''>
+	</div>
+</div>
+
+<div id="edit-notification-message-dialog" style="display:none">	
+	<div class='form-data' id='data-notification-message-title'>
+		<div class='title'>Title:</div>
+		<input id='notification-message-title' class='form-data-value' type='text' name='title' value=''>
+	</div>
+	
+	<div class='form-data' id='data-notification-message'>
+		<div class='title'>Message:</div>
+		<textarea rows="4" cols="70" id='notification-message' class='form-data-value' name='message' value=''/>
+	</div>
+	
+	<div class='toggle-panel'>
+		<div class='toggle-panel-title' id='notification-message-variables-toggle'>Variables</div>
+		<div class='toggle-panel-content' id='notification-message-variables'>
+			<p>
+				Following variables are available in the title and message for all event types:
+				<ul>
+					<li><code>%user_id%</code> User id</li>
+					<li><code>%username%</code> User name</li>
+					<li><code>%event_time%</code> Time of the event</li>
+					<li><code>%event_type%</code> Type of the event, for example "<code>filesystem/rename</code>"</li>
+					<li><code>%event_main_type%</code> Main type of the event, for example "<code>filesystem</code>"
+					<li><code>%event_sub_type%</code> Sub type of the event, for example "<code>rename</code>"
+				</ul>
+				
+				For filesystem events, following variables are available:
+				<ul>
+					<li><code>%item_id%</code> Id of the file or folder</li>
+					<li><code>%item_name%</code> Name of the file or folder</li>
+					<li><code>%item_path%</code> Mollify path of the file or folder</li>
+					<li><code>%item_internal_path%</code> Internal path of the file or folder (for local filesystem this the actual location in the filesystem)</li>
+					<li><code>%root_name%</code> Name of the published folder</li>
+					
+					<br/><b>Following applies only to rename, copy and move events:</b>
+					<li><code>%to_item_id%</code> Id of the target file or folder</li>
+					<li><code>%to_item_name%</code> Name of the target file or folder</li>
+					<li><code>%to_item_path%</code> Mollify path of the target file or folder</li>
+					<li><code>%to_item_internal_path%</code> Internal path of the target file or folder (for local filesystem this the actual location in the filesystem)</li>
+					<li><code>%to_root_name%</code> Name of the target published folder</li>
+				</ul>
+				
+				For session events (login, logout and failed login):
+				<ul>
+					<li><code>%ip%</code> IP address</li>
+					<li><code>%user%</code> (only for failed login) user name</li>
+				</ul>
+			</p>
+		</div>
+	</div>
+</div>
+
+<div id="edit-notification-events-dialog" style="display:none">
+	<p>Select events that trigger the notification, or clear the list to trigger it for any event.</p>
+	
+	<div class='form-data-left' id='data-notification-events-selected'>
+		<p>Selected events:</p>
+		<table id='notification-events-list'></table>
+		<button id="button-remove-notification-event" class="ui-state-default ui-corner-all">Remove</button>
+	</div>
+	
+	<div class='form-data-right' id='data-notification-events-available'>
+		<p>Available events:</p>
+		<table id='notification-events-available-list'></table>
+		<button id="button-add-notification-event" class="ui-state-default ui-corner-all">Add</button>
+	</div>
+</div>
+
+<div id="edit-notification-recipients-dialog" style="display:none">
+	<p>Select recipients that will receive the notification.</p>
+	
+	<div class='form-data-left' id='data-notification-recipients-selected'>
+		<p>Selected recipients:</p>
+		<table id='notification-recipients-list'></table>
+		<button id="button-remove-notification-recipient" class="ui-state-default ui-corner-all">Remove</button>
+	</div>
+	
+	<div class='form-data-right' id='data-notification-recipients-available'>
+		<p>Available recipients:</p>
+		<table id='notification-recipients-available-list'></table>
+		<button id="button-add-notification-recipient" class="ui-state-default ui-corner-all">Add</button>
+	</div>
+</div>

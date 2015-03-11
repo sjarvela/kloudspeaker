@@ -1,0 +1,21 @@
+{
+	"locale" : "hr",
+	"texts": {
+		"pluginEventLoggingAdminNavTitle" : "Događaji",
+		"pluginEventLoggingEventTypeTitle" : "Događaj",
+		"pluginEventLoggingUserTitle" : "Korisnik",
+		"pluginEventLoggingTimeTitle" : "Vrijeme",
+		"pluginEventLoggingIPTitle" : "IP",
+		"pluginEventLoggingAdminOptionsTitle" : "Filter",
+		"pluginEventLoggingAdminOptionEventType" : "Vrsta događaja:",
+		"pluginEventLoggingAdminOptionUser" : "Korisnik:",
+		"pluginEventLoggingAdminOptionTime" : "Vrijeme:",
+		"pluginEventLoggingAdminAny" : "Bilokoji",
+		"pluginEventLoggingAdminEventTypeCustom" : "Uobičajeni",
+		"pluginEventLoggingAdminDetailsTime" : "Vrijeme",
+		"pluginEventLoggingAdminDetailsUser" : "Korisnik",
+		"pluginEventLoggingAdminDetailsIP" : "IP",
+		"pluginEventLoggingAdminDetailsItem" : "Stavka",
+		"pluginEventLoggingAdminDetailsDetails" : "Pojedinosti"
+	}
+}
