@@ -131,8 +131,9 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
     width: 100%;
 }
 .kloudspeaker-logo {
+    margin: 40px 0 40px 0;
     height: 100px;
-    background-image: url(images/kloudspeaker_img.png);
+    background-image: url(images/kloudspeaker_img2.png);
     background-repeat: no-repeat;
     background-position: center center;
 }
@@ -183,7 +184,7 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
 #kloudspeaker-mainview-header {} #kloudspeaker-mainview-logo {
     width: 70px;
     height: 62px;
-    background: url(images/kloudspeaker_img_small.png) no-repeat;
+    background: url(images/kloudspeaker_img_small2.png) no-repeat;
     margin: 6px 0 2px 0;
     padding: 0;
 }
