@@ -1,1 +1,0 @@
-UPDATE parameter SET value = '2_5_6' WHERE name = 'version';
