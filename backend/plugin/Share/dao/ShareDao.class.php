@@ -122,13 +122,16 @@ class ShareDao {
 
 	public function getUserSharesForChildren($p, $currentUser) {
 		$db = $this->env->db();
-		$parentLocation = $db->string(str_replace("\\", "\\\\", $p->location()));
+		/*$parentLocation = $db->string(str_replace("\\", "\\\\", $p->location()));	//itemidprovider
 
 		if (strcasecmp("mysql", $this->env->db()->type()) == 0) {
-			$itemFilter = "select id from " . $db->table("item_id") . " where path REGEXP '^" . $parentLocation . "[^/\\\\]+[/\\\\]?$'";
+			$itemFilter = "select id from " . $db->table("item_id") . " where path REGEXP '^" . $parentLocation . "[^/]+[/]?$'";
 		} else {
-			$itemFilter = "select id from " . $db->table("item_id") . " where REGEX(path, \"#^" . $parentLocation . "[^/\\\\]+[/\\\\]?$#\")";
-		}
+			$itemFilter = "select id from " . $db->table("item_id") . " where REGEX(path, \"#^" . $parentLocation . "[^/]+[/]?$#\")";
+		}*/
+		$pathFilter = $this->env->filesystem()->itemIdProvider()->pathQueryFilter($p, FALSE, NULL);
+		$itemFilter = "select id from " . $db->table("item_id") . " where ".$pathFilter;
+
 		return $db->query("select item_id, sum(case when user_id = " . $db->string($currentUser, TRUE) . " then 1 else 0 end) as own, sum(case when user_id <> " . $db->string($currentUser, TRUE) . " then 1 else 0 end) as other from " . $db->table("share") . " where item_id in (" . $itemFilter . ") group by item_id")->valueMap("item_id", "own", "other");
 	}
 

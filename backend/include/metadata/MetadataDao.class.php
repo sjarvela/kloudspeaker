@@ -37,17 +37,18 @@ class Kloudspeaker_MetadataDao {
 	}
 
 	public function find($parent, $key, $value = FALSE, $recursive = FALSE) {
-		$p = $this->db->string(str_replace("\\", "\\\\", str_replace("'", "\'", $parent->location())));
+		/*$p = $this->db->string(str_replace("\\", "\\\\", str_replace("'", "\'", $parent->location())));	//itemidprovider
 
 		if ($recursive) {
 			$pathFilter = "i.path like '" . $p . "%'";
 		} else {
 			if (strcasecmp("mysql", $this->env->db()->type()) == 0) {
-				$pathFilter = "i.path REGEXP '^" . $p . "[^/\\\\]+[/\\\\]?$'";
+				$pathFilter = "i.path REGEXP '^" . $p . "[^/]+[/]?$'";
 			} else {
-				$pathFilter = "REGEX(i.path, \"#^" . $p . "[^/\\\\]+[/\\\\]?$#\")";
+				$pathFilter = "REGEX(i.path, \"#^" . $p . "[^/]+[/]?$#\")";
 			}
-		}
+		}*/
+		$pathFilter = $this->env->filesystem()->itemIdProvider()->pathQueryFilter($parent, $recursive);
 
 		$query = "SELECT item_id, md_key, md_value from " . $this->db->table("metadata") . " md, " . $this->db->table("item_id") . " i where md.item_id = i.id AND " . $pathFilter;
 		if ($value) {

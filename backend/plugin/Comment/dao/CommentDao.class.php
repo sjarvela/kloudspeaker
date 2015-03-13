@@ -23,13 +23,14 @@ class CommentDao {
 
 	public function getCommentCountForChildren($parent) {
 		$db = $this->env->db();
-		$parentLocation = $db->string(str_replace("\\", "\\\\", $parent->location()));
-
-		if (strcasecmp("mysql", $this->env->db()->type()) == 0) {
-			$itemFilter = "select id from " . $db->table("item_id") . " where path REGEXP '^" . $parentLocation . "[^/\\\\]+[/\\\\]?$'";
+		//$parentLocation = $db->string(str_replace("\\", "\\\\", $parent->location()));	//itemidprovider
+		$pathFilter = $this->env->filesystem()->itemIdProvider()->pathQueryFilter($parent, FALSE, NULL);
+		$itemFilter = "select id from " . $db->table("item_id") . " where ".$pathFilter;
+		/*if (strcasecmp("mysql", $this->env->db()->type()) == 0) {
+			$itemFilter = "select id from " . $db->table("item_id") . " where path REGEXP '^" . $parentLocation . "[^/]+[/]?$'";
 		} else {
-			$itemFilter = "select id from " . $db->table("item_id") . " where REGEX(path, \"#^" . $parentLocation . "[^/\\\\]+[/\\\\]?$#\")";
-		}
+			$itemFilter = "select id from " . $db->table("item_id") . " where REGEX(path, \"#^" . $parentLocation . "[^/]+[/]?$#\")";
+		}*/
 		return $db->query("select item_id, count(`id`) as count from " . $db->table("comment") . " where item_id in (" . $itemFilter . ") group by item_id")->valueMap("item_id", "count");
 	}
 
@@ -45,15 +46,15 @@ class CommentDao {
 
 	public function findItemsWithComment($parent, $text = FALSE, $recursive = FALSE) {
 		$db = $this->env->db();
-		$p = $db->string(str_replace("\\", "\\\\", str_replace("'", "\'", $parent->location())));
+		$p = $db->string(str_replace("\\", "\\\\", str_replace("'", "\'", $parent->location())));	//itemidprovider
 
 		if ($recursive) {
 			$pathFilter = "i.path like '" . $p . "%'";
 		} else {
 			if (strcasecmp("mysql", $this->env->db()->type()) == 0) {
-				$pathFilter = "i.path REGEXP '^" . $p . "[^/\\\\]+[/\\\\]?$'";
+				$pathFilter = "i.path REGEXP '^" . $p . "[^/]+[/]?$'";
 			} else {
-				$pathFilter = "REGEX(i.path, \"#^" . $p . "[^/\\\\]+[/\\\\]?$#\")";
+				$pathFilter = "REGEX(i.path, \"#^" . $p . "[^/]+[/]?$#\")";
 			}
 		}
 

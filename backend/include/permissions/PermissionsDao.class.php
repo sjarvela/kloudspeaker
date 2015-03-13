@@ -67,17 +67,17 @@ class Kloudspeaker_PermissionsDao {
 		$query = sprintf("SELECT value, name, user_id, subject, (case when subject = '' then 2 else 1 end) as cat1, %s as cat2, 0 as cat3 FROM " . $table . " WHERE name %s AND (subject = '' OR subject = '%s') AND %s", $subcategoryQuery, $nameQuery, $id, $userQuery);
 
 		if ($item->isFile() or !$item->isRoot()) {
-			$parentLocation = $item->parent()->location();
-			$rootLocation = $item->root()->location();
+			$parentLocation = $this->env->filesystem()->itemIdProvider()->itemQueryPath($item->parent());
+			$rootLocation = $this->env->filesystem()->itemIdProvider()->itemQueryPath($item->root());
 
 			if ($mysql) {
-				$hierarchyQuery = "(i.path REGEXP '^" . str_replace("'", "\'", str_replace("\\", "\\\\", $rootLocation));
+				$hierarchyQuery = "(i.path REGEXP '^" . str_replace("'", "\'", $rootLocation);
 			} else {
-				$hierarchyQuery = "REGEX(i.path, '#^" . str_replace("'", "\'", str_replace("\\", "\\\\", $rootLocation));
+				$hierarchyQuery = "REGEX(i.path, '#^" . str_replace("'", "\'", $rootLocation);
 			}
 
 			$hierarchyQueryEnd = "";
-			$parts = preg_split("/[\/\\\\]+/", substr($parentLocation, strlen($rootLocation)), -1, PREG_SPLIT_NO_EMPTY);
+			$parts = preg_split("/[\/]+/", substr($parentLocation, strlen($rootLocation)), -1, PREG_SPLIT_NO_EMPTY);
 			//Logging::logDebug(Util::array2str($parts));
 			foreach ($parts as $part) {
 				$hierarchyQuery .= "(" . str_replace("'", "\'", $part) . DIRECTORY_SEPARATOR;
@@ -108,7 +108,7 @@ class Kloudspeaker_PermissionsDao {
 	}
 
 	public function getFilesystemPermissionsForChildren($name, $parent, $userId, $groupIds = NULL) {
-		$parentLocation = str_replace("'", "\'", str_replace("\\", "\\\\", $parent->location()));
+		//$parentLocation = str_replace("'", "\'", str_replace("\\", "\\\\", $parent->location()));	//itemidprovider
 		$table = $this->db->table("permission");
 		$mysql = (strcmp("mysql", $this->db->type()) == 0);
 
@@ -124,11 +124,12 @@ class Kloudspeaker_PermissionsDao {
 		$nameQuery = ($name != NULL) ? "name = " . $this->db->string($name, TRUE) : "";
 
 		//TODO subject asc? -> join p.subject = item.id & item.location asc
+		$pathFilter = $this->env->filesystem()->itemIdProvider()->pathQueryFilter($parent);
 		if ($mysql) {
-			$itemFilter = "SELECT distinct subject from " . $table . " p, " . $this->db->table("item_id") . " i where p.subject = i.id and " . $userQuery . " and i.path REGEXP '^" . $parentLocation . "[^/\\\\]+[/\\\\]?$'";
+			$itemFilter = "SELECT distinct subject from " . $table . " p, " . $this->db->table("item_id") . " i where p.subject = i.id and " . $userQuery . " and ".$pathFilter;//i.path REGEXP '^" . $parentLocation . "[^/]+[/]?$'";
 			$query = sprintf("SELECT subject, name, value, (IF(user_id = '%s', 1, IF(user_id = '0', 3, 2))) as ind from %s where %s and %s and subject in (%s) order by subject asc, ind asc, value desc", $userId, $table, $nameQuery, $userQuery, $itemFilter);
 		} else {
-			$itemFilter = "SELECT distinct subject from " . $table . " p, " . $this->db->table("item_id") . " i where p.subject = i.id and " . $userQuery . " and REGEX(i.path, \"#^" . $parentLocation . "[^/\\\\]+[/\\\\]?$#\")";
+			$itemFilter = "SELECT distinct subject from " . $table . " p, " . $this->db->table("item_id") . " i where p.subject = i.id and " . $userQuery . " and ".$pathFilter;//REGEX(i.path, \"#^" . $parentLocation . "[^/]+[/]?$#\")";
 			$query = sprintf("SELECT subject, name, value, case when user_id = '%s' then 1 when user_id = '0' then 3 else 2 end as ind from %s where %s and %s and subject in (%s) order by name asc, subject asc, ind asc, value desc", $userId, $table, $nameQuery, $userQuery, $itemFilter);
 		}
 
