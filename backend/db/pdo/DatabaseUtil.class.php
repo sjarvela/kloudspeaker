@@ -21,7 +21,7 @@ class DatabaseUtil {
 	}
 
 	public function getVersionHistory() {
-		return array("2_6");
+		return array("2_6_7");
 	}
 
 	public function currentVersion() {
