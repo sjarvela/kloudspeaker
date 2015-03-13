@@ -1632,6 +1632,8 @@
         t.colWidths = {};
 
         for (var colId in columns) {
+            if (columns[colId] === false) continue;
+            
             var col = filelistSpec.columns[colId];
             if (!col) continue;
 

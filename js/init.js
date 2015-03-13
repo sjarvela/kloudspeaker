@@ -78,6 +78,9 @@ var kloudspeaker_defaults = {
         kloudspeaker.App.mobile = (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
 
         kloudspeaker.settings = $.extend(true, {}, kloudspeaker_defaults, s);
+        // don't merge file list columns
+        if (s["file-view"]["file-list-columns"]) kloudspeaker.settings["file-view"]["file-list-columns"] = s["file-view"]["file-list-columns"];
+        
         kloudspeaker.service.init(false, kloudspeaker.settings["service-param"]);
 
         kloudspeaker.plugins.register(new kloudspeaker.plugin.Core());
