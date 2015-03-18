@@ -1,4 +1,5 @@
 dist/
 node_modules/
+jspm_packages/
 npm-debug.log
 backend/configuration.php

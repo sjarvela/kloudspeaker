@@ -1,43 +1,46 @@
 {
-    "name": "kloudspeaker"
-  , "description": "Kloudspeaker"
-  , "version": "2.6.7"
-  , "revision": "19"
-  , "keywords": ["kloudspeaker"]
-  , "homepage": "http://www.kloudspeaker.com/"
-  , "author": "Samuli Järvelä"
-  , "scripts": { "test": "grunt test" }
-  , "repository": {
-      "type": "git"
-    , "url": "https://github.com/sjarvela/kloudspeaker.git"
-  }
-  , "licenses": [
-    {
-        "type": "GPLv2"
-      , "url": "http://www.gnu.org/licenses/old-licenses/gpl-2.0.html"
+    "name": "kloudspeaker",
+    "description": "Kloudspeaker",
+    "version": "2.6.7",
+    "revision": "19",
+    "keywords": ["kloudspeaker"],
+    "homepage": "http://www.kloudspeaker.com/",
+    "author": "Samuli Järvelä",
+    "scripts": {
+        "test": "grunt test"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/sjarvela/kloudspeaker.git"
+    },
+    "licenses": [{
+        "type": "GPLv2",
+        "url": "http://www.gnu.org/licenses/old-licenses/gpl-2.0.html"
+    }],
+    "devDependencies": {
+        "grunt": "0.4.2",
+        "grunt-banner": "~0.2.0",
+        "grunt-contrib-clean": "~0.5.0",
+        "grunt-contrib-concat": "~0.3.0",
+        "grunt-contrib-connect": "~0.6.0",
+        "grunt-contrib-copy": "~0.5.0",
+        "grunt-contrib-csslint": "~0.2.0",
+        "grunt-contrib-cssmin": "~0.7.0",
+        "grunt-contrib-jade": "~0.9.1",
+        "grunt-contrib-jshint": "~0.8.0",
+        "grunt-contrib-less": "~0.9.0",
+        "grunt-contrib-qunit": "~0.4.0",
+        "grunt-contrib-uglify": "~0.3.0",
+        "grunt-contrib-watch": "~0.5.3",
+        "grunt-contrib-compress": "~0.6.0",
+        "grunt-csscomb": "~2.0.1",
+        "grunt-exec": "0.4.3",
+        "grunt-jscs-checker": "~0.3.0",
+        "grunt-sed": "~0.1.1",
+        "grunt-phpunit": "*",
+        "load-grunt-tasks": "~0.3.0"
+    },
+    "peerDependencies": {
+      "grunt": "0.4.2"
     }
-  ]
-  , "devDependencies": {
-    "grunt": "~0.4.2",
-    "grunt-banner": "~0.2.0",
-    "grunt-contrib-clean": "~0.5.0",
-    "grunt-contrib-concat": "~0.3.0",
-    "grunt-contrib-connect": "~0.6.0",
-    "grunt-contrib-copy": "~0.5.0",
-    "grunt-contrib-csslint": "~0.2.0",
-    "grunt-contrib-cssmin": "~0.7.0",
-    "grunt-contrib-jade": "~0.9.1",
-    "grunt-contrib-jshint": "~0.8.0",
-    "grunt-contrib-less": "~0.9.0",
-    "grunt-contrib-qunit": "~0.4.0",
-    "grunt-contrib-uglify": "~0.3.0",
-    "grunt-contrib-watch": "~0.5.3",
-    "grunt-contrib-compress": "~0.6.0",
-    "grunt-csscomb": "~2.0.1",
-    "grunt-exec": "0.4.3",
-    "grunt-jscs-checker": "~0.3.0",
-    "grunt-sed": "~0.1.1",
-    "grunt-phpunit": "*",
-    "load-grunt-tasks": "~0.3.0"
-  }
 }
