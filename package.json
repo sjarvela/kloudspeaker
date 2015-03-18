@@ -1,43 +1,65 @@
 {
-    "name": "kloudspeaker"
-  , "description": "Kloudspeaker"
-  , "version": "2.6.7"
-  , "revision": "19"
-  , "keywords": ["kloudspeaker"]
-  , "homepage": "http://www.kloudspeaker.com/"
-  , "author": "Samuli Järvelä"
-  , "scripts": { "test": "grunt test" }
-  , "repository": {
-      "type": "git"
-    , "url": "https://github.com/sjarvela/kloudspeaker.git"
-  }
-  , "licenses": [
+  "name": "kloudspeaker",
+  "description": "Kloudspeaker",
+  "version": "3.0.0",
+  "revision": "19",
+  "keywords": [
+    "kloudspeaker"
+  ],
+  "homepage": "http://www.kloudspeaker.com/",
+  "author": "Samuli Järvelä",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sjarvela/kloudspeaker.git"
+  },
+  "licenses": [
     {
-        "type": "GPLv2"
-      , "url": "http://www.gnu.org/licenses/old-licenses/gpl-2.0.html"
+      "type": "GPLv2",
+      "url": "http://www.gnu.org/licenses/old-licenses/gpl-2.0.html"
     }
-  ]
-  , "devDependencies": {
-    "grunt": "~0.4.2",
-    "grunt-banner": "~0.2.0",
-    "grunt-contrib-clean": "~0.5.0",
-    "grunt-contrib-concat": "~0.3.0",
-    "grunt-contrib-connect": "~0.6.0",
-    "grunt-contrib-copy": "~0.5.0",
-    "grunt-contrib-csslint": "~0.2.0",
-    "grunt-contrib-cssmin": "~0.7.0",
-    "grunt-contrib-jade": "~0.9.1",
-    "grunt-contrib-jshint": "~0.8.0",
-    "grunt-contrib-less": "~0.9.0",
-    "grunt-contrib-qunit": "~0.4.0",
-    "grunt-contrib-uglify": "~0.3.0",
-    "grunt-contrib-watch": "~0.5.3",
-    "grunt-contrib-compress": "~0.6.0",
-    "grunt-csscomb": "~2.0.1",
-    "grunt-exec": "0.4.3",
-    "grunt-jscs-checker": "~0.3.0",
-    "grunt-sed": "~0.1.1",
-    "grunt-phpunit": "*",
-    "load-grunt-tasks": "~0.3.0"
+  ],
+  "devDependencies": {
+    "aurelia-tools": "^0.1.0",
+    "browser-sync": "^1.8.1",
+    "conventional-changelog": "0.0.11",
+    "del": "^1.1.0",
+    "gulp": "^3.8.10",
+    "gulp-babel": "^4.0.0",
+    "gulp-bump": "^0.1.11",
+    "gulp-changed": "^1.1.0",
+    "gulp-jshint": "^1.9.0",
+    "gulp-plumber": "^0.6.6",
+    "gulp-protractor": "^0.0.12",
+    "gulp-sourcemaps": "^1.3.0",
+    "gulp-yuidoc": "^0.1.2",
+    "jasmine-core": "^2.1.3",
+    "jshint-stylish": "^1.0.0",
+    "karma": "^0.12.28",
+    "karma-babel-preprocessor": "^4.0.0",
+    "karma-chrome-launcher": "^0.1.7",
+    "karma-jasmine": "^0.3.5",
+    "karma-jspm": "^1.0.1",
+    "object.assign": "^1.0.3",
+    "require-dir": "^0.1.0",
+    "run-sequence": "^1.0.2",
+    "vinyl-paths": "^1.0.0",
+    "yargs": "^2.1.1"
+  },
+  "peerDependencies": {
+    "grunt": "0.4.x"
+  },
+  "jspm": {
+    "dependencies": {
+      "aurelia-bootstrapper": "github:aurelia/bootstrapper@^0.9.5",
+      "aurelia-dependency-injection": "github:aurelia/dependency-injection@^0.4.5",
+      "aurelia-framework": "github:aurelia/framework@^0.8.8",
+      "aurelia-http-client": "github:aurelia/http-client@^0.5.5",
+      "aurelia-router": "github:aurelia/router@^0.5.8",
+      "bootstrap": "github:twbs/bootstrap@^3.3.1",
+      "font-awesome": "npm:font-awesome@^4.3.0"
+    }
   }
 }
