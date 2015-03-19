@@ -1,0 +1,13 @@
+{
+    "name": "kloudspeaker",
+    "version": "3.0.0",
+    "main": [],
+    "dependencies": {
+        "durandal": "*",
+        "bootstrap": "*",
+        "font-awesome": "*",
+        "moment": "*",
+        "underscore": "*",
+        "i18next": "*"
+    }
+}
