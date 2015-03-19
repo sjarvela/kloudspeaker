@@ -7,7 +7,7 @@ define(['require', 'jquery', 'durandal/system', 'durandal/app', 'durandal/viewLo
         },
         "view-url": false,
         "app-element-id": "cloudberry",
-        "rest-path": "",
+        "rest-path": "backend/",
         "templates-path": "views/",
         "limited-http-methods": false,
         "file-view": {
@@ -49,7 +49,7 @@ define(['require', 'jquery', 'durandal/system', 'durandal/app', 'durandal/viewLo
             lng: kloudspeakerApp.config.language.default || window.navigator.userLanguage || window.navigator.language,
             fallbackLang: kloudspeakerApp.config.language.default,
             ns: 'app',
-            resGetPath: 'app/localizations/__lng__/__ns__.json',
+            resGetPath: 'localizations/__lng__/__ns__.json',
             useCookie: false
         };
 

@@ -1,0 +1,4 @@
+<ul class="files-nav roots nav navbar-nav navbar-right" data-bind="foreach: model.viewTypes">
+    <li data-bind="css: { active : (id == $root.model.viewType().id) }"><a href="#" data-bind="click: $parent.setViewType"><i data-bind="attr: { class : 'fa ' + icon }"></i></a>
+    </li>
+</ul>

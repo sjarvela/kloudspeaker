@@ -1,0 +1,6 @@
+<div data-bind="text: large"></div>
+
+<ul data-bind="foreach: model.items">
+    <li data-bind="text: name, click: $parent.onItemClick">
+    </li>
+</ul>

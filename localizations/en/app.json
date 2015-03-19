@@ -1,0 +1,38 @@
+{
+    "core": {
+        "action": {
+            "session": {
+            	"logout": "Logout"
+            },
+            "filesystem": {
+            	"open": "Open"
+            }
+        }
+    },
+    "login": {
+        "title": "Login",
+        "username": "Username",
+        "password": "Password",
+        "remember": "Remember me",
+        "loginAction": "Login",
+
+        "resetPassword": {
+            "title": "Reset password",
+            "email": "Email",
+            "send": "Send"
+        },
+        "register": "Register"
+    },
+    "main": {
+        "files": {
+            "title": "Files"
+        },
+        "config": {
+            "title": "Configuration",
+
+            "users": {
+                "title": "Users"
+            }
+        }
+    }
+}

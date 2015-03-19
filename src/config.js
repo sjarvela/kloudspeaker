@@ -114,7 +114,7 @@ requirejs.config({
     return bootstrapModal;
 });*/
 
-window.cloudberry = {
+window.kloudspeaker = {
     platform: [],
     actions: [],
     filelist: {
@@ -138,7 +138,7 @@ window.cloudberry = {
                 success: {},
                 fail: {}
             };
-            var all = cloudberry.utils.getKeys(m);
+            var all = kloudspeaker.utils.getKeys(m);
             var count = all.length;
             $.each(all, function(i, dk) {
                 var df = m[dk];
@@ -159,7 +159,7 @@ window.cloudberry = {
             var parts = u.split("?");
             return {
                 path: parts[0],
-                params: cloudberry.helpers.getUrlParams(u),
+                params: kloudspeaker.helpers.getUrlParams(u),
                 paramsString: (parts.length > 1 ? ("?" + parts[1]) : "")
             };
         },
@@ -181,7 +181,7 @@ window.cloudberry = {
         },
 
         noncachedUrl: function(url) {
-            return cloudberry.utils.urlWithParam(url, "_=" + cloudberry._time);
+            return kloudspeaker.utils.urlWithParam(url, "_=" + kloudspeaker._time);
         },
 
         formatDateTime: function(time, fmt) {
@@ -204,7 +204,7 @@ window.cloudberry = {
 
         formatInternalTime: function(time) {
             if (!time) return null;
-            return cloudberry.utils.formatDateTime(time, 'yyyyMMddHHmmss');
+            return kloudspeaker.utils.formatDateTime(time, 'yyyyMMddHHmmss');
         },
 
         mapByKey: function(list, key, value) {

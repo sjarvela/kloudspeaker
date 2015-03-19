@@ -1,0 +1,12 @@
+<div class="item-details-content" data-bind="class: { loading : model.itemDetails.loading() }, with: model.itemDetails">
+    <h2 data-bind="text: item().name"></h2>
+
+    <div class="item-details-tabs" data-bind="foreach: { data: details(), as: 'tab' }">
+        <div class="item-details-tab" data-bind="i18n: titleKey, click: $parent.setActiveDetails"></div>
+    </div>
+
+    <!-- ko if: activeDetails() != null -->
+    <div class="item-details-active-tab" data-bind="compose: { model: activeDetails().module, activationData: $data }">
+    </div>
+    <!-- /ko -->
+</div>

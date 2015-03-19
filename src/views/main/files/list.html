@@ -1,0 +1,16 @@
+<div class="filelist-table">
+    <div class="filelist-header" data-bind="foreach: cols">
+        <div data-bind="attr: { class: 'filelist-header-col col col-'+id }, text: title">
+        </div>
+    </div>
+
+    <div class="filelist-items" data-bind="foreach: { data: model.items, as: 'item' }">
+        <div class="filelist-item" data-bind="attr: { id: 'filelist-item-'+item.id }">
+            <!-- ko foreach: { data: $parent.cols, as: 'col' } -->
+            <div data-bind="attr: { class: 'filelist-item-value col col-'+col.id }, html: $root.getCell(col, item)">
+            </div>
+            <!-- /ko -->
+            <div class="item-details-container"></div>
+        </div>
+    </div>
+</div>

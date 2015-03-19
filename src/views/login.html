@@ -1,0 +1,42 @@
+<div class="login-view container">
+    <form class="fullpage" role="form" data-bind="submit: onLogin">
+        <div class="cloudberry-logo"></div>
+
+        <legend data-i18n="app:login.title">login_Login</legend>
+
+        <div class="form-group">
+            <label class="sr-only" for="loginUsername" data-i18n="app:login.username"></label>
+            <input id="loginUsername" type="text" class="form-control" required="1" autofocus="1" data-i18n="[placeholder]app:login.username" data-bind="value:model.username" />
+        </div>
+
+        <div class="form-group">
+            <label class="sr-only" for="loginPassword" data-i18n="app:login.password"></label>
+            <input id="loginPassword" type="password" class="form-control" required="1" data-i18n="[placeholder]app:login.password" data-bind="value:model.password" />
+        </div>
+        <label class="checkbox">
+            <label>
+                <input type="checkbox" data-bind="checked:model.remember">
+                <span data-i18n="app:login.remember"></span>
+            </label>
+        </label>
+
+        <button class="btn btn-lg btn-primary btn-block" data-i18n="app:login.loginAction"></button>
+
+        <div class="links center-block">
+            <div class="link" ng-if="features.lost_password">
+                <a class="btn btn-link" href="javascript: void(0)" data-i18n="app:login.resetPassword.title" data-bind="popover: {template: 'login-reset', title: $.t('app:login.resetPassword.title')}"></a>
+            </div>
+            <div class="link" ng-if="features.registration">
+                <a class="btn btn-link" data-i18n="app:login.register"></a>
+            </div>
+        </div>
+
+        <script id="login-reset" type="text/html">
+            <form role="form" data-bind="submit: onReset">
+                <label class="sr-only" for="forgotPasswordEmail" data-i18n="app:login.resetPassword.email"></label>
+                <input class="form-control" required="1" data-i18n="[placeholder]app:login.resetPassword.email" data-bind="value:model.resetEmail" />
+                <button class="btn btn-lg btn-primary btn-block" data-i18n="app:login.resetPassword.send"></button>
+            </form>
+        </script>
+    </form>
+</div>
