@@ -10,95 +10,16 @@
 
     <script src="jspm_packages/system.js"></script>
     <script src="config.js"></script>
-
-    <script type="text/javascript">
-    //$(document).ready(function() {
-    /*kloudspeaker.App.init({
-        "language": {
-            default: "en",
-            options: ["en", "fr"]
-        },
-        "resource-map": {
-            "localization/texts_fr.json": "custom/texts_fr.json",
-            "http://localhost:8888/mollify/custom/plugin/Quota/localization/texts_fr.json": false,
-            "backend/plugin/Quota/localization/texts_fr.json": "custom/plugin_quota_fr.json",
-            "backend/plugin/EventLogging/localization/texts_fr.json": "custom/plugin_eventlogging_fr.json"
-                //"templates/loginview.html" : "custom/template-loginview.html"
-        },
-        "html5-uploader": {
-            maxChunkSize: 1000000
-        },
-        "service-param": true,
-        "view-url": true,
-        "file-view": {
-            "create-empty-file-action": true,
-            //"drop-type": function(to, i) {
-            //console.log("dt");
-            //return "move";
-            //},
-            "list-view-columns": {
-                "name": {
-                    width: 250
-                },
-                "size": {},
-                "file-modified": {
-                    width: 150
-                },
-                "comment-count": {},
-                "share-info": {},
-                "history-info": {},
-                "item-description": {},
-            },
-            actions: {
-                onDblClick: function(item, ctx) {
-                    if (item.is_file) {
-                        kloudspeaker.ui.download(kloudspeaker.filesystem.getDownloadUrl(item));
-                        return true;
-                    }
-                    //kloudspeaker.plugins.get("plugin-fileviewereditor").view(item);
-                    //return false;
-                }
-            }
-        },
-        plugins: {
-            "plugin-history": {
-                //menu: false
-            }
-        }
-    }, [
-        new kloudspeaker.plugin.ItemDetailsPlugin({
-            "jpg,tiff": {
-                "last-modified": {},
-                "metadata-created": {},
-                "size": {},
-                "image-size": {},
-                "exif": {},
-            },
-            "*": {
-                "metadata-created": {},
-                "last-modified": {},
-                "size": {},
-            }
-        }),
-        new kloudspeaker.plugin.ArchiverPlugin(),
-        new kloudspeaker.plugin.FileViewerEditorPlugin(),
-        new kloudspeaker.plugin.DropboxPlugin(),
-        new kloudspeaker.plugin.RegistrationPlugin(),
-        new kloudspeaker.plugin.ItemCollectionPlugin(),
-        new kloudspeaker.plugin.SharePlugin(),
-        new kloudspeaker.plugin.CommentPlugin(),
-        //new MyPlugin()
-    ]);*/
-    //});
-    </script>
 </head>
 
-<body aurelia-app>
+<body>
     <div class="splash">
         <div class="message">Aurelia Navigation Skeleton</div>
         <i class="fa fa-spinner fa-spin"></i>
     </div>
 
+    <div id="kloudspeaker" aurelia-main>
+    </div>
     <script type="text/javascript">
     System.import('aurelia-bootstrapper');
     </script>
