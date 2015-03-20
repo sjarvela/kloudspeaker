@@ -18,7 +18,7 @@ class ItemIdProvider {
 
 	function __construct($env) {
 		$this->env = $env;
-		$this->convertPathDelimiter = (DIRECTORY_SEPARATOR == self::PATH_DELIMITER);
+		$this->convertPathDelimiter = (DIRECTORY_SEPARATOR != self::PATH_DELIMITER);
 	}
 
 	public function getItemId($p) {

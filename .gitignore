@@ -1,5 +1,6 @@
 dist/
 node_modules/
+bower_components/
 jspm_packages/
 npm-debug.log
 backend/configuration.php

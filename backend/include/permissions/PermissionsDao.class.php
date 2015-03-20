@@ -80,7 +80,7 @@ class Kloudspeaker_PermissionsDao {
 			$parts = preg_split("/[\/]+/", substr($parentLocation, strlen($rootLocation)), -1, PREG_SPLIT_NO_EMPTY);
 			//Logging::logDebug(Util::array2str($parts));
 			foreach ($parts as $part) {
-				$hierarchyQuery .= "(" . str_replace("'", "\'", $part) . DIRECTORY_SEPARATOR;
+				$hierarchyQuery .= "(" . str_replace("'", "\'", $part) . "/";
 				$hierarchyQueryEnd .= ")*";
 			}
 			if ($mysql) {
