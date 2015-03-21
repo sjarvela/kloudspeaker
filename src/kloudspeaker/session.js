@@ -11,18 +11,25 @@ define(['jquery', 'kloudspeaker/core_service', 'durandal/app'],
         da.on('error:unauthorized').then(_end);
 
         var _set = function(s) {
-            _session = s;
+            _session = {
+                id: false,
+                user: null
+            };
 
-            if (!s) {
-                _session = {
-                    id: false,
-                    user: null
-                };
-            }
-            if (!s.user) {
-                _session.user = null;
-            } else {
-                _session.user.admin = s.user.type == 'a';
+            if (s) {
+                var user = s.authenticated ? {
+                    id: s.user_id,
+                    name: s.username,
+                    type: s.user_type,
+                    lang: s.lang,
+                    admin: s.user_type == 'a',
+                    permissions: s.permissions,
+                    auth: s.user_auth
+                } : null;
+                if (user) {
+                    _session.id = s.session_id;
+                    _session.user = user;
+                }
             }
             da.trigger('session:start', _session);
         };
@@ -48,9 +55,9 @@ define(['jquery', 'kloudspeaker/core_service', 'durandal/app'],
                 return df.promise();
             },
             authenticate: function(username, pw, remember) {
-                return service.post('session/login', {
-                    name: username,
-                    password: pw,
+                return service.post('session/authenticate', {
+                    username: username,
+                    password: Base64.encode(pw),
                     remember: !!remember
                 }).done(function(s) {
                     _set(s);

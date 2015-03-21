@@ -34,9 +34,9 @@ define(['jquery', 'kloudspeaker/config', 'durandal/app'],
                         dataType: 'json',
                         beforeSend: function(xhr) {
                             if (sid)
-                                xhr.setRequestHeader("cloudberry-session-id", sid);
+                                xhr.setRequestHeader("kloudspeaker-session-id", sid);
                             if (_limitedHttpMethods || diffMethod)
-                                xhr.setRequestHeader("cloudberry-http-method", type);
+                                xhr.setRequestHeader("kloudspeaker-http-method", type);
                         }
                     }).pipe(function(r) {
                         if (!r) {
@@ -44,7 +44,7 @@ define(['jquery', 'kloudspeaker/config', 'durandal/app'],
                                 code: 999
                             });
                         }
-                        return r;
+                        return r.result;
                     }, function(xhr) {
                         var df = $.Deferred();
 
@@ -78,7 +78,7 @@ define(['jquery', 'kloudspeaker/config', 'durandal/app'],
                         // push default handler to end of callback list
                         setTimeout(function() {
                             df.fail(function(err) {
-                                if (!failContext.handled) window.alert(JSON.stringify(err)); //TODO cloudberry.ui.dialogs.showError(err);
+                                if (!failContext.handled) window.alert(JSON.stringify(err)); //TODO kloudspeaker.ui.dialogs.showError(err);
                             });
                         }, 0);
                         return df.rejectWith(failContext, [error]);
