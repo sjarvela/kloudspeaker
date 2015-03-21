@@ -1,4 +1,4 @@
-define(['cloudberry/session', 'cloudberry/core', 'knockout', 'jquery', 'i18next'], function(session, core, ko, $, i18n) {
+define(['kloudspeaker/session', 'kloudspeaker/core', 'knockout', 'jquery', 'i18next'], function(session, core, ko, $, i18n) {
     var router = core.routers.get('main');
 
     core.actions.register({

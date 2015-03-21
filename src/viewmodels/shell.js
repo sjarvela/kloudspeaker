@@ -1,4 +1,4 @@
-define(['cloudberry/core', 'cloudberry/session', 'durandal/app'], function(core, session, da) {
+define(['kloudspeaker/core', 'kloudspeaker/session', 'durandal/app'], function(core, session, da) {
     var router = core.routers.root();
 
     da.on('session:end').then(function() {

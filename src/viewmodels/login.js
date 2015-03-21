@@ -1,4 +1,4 @@
-define(['cloudberry/session', 'knockout'], function(session, ko) {
+define(['kloudspeaker/session', 'knockout'], function(session, ko) {
     var model = {
         username : ko.observable(''),
         password : ko.observable(''),

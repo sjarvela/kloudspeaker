@@ -6,7 +6,7 @@ define(['require', 'jquery', 'durandal/system', 'durandal/app', 'durandal/viewLo
             "options": ["en"]
         },
         "view-url": false,
-        "app-element-id": "cloudberry",
+        "app-element-id": "kloudspeaker",
         "rest-path": "backend/",
         "templates-path": "views/",
         "limited-http-methods": false,
@@ -100,7 +100,7 @@ define(['require', 'jquery', 'durandal/system', 'durandal/app', 'durandal/viewLo
                     require(['kloudspeaker/session'], function(session) {
                         session.init(kloudspeakerApp.config).then(function() {
                             loadModules(session).then(function() {
-                                app.setRoot('viewmodels/shell', false, 'cloudberry');
+                                app.setRoot('viewmodels/shell', false, 'kloudspeaker');
                             });
                         });
                     });

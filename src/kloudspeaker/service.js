@@ -17,7 +17,7 @@ define(['jquery', 'kloudspeaker/config', 'durandal/app'],
                 if (u.startsWith('http')) return u;
                 var url = _restPath + "r.php/" + (prefix || '') + u;
                 if (!full) return url;
-                return "TODO" + url; //cloudberry.App.pageUrl + url;
+                return "TODO" + url; //kloudspeaker.App.pageUrl + url;
             };
             var doRequest = function(type, url, data) {
                 var t = type;

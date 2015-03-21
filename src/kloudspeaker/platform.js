@@ -1,6 +1,6 @@
 define("kloudspeaker/core_service", ['kloudspeaker/service'],
     function(service) {
-        var cs = service.get("api/v1/");
+        var cs = service.get();//("api/v1/");
         return cs;
     }
 );
