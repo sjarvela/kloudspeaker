@@ -1,4 +1,4 @@
-define(['cloudberry/core', 'knockout'], function(core, ko) {
+define(['kloudspeaker/core', 'knockout'], function(core, ko) {
     console.log("Config route");
 
     core.views.register({

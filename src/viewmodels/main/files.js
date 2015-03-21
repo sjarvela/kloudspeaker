@@ -1,4 +1,4 @@
-define(['plugins/router', 'cloudberry/config', 'cloudberry/session', 'cloudberry/filesystem', 'cloudberry/core', 'cloudberry/ui/files', 'knockout', 'jquery'], function(router, config, session, fs, core, uif, ko, $) {
+define(['plugins/router', 'kloudspeaker/config', 'kloudspeaker/session', 'kloudspeaker/filesystem', 'kloudspeaker/core', 'kloudspeaker/ui/files', 'knockout', 'jquery'], function(router, config, session, fs, core, uif, ko, $) {
     core.actions.register({
         id: 'filesystem/open',
         type: 'filesystem',
