@@ -4,10 +4,6 @@
 <div class="info">
 	<dl class="dl-horizontal">
 	  <dt>TODO modified</dt>
-	  <dd data-bind="text: model.data.last_modified">></dd>
-	</dl>
-	<dl class="dl-horizontal">
-	  <dt>TODO modified</dt>
-	  <dd data-bind="text: model.data.last_modified">></dd>
+	  <dd data-bind="format: model.data.last_modified" data-formatter="timestamp"></dd>
 	</dl>
 </div>

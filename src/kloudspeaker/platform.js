@@ -35,8 +35,29 @@ define('kloudspeaker/ui/files', [], function() {
     }
 });
 
+define('kloudspeaker/ui/formatters', ["i18next",], function(i18n) {
+    var formatters = {
+        timestamp: function(ts, ctx) {
+            if (ts == null) return "";
+            var fmt = null;
+            if (ctx && ctx.format) fmt = ctx.format;
+            else fmt = i18n.t('datetime-full');
+
+            if (typeof(ts) === 'string') ts = kloudspeaker.utils.parseInternalTime(ts);
+            return ts.toString(fmt);
+        }
+    };
+    return {
+        all: formatters,
+        register: function(id, f) {
+            formatters[id] = f;
+        }
+    }
+});
+
 define([
     "kloudspeaker/core",
+    "kloudspeaker/ui/formatters",
     "durandal/composition",
     "knockout",
     "jquery",
@@ -44,7 +65,7 @@ define([
     "bootstrap",
     "knockout-bootstrap",
     "underscore"
-], function(core, composition, ko, $, i18n) {
+], function(core, formatters, composition, ko, $, i18n) {
     var _i18n = function(e, va) {
         var value = ko.unwrap(va());
         var loc = i18n.t(value) || '';
@@ -58,5 +79,17 @@ define([
     composition.addBindingHandler('i18n', {
         init: _i18n,
         update: _i18n
+    });
+
+    var _fmt = function(e, va) {
+        var value = ko.unwrap(va());
+        var $e = $(e);
+        var formatter = $e.attr('data-formatter');
+        var ctx = null;
+        $e.text(formatters.all[formatter](value, ctx));
+    }
+    composition.addBindingHandler('format', {
+        init: _fmt,
+        update: _fmt
     });
 });

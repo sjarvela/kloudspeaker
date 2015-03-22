@@ -5,6 +5,13 @@ define(['knockout'], function(ko) {
     };
 
     return {
+        formatters: {
+            timestamp: {
+                format: function(f) {
+                    return "foo " + f;
+                }
+            }
+        },
         activate: function(p) {
             console.log("files/iteminfo");
             var data = p.data();
