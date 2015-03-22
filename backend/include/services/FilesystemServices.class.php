@@ -318,6 +318,7 @@ class FilesystemServices extends ServicesBase {
 		$result["folder"] = ($item != NULL) ? $item->data() : NULL;
 		$result["files"] = $files;
 		$result["folders"] = $folders;
+		$result["items"] = array_merge($folders, $files);
 		$result["permissions"] = ($item != NULL) ? $this->env->permissions()->getAllFilesystemPermissions($item) : array();
 		$result["data"] = $this->env->filesystem()->getRequestData($item, $items, $data);
 
