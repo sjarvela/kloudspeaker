@@ -12,13 +12,13 @@ define('kloudspeaker/permissions', ['kloudspeaker/session', 'durandal/app'], fun
         if (!s.user) return;
 
         _types = s.permissions.types;
-        var genericKeys = kloudspeaker.utils.getKeys(_types.generic);
-        var filesystemKeys = kloudspeaker.utils.getKeys(_types.filesystem);
+        /*var genericKeys = kloudspeaker.utils.getKeys(_types.keys.generic);
+        var filesystemKeys = kloudspeaker.utils.getKeys(_types.keys.filesystem);
         _types.keys = {
             generic: genericKeys,
             filesystem: filesystemKeys,
             all: genericKeys.concat(filesystemKeys)
-        }
+        }*/
         updatePermissions(_permissions, s.permissions.user);
     });
 

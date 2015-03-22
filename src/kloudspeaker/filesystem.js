@@ -24,7 +24,7 @@ define(['kloudspeaker/core_service', 'kloudspeaker/permissions', 'durandal/app']
                 return _rootsById;
             },
             folderInfo: function(folderId, data) {
-                return service.post("filesystem/" + folderId + "/info/", {
+                return service.post("filesystem/" + folderId + "/info/?h=1", { //remove "h=1" when rewriting backend
                     data: data,
                     children: true,
                     hierarchy: true,
@@ -32,9 +32,8 @@ define(['kloudspeaker/core_service', 'kloudspeaker/permissions', 'durandal/app']
                 }).pipe(function(r) {
                     permissions.putFilesystemPermissions(folderId, r.permissions);
 
-                    //var folder = r.folder;
                     var data = r;
-                    data.items = r.children;
+                    //data.items = r.children;
                     return data;
                 });
             },
