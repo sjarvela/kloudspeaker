@@ -210,7 +210,7 @@ function setupKoBootstrap(koObject, $) {
             var childBindingContext = bindingContext.createChildContext(viewModel);
 
             // set internal content
-            tmpOptions.content = $(tmplDom[0]).i18n().outerHtml();	//cloudberry: i18n
+            tmpOptions.content = $(tmplDom[0]).i18n().outerHtml();	//kloudspeaker: i18n
 
             // Need to copy this, otherwise all the popups end up with the value of the last item
             var popoverOptions = $.extend({}, koObject.bindingHandlers.popover.options, tmpOptions);

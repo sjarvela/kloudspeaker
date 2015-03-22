@@ -25,7 +25,7 @@ define('kloudspeaker/ui/files', [], function() {
             get: function(item, data) {
                 var r = [];
                 _.each(itemDetailsProviders, function(h) {
-                    var hi = h.get(item, data[h.id]);
+                    var hi = h.get(item, h.id ? data[h.id] : data);
                     if (!hi) return;
                     r.push(hi);
                 });

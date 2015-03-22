@@ -12,6 +12,16 @@ define(['plugins/router', 'kloudspeaker/config', 'kloudspeaker/session', 'klouds
         }
     });
 
+    // item info
+    uif.itemDetails.registerProvider({
+        get: function(item) {
+            return {
+                titleKey: "files.iteminfo.title",
+                module: 'viewmodels/main/files/iteminfo',
+            }
+        }
+    });
+
     var $activeDetails = null;
     core.actions.register({
         id: 'view/details',
@@ -41,7 +51,7 @@ define(['plugins/router', 'kloudspeaker/config', 'kloudspeaker/session', 'klouds
                 }
 
                 var $container = $itemElement.find(".item-details-container").hide();
-                
+
                 itemDetails.item(item);
                 itemDetails.loading(true);
 
@@ -100,7 +110,7 @@ define(['plugins/router', 'kloudspeaker/config', 'kloudspeaker/session', 'klouds
             details: ko.observableArray([]),
             activeDetails: ko.observable(null),
             setActiveDetails: function(d) {
-            	model.itemDetails.activeDetails(d);
+                model.itemDetails.activeDetails(d);
             }
         }
     };
