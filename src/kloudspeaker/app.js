@@ -37,6 +37,14 @@ define(['require', 'jquery', 'durandal/system', 'durandal/app', 'durandal/viewLo
                 "filesystemitem-folder": "css/images/mimetypes64/folder.png",
                 "filesystemitem-many": "css/images/mimetypes64/application_x_cpio.png"
             }
+        },
+        plugins: {
+            "ItemDetails": {
+                "*": {
+                    "last-modified": {},
+                    "size": {}
+                }
+            }
         }
     };
     var kloudspeakerApp = {};
@@ -69,11 +77,36 @@ define(['require', 'jquery', 'durandal/system', 'durandal/app', 'durandal/viewLo
         var loadModules = function(session) {
             console.log("Loading modules");
             console.log(session);
+            var paths = [];
+            var modules = [];
+            var packages = [];
+            _.each(session.plugins, function(pl) {
+                if (pl["client_module_path"]) {
+                    paths.push(pl["client_module_path"]);
+                    modules.push(pl["client_module_id"]);
+                    packages.push({
+                        name: pl["client_module_id"],
+                        location: pl["client_module_path"]
+                    });
+                }
+            });
             var df = $.Deferred();
-            //TODO
-            //require(['../../workbench/kloudspeaker/comments/public/js/plugin'], function() {
-            df.resolve();
-            //});
+            if (modules.length > 0) {
+                requirejs.config({
+                    packages: packages
+                });
+                require(modules, function() {
+                    df.resolve();
+                });
+                // TODO load plugin modules elsewhere
+                // TODO how to define module paths so they are loaded automatically with module id? requirejs package?
+                /*require(paths, function() {
+                    require(modules, function() {
+                        df.resolve();
+                    });
+                });*/
+            } else
+                df.resolve();
             return df;
         };
 
@@ -98,8 +131,8 @@ define(['require', 'jquery', 'durandal/system', 'durandal/app', 'durandal/viewLo
                     });
 
                     require(['kloudspeaker/session'], function(session) {
-                        session.init(kloudspeakerApp.config).then(function() {
-                            loadModules(session).then(function() {
+                        session.init(kloudspeakerApp.config).then(function(s) {
+                            loadModules(s).then(function() {
                                 app.setRoot('viewmodels/shell', false, 'kloudspeaker');
                             });
                         });

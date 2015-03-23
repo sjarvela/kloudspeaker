@@ -12,6 +12,10 @@
 class ItemDetails extends PluginBase {
 	private $detailProviders = array();
 
+	public function getClientModuleId() {
+		return "kloudspeaker/plugin/itemdetails";
+	}
+
 	public function setup() {
 		foreach ($this->getSettings() as $p) {
 			$this->initProvider($p);
@@ -43,13 +47,11 @@ class ItemDetails extends PluginBase {
 	}
 
 	public function getItemContextData($item, $details, $k, $data) {
-		if (!$data) {
-			return FALSE;
-		}
-
-		$result = array();
-		foreach ($data as $key) {
-			$result[$key] = $this->getData($item, $key);
+		$result = array("id" => $item->id());
+		if ($data) {
+			foreach ($data as $key) {
+				$result[$key] = $this->getData($item, $key);
+			}
 		}
 
 		return $result;

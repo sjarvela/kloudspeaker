@@ -1,17 +1,10 @@
-define(['knockout'], function(ko) {
+define(['kloudspeaker/resources', 'knockout'], function(res, ko) {
     var model = {
         item: null,
         data: null
     };
 
     return {
-        formatters: {
-            timestamp: {
-                format: function(f) {
-                    return "foo " + f;
-                }
-            }
-        },
         activate: function(p) {
             console.log("files/iteminfo");
             var data = p.data();
@@ -22,8 +15,7 @@ define(['knockout'], function(ko) {
             model.data = data;
         },
         getView: function() {
-            //TODO util that resolves plugin url from "comments/public/templates/itemdetails"
-            return 'views/main/files/iteminfo';
+            return res.getPluginUrl('ItemDetails', 'client/iteminfo');
         },
         model: model
     };

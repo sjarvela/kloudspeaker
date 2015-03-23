@@ -12,16 +12,6 @@ define(['plugins/router', 'kloudspeaker/config', 'kloudspeaker/session', 'klouds
         }
     });
 
-    // item info
-    uif.itemDetails.registerProvider({
-        get: function(item) {
-            return {
-                titleKey: "files.iteminfo.title",
-                module: 'viewmodels/main/files/iteminfo',
-            }
-        }
-    });
-
     var $activeDetails = null;
     core.actions.register({
         id: 'view/details',

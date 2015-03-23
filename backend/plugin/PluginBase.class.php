@@ -40,6 +40,10 @@ abstract class PluginBase {
 		return NULL;
 	}
 
+	public function getClientModuleId() {
+		return NULL;
+	}
+
 	public function id() {
 		return $this->id;
 	}

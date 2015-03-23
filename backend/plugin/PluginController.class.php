@@ -78,10 +78,18 @@ class PluginController {
 			$info = $p->getSessionInfo();
 			$info["custom"] = $custom;
 			$info["admin"] = $p->hasAdminView();
+			$info["url"] = $custom ? $this->env->resources()->getCustomPluginUrl($id, "") : $this->env->getPluginUrl($id, "", TRUE);
 
 			$clientPlugin = $p->getClientPlugin();
 			if ($clientPlugin != NULL) {
 				$info["client_plugin"] = $custom ? $this->env->resources()->getCustomPluginUrl($id, $clientPlugin) : $this->env->getPluginUrl($id, $clientPlugin, TRUE);
+			}
+
+			$clientModule = $p->getClientModuleId();
+			if ($clientModule != NULL) {
+				$path = "js/";
+				$info["client_module_path"] = $custom ? $this->env->resources()->getCustomPluginUrl($id, $path) : $this->env->getPluginUrl($id, $path, TRUE);
+				$info["client_module_id"] = $clientModule;
 			}
 
 			$result[$id] = $info;

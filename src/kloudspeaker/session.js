@@ -34,8 +34,9 @@ define(['jquery', 'kloudspeaker/core_service', 'durandal/app'],
                         user: s.permissions
                     }
                     _session.folders = s.folders;
-                    _session.features = s.features;
                 }
+                _session.features = s.features;
+                _session.plugins = s.plugins;
             }
             da.trigger('session:start', _session);
         };
