@@ -41,6 +41,52 @@ define("kloudspeaker/resources", ['kloudspeaker/config', 'kloudspeaker/plugins']
     }
 );
 
+define("kloudspeaker/localization", ['kloudspeaker/config', 'kloudspeaker/resources', 'i18next'],
+    function(cfg, res, i18n) {
+        var i18NOptions = {
+            detectFromHeaders: false,
+            lng: cfg.language.default || window.navigator.userLanguage || window.navigator.language,
+            fallbackLang: cfg.language.default,
+            ns: 'app',
+            //resGetPath: 'client/localizations/__lng__/__ns__.json',
+            useCookie: false
+        };
+        var currentLang = i18NOptions.lng;
+
+        //customize language loader
+        i18NOptions.customLoad = function(lng, ns, options, loadComplete) {
+            var url = "client/localizations/" + lng + "/" + ns + ".json";
+            //TODO map
+
+            console.log("Load lang " + lng + "/" + ns + " => " + url);
+
+            $.ajax({
+                type: 'GET',
+                contentType: 'application/json',
+                url: url
+            }).done(function(d) {
+                loadComplete(null, d);
+            }).fail(function() {
+                loadComplete('Error loading localization: ' + lng + ": " + ns + " => " + url);
+            });
+        };
+
+        return {
+            init: function(cb) {
+                i18n.init(i18NOptions, function() {
+                    console.log("Localization ready");
+                    if (cb) cb();
+                });
+            },
+            setLang: function(lang) {
+                console.log("set lang=" + lang + ", current=" + currentLang);
+                currentLang = lang;
+                i18n.setLng(lang);
+            }
+        }
+    }
+);
+
 define('kloudspeaker/ui/files', [], function() {
     var itemDetailsProviders = [];
     return {

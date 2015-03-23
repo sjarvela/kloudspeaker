@@ -1,4 +1,4 @@
-define(['require', 'jquery', 'durandal/system', 'durandal/app', 'durandal/viewLocator', 'durandal/binder', 'i18next'], function(require, $, system, app, viewLocator, binder, i18n) {
+define(['require', 'jquery', 'durandal/system', 'durandal/app', 'durandal/viewLocator', 'durandal/binder'], function(require, $, system, app, viewLocator, binder) {
     var _kloudspeakerDefaults = {
         "localization-debug": false,
         "language": {
@@ -52,17 +52,11 @@ define(['require', 'jquery', 'durandal/system', 'durandal/app', 'durandal/viewLo
     kloudspeakerApp.init = function(cfg) {
         kloudspeakerApp.config = $.extend({}, _kloudspeakerDefaults, cfg);
 
-        var i18NOptions = {
-            detectFromHeaders: false,
-            lng: kloudspeakerApp.config.language.default || window.navigator.userLanguage || window.navigator.language,
-            fallbackLang: kloudspeakerApp.config.language.default,
-            ns: 'app',
-            resGetPath: 'client/localizations/__lng__/__ns__.json',
-            useCookie: false
-        };
-
         define("kloudspeaker/config", function() {
             return kloudspeakerApp.config;
+        });
+        define("kloudspeaker/instance", function() {
+            return kloudspeakerApp;
         });
 
         system.debug(true);
@@ -103,7 +97,7 @@ define(['require', 'jquery', 'durandal/system', 'durandal/app', 'durandal/viewLo
 
         require(['plugins/router', 'kloudspeaker/platform'], function(router) {
             app.start().then(function() {
-                require(['kloudspeaker/resources'], function(res) {
+                require(['kloudspeaker/resources', 'kloudspeaker/localization'], function(res, loc) {
                     // customize view path
                     var modulesPath = 'viewmodels';
                     var viewsPath = kloudspeakerApp.config['templates-path'];
@@ -116,19 +110,15 @@ define(['require', 'jquery', 'durandal/system', 'durandal/app', 'durandal/viewLo
                         return path;
                     };
 
-                    i18n.init(i18NOptions, function() {
+                    loc.init(function() {
                         //Call localization on view before binding...
                         binder.binding = function(obj, view) {
                             $(view).i18n();
                         };
 
                         // change language when session starts, and redirect to default view (?)
-                        // TODO move to where?
                         app.on('session:start').then(function(session) {
-                            var lang = (session.user ? session.user.lang : false) || kloudspeakerApp.config.language.default;
-                            console.log("LANG=" + lang);
-                            i18n.setLng(lang);
-
+                            loc.setLang((session.user ? session.user.lang : false) || kloudspeakerApp.config.language.default);
                             router.navigate("files");
                         });
 
