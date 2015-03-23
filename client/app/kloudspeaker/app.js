@@ -77,12 +77,10 @@ define(['require', 'jquery', 'durandal/system', 'durandal/app', 'durandal/viewLo
         var loadModules = function(session) {
             console.log("Loading modules");
             console.log(session);
-            var paths = [];
             var modules = [];
             var packages = [];
             _.each(session.plugins, function(pl) {
                 if (pl["client_module_path"]) {
-                    paths.push(pl["client_module_path"]);
                     modules.push(pl["client_module_id"]);
                     packages.push({
                         name: pl["client_module_id"],
@@ -98,13 +96,6 @@ define(['require', 'jquery', 'durandal/system', 'durandal/app', 'durandal/viewLo
                 require(modules, function() {
                     df.resolve();
                 });
-                // TODO load plugin modules elsewhere
-                // TODO how to define module paths so they are loaded automatically with module id? requirejs package?
-                /*require(paths, function() {
-                    require(modules, function() {
-                        df.resolve();
-                    });
-                });*/
             } else
                 df.resolve();
             return df;
@@ -112,28 +103,40 @@ define(['require', 'jquery', 'durandal/system', 'durandal/app', 'durandal/viewLo
 
         require(['plugins/router', 'kloudspeaker/platform'], function(router) {
             app.start().then(function() {
-                viewLocator.useConvention(false, kloudspeakerApp.config['templates-path']);
-
-                i18n.init(i18NOptions, function() {
-                    //Call localization on view before binding...
-                    binder.binding = function(obj, view) {
-                        $(view).i18n();
+                require(['kloudspeaker/resources'], function(res) {
+                    // customize view path
+                    var modulesPath = 'viewmodels';
+                    var viewsPath = kloudspeakerApp.config['templates-path'];
+                    viewLocator.useConvention(modulesPath, kloudspeakerApp.config['templates-path']);
+                    var reg = new RegExp(escape(modulesPath), 'gi');
+                    viewLocator.convertModuleIdToViewId = function(moduleId) {
+                        var path = moduleId.replace(reg, viewsPath);
+                        //TODO map
+                        console.log("Resolve view:" + moduleId + " -> " + path);
+                        return path;
                     };
 
-                    // change language when session starts, and redirect to default view (?)
-                    // TODO move to where?
-                    app.on('session:start').then(function(session) {
-                        var lang = (session.user ? session.user.lang : false) || kloudspeakerApp.config.language.default;
-                        console.log("LANG=" + lang);
-                        i18n.setLng(lang);
+                    i18n.init(i18NOptions, function() {
+                        //Call localization on view before binding...
+                        binder.binding = function(obj, view) {
+                            $(view).i18n();
+                        };
 
-                        router.navigate("files");
-                    });
+                        // change language when session starts, and redirect to default view (?)
+                        // TODO move to where?
+                        app.on('session:start').then(function(session) {
+                            var lang = (session.user ? session.user.lang : false) || kloudspeakerApp.config.language.default;
+                            console.log("LANG=" + lang);
+                            i18n.setLng(lang);
 
-                    require(['kloudspeaker/session'], function(session) {
-                        session.init(kloudspeakerApp.config).then(function(s) {
-                            loadModules(s).then(function() {
-                                app.setRoot('viewmodels/shell', false, 'kloudspeaker');
+                            router.navigate("files");
+                        });
+
+                        require(['kloudspeaker/session'], function(session) {
+                            session.init(kloudspeakerApp.config).then(function(s) {
+                                loadModules(s).then(function() {
+                                    app.setRoot('viewmodels/shell', false, 'kloudspeaker');
+                                });
                             });
                         });
                     });
