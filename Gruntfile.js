@@ -33,13 +33,13 @@ module.exports = function(grunt) {
 
         jshint: {
             options: {
-                jshintrc: 'src/.jshintrc'
+                jshintrc: 'client/app/.jshintrc'
             },
             grunt: {
                 src: [] //TODO clean up 'Gruntfile.js']
             },
             src: {
-                src: ['src/*.js']
+                src: ['client/app/*.js']
             },
             test: {
                 src: [] //'js/tests/unit/*.js'
@@ -51,13 +51,13 @@ module.exports = function(grunt) {
 
         jscs: {
             options: {
-                config: 'src/.jscs.json',
+                config: 'client/app/.jscs.json',
             },
             grunt: {
                 src: [] //'Gruntfile.js']
             },
             src: {
-                src: ['src/*.js'] //TODO clean 
+                src: ['client/app/*.js'] //TODO clean 
             },
             test: {
                 src: [] //'js/tests/unit/*.js'
@@ -77,7 +77,7 @@ module.exports = function(grunt) {
                     //sourceMapFilename: 'dist/css/<%= pkg.name %>.css.map'
                 },
                 files: {
-                    'css/<%= pkg.name %>.css': 'less/app.less'
+                    'client/css/<%= pkg.name %>.css': 'client/less/app.less'
                 }
             },
             /*compileTheme: {
@@ -98,7 +98,7 @@ module.exports = function(grunt) {
                     report: 'min'
                 },
                 files: {
-                    'css/<%= pkg.name %>.min.css': 'css/<%= pkg.name %>.css',
+                    'client/css/<%= pkg.name %>.min.css': 'client/css/<%= pkg.name %>.css',
                     //'dist/css/<%= pkg.name %>-theme.min.css': 'dist/css/<%= pkg.name %>-theme.css'
                 }
             }
@@ -109,11 +109,11 @@ module.exports = function(grunt) {
                 banner: '<%= banner %>\n',
                 stripBanners: false
             },
-            mollify: {
+            kloudspeaker: {
                 src: [
                     'js/*.js'
                 ],
-                dest: 'dist/js/<%= pkg.name %>.js'
+                dest: 'dist/client/<%= pkg.name %>.js'
             },
             full: {
                 src: [
@@ -143,11 +143,11 @@ module.exports = function(grunt) {
                     report: 'min'
                 },
                 files: [{
-                    src: 'dist/js/mollify.js',
-                    dest: 'dist/js/mollify.min.js'
+                    src: 'dist/js/kloudspeaker.js',
+                    dest: 'dist/js/kloudspeaker.min.js'
                 }, {
-                    src: 'dist/js/mollify.full.js',
-                    dest: 'dist/js/mollify.full.min.js'
+                    src: 'dist/js/kloudspeaker.full.js',
+                    dest: 'dist/js/kloudspeaker.full.min.js'
                 }]
             }
         },
@@ -161,7 +161,7 @@ module.exports = function(grunt) {
                     selectorsMergeMode: 'ie8'
                 },
                 files: {
-                    'dist/css/<%= pkg.name %>.min.css': ['css/kloudspeaker.css']
+                    'client/css/<%= pkg.name %>.min.css': ['css/kloudspeaker.css']
                 }
             }
             /*,
@@ -187,8 +187,8 @@ module.exports = function(grunt) {
                 },
                 files: {
                     src: [
-                        'dist/css/<%= pkg.name %>.css',
-                        'dist/css/<%= pkg.name %>.min.css'
+                        'client/css/<%= pkg.name %>.css',
+                        'client/css/<%= pkg.name %>.min.css'
                     ]
                 }
             }
@@ -197,7 +197,7 @@ module.exports = function(grunt) {
         copy: {
             css: {
                 expand: true,
-                src: ['css/font/**', 'css/images/**'],
+                src: ['client/css/font/**', 'client/css/images/**'],
                 dest: 'dist/'
             },
             js: {
@@ -304,7 +304,7 @@ module.exports = function(grunt) {
                 tasks: ['jshint:test', 'qunit']
             },
             less: {
-                files: 'less/*.less',
+                files: 'client/less/*.less',
                 tasks: 'less'
             }
         }
