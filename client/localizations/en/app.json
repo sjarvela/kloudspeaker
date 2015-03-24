@@ -1,11 +1,19 @@
 {
+    "formats": {
+        "date": {
+            "short": "M/d/YYYY"
+        },
+        "datetime": {
+            "short": "M/d/YYYY h:mm:ss A"
+        }
+    },
     "core": {
         "action": {
             "session": {
-            	"logout": "Logout"
+                "logout": "Logout"
             },
             "filesystem": {
-            	"open": "Open"
+                "open": "Open"
             }
         }
     },

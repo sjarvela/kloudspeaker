@@ -12,6 +12,7 @@ requirejs.config({
         'knockout-bootstrap': '../vendor/knockout-bootstrap',
         'jquery-singledoubleclick': '../vendor/jquery-singledoubleclick',
         'i18next': '../../bower_components/i18next/i18next.amd.withJQuery.min',
+        'moment': '../../bower_components/moment/moment',
     },
     shim: {
         'bootstrap': {

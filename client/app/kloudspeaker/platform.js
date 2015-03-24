@@ -170,16 +170,16 @@ define('kloudspeaker/ui/files', [], function() {
     }
 });
 
-define('kloudspeaker/ui/formatters', ['kloudspeaker/utils', "i18next"], function(utils, i18n) {
+define('kloudspeaker/ui/formatters', ['kloudspeaker/utils', "i18next", "moment"], function(utils, i18n, moment) {
     var formatters = {
         timestamp: function(ts, ctx) {
             if (ts == null) return "";
             var fmt = null;
             if (ctx && ctx.format) fmt = ctx.format;
-            else fmt = i18n.t('datetime-full');
+            else fmt = i18n.t('formats.datetime.short');
 
             if (typeof(ts) === 'string') ts = utils.parseInternalTime(ts);
-            return ts.toString(fmt);
+            return moment(ts).format(fmt);
         }
     };
     return {
