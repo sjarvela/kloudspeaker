@@ -24,7 +24,7 @@ module.exports = function(grunt) {
 
         // Metadata.
         pkg: pkg,
-        banner: '/*!\n' + ' * Kloudspeaker v<%= pkg.version %> (<%= pkg.homepage %>)\n' + ' * Copyright 2015-<%= grunt.template.today("yyyy") %> <%= pkg.author %>\n' + ' * Licensed under <%= _.pluck(pkg.licenses, "type") %> (<%= _.pluck(pkg.licenses, "url") %>)\n' + ' */\n',
+        banner: '/*!\n' + ' * Kloudspeaker v<%= pkg.version %> (<%= pkg.homepage %>)\n' + ' * Copyright 2015- <%= pkg.author %>\n' + ' * Licensed under <%= _.pluck(pkg.licenses, "type") %> (<%= _.pluck(pkg.licenses, "url") %>)\n' + ' */\n',
 
         // Task configuration.
         clean: {
