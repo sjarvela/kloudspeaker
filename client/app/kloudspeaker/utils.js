@@ -1,5 +1,7 @@
 define([],
     function() {
+        var _time = new Date().getTime();
+
         /**
          *
          *  Base64 encode / decode
@@ -157,7 +159,7 @@ define([],
                     success: {},
                     fail: {}
                 };
-                var all = kloudspeaker.utils.getKeys(m);
+                var all = utils.getKeys(m);
                 var count = all.length;
                 $.each(all, function(i, dk) {
                     var df = m[dk];
@@ -178,7 +180,7 @@ define([],
                 var parts = u.split("?");
                 return {
                     path: parts[0],
-                    params: kloudspeaker.helpers.getUrlParams(u),
+                    params: utils.getUrlParams(u),
                     paramsString: (parts.length > 1 ? ("?" + parts[1]) : "")
                 };
             },
@@ -200,7 +202,7 @@ define([],
             },
 
             noncachedUrl: function(url) {
-                return kloudspeaker.utils.urlWithParam(url, "_=" + kloudspeaker._time);
+                return utils.urlWithParam(url, "_=" + _time);
             },
 
             formatDateTime: function(time, fmt) {
@@ -223,7 +225,7 @@ define([],
 
             formatInternalTime: function(time) {
                 if (!time) return null;
-                return kloudspeaker.utils.formatDateTime(time, 'yyyyMMddHHmmss');
+                return utils.formatDateTime(time, 'yyyyMMddHHmmss');
             },
 
             mapByKey: function(list, key, value) {

@@ -95,6 +95,36 @@ define("kloudspeaker/localization", ['kloudspeaker/config', 'kloudspeaker/resour
     }
 );
 
+define('kloudspeaker/dom', ['kloudspeaker/resources', 'kloudspeaker/utils', 'jquery'], function(res, utils, $) {
+    return {
+        importScript: function(url) {
+            var u = url; //TODO map: res.resourceUrl(url);
+            if (!u)
+                return $.Deferred().resolve().promise();
+            var df = $.Deferred();
+            $.getScript(u, df.resolve).fail(function(e) {
+                //TODO new mollify.ui.FullErrorView("Failed to load script ", "<code>" + u + "</code>").show();
+                alert(u);
+                df.reject();
+            });
+            return df.promise();
+        },
+
+        importCss: function(url) {
+            var u = url; //TODO map: res.resourceUrl(url);
+            if (!u) return;
+
+            var link = $("<link>");
+            link.attr({
+                type: 'text/css',
+                rel: 'stylesheet',
+                href: utils.noncachedUrl(u)
+            });
+            $("head").append(link);
+        }
+    }
+});
+
 define('kloudspeaker/ui/files', [], function() {
     var itemDetailsProviders = [];
     return {

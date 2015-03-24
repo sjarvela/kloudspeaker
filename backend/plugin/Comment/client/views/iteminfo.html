@@ -1,3 +1,10 @@
-<div>
-comments
-</div>
+<ul data-bind="foreach: { data: model.list(), as: 'comment' }">
+	<li>
+		<span data-bind="text: time"></span>
+		<span data-bind="text: user_id"></span>
+		<span data-bind="text: username"></span>
+		<span data-bind="text: comment"></span>
+	</li>
+</ul>
+
+<input class="new_comment" data-bind="value: model.comment"></input><button class="add_comment" data-bind="click: add">ADD</button>
