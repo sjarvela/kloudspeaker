@@ -5,8 +5,8 @@
     <!-- ko if: editing -->
     <div class="editor">
         <input class="value-editor" data-bind="value: settings.value"></input>
-        <button class="btn" data-bind="click: onEdit">OK</button>
-        <button class="btn" data-bind="click: cancel">Cancel</button>
+        <button class="btn" data-bind="click: onEdit, clickBubble: false">OK</button>
+        <button class="btn" data-bind="click: cancel, clickBubble: false">Cancel</button>
     </div>
     <!-- /ko -->
 </div>

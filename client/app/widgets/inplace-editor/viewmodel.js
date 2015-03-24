@@ -14,32 +14,15 @@ define(['durandal/composition', 'knockout', 'jquery'], function(composition, ko,
     ctor.prototype.cancel = function() {
         this.settings.value = this.originalValue;
         this.editing(false);
+        return true;
     }
     ctor.prototype.onEdit = function() {
         if (!this.settings.action) return;
         if (this.settings.action(this.settings.value) === false) return;
         this.originalValue = this.settings.value;
         this.editing(false);
+        return false;
     };
-
-    /*ctor.prototype.getHeaderText = function(item) {
-        if (this.settings.headerProperty) {
-            return item[this.settings.headerProperty];
-        }
- 
-        return item.toString();
-    };
- 
-    ctor.prototype.afterRenderItem = function(elements, item) {
-        var parts = composition.getParts(elements);
-        var $itemContainer = $(parts.itemContainer);
- 
-        $itemContainer.hide();
- 
-        $(parts.headerContainer).bind('click', function() {
-            $itemContainer.toggle('fast');
-        });
-    };*/
 
     return ctor;
 });
