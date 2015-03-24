@@ -87,7 +87,7 @@ class PluginController {
 
 			$clientModule = $p->getClientModuleId();
 			if ($clientModule != NULL) {
-				$path = "js/";
+				$path = "client/";
 				$info["client_module_path"] = $custom ? $this->env->resources()->getCustomPluginUrl($id, $path) : $this->env->getPluginUrl($id, $path, TRUE);
 				$info["client_module_id"] = $clientModule;
 			}

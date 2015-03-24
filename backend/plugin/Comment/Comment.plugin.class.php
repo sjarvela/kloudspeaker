@@ -22,6 +22,10 @@ class Comment extends PluginBase {
 		return array("1_0");
 	}
 
+	public function getClientModuleId() {
+		return "kloudspeaker/comments";
+	}
+
 	public function setup() {
 		$this->addService("comment", "CommentServices");
 

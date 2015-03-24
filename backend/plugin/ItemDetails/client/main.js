@@ -1,5 +1,5 @@
 define(['kloudspeaker/config', 'kloudspeaker/plugins', 'kloudspeaker/ui/files'], function(config, plugins, uif) {
-	console.log('kloudspeaker/plugin/itemdetails');
+	console.log('kloudspeaker/itemdetails');
 
 	// item info
 	var typeConfig = false;
@@ -28,15 +28,15 @@ define(['kloudspeaker/config', 'kloudspeaker/plugins', 'kloudspeaker/ui/files'],
 	}
 
 	uif.itemDetails.registerProvider({
-		id: "plugin/itemdetails",
+		id: "itemdetails",
 		get: function(item, d, pd) {
 			if (!typeConfig || !plugins.exists("ItemDetails")) return false;
 			var spec = getApplicableSpec(item);
 			if (!spec) return false;
 
 			return {
-				titleKey: "files.iteminfo.title",
-				module: 'kloudspeaker/plugin/itemdetails/iteminfo',
+				titleKey: "itemdetails.iteminfo.title",
+				module: 'kloudspeaker/itemdetails/iteminfo',
 			}
 		}
 	});

@@ -1,10 +1,10 @@
-define('kloudspeaker/permissions', ['kloudspeaker/session', 'durandal/app'], function(session, da) {
+define('kloudspeaker/permissions', ['kloudspeaker/session', 'kloudspeaker/utils', 'durandal/app'], function(session, utils, da) {
     var _types = null;
     var _filesystemPermissions = {};
     var _permissions = {};
 
     var updatePermissions = function(list, permissions) {
-        $.each(kloudspeaker.utils.getKeys(permissions), function(i, p) {
+        $.each(utils.getKeys(permissions), function(i, p) {
             list[p] = permissions[p];
         });
     };
@@ -12,8 +12,8 @@ define('kloudspeaker/permissions', ['kloudspeaker/session', 'durandal/app'], fun
         if (!s.user) return;
 
         _types = s.permissions.types;
-        /*var genericKeys = kloudspeaker.utils.getKeys(_types.keys.generic);
-        var filesystemKeys = kloudspeaker.utils.getKeys(_types.keys.filesystem);
+        /*var genericKeys = utils.getKeys(_types.keys.generic);
+        var filesystemKeys = utils.getKeys(_types.keys.filesystem);
         _types.keys = {
             generic: genericKeys,
             filesystem: filesystemKeys,

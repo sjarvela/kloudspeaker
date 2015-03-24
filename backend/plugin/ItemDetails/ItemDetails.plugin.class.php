@@ -13,7 +13,7 @@ class ItemDetails extends PluginBase {
 	private $detailProviders = array();
 
 	public function getClientModuleId() {
-		return "kloudspeaker/plugin/itemdetails";
+		return "kloudspeaker/itemdetails";
 	}
 
 	public function setup() {

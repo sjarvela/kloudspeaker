@@ -1,5 +1,5 @@
-define(['jquery', 'kloudspeaker/core_service', 'durandal/app'],
-    function($, service, da) {
+define(['jquery', 'kloudspeaker/core_service', 'kloudspeaker/utils', 'durandal/app'],
+    function($, service, utils, da) {
         var _session = false;
         var _end = function() {
             _session = {
@@ -64,7 +64,7 @@ define(['jquery', 'kloudspeaker/core_service', 'durandal/app'],
             authenticate: function(username, pw, remember) {
                 return service.post('session/authenticate', {
                     username: username,
-                    password: Base64.encode(pw),
+                    password: utils.Base64.encode(pw),
                     remember: !!remember
                 }).done(function(s) {
                     _set(s);
