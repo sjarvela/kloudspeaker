@@ -1792,7 +1792,7 @@
             "on-button": function(btn, d, $d) {
                 var checkedOpts = {};
                 $d.find("input.kloudspeaker-confirmation-option:checked").each(function() {
-                    checkedOpts[$(this).attr('id').substring(28)] = true;
+                    checkedOpts[$(this).attr('id').substring(33)] = true;
                 });
                 d.close();
                 if (spec.callback && btn.id === 'yes') spec.callback(checkedOpts);
