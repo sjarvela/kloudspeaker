@@ -1,4 +1,4 @@
-define(['plugins/router', 'kloudspeaker/config', 'kloudspeaker/session', 'kloudspeaker/filesystem', 'kloudspeaker/core', 'kloudspeaker/ui/files', 'knockout', 'jquery'], function(router, config, session, fs, core, uif, ko, $) {
+define(['plugins/router', 'kloudspeaker/config', 'kloudspeaker/session', 'kloudspeaker/permissions', 'kloudspeaker/filesystem', 'kloudspeaker/core', 'kloudspeaker/features', 'kloudspeaker/ui/files', 'knockout', 'jquery'], function(router, config, session, permissions, fs, core, features, uif, ko, $) {
     core.actions.register({
         id: 'filesystem/open',
         type: 'filesystem',
@@ -52,6 +52,9 @@ define(['plugins/router', 'kloudspeaker/config', 'kloudspeaker/session', 'klouds
                 fs.itemInfo(item.id, uif.itemDetails.getRequestData(item)).done(function(r) {
                     itemDetails.loading(false);
                     itemDetails.data(r);
+                    itemDetails.metadata(r.metadata || { description: ''});
+                    itemDetails.showDescription(features.exists('descriptions'));
+                    itemDetails.canEditDescription(permissions.hasFilesystemPermission(item, 'edit_description'));
 
                     var d = uif.itemDetails.get(item, r);
                     itemDetails.details(d);
@@ -98,9 +101,19 @@ define(['plugins/router', 'kloudspeaker/config', 'kloudspeaker/session', 'klouds
             loading: ko.observable(false),
             data: ko.observable(null),
             details: ko.observableArray([]),
+            showDescription: ko.observable(false),
+            canEditDescription: ko.observable(false),
+            metadata: ko.observable(null),
             activeDetails: ko.observable(null),
             setActiveDetails: function(d) {
                 model.itemDetails.activeDetails(d);
+            },
+            setDescription: function(d) {
+                fs.setItemDescription(model.itemDetails.item(), d).done(function() {
+                    var md = model.itemDetails.metadata();
+                    md.description = d;
+                    model.itemDetails.metadata(md);
+                });
             }
         }
     };

@@ -64,6 +64,7 @@ define(['require', 'jquery', 'durandal/system', 'durandal/app', 'durandal/viewLo
         app.title = 'Kloudspeaker';
 
         app.configurePlugins({
+            widget: true,
             router: true,
             dialog: true
         });

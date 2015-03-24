@@ -1,4 +1,4 @@
-define('kloudspeaker/permissions', ['kloudspeaker/session', 'kloudspeaker/utils', 'durandal/app'], function(session, utils, da) {
+define(['kloudspeaker/session', 'kloudspeaker/utils', 'durandal/app'], function(session, utils, da) {
     var _types = null;
     var _filesystemPermissions = {};
     var _permissions = {};
@@ -44,12 +44,14 @@ define('kloudspeaker/permissions', ['kloudspeaker/session', 'kloudspeaker/utils'
         },
         hasFilesystemPermission: function(item, name, required) {
             var user = session.get().user;
+            if (_types.keys.all.indexOf(name) < 0) return false;
             if (!user) return false;
             if (user.admin) return true;
             return hasPermission(_filesystemPermissions[((typeof(item) === "string") ? item : item.id)], name, required);
         },
         hasPermission: function(name, required) {
             var user = session.get().user;
+            if (_types.keys.all.indexOf(name) < 0) return false;
             if (!user) return false;
             if (user.admin) return true;
             return hasPermission(_permissions, name, required);

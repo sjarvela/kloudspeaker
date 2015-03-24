@@ -46,6 +46,11 @@ define(['kloudspeaker/core_service', 'kloudspeaker/permissions', 'durandal/app']
                     permissions.putFilesystemPermissions(itemId, r.permissions);
                     return r;
                 });
+            },
+            setItemDescription: function(item, description) {
+                return service.put("filesystem/" + item.id + "/description/", {
+                    description: description
+                });
             }
         };
     }

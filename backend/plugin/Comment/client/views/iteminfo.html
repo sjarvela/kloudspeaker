@@ -1,10 +1,16 @@
-<ul data-bind="foreach: { data: model.list(), as: 'comment' }">
-	<li>
-		<span data-bind="text: time"></span>
-		<span data-bind="text: user_id"></span>
-		<span data-bind="text: username"></span>
-		<span data-bind="text: comment"></span>
-	</li>
-</ul>
-
-<input class="new_comment" data-bind="value: model.comment"></input><button class="add_comment" data-bind="click: add">ADD</button>
+<div class="comments-iteminfo well">
+    <ul class="comment-list" data-bind="foreach: { data: model.list(), as: 'comment' }">
+        <li class="comment">
+            <div class="info">
+                <span data-bind="text: time"></span>
+                <span data-bind="text: user_id"></span>
+                <span data-bind="text: username"></span>
+            </div>
+            <div class="comment-txt" data-bind="text: comment"></div>
+        </li>
+    </ul>
+    <div class="add-comment" data-bind="if: model.canAdd">
+        <textarea class="form-control comment-txt" rows="3" data-bind="value: model.comment"></textarea>
+        <button class="btn-add-comment btn btn-primary" data-bind="click: add" data-i18n="comments:iteminfo.add-comment"></button>
+    </div>
+</div>

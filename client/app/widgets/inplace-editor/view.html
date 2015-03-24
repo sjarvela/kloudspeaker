@@ -1,0 +1,12 @@
+<div class="inplace-editor" data-bind="click: edit">
+    <!-- ko ifnot: editing -->
+    <div class="read-only-value" data-bind="text: settings.value"></div>
+    <!-- /ko -->
+    <!-- ko if: editing -->
+    <div class="editor">
+        <input class="value-editor" data-bind="value: settings.value"></input>
+        <button class="btn" data-bind="click: onEdit">OK</button>
+        <button class="btn" data-bind="click: cancel">Cancel</button>
+    </div>
+    <!-- /ko -->
+</div>

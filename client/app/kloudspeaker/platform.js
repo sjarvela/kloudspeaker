@@ -5,6 +5,21 @@ define("kloudspeaker/core_service", ['kloudspeaker/service'],
     }
 );
 
+define("kloudspeaker/features", ['durandal/app'],
+    function(app) {
+        var features = {};
+        app.on('session:start').then(function(session) {
+            if (!session) features = {};
+            else features = session.features;
+        });
+        return {
+            exists: function(id) {
+                return !!features[id];
+            }
+        }
+    }
+);
+
 define("kloudspeaker/plugins", ['durandal/app'],
     function(app) {
         var plugins = {};
@@ -175,18 +190,23 @@ define('kloudspeaker/ui/formatters', ['kloudspeaker/utils', "i18next"], function
     }
 });
 
+// 1. require any modules that needs to be initialized at start
+// 2. setup components etc
+
 define([
     "kloudspeaker/core",
     "kloudspeaker/ui/formatters",
     "kloudspeaker/resources",
+    "kloudspeaker/features",
     "durandal/composition",
+    "plugins/widget",
     "knockout",
     "jquery",
     "i18next",
     "bootstrap",
     "knockout-bootstrap",
     "underscore"
-], function(core, formatters, res, composition, ko, $, i18n) {
+], function(core, formatters, res, features, composition, widget, ko, $, i18n) {
     var _i18n = function(e, va) {
         var value = ko.unwrap(va());
         var loc = i18n.t(value) || '';
@@ -213,6 +233,8 @@ define([
         init: _fmt,
         update: _fmt
     });
+
+    widget.registerKind('inplace-editor');
 });
 
 if (!window.isArray)

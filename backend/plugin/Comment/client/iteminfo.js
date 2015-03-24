@@ -1,8 +1,9 @@
-define(['kloudspeaker/comments/repository', 'kloudspeaker/resources', 'knockout'], function(repository, res, ko) {
+define(['kloudspeaker/comments/repository', 'kloudspeaker/permissions', 'kloudspeaker/resources', 'knockout'], function(repository, permissions, res, ko) {
     var model = {
         item: null,
         list: null,
         comment: ko.observable(""),
+        canAdd: ko.observable(false)
     };
     var reload = function() {
         repository.getCommentsForItem(model.item).done(function(c) {
@@ -18,6 +19,7 @@ define(['kloudspeaker/comments/repository', 'kloudspeaker/resources', 'knockout'
 
             model.item = p.item();
             model.list = ko.observableArray([]);
+            model.canAdd = permissions.hasFilesystemPermission(model.item, "comment_item");
             reload();
         },
         getView: function() {
