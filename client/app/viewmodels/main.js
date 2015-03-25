@@ -29,12 +29,26 @@ define(['kloudspeaker/session', 'kloudspeaker/core', 'knockout', 'jquery', 'i18n
 
         console.log("active=" + firstLevel + " / " + secondLevel);
 
-        model.activeFirstLevelView(core.views.getById(firstLevel));
-        model.activeSecondLevelView(secondLevel ? core.views.getById(secondLevel) : null);
+        var firstLevelView = core.views.getById(firstLevel);
+        var secondLevelView = secondLevel ? core.views.getById(secondLevel) : null;
+
+        model.activeFirstLevelView(firstLevelView);
+        model.activeSecondLevelView(secondLevelView);
         model.secondLevelViews(core.views.get(firstLevel) || []);
 
+        core.activeViewInfo = {
+            path: instruction.fragment,
+            parts: parts,
+            config: instruction.config,
+            firstLevelView: firstLevelView,
+            secondLevelView: secondLevelView
+        };
+
         if (instruction.config.subViewTemplates)
-            model.subviews({ templates: instruction.config.subViewTemplates, model: instance });
+            model.subviews({
+                templates: instruction.config.subViewTemplates,
+                model: instance
+            });
         else
             model.subviews(null);
     });

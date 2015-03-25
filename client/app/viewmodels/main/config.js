@@ -13,14 +13,22 @@ define(['kloudspeaker/core', 'knockout'], function(core, ko) {
     });
 
     var router = core.routers.get('config');
-
-    /*childRouter.mapUnknownRoutes(function(instruction) {
-        console.log("UNKNOWN");
-        console.log(instruction);
-        //use the instruction to conventionally configure a module
-    }).buildNavigationModel();*/
+    router.mapUnknownRoutes(function(instruction) {
+        var views = core.views.get('config');
+        if (views.length > 0) router.navigate("config/" + views[0].id);
+        else router.navigate("config/none");
+        
+        return { then: function() {} };
+    });
 
     return {
-        router: router
+        activate: function(id) {
+            console.log("config " + id);
+            if (id == null) {
+                return false;
+            }
+        },
+        router: router,
+        activeView: core.activeView
     };
 });

@@ -1,8 +1,8 @@
 <div class="config-list">
     <!-- ko if: settings.tools -->
-    <div class="tools">
+    <div class="btn-toolbar tools" role="toolbar">
         <!-- ko foreach: {data: settings.tools, as: 'tool'} -->
-        <button class="btn" data-bind="text: tool.id, click: tool.action"></button>
+        <button type="button" class="btn btn-default" data-bind="text: tool.id, click: tool.action"></button>
         <!-- /ko -->
     </div>
     <!-- /ko -->

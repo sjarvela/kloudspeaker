@@ -1,26 +1,15 @@
 define(['kloudspeaker/config/users/repository', 'knockout'], function(repository, ko) {
+    var model = {
+        users: ko.observableArray([]),
+        user: ko.observable(null)
+    };
+
     var onAddUser = function() {
         alert('add');
     };
-    
-    var model = {
-        users: ko.observableArray([]),
-        user: ko.observable(null),
-        tools: [{
-            id: 'add',
-            action: onAddUser
-        }],
-        cols: [{
-            id: 'id'
-        }, {
-            id: 'name'
-        }, {
-            id: 'remove',
-            type: 'action',
-            action: function(u) {
-                alert(u.name);
-            }
-        }]
+
+    var onRemoveUser = function() {
+
     };
 
     var reload = function() {
@@ -42,6 +31,19 @@ define(['kloudspeaker/config/users/repository', 'knockout'], function(repository
             //TODO url?
             model.user(u);
         },
+        tools: [{
+            id: 'add',
+            action: onAddUser
+        }],
+        cols: [{
+            id: 'id'
+        }, {
+            id: 'name'
+        }, {
+            id: 'remove',
+            type: 'action',
+            action: onRemoveUser
+        }],
         model: model
     };
 });

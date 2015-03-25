@@ -209,7 +209,8 @@ define([
     "underscore"
 ], function(core, formatters, res, features, composition, widget, ko, $, i18n) {
     var _i18n = function(e, va) {
-        var value = ko.unwrap(va());
+        var v = va();
+        var value = ko.unwrap(v);
         var loc = i18n.t(value) || '';
         var $e = $(e);
         var target = $e.attr('data-i18n-bind-target');

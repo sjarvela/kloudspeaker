@@ -1,5 +1,6 @@
 define(['plugins/router', 'kloudspeaker/filesystem'],
     function(router, fs) {
+        var activeViewInfo = null;
         var views = {};
         var viewsById = {};
         var actions = {};
@@ -79,7 +80,8 @@ define(['plugins/router', 'kloudspeaker/filesystem'],
                     }
                     return routers[id];
                 }
-            }
+            },
+            activeViewInfo: activeViewInfo
         }
 
         // full
