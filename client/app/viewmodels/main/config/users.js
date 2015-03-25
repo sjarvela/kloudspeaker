@@ -2,10 +2,17 @@ define(['kloudspeaker/config/users/repository', 'knockout'], function(repository
     var model = {
         users: ko.observableArray([]),
         user: ko.observable(null),
-        cols: [
-        	{ id: 'id' },
-        	{ id: 'name' }
-        ]
+        cols: [{
+            id: 'id'
+        }, {
+            id: 'name'
+        }, {
+            id: 'remove',
+            type: 'action',
+            action: function(u) {
+                alert(u.name);
+            }
+        }]
     };
 
     var reload = function() {
@@ -24,7 +31,7 @@ define(['kloudspeaker/config/users/repository', 'knockout'], function(repository
             return true;
         },
         selectUser: function(u) {
-        	//TODO url?
+            //TODO url?
             model.user(u);
         },
         model: model

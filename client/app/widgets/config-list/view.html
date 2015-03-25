@@ -1,7 +1,26 @@
-<div class="config-list">    
-    <div class="row" data-bind="foreach: {data: settings.values, as: 'row'}">
-        <div class="col" data-bind="foreach: {data: $parent.settings.cols, as: 'col'}">
-            <div data-bind="text: row[col.id]"></div>
-        </div>
-    </div>
+<div class="table-responsive">
+    <table class="table config-list">
+        <thead>
+            <tr data-bind="foreach: {data: settings.cols, as: 'hcol'}">
+                <th data-bind="text: hcol.id"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- ko foreach: {data: settings.values, as: 'row'} -->
+            <tr>
+            <!-- ko foreach: {data: $parent.settings.cols, as: 'col'} -->
+
+                <!-- ko if: !col.type -->
+                <td data-bind="text: row[col.id]"></td>
+                <!-- /ko -->
+
+                <!-- ko if: col.type == 'action' -->
+                <td><a href="#" data-bind="text: col.id, click: function() { col.action(row) }"></a></td>
+                <!-- /ko -->
+
+            <!-- /ko -->
+            </tr>
+            <!-- /ko -->
+        </tbody>
+    </table>
 </div>
