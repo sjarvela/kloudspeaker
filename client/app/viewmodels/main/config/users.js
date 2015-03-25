@@ -33,15 +33,20 @@ define(['kloudspeaker/config/users/repository', 'knockout'], function(repository
         },
         tools: [{
             id: 'add',
+            icon: 'plus',
             action: onAddUser
         }],
         cols: [{
-            id: 'id'
+            id: 'id',
+            titleKey: 'config.list.id'
         }, {
-            id: 'name'
+            id: 'name',
+            titleKey: 'main.config.users.name'
         }, {
             id: 'remove',
             type: 'action',
+            icon: 'trash',
+            title: '',
             action: onRemoveUser
         }],
         model: model

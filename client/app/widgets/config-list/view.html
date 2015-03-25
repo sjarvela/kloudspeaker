@@ -1,17 +1,22 @@
 <div class="config-list">
-    <!-- ko if: settings.tools -->
-    <div class="btn-toolbar tools" role="toolbar">
-        <!-- ko foreach: {data: settings.tools, as: 'tool'} -->
-        <button type="button" class="btn btn-default" data-bind="text: tool.id, click: tool.action"></button>
+    <div class="header">
+        <div class="header-title">
+            <div data-part="header-title"></div>
+        </div>
+        <!-- ko if: settings.tools -->
+        <div class="btn-toolbar tools" role="toolbar">
+            <!-- ko foreach: {data: settings.tools, as: 'tool'} -->
+            <button type="button" class="btn btn-default" data-bind="click: tool.action"><i data-bind="attr: {class: 'fa fa-'+tool.icon }"></i></button>
+            <!-- /ko -->
+        </div>
         <!-- /ko -->
     </div>
-    <!-- /ko -->
-
+    
     <div class="table-responsive">
         <table class="table">
             <thead>
                 <tr data-bind="foreach: {data: settings.cols, as: 'hcol'}">
-                    <th data-bind="text: hcol.id"></th>
+                    <th data-bind="text: $parent.getColTitle(hcol)"></th>
                 </tr>
             </thead>
             <tbody>
@@ -23,7 +28,9 @@
                     <!-- /ko -->
                     <!-- ko if: col.type == 'action' -->
                     <td>
-                        <a href="#" data-bind="text: col.id, click: function() { col.action(row) }"></a>
+                        <a href="#" data-bind="click: function() { col.action(row) }">
+                            <i data-bind="attr: {class: 'fa fa-'+col.icon }"></i>
+                        </a>
                     </td>
                     <!-- /ko -->
                     <!-- /ko -->

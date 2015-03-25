@@ -8,6 +8,7 @@
         "font-awesome": "*",
         "moment": "*",
         "underscore": "*",
-        "i18next": "*"
+        "i18next": "*",
+        "knockstrap": "*"
     }
 }

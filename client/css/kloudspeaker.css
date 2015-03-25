@@ -8915,13 +8915,12 @@ button.close {
   padding-bottom: 10px;
   border-bottom: 1px solid #eee;
 }
-#kloudspeaker .main-view .config-table .config-table-actions {
-  padding-bottom: 8px;
+#kloudspeaker .main-view .config-list .header {
+  clear: both;
 }
-#kloudspeaker .main-view .config-table .ngGrid {
-  max-height: 300px;
-  height: auto !important;
+#kloudspeaker .main-view .config-list .header .header-title {
+  float: left;
 }
-#kloudspeaker .main-view .config-table .ngGrid .ngViewport {
-  height: auto !important;
+#kloudspeaker .main-view .config-list .header .toolbar {
+  float: left;
 }

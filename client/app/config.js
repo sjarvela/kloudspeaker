@@ -9,10 +9,11 @@ requirejs.config({
         'jquery': '../../bower_components/jquery/jquery',
         'bootstrap': '../../bower_components/bootstrap/dist/js/bootstrap',
         'underscore': '../../bower_components/underscore/underscore',
-        'knockout-bootstrap': '../vendor/knockout-bootstrap',
+        //'knockout-bootstrap': '../vendor/knockout-bootstrap',
         'jquery-singledoubleclick': '../vendor/jquery-singledoubleclick',
         'i18next': '../../bower_components/i18next/i18next.amd.withJQuery.min',
         'moment': '../../bower_components/moment/moment',
+        'knockstrap': '../../bower_components/knockstrap/build/knockstrap',
     },
     shim: {
         'bootstrap': {

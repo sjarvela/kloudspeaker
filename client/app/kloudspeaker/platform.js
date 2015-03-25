@@ -105,7 +105,8 @@ define("kloudspeaker/localization", ['kloudspeaker/config', 'kloudspeaker/resour
                 if (lang == currentLang) return;
                 currentLang = lang;
                 i18n.setLng(lang);
-            }
+            },
+            t: i18n.t
         }
     }
 );
@@ -205,7 +206,8 @@ define([
     "jquery",
     "i18next",
     "bootstrap",
-    "knockout-bootstrap",
+    //"knockout-bootstrap",
+    "knockstrap",
     "underscore"
 ], function(core, formatters, res, features, composition, widget, ko, $, i18n) {
     var _i18n = function(e, va) {

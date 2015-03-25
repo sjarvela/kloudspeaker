@@ -17,8 +17,10 @@ define(['kloudspeaker/core', 'knockout'], function(core, ko) {
         var views = core.views.get('config');
         if (views.length > 0) router.navigate("config/" + views[0].id);
         else router.navigate("config/none");
-        
-        return { then: function() {} };
+
+        return {
+            then: function() {}
+        };
     });
 
     return {
@@ -29,6 +31,5 @@ define(['kloudspeaker/core', 'knockout'], function(core, ko) {
             }
         },
         router: router,
-        activeView: core.activeView
     };
 });
