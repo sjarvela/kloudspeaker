@@ -162,6 +162,7 @@ define('kloudspeaker/ui/files', [], function() {
                 _.each(itemDetailsProviders, function(h) {
                     var hi = h.get(item, data, h.id ? data.plugins[h.id] : null);
                     if (!hi) return;
+                    hi.active = false;
                     r.push(hi);
                 });
                 return r;

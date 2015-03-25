@@ -12,7 +12,7 @@
 	<!-- /ko -->
 
     <ul class="nav nav-tabs item-details-tabs" role="tablist" data-bind="foreach: { data: details(), as: 'tab' }">
-        <li role="presentation" class="item-details-tab"><a data-bind="i18n: titleKey, click: $parent.setActiveDetails" href="#"></a></li>
+        <li role="presentation" class="item-details-tab" data-bind="class: { active : tab.active }" ><a data-bind="i18n: titleKey, click: $parent.setActiveDetails" href="#"></a></li>
     </ul>
 
     <!-- ko if: activeDetails() != null -->

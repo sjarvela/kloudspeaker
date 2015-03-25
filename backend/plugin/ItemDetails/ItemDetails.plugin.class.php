@@ -58,31 +58,31 @@ class ItemDetails extends PluginBase {
 	}
 
 	private function getData($item, $key) {
-		if (strcmp($key, "name") === 0) {
+		if (strcmp($key, "filesystem/name") === 0) {
 			return $item->name();
 		}
 
-		if (strcmp($key, "path") === 0) {
+		if (strcmp($key, "filesystem/path") === 0) {
 			return $item->path();
 		}
 
-		if (strcmp($key, "size") === 0) {
+		if (strcmp($key, "filesystem/size") === 0) {
 			return $item->isFile() ? $item->size() : NULL;
 		}
 
-		if (strcmp($key, "extension") === 0) {
+		if (strcmp($key, "filesystem/extension") === 0) {
 			return $item->isFile() ? $item->extension() : NULL;
 		}
 
-		if (strcmp($key, "last-modified") === 0) {
+		if (strcmp($key, "filesystem/last-modified") === 0) {
 			return $this->env->configuration()->formatTimestampInternal($item->lastModified());
 		}
 
-		if (strcmp($key, "metadata-created") === 0) {
+		if (strcmp($key, "metadata/created") === 0) {
 			return $this->env->filesystem()->getCreatedMetadataInfo($item);
 		}
 
-		if (strcmp($key, "image-size") === 0) {
+		if (strcmp($key, "image/size") === 0) {
 			if (!$item->exists()) {
 				return "0x0";
 			}
@@ -95,7 +95,7 @@ class ItemDetails extends PluginBase {
 			$size = getimagesize($item->internalPath());
 			return $size == NULL ? NULL : $size[0] . "x" . $size[1];
 		}
-		if (strcmp($key, "exif") === 0) {
+		if (strcmp($key, "image/exif") === 0) {
 			return $this->getExif($item);
 		}
 

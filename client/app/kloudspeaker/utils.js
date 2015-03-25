@@ -255,6 +255,10 @@ define([],
                 return list;
             },
 
+            eachKey: function(o, f) {
+                _.each(utils.getKeys(o), f);
+            },
+
             extractValue: function(list, key) {
                 var l = [];
                 for (var i = 0, j = list.length; i < j; i++) {

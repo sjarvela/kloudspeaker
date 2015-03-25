@@ -1,6 +1,18 @@
 <div class="itemdetails-iteminfo">
+    <div data-bind="foreach: model.groups" class="iteminfo-group">
+        <h3 data-bind="text: title"></h3>
+
+        <div class="iteminfo-rows">
+            <dl class="dl-horizontal" data-bind="foreach: rows">
+                <dt data-bind="text: title"></dt>
+                <dd data-bind="text: value"></dd>
+            </dl>
+        </div>
+    </div>
+</div>
+<!--div class="itemdetails-iteminfo">
 	<dl class="dl-horizontal">
 	  <dt>TODO modified</dt>
 	  <dd data-bind="format: model.data.last_modified" data-formatter="timestamp"></dd>
 	</dl>
-</div>
+</div-->

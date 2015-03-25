@@ -41,8 +41,9 @@ define(['require', 'jquery', 'durandal/system', 'durandal/app', 'durandal/viewLo
         plugins: {
             "ItemDetails": {
                 "*": {
-                    "last-modified": {},
-                    "size": {}
+                    "metadata/created": {},
+                    "filesystem/last-modified": {},
+                    "filesystem/size": {}
                 }
             }
         }

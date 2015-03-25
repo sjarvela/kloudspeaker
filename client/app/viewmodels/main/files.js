@@ -106,6 +106,10 @@ define(['plugins/router', 'kloudspeaker/config', 'kloudspeaker/session', 'klouds
             metadata: ko.observable(null),
             activeDetails: ko.observable(null),
             setActiveDetails: function(d) {
+                var c = model.itemDetails.activeDetails();
+                if (c) c.active = false;
+
+                d.active = true;
                 model.itemDetails.activeDetails(d);
             },
             setDescription: function(d) {
