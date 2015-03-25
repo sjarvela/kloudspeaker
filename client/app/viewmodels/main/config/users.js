@@ -1,7 +1,15 @@
 define(['kloudspeaker/config/users/repository', 'knockout'], function(repository, ko) {
+    var onAddUser = function() {
+        alert('add');
+    };
+    
     var model = {
         users: ko.observableArray([]),
         user: ko.observable(null),
+        tools: [{
+            id: 'add',
+            action: onAddUser
+        }],
         cols: [{
             id: 'id'
         }, {
