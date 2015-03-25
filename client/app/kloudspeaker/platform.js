@@ -235,7 +235,9 @@ define([
         update: _fmt
     });
 
+    //register widgets
     widget.registerKind('inplace-editor');
+    widget.registerKind('config-list');
 });
 
 if (!window.isArray)

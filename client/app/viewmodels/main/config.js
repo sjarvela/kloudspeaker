@@ -2,11 +2,11 @@ define(['kloudspeaker/core', 'knockout'], function(core, ko) {
     console.log("Config route");
 
     core.views.register({
-    	id: 'users',
-    	icon: 'user',
+        id: 'users',
+        icon: 'user',
         parent: 'config',
         route: 'config/users(/:id)',
-        moduleId: 'views/main/config/users',
+        moduleId: 'viewmodels/main/config/users',
         titleKey: 'main.config.users.title',
         hash: "#config/users",
         nav: true
@@ -22,18 +22,5 @@ define(['kloudspeaker/core', 'knockout'], function(core, ko) {
 
     return {
         router: router
-    };
-});
-
-define('views/main/config/users', [], function() {
-	var model = {};
-
-    return {
-        activate: function(id) {
-            console.log(id);
-
-            return true;
-        },
-        model: model
     };
 });

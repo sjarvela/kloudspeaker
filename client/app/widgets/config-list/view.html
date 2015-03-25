@@ -1,0 +1,7 @@
+<div class="config-list">    
+    <div class="row" data-bind="foreach: {data: settings.values, as: 'row'}">
+        <div class="col" data-bind="foreach: {data: $parent.settings.cols, as: 'col'}">
+            <div data-bind="text: row[col.id]"></div>
+        </div>
+    </div>
+</div>

@@ -1,1 +1,12 @@
-<span>users</span>
+<div class="config-users">
+	<span>users</span>
+
+	<div class="users-list" data-bind="config-list: {values: model.users, cols: model.cols}"></div>
+	<!--div data-bind="foreach: model.users">
+		<div data-bind="text: name, click: $parent.selectUser"></div>
+	</div-->
+
+	<!-- ko if: model.user() != null -->
+	<div data-bind="text: model.user().name"></div>
+	<!-- /ko -->
+</div>
