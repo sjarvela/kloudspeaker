@@ -1,11 +1,14 @@
-define(['kloudspeaker/config/users/repository', 'knockout'], function(repository, ko) {
+define(['kloudspeaker/config/users/repository', 'kloudspeaker/ui', 'knockout'], function(repository, ui, ko) {
     var model = {
         users: ko.observableArray([]),
         user: ko.observable(null)
     };
 
     var onAddUser = function() {
-        alert('add');
+        ui.dialogs.open({
+        	module: 'kloudspeaker/config/users/adduser',
+        	param: 'foo'
+        });
     };
 
     var onRemoveUser = function() {

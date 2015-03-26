@@ -141,6 +141,20 @@ define('kloudspeaker/dom', ['kloudspeaker/resources', 'kloudspeaker/utils', 'jqu
     }
 });
 
+define('kloudspeaker/ui', ['jquery', 'durandal/composition'], function($, composition) {
+    return {
+        dialogs : {
+            open : function(s) {
+                var $e = $("<div/>").appendTo($("body"));
+                composition.compose($e[0], {
+                    activate: true,
+                    model: s.module
+                });
+            }
+        }
+    }
+});
+
 define('kloudspeaker/ui/files', [], function() {
     var itemDetailsProviders = [];
     return {
