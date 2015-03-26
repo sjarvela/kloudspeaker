@@ -11,7 +11,6 @@
         </div>
         <!-- /ko -->
     </div>
-    
     <div class="table-responsive">
         <table class="table">
             <thead>
@@ -39,4 +38,24 @@
             </tbody>
         </table>
     </div>
+    <nav class="config-list-pager" data-bind="if: settings.paging() != null">
+        <ul class="pagination">
+            <li class="page-btn page-next" data-bind="class: { disabled : (settings.paging().page < 2) }"><a href="#" data-bind="click: gotoPrev" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+
+            <!-- ko if: settings.paging().pages < 10 -->
+            <!-- ko foreach: new Array(settings.paging().pages) -->
+            <li class="page-btn page-nr"><a href="#" data-bind="text: ($index()+1), click: function(){ $parent.goto($index()+1) }"></a></li>
+            <!-- /ko -->
+            <!-- /ko -->
+
+            <!-- ko if: settings.paging().pages >= 10 -->
+
+            <!-- /ko -->
+            <li class="page-btn page-prev" data-bind="class: { disabled : (settings.paging().page >= settings.paging().pages) }"><a href="#" data-bind="click: gotoNext" aria-label="Previous"><span aria-hidden="true">&raquo;</span></a></li>
+        </ul>
+        <div data-bind="text: settings.paging().page"></div>
+        <div data-bind="text: settings.paging().pages"></div>
+        <div data-bind="text: settings.paging().count"></div>
+        <div data-bind="text: settings.paging().maxPerPage"></div>
+    </nav>
 </div>

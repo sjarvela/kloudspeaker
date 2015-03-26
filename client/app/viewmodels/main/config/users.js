@@ -21,7 +21,7 @@ define(['kloudspeaker/config/users/repository', 'knockout'], function(repository
     return {
         activate: function(id) {
             console.log("config/users/" + id);
-            reload();
+            //reload();
             if (id != null) repository.getUser(id).done(function(u) {
                 model.user(u);
             });
@@ -49,6 +49,9 @@ define(['kloudspeaker/config/users/repository', 'knockout'], function(repository
             title: '',
             action: onRemoveUser
         }],
+        remote: {
+        	handler: repository.query
+        },
         model: model
     };
 });
