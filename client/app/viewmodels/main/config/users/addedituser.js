@@ -1,4 +1,4 @@
-define(['kloudspeaker/service', 'knockout'], function(service, ko) {
+define(['kloudspeaker/service', 'kloudspeaker/utils', 'knockout'], function(service, utils, ko) {
     return function() {
         console.log("addedit user init");
 
@@ -46,6 +46,10 @@ define(['kloudspeaker/service', 'knockout'], function(service, ko) {
                     }]
                 });
                 return true;
+            },
+            generatePassword: function() {
+                if (model.edit) return;
+                model.password(utils.generatePassword());
             },
             model: model
         }

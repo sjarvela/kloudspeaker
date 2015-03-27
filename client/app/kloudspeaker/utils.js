@@ -144,13 +144,36 @@ define([],
 
         var utils = {
             Base64: Base64,
-            createObj: function neu(constructor, args) {
+            createObj: function(constructor, args) {
                 // http://www.ecma-international.org/ecma-262/5.1/#sec-13.2.2
                 var instance = Object.create(constructor.prototype);
                 var result = constructor.apply(instance, args);
 
                 // The ECMAScript language types are Undefined, Null, Boolean, String, Number, and Object.
                 return (result !== null && typeof result === 'object') ? result : instance;
+            },
+
+            generatePassword : function() {
+                var length = 8;
+                var password = '';
+                var c;
+
+                for (var i = 0; i < length; i++) {
+                    while (true) {
+                        c = (parseInt(Math.random() * 1000, 10) % 94) + 33;
+                        if (utils.isValidPasswordChar(c)) break;
+                    }
+                    password += String.fromCharCode(c);
+                }
+                return password;
+            },
+
+            isValidPasswordChar : function(c) {
+                if (c >= 33 && c <= 47) return false;
+                if (c >= 58 && c <= 64) return false;
+                if (c >= 91 && c <= 96) return false;
+                if (c >= 123 && c <= 126) return false;
+                return true;
             },
 
             deferreds: function(m) {

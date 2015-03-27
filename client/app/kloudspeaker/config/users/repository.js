@@ -21,6 +21,12 @@ define(['jquery', 'kloudspeaker/service', 'kloudspeaker/utils'], function($, ser
                 _cache.byId.id = u;
             });
         },
+        addUser: function(u) {
+            return user_service.post("", u);
+        },
+        editUser: function(u) {
+            return user_service.put(u.id, u);
+        },
         query: function(p) {
             return user_service.post('query', p);
         }

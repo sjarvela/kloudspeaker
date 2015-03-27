@@ -50,7 +50,8 @@
                     "titleEdit": "Edit User",
                     "name": "Name",
                     "email": "Email",
-                    "password": "Password"
+                    "password": "Password",
+                    "generatePassword": "Generate"
                 }
             }
         }

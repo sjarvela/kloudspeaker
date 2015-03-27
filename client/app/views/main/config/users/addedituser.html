@@ -6,9 +6,10 @@
     <div class="form-group">
         <label for="user-email" class="control-label" data-i18n="main.config.users.addedituser.email"></label>
         <input type="text" class="form-control" id="user-email" data-bind="value: model.email">
-    </div>
-    <div class="form-group">
+    </div>    
+    <div class="form-group" data-bind="if: !model.edit">
         <label for="user-password" class="control-label" data-i18n="main.config.users.addedituser.password"></label>
         <input type="text" class="form-control" id="user-password" data-bind="value: model.password">
+        <button class="btn" data-bind="click: generatePassword" data-i18n="main.config.users.addedituser.generatePassword"></button>
     </div>
 </form>
