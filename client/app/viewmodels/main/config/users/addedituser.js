@@ -1,12 +1,21 @@
-define(['kloudspeaker/service', 'kloudspeaker/utils', 'knockout'], function(service, utils, ko) {
+define(['kloudspeaker/service', 'kloudspeaker/utils', 'kloudspeaker/localization', 'knockout'], function(service, utils, loc, ko) {
     return function() {
         console.log("addedit user init");
 
         var model = {
             edit: false,
             name: ko.observable(''),
+            type: ko.observable(''),
             email: ko.observable(''),
             password: ko.observable(''),
+
+            types: [{
+                titleKey: 'main.config.users.addedituser.typeNormal',
+                value: ''
+            }, {
+                titleKey: 'main.config.users.addedituser.typeAdmin',
+                value: 'a'
+            }]
         }
 
         return {
@@ -38,10 +47,10 @@ define(['kloudspeaker/service', 'kloudspeaker/utils', 'knockout'], function(serv
                 d.initModal({
                     titleKey: model.edit ? 'main.config.users.addedituser.titleEdit' : 'main.config.users.addedituser.titleAdd',
                     buttons: [{
-                        titleKey: 'dialogs.ok',
+                        titleKey: 'dialog.ok',
                         handler: onAddEdit
                     }, {
-                        titleKey: 'dialogs.cancel',
+                        titleKey: 'dialog.cancel',
                         close: true
                     }]
                 });

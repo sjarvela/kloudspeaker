@@ -165,6 +165,8 @@ define('kloudspeaker/ui', ['jquery', 'durandal/composition', 'knockout'], functi
                             setTimeout(function() {
                                 modal = $e.find(".modal").modal({
                                     show: true
+                                }).on('shown.bs.modal', function(e) {
+                                    $e.find('input[autofocus]').trigger('focus');
                                 }).on('hidden.bs.modal', function(e) {
                                     $e.remove();
                                     modal = false;

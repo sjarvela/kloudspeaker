@@ -9,7 +9,7 @@
             </div>
             <div class="modal-footer" data-bind="if: spec.buttons">
             	<!-- ko foreach: spec.buttons -->
-                <button type="button" class="btn btn-default" data-bind="text: titleKey, click: function(b) { if (b.handler) b.handler(); else if (b.close) $parent.close(); }"></button>
+                <button type="button" class="btn btn-default" data-bind="i18n: titleKey, click: function(b) { if (b.handler) b.handler(); else if (b.close) $parent.close(); }"></button>
                 <!-- /ko -->
             </div>
         </div>

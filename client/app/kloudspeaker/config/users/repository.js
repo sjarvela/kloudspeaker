@@ -27,6 +27,9 @@ define(['jquery', 'kloudspeaker/service', 'kloudspeaker/utils'], function($, ser
         editUser: function(u) {
             return user_service.put(u.id, u);
         },
+        removeUser: function(u) {
+            return user_service.del(u.id);
+        },
         query: function(p) {
             return user_service.post('query', p);
         }

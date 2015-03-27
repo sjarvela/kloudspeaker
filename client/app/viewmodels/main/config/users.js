@@ -1,37 +1,38 @@
-define(['kloudspeaker/config/users/repository', 'kloudspeaker/ui', 'knockout'], function(repository, ui, ko) {
+define(['kloudspeaker/config/users/repository', 'kloudspeaker/ui', 'kloudspeaker/utils', 'knockout'], function(repository, ui, utils, ko) {
     var model = {
-        users: ko.observableArray([]),
         user: ko.observable(null)
     };
 
+    var listRefresh = utils.createNotifier();
+
     var onAddUser = function() {
         ui.dialogs.open({
-        	module: 'viewmodels/main/config/users/addedituser',
-        	view: 'views/main/config/users/addedituser'
+            module: 'viewmodels/main/config/users/addedituser',
+            view: 'views/main/config/users/addedituser'
         }).done(function(u) {
-        	alert(u.name);
+            repository.addUser(u).done(function() {
+                listRefresh.trigger();
+            });
         });
     };
 
     var onEditUser = function(u) {
         ui.dialogs.open({
-        	module: 'viewmodels/main/config/users/addedituser',
-        	view: 'views/main/config/users/addedituser',
-        	param: {
-        		user: u
-        	}
+            module: 'viewmodels/main/config/users/addedituser',
+            view: 'views/main/config/users/addedituser',
+            param: {
+                user: u
+            }
         }).done(function(u) {
-        	alert(u.name);
+            repository.editUser(u).done(function() {
+                listRefresh.trigger();
+            });
         });
     };
 
     var onRemoveUser = function(u) {
-
-    };
-
-    var reload = function() {
-        repository.getAllUsers().done(function(u) {
-            model.users(u);
+        repository.removeUser(u).done(function() {
+            listRefresh.trigger();
         });
     };
 
@@ -55,10 +56,13 @@ define(['kloudspeaker/config/users/repository', 'kloudspeaker/ui', 'knockout'], 
         }],
         cols: [{
             id: 'id',
-            titleKey: 'config.list.id'
+            titleKey: 'main.config.list.id'
         }, {
             id: 'name',
-            titleKey: 'config.users.list.name'
+            titleKey: 'user.name'
+        }, {
+            id: 'email',
+            titleKey: 'user.email'
         }, {
             id: 'edit',
             type: 'action',
@@ -73,7 +77,8 @@ define(['kloudspeaker/config/users/repository', 'kloudspeaker/ui', 'knockout'], 
             action: onRemoveUser
         }],
         remote: {
-        	handler: repository.query
+            handler: repository.query,
+            refresh: listRefresh
         },
         model: model
     };

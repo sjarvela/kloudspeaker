@@ -7,6 +7,10 @@
             "short": "M/d/YYYY h:mm:ss A"
         }
     },
+    "dialog": {
+        "ok": "OK",
+        "cancel": "Cancel"
+    },
     "core": {
         "action": {
             "session": {
@@ -38,22 +42,31 @@
         "config": {
             "title": "Configuration",
 
+            "list": {
+                "id": "ID"
+            },
+
             "users": {
                 "title": "Users",
 
-                "list": {
-                    "name": "Name"
-                },
+                "list": {},
 
                 "addedituser": {
                     "titleAdd": "Add New User",
                     "titleEdit": "Edit User",
-                    "name": "Name",
-                    "email": "Email",
-                    "password": "Password",
+
+                    "typeNormal": "Normal",
+                    "typeAdmin": "Administrator",
+
                     "generatePassword": "Generate"
                 }
             }
         }
+    },
+    "user": {
+        "name": "Name",
+        "type": "Type",
+        "email": "Email",
+        "password": "Password"
     }
 }

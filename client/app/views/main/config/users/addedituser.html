@@ -1,15 +1,21 @@
 <form class="config-users-addedituser">
     <div class="form-group">
-        <label for="user-name" class="control-label" data-i18n="main.config.users.addedituser.name"></label>
-        <input type="text" class="form-control" id="user-name" data-bind="value: model.name">
+        <label for="user-name" class="control-label" data-i18n="user.name"></label>
+        <input type="text" class="form-control" id="user-name" data-bind="value: model.name" autofocus>
     </div>
     <div class="form-group">
-        <label for="user-email" class="control-label" data-i18n="main.config.users.addedituser.email"></label>
+        <label for="user-type" class="control-label" data-i18n="user.type"></label>
+        <select id="user-type" class="form-control" data-bind="value: model.type, foreach: {data: model.types, as: 'type'}">
+            <option data-bind="attr: {value: type.value}, i18n: type.titleKey"></option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="user-email" class="control-label" data-i18n="user.email"></label>
         <input type="text" class="form-control" id="user-email" data-bind="value: model.email">
-    </div>    
+    </div>
     <div class="form-group" data-bind="if: !model.edit">
-        <label for="user-password" class="control-label" data-i18n="main.config.users.addedituser.password"></label>
-        <input type="text" class="form-control" id="user-password" data-bind="value: model.password">
+        <label for="user-password" class="control-label" data-i18n="user.password"></label>
+        <input type="password" class="form-control" id="user-password" data-bind="value: model.password">
         <button class="btn" data-bind="click: generatePassword" data-i18n="main.config.users.addedituser.generatePassword"></button>
     </div>
 </form>

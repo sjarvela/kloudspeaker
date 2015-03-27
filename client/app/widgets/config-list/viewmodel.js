@@ -3,6 +3,7 @@ define(['kloudspeaker/localization', 'durandal/composition', 'knockout', 'jquery
 
     ctor.prototype.activate = function(settings) {
         console.log("config-list");
+        var that = this;
         this.settings = settings;
         if (!settings.values) {
             if (settings.remote) {
@@ -14,6 +15,9 @@ define(['kloudspeaker/localization', 'durandal/composition', 'knockout', 'jquery
                     start: 0
                 });
                 this.reload();
+                if (settings.remote.refresh) settings.remote.refresh.listen(function() {
+                    that.reload();
+                });
             }
         }
     };

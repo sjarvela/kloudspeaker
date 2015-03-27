@@ -153,7 +153,7 @@ define([],
                 return (result !== null && typeof result === 'object') ? result : instance;
             },
 
-            generatePassword : function() {
+            generatePassword: function() {
                 var length = 8;
                 var password = '';
                 var c;
@@ -168,7 +168,7 @@ define([],
                 return password;
             },
 
-            isValidPasswordChar : function(c) {
+            isValidPasswordChar: function(c) {
                 if (c >= 33 && c <= 47) return false;
                 if (c >= 58 && c <= 64) return false;
                 if (c >= 91 && c <= 96) return false;
@@ -197,6 +197,22 @@ define([],
                     });
                 });
                 return master.promise();
+            },
+
+            createNotifier: function() {
+                return function() {
+                    var listeners = [];
+                    return {
+                        trigger: function() {
+                            _.each(listeners, function(l) {
+                                l();
+                            });
+                        },
+                        listen: function(cb) {
+                            listeners.push(cb);
+                        }
+                    }
+                }();
             },
 
             breakUrl: function(u) {
