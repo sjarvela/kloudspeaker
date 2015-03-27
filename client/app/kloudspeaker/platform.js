@@ -146,9 +146,11 @@ define('kloudspeaker/ui', ['jquery', 'durandal/composition', 'knockout'], functi
         dialogs: {
             open: function(s) {
                 var api = $.Deferred();
-                //var api = {};
                 var modal = false;
-                var buttons = ko.observableArray([]);
+                var spec = ({
+                    titleKey: ko.observable(''),
+                    buttons: ko.observableArray([])
+                });
 
                 var $e = $("<div/>").appendTo($("body"));
                 composition.compose($e[0], {
@@ -171,7 +173,7 @@ define('kloudspeaker/ui', ['jquery', 'durandal/composition', 'knockout'], functi
                         },
                         module: s.module,
                         view: s.view,
-                        buttons: buttons,
+                        spec: spec,
                         close: function() {
                             api.reject();
                         },
@@ -179,8 +181,8 @@ define('kloudspeaker/ui', ['jquery', 'durandal/composition', 'knockout'], functi
                             param: s.param,
                             initModal: function(p) {
                                 console.log(p);
-                                if (p.buttons) buttons(p.buttons);
-                                else buttons({
+                                spec.titleKey(p.titleKey || 'dialogs.defaultTitle');
+                                spec.buttons(p.buttons || {
                                     titleKey: 'dialog.cancel',
                                     close: true
                                 });

@@ -6,14 +6,26 @@ define(['kloudspeaker/config/users/repository', 'kloudspeaker/ui', 'knockout'], 
 
     var onAddUser = function() {
         ui.dialogs.open({
-        	module: 'viewmodels/main/config/users/adduser',
-        	view: 'views/main/config/users/adduser'
+        	module: 'viewmodels/main/config/users/addedituser',
+        	view: 'views/main/config/users/addedituser'
         }).done(function(u) {
         	alert(u.name);
         });
     };
 
-    var onRemoveUser = function() {
+    var onEditUser = function(u) {
+        ui.dialogs.open({
+        	module: 'viewmodels/main/config/users/addedituser',
+        	view: 'views/main/config/users/addedituser',
+        	param: {
+        		user: u
+        	}
+        }).done(function(u) {
+        	alert(u.name);
+        });
+    };
+
+    var onRemoveUser = function(u) {
 
     };
 
@@ -46,7 +58,13 @@ define(['kloudspeaker/config/users/repository', 'kloudspeaker/ui', 'knockout'], 
             titleKey: 'config.list.id'
         }, {
             id: 'name',
-            titleKey: 'main.config.users.name'
+            titleKey: 'config.users.list.name'
+        }, {
+            id: 'edit',
+            type: 'action',
+            icon: 'pencil',
+            title: '',
+            action: onEditUser
         }, {
             id: 'remove',
             type: 'action',

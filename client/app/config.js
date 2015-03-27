@@ -11,7 +11,7 @@ requirejs.config({
         'underscore': '../../bower_components/underscore/underscore',
         //'knockout-bootstrap': '../vendor/knockout-bootstrap',
         'jquery-singledoubleclick': '../vendor/jquery-singledoubleclick',
-        'i18next': '../../bower_components/i18next/i18next.amd.withJQuery.min',
+        'i18next': '../../bower_components/i18next/i18next.amd.withJQuery',
         'moment': '../../bower_components/moment/moment',
         'knockstrap': '../../bower_components/knockstrap/build/knockstrap',
     },

@@ -39,7 +39,19 @@
             "title": "Configuration",
 
             "users": {
-                "title": "Users"
+                "title": "Users",
+
+                "list": {
+                    "name": "Name"
+                },
+
+                "addedituser": {
+                    "titleAdd": "Add New User",
+                    "titleEdit": "Edit User",
+                    "name": "Name",
+                    "email": "Email",
+                    "password": "Password"
+                }
             }
         }
     }
