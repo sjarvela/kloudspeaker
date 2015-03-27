@@ -141,15 +141,71 @@ define('kloudspeaker/dom', ['kloudspeaker/resources', 'kloudspeaker/utils', 'jqu
     }
 });
 
-define('kloudspeaker/ui', ['jquery', 'durandal/composition'], function($, composition) {
+define('kloudspeaker/ui', ['jquery', 'durandal/composition', 'knockout'], function($, composition, ko) {
     return {
-        dialogs : {
-            open : function(s) {
+        dialogs: {
+            open: function(s) {
+                var api = $.Deferred();
+                //var api = {};
+                var modal = false;
+                var buttons = ko.observableArray([]);
+
                 var $e = $("<div/>").appendTo($("body"));
                 composition.compose($e[0], {
                     activate: true,
-                    model: s.module
+                    activationData: {
+                        $e: $e,
+                        spec: s
+                    },
+                    model: {
+                        activate: function(d) {
+                            console.log("modal");
+                            setTimeout(function() {
+                                modal = $e.find(".modal").modal({
+                                    show: true
+                                }).on('hidden.bs.modal', function(e) {
+                                    $e.remove();
+                                    modal = false;
+                                });
+                            }, 0);
+                        },
+                        module: s.module,
+                        view: s.view,
+                        buttons: buttons,
+                        close: function() {
+                            api.reject();
+                        },
+                        ctx: {
+                            param: s.param,
+                            initModal: function(p) {
+                                console.log(p);
+                                if (p.buttons) buttons(p.buttons);
+                                else buttons({
+                                    titleKey: 'dialog.cancel',
+                                    close: true
+                                });
+                            },
+                            done: function(o) {
+                                api.resolve(o);
+                            },
+                            cancel: function() {
+                                api.reject();
+                            }
+                        }
+                    },
+                    view: "views/core/modal"
                 });
+                api.cancel = function() {
+                    modal.modal('hide');
+                };
+                api.close = api.cancel;
+                api.done(function() {
+                    api.close();
+                });
+                api.fail(function() {
+                    api.close();
+                });
+                return api;
             }
         }
     }

@@ -6,8 +6,10 @@ define(['kloudspeaker/config/users/repository', 'kloudspeaker/ui', 'knockout'], 
 
     var onAddUser = function() {
         ui.dialogs.open({
-        	module: 'kloudspeaker/config/users/adduser',
-        	param: 'foo'
+        	module: 'viewmodels/main/config/users/adduser',
+        	view: 'views/main/config/users/adduser'
+        }).done(function(u) {
+        	alert(u.name);
         });
     };
 
