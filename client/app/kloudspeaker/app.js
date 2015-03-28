@@ -70,11 +70,12 @@ define(['require', 'jquery', 'durandal/system', 'durandal/app', 'durandal/viewLo
             dialog: true
         });
 
+        var packages = [];
+
         var loadModules = function(session) {
             console.log("Loading modules");
             console.log(session);
             var modules = [];
-            var packages = [];
             _.each(session.plugins, function(pl) {
                 if (pl["client_module_path"]) {
                     modules.push(pl["client_module_id"]);
@@ -106,7 +107,19 @@ define(['require', 'jquery', 'durandal/system', 'durandal/app', 'durandal/viewLo
                     viewLocator.useConvention(modulesPath, kloudspeakerApp.config['templates-path']);
                     var reg = new RegExp(escape(modulesPath), 'gi');
                     viewLocator.convertModuleIdToViewId = function(moduleId) {
-                        var path = moduleId.replace(reg, viewsPath);
+                        //var path = moduleId.replace(reg, viewsPath);
+                        var path = moduleId;
+                        if (moduleId.startsWith('viewmodels/'))
+                            path = viewsPath + moduleId.substring(11);
+                        else {
+                            _.each(packages, function(p) {
+                                var pn = p.name +'/';
+                                if (moduleId.startsWith(pn)) {
+                                    path = p.location + "/views/" + moduleId.substring(pn.length);
+                                    return false;
+                                }
+                            });
+                        }
                         //TODO map
                         console.log("Resolve view:" + moduleId + " -> " + path);
                         return path;

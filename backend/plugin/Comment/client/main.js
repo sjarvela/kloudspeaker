@@ -1,4 +1,4 @@
-define(['kloudspeaker/config', 'kloudspeaker/localization', 'kloudspeaker/dom', 'kloudspeaker/resources', 'kloudspeaker/plugins', 'kloudspeaker/ui/files'], function(config, loc, dom, res, plugins, uif) {
+define(['kloudspeaker/config', 'kloudspeaker/core', 'kloudspeaker/localization', 'kloudspeaker/dom', 'kloudspeaker/resources', 'kloudspeaker/plugins', 'kloudspeaker/ui/files'], function(config, core, loc, dom, res, plugins, uif) {
     console.log('kloudspeaker/comments');
 
     loc.addNamespace("comments", res.getPluginUrl('Comment'));
@@ -17,6 +17,17 @@ define(['kloudspeaker/config', 'kloudspeaker/localization', 'kloudspeaker/dom', 
         getRequestData: function(item) {
             return {};
         }
+    });
+
+    core.views.register({
+        id: 'comments',
+        icon: 'comment',
+        parent: 'config',
+        route: 'config/comments(/:id)',
+        moduleId: 'kloudspeaker/comments/config',
+        titleKey: 'comments:config.title',
+        hash: "#config/comments",
+        nav: true
     });
 });
 
@@ -38,6 +49,9 @@ define('kloudspeaker/comments/repository', ['kloudspeaker/service'], function(se
         },
         removeItemComment: function(item, comment) {
             return cs.del("items/" + item.id + "/" + comment.id);
+        },
+        query: function(d) {
+            return cs.post('query', d);
         }
     };
 });
