@@ -52,7 +52,9 @@ define(['plugins/router', 'kloudspeaker/config', 'kloudspeaker/session', 'klouds
                 fs.itemInfo(item.id, uif.itemDetails.getRequestData(item)).done(function(r) {
                     itemDetails.loading(false);
                     itemDetails.data(r);
-                    itemDetails.metadata(r.metadata || { description: ''});
+                    itemDetails.metadata(r.metadata || {
+                        description: ''
+                    });
                     itemDetails.showDescription(features.exists('descriptions'));
                     itemDetails.canEditDescription(permissions.hasFilesystemPermission(item, 'edit_description'));
 
@@ -183,7 +185,7 @@ define(['plugins/router', 'kloudspeaker/config', 'kloudspeaker/session', 'klouds
     };
 });
 
-define('main/files/list', ['knockout'], function(ko) {
+define('main/files/list', ['kloudspeaker/filesystem/dnd', 'knockout'], function(fsDnd, ko) {
     var parentModel = null;
     var cols = [{
         id: 'name',
@@ -269,10 +271,8 @@ define('main/files/list', ['knockout'], function(ko) {
         getCell: function(col, item) {
             return col.content(item);
         },
-        onDrag: function(i) {
-            console.log("onDrag");
-            console.log(i);
-        }
+        dragHandler: fsDnd.dragHandler,
+        dropHandler: fsDnd.dropHandler
     };
 });
 

@@ -14,6 +14,45 @@ define(['kloudspeaker/core_service', 'kloudspeaker/permissions', 'durandal/app']
         });
 
         return {
+            canCopyTo: function(item, to) {
+                if (window.isArray(item)) {
+                    for (var i = 0, j = item.length; i < j; i++)
+                        if (!mfs.canCopyTo(item[i], to)) return false;
+                    return true;
+                }
+
+                // cannot copy into file
+                if (to.is_file) return false;
+
+                // cannot copy into itself
+                if (item.id == to.id) return false;
+
+                // cannot copy into same location
+                if (item.parent_id == to.id) return false;
+                return true;
+            },
+
+            canMoveTo: function(item, to) {
+                if (window.isArray(item)) {
+                    for (var i = 0, j = item.length; i < j; i++)
+                        if (!mfs.canMoveTo(item[i], to)) return false;
+                    return true;
+                }
+
+                // cannot move into file
+                if (to.is_file) return false;
+
+                // cannot move folder into its own subfolder
+                if (!to.is_file && item.root_id == to.root_id && to.path.startsWith(item.path)) return false;
+
+                // cannot move into itself
+                if (item.id == to.id) return false;
+
+                // cannot move into same location
+                if (item.parent_id == to.id) return false;
+                return true;
+            },
+
             roots: function() {
                 return _roots;
             },
@@ -51,6 +90,12 @@ define(['kloudspeaker/core_service', 'kloudspeaker/permissions', 'durandal/app']
                 return service.put("filesystem/" + item.id + "/description/", {
                     description: description
                 });
+            },
+            copy: function(itm, to) {
+                //TODO
+            },
+            move: function(itm, to) {
+                //TODO
             }
         };
     }

@@ -266,6 +266,89 @@ define('kloudspeaker/ui/formatters', ['kloudspeaker/utils', "i18next", "moment"]
     }
 });
 
+define('kloudspeaker/filesystem/dnd', ['kloudspeaker/config', 'kloudspeaker/filesystem'], function(config, fs) {
+    var dropType = function(to, i) {
+        var single = false;
+        if (!window.isArray(i)) single = i;
+        else if (i.length == 1) single = i[0];
+
+        if (config["file-view"] && config["file-view"]["drop-type"]) {
+            var dt = config["file-view"]["drop-type"];
+            var t = typeof(dt);
+            if (t == 'function') return dt(to, i);
+            else if (t == 'object') {
+                if (single && dt.single) return dt.single;
+                if (!single && dt.multi) return dt.multi;
+            } else if (t == 'string') return dt;
+        }
+
+        var copy = (!single || to.root_id != single.root_id);
+        return copy ? "copy" : "move";
+    };
+
+    var canDragAndDrop = function(to, itm) {
+        var single = false;
+        if (!window.isArray(itm)) single = itm;
+        else if (itm.length == 1) single = itm[0];
+
+        var droptype = dropType(to, itm);
+
+        //TODO permissions?
+
+        if (single)
+            return (droptype == "copy") ? fs.canCopyTo(single, to) : fs.canMoveTo(single, to);
+
+        var can = true;
+        for (var i = 0; i < itm.length; i++) {
+            var item = itm[i];
+            if (!(droptype == "copy" ? fs.canCopyTo(item, to) : fs.canMoveTo(item, to))) {
+                can = false;
+                break;
+            }
+        }
+        return can;
+    };
+
+    //TODO -> getXXHandler (return scoped instance with callbacks to onDragXX/onDrop)
+    return {
+        dragHandler: function(i) {
+            if (!i) return false;
+
+            return {
+                type: 'filesystem/item',
+                payload: i,
+                onDragStart: function() {
+                    console.log("drag start: " + i.id);
+                },
+                onDragEnd: function() {
+                    console.log("drag end: " + i.id);
+                }
+            };
+        },
+        dropHandler: function(i) {
+            if (i.is_file) return false;
+
+            return {
+                canBeDropped: function(d) {
+                    if (d.type != 'filesystem/item') return false;
+                    return canDragAndDrop(i, d.payload);
+                },
+                onDrop: function(d) {
+                    var itm = d.payload;
+                    var copy = (dropType(i, itm) == 'copy');
+                    //console.log((copy ? "copy " : "move ") +itm.name+" to "+to.name);
+
+                    if (copy) fs.copy(itm, i);
+                    else fs.move(itm, i);
+                },
+                dropType: function(d) {
+                    return dropType(i, d.payload);
+                }
+            };
+        }
+    }
+});
+
 // 1. require any modules that needs to be initialized at start
 // 2. setup components etc
 
@@ -315,6 +398,14 @@ define([
     });
 
     // draggable
+    var _activeDrag = false;
+    var _endDrag = function(e) {
+        if (_activeDrag) {
+            _activeDrag.$e.removeClass("dragged");
+            if (_activeDrag.onDragEnd) _activeDrag.onDragEnd();
+        }
+        _activeDrag = false;
+    };
     $("body").bind('dragover', function(e) {
         if (e.preventDefault) e.preventDefault();
         e.originalEvent.dataTransfer.dropEffect = "none";
@@ -323,25 +414,104 @@ define([
     var _draggable = function(e, va) {
         var handler = ko.unwrap(va());
         var $e = $(e);
-        $e.attr("draggable", "true").bind('dragstart', function(ev) {            
+        $e.attr("draggable", "true").bind('dragstart', function(ev) {
+            _activeDrag = false;
+            ev.originalEvent.dataTransfer.effectAllowed = "none";
+
             var o = ko.dataFor(e);
-            var payload = false;
+            var spec = false;
 
             if (typeof(handler) === 'function')
-                payload = handler(o);
-            else if (typeof(handler) === 'object')
-                payload = handler;
+                spec = handler(o);
 
-            if (!payload) return;
-            console.log("drag start");
-            console.log(payload);
-            //TODO other
+            if (!spec || !spec.payload) return;
+
+            console.log(spec);
+            _activeDrag = {
+                spec: spec,
+                $e: $(this)
+            };
+
+            //TODO drag image
+            //TODO drag desktop
+            _activeDrag.$e.addClass("dragged");
+            ev.originalEvent.dataTransfer.effectAllowed = "copyMove";
+            return
+        }).bind('dragend', function(ev) {
+            _endDrag(ev);
         });
-        //$e.text(formatters.all[formatter](value, ctx));
     }
-    composition.addBindingHandler('draggable', {
+    composition.addBindingHandler('dnd-drag', {
         init: _draggable,
         update: _draggable
+    });
+
+    // droppable
+    var _droppable = function(e, va) {
+        var handler = ko.unwrap(va());
+        var $e = $(e);
+        $e.addClass("droppable").bind('drop', function(ev) {
+            if (ev.stopPropagation) ev.stopPropagation();
+            if (!_activeDrag) return;
+
+            var o = ko.dataFor(e);
+            var spec = false;
+
+            if (typeof(handler) === 'function')
+                spec = handler(o);
+            if (!spec || !spec.canBeDropped || !spec.onDrop) return;
+
+            var $t = $(this);
+            if (spec.canBeDropped(_activeDrag.spec)) {
+                spec.onDrop(_activeDrag.spec);
+                $t.removeClass("dragover");
+            }
+            _endDrag(ev);
+        }).bind('dragenter', function(ev) {
+            if (!_activeDrag) return false;
+
+            var o = ko.dataFor(e);
+            var spec = false;
+
+            if (typeof(handler) === 'function')
+                spec = handler(o);
+            if (!spec || !spec.canBeDropped) return;
+
+            var $t = $(this);
+            if (spec.canBeDropped(_activeDrag.spec)) {
+                $t.addClass("dragover");
+                _activeDrag.$target = $t;
+            }
+        }).bind('dragover', function(ev) {
+            if (ev.preventDefault) ev.preventDefault();
+            ev.originalEvent.dataTransfer.dropEffect = 'none';
+
+            if (!_activeDrag) return false;
+
+            var o = ko.dataFor(e);
+            var spec = false;
+
+            if (typeof(handler) === 'function')
+                spec = handler(o);
+            if (!spec || !spec.canBeDropped) return false;
+            if (!spec.canBeDropped(_activeDrag.spec)) return false;
+
+            var fx = "copy";
+            var $t = $(this);
+            var tp = spec.dropType ? spec.dropType(_activeDrag.spec) : null;
+            if (tp) fx = tp;
+
+            ev.originalEvent.dataTransfer.dropEffect = fx;
+            return false;
+        }).bind('dragleave', function(e) {
+            var $t = $(this);
+            $t.removeClass("dragover");
+            _activeDrag.$target = false;
+        });
+    }
+    composition.addBindingHandler('dnd-drop', {
+        init: _droppable,
+        update: _droppable
     });
 
     //register widgets
