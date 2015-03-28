@@ -268,6 +268,10 @@ define('main/files/list', ['knockout'], function(ko) {
         },
         getCell: function(col, item) {
             return col.content(item);
+        },
+        onDrag: function(i) {
+            console.log("onDrag");
+            console.log(i);
         }
     };
 });

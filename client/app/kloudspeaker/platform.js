@@ -284,6 +284,7 @@ define([
     "knockstrap",
     "underscore"
 ], function(core, formatters, res, features, composition, widget, ko, $, i18n) {
+    // i18n
     var _i18n = function(e, va) {
         var v = va();
         var value = ko.unwrap(v);
@@ -300,6 +301,7 @@ define([
         update: _i18n
     });
 
+    // format
     var _fmt = function(e, va) {
         var value = ko.unwrap(va());
         var $e = $(e);
@@ -310,6 +312,36 @@ define([
     composition.addBindingHandler('format', {
         init: _fmt,
         update: _fmt
+    });
+
+    // draggable
+    $("body").bind('dragover', function(e) {
+        if (e.preventDefault) e.preventDefault();
+        e.originalEvent.dataTransfer.dropEffect = "none";
+        return false;
+    });
+    var _draggable = function(e, va) {
+        var handler = ko.unwrap(va());
+        var $e = $(e);
+        $e.attr("draggable", "true").bind('dragstart', function(ev) {            
+            var o = ko.dataFor(e);
+            var payload = false;
+
+            if (typeof(handler) === 'function')
+                payload = handler(o);
+            else if (typeof(handler) === 'object')
+                payload = handler;
+
+            if (!payload) return;
+            console.log("drag start");
+            console.log(payload);
+            //TODO other
+        });
+        //$e.text(formatters.all[formatter](value, ctx));
+    }
+    composition.addBindingHandler('draggable', {
+        init: _draggable,
+        update: _draggable
     });
 
     //register widgets
