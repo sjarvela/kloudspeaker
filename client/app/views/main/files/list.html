@@ -5,7 +5,7 @@
     </div>
 
     <div class="filelist-items" data-bind="foreach: { data: model.items, as: 'item' }">
-        <div class="filelist-item" data-bind="dnd-drag: $parent.dragHandler, dnd-drop: $parent.dropHandler, attr: { id: 'filelist-item-'+item.id }">
+        <div class="filelist-item" data-bind="attr: { id: 'filelist-item-'+item.id }">
             <!-- ko foreach: { data: $parent.cols, as: 'col' } -->
             <div data-bind="attr: { class: 'filelist-item-value col col-'+col.id }, html: $root.getCell(col, item)">
             </div>

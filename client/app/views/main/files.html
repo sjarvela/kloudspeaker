@@ -1,4 +1,4 @@
-<div class="row-fluid files-view" data-bind="compose: { view: model.viewType().template, model: model.viewType().module, activationData: $root }, class: { loading: model.loading }">
+<div class="row-fluid files-view" data-bind="compose: { view: model.viewType().template, model: model.viewType().module, activationData: $root }, class: { loading: model.loading }, dnd-drag: model.dragHandler, dnd-drop: model.dropHandler" data-dnd-selector=".filelist-item">
 </div>
 
 <div style="height: 0; visibility: hidden">

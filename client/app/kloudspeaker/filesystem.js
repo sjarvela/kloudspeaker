@@ -93,9 +93,11 @@ define(['kloudspeaker/core_service', 'kloudspeaker/permissions', 'durandal/app']
             },
             copy: function(itm, to) {
                 //TODO
+                alert("copy "+itm.name);
             },
             move: function(itm, to) {
                 //TODO
+                alert("move "+itm.name);
             }
         };
     }

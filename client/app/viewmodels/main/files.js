@@ -1,4 +1,4 @@
-define(['plugins/router', 'kloudspeaker/config', 'kloudspeaker/session', 'kloudspeaker/permissions', 'kloudspeaker/filesystem', 'kloudspeaker/core', 'kloudspeaker/features', 'kloudspeaker/ui/files', 'knockout', 'jquery'], function(router, config, session, permissions, fs, core, features, uif, ko, $) {
+define(['plugins/router', 'kloudspeaker/config', 'kloudspeaker/session', 'kloudspeaker/permissions', 'kloudspeaker/filesystem', 'kloudspeaker/core', 'kloudspeaker/features', 'kloudspeaker/ui/files', 'kloudspeaker/filesystem/dnd', 'knockout', 'jquery'], function(router, config, session, permissions, fs, core, features, uif, fsDnd, ko, $) {
     core.actions.register({
         id: 'filesystem/open',
         type: 'filesystem',
@@ -98,6 +98,9 @@ define(['plugins/router', 'kloudspeaker/config', 'kloudspeaker/session', 'klouds
         items: ko.observableArray([]),
         folder: ko.observable(null),
 
+        dragHandler: ko.observable(null), //fsDnd.getDragHandler(),
+        dropHandler: ko.observable(null), //fsDnd.getDropHandler()
+
         itemDetails: {
             item: ko.observable(null),
             loading: ko.observable(false),
@@ -142,11 +145,18 @@ define(['plugins/router', 'kloudspeaker/config', 'kloudspeaker/session', 'klouds
 
         console.log("Files load " + model.folderId);
         fs.folderInfo(model.folderId || 'roots', rqData).then(function(r) {
+            console.log("items");
+            console.log(r.items);
             model.loading(false);
             model.items(r.items);
             model.root(r.hierarchy ? r.hierarchy[0] : null);
             model.hierarchy((r.hierarchy && r.hierarchy.length > 1) ? r.hierarchy.slice(1) : []);
             model.folder(r.item);
+            console.log("dnd");
+            setTimeout(function() {
+                model.dragHandler(fsDnd.getDragHandler());
+                model.dropHandler(fsDnd.getDropHandler());
+            });
         });
     };
     return {
@@ -185,7 +195,7 @@ define(['plugins/router', 'kloudspeaker/config', 'kloudspeaker/session', 'klouds
     };
 });
 
-define('main/files/list', ['kloudspeaker/filesystem/dnd', 'knockout'], function(fsDnd, ko) {
+define('main/files/list', ['knockout'], function(ko) {
     var parentModel = null;
     var cols = [{
         id: 'name',
@@ -270,9 +280,7 @@ define('main/files/list', ['kloudspeaker/filesystem/dnd', 'knockout'], function(
         },
         getCell: function(col, item) {
             return col.content(item);
-        },
-        dragHandler: fsDnd.dragHandler,
-        dropHandler: fsDnd.dropHandler
+        }
     };
 });
 
