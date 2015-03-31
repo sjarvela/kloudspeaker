@@ -152,11 +152,10 @@ define(['plugins/router', 'kloudspeaker/config', 'kloudspeaker/session', 'klouds
             model.root(r.hierarchy ? r.hierarchy[0] : null);
             model.hierarchy((r.hierarchy && r.hierarchy.length > 1) ? r.hierarchy.slice(1) : []);
             model.folder(r.item);
-            console.log("dnd");
-            setTimeout(function() {
-                model.dragHandler(fsDnd.getDragHandler());
-                model.dropHandler(fsDnd.getDropHandler());
-            });
+
+            // trigger dnd init
+            model.dragHandler(fsDnd.getDragHandler());
+            model.dropHandler(fsDnd.getDropHandler());
         });
     };
     return {

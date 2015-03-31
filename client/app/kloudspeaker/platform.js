@@ -358,55 +358,7 @@ define('kloudspeaker/filesystem/dnd', ['kloudspeaker/config', 'kloudspeaker/file
     }
 });
 
-// 1. require any modules that needs to be initialized at start
-// 2. setup components etc
-
-define([
-    "kloudspeaker/core",
-    "kloudspeaker/ui/formatters",
-    "kloudspeaker/resources",
-    "kloudspeaker/features",
-    "durandal/composition",
-    "plugins/widget",
-    "knockout",
-    "jquery",
-    "i18next",
-    "bootstrap",
-    //"knockout-bootstrap",
-    "knockstrap",
-    "underscore"
-], function(core, formatters, res, features, composition, widget, ko, $, i18n) {
-    // i18n
-    var _i18n = function(e, va) {
-        var v = va();
-        var value = ko.unwrap(v);
-        var loc = i18n.t(value) || '';
-        var $e = $(e);
-        var target = $e.attr('data-i18n-bind-target');
-        if (target && target != 'text')
-            $a.attr(target, loc);
-        else
-            $e.text(loc);
-    }
-    composition.addBindingHandler('i18n', {
-        //init: _i18n,
-        update: _i18n
-    });
-
-    // format
-    var _fmt = function(e, va) {
-        var value = ko.unwrap(va());
-        var $e = $(e);
-        var formatter = $e.attr('data-formatter');
-        var ctx = null;
-        $e.text(formatters.all[formatter](value, ctx));
-    }
-    composition.addBindingHandler('format', {
-        //init: _fmt,
-        update: _fmt
-    });
-
-    // draggable
+define('kloudspeaker/dnd', ['jquery', 'knockout', 'durandal/composition'], function($, ko, composition) {
     var _activeDrag = false;
     var _endDrag = function(e) {
         if (_activeDrag) {
@@ -429,6 +381,7 @@ define([
             spec = handler(o);
         return spec;
     };
+
     var _draggable = function(e, va) {
         var handler = ko.unwrap(va());
         var $e = $(e);
@@ -468,11 +421,10 @@ define([
         });
     }
     composition.addBindingHandler('dnd-drag', {
-        init: _draggable,
+        //init: _draggable,
         update: _draggable
     });
 
-    // droppable
     var _droppable = function(e, va) {
         var handler = ko.unwrap(va());
         var $e = $(e);
@@ -539,6 +491,60 @@ define([
     composition.addBindingHandler('dnd-drop', {
         //init: _droppable,
         update: _droppable
+    });
+
+    return {
+
+    }
+});
+
+// 1. require any modules that needs to be initialized at start
+// 2. setup components etc
+
+define([
+    "kloudspeaker/core",
+    "kloudspeaker/ui/formatters",
+    "kloudspeaker/resources",
+    "kloudspeaker/features",
+    "kloudspeaker/dnd",
+    "durandal/composition",
+    "plugins/widget",
+    "knockout",
+    "jquery",
+    "i18next",
+    "bootstrap",
+    //"knockout-bootstrap",
+    "knockstrap",
+    "underscore"
+], function(core, formatters, res, features, dnd, composition, widget, ko, $, i18n) {
+    // i18n
+    var _i18n = function(e, va) {
+        var v = va();
+        var value = ko.unwrap(v);
+        var loc = i18n.t(value) || '';
+        var $e = $(e);
+        var target = $e.attr('data-i18n-bind-target');
+        if (target && target != 'text')
+            $a.attr(target, loc);
+        else
+            $e.text(loc);
+    }
+    composition.addBindingHandler('i18n', {
+        //init: _i18n,
+        update: _i18n
+    });
+
+    // format
+    var _fmt = function(e, va) {
+        var value = ko.unwrap(va());
+        var $e = $(e);
+        var formatter = $e.attr('data-formatter');
+        var ctx = null;
+        $e.text(formatters.all[formatter](value, ctx));
+    }
+    composition.addBindingHandler('format', {
+        //init: _fmt,
+        update: _fmt
     });
 
     //register widgets
