@@ -142,7 +142,16 @@ define('kloudspeaker/dom', ['kloudspeaker/resources', 'kloudspeaker/utils', 'jqu
 });
 
 define('kloudspeaker/ui', ['jquery', 'durandal/composition', 'knockout'], function($, composition, ko) {
+    var _activeViewInfo = null;
     return {
+        views: {
+            getActiveView : function() {
+                return _activeViewInfo ? _activeViewInfo.view : null;
+            },
+            setActiveViewInfo : function(info) {
+                _activeViewInfo = info;
+            }
+        },
         dialogs: {
             open: function(s) {
                 var api = $.Deferred();
@@ -389,9 +398,9 @@ define('kloudspeaker/dnd', ['jquery', 'knockout', 'durandal/composition'], funct
         var $trg = $e;
         if (sel) $trg = $e.find(sel);
 
-        console.log("dnd-drag:" + sel);
-        console.log($e);
-        console.log($trg);
+        //console.log("dnd-drag:" + sel);
+        //console.log($e);
+        //console.log($trg);
 
         //TODO delegate
         $trg.attr("draggable", "true");
@@ -432,9 +441,9 @@ define('kloudspeaker/dnd', ['jquery', 'knockout', 'durandal/composition'], funct
         var $trg = $e;
         if (sel) $trg = $e.find(sel);
 
-        console.log("dnd-drop:" + sel);
-        console.log($e);
-        console.log($trg);
+        //console.log("dnd-drop:" + sel);
+        //console.log($e);
+        //console.log($trg);
 
         $trg.addClass("droppable");
         $e.off('drop.ks').off('dragenter.ks').off('dragover.ks').off('dragleave.ks').on('drop.ks', sel, function(ev) {

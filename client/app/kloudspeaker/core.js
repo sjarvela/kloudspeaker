@@ -80,8 +80,7 @@ define(['plugins/router', 'kloudspeaker/filesystem'],
                     }
                     return routers[id];
                 }
-            },
-            activeViewInfo: activeViewInfo
+            }
         }
 
         // full
@@ -109,7 +108,10 @@ define(['plugins/router', 'kloudspeaker/filesystem'],
             },
             titleKey: 'main.files.title',
             hash: "#files",
-            nav: true
+            nav: true,
+            api: {
+
+            }
         });
         core.views.register({
             id: 'config',

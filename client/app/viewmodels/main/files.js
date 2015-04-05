@@ -1,4 +1,4 @@
-define(['plugins/router', 'kloudspeaker/config', 'kloudspeaker/session', 'kloudspeaker/permissions', 'kloudspeaker/filesystem', 'kloudspeaker/core', 'kloudspeaker/features', 'kloudspeaker/ui/files', 'kloudspeaker/filesystem/dnd', 'knockout', 'jquery'], function(router, config, session, permissions, fs, core, features, uif, fsDnd, ko, $) {
+define(['plugins/router', 'kloudspeaker/config', 'kloudspeaker/session', 'kloudspeaker/permissions', 'kloudspeaker/filesystem', 'kloudspeaker/core', 'kloudspeaker/features', 'kloudspeaker/ui/files', 'kloudspeaker/ui', 'kloudspeaker/filesystem/dnd', 'knockout', 'jquery'], function(router, config, session, permissions, fs, core, features, uif, ui, fsDnd, ko, $) {
     core.actions.register({
         id: 'filesystem/open',
         type: 'filesystem',
@@ -9,63 +9,6 @@ define(['plugins/router', 'kloudspeaker/config', 'kloudspeaker/session', 'klouds
                 return;
             }
             router.navigate("files/" + item.id);
-        }
-    });
-
-    var $activeDetails = null;
-    core.actions.register({
-        id: 'view/details',
-        type: 'filesystem',
-        titleKey: 'core.action.filesystem.open',
-        handler: function(item, ctx) {
-            console.log("details " + item.name);
-            if (!model.activeListWidget) return;
-
-            var oldItem = model.itemDetails.item();
-            var $itemElement = model.activeListWidget.getItemDOMObject(item);
-
-            //var $all = $(".item-details-container");
-            var showDetails = function() {
-                if ($activeDetails) $activeDetails.hide();
-
-                var itemDetails = model.itemDetails;
-                itemDetails.loading(false);
-                itemDetails.data(null);
-                itemDetails.details([]);
-                itemDetails.activeDetails(null);
-
-                // same item clicked, just close
-                if (oldItem && item.id == oldItem.id) {
-                    itemDetails.item(null);
-                    return;
-                }
-
-                var $container = $itemElement.find(".item-details-container").hide();
-
-                itemDetails.item(item);
-                itemDetails.loading(true);
-
-                $("#files-view-item-details").remove().appendTo($container);
-                $container.slideDown();
-                $activeDetails = $container;
-
-                fs.itemInfo(item.id, uif.itemDetails.getRequestData(item)).done(function(r) {
-                    itemDetails.loading(false);
-                    itemDetails.data(r);
-                    itemDetails.metadata(r.metadata || {
-                        description: ''
-                    });
-                    itemDetails.showDescription(features.exists('descriptions'));
-                    itemDetails.canEditDescription(permissions.hasFilesystemPermission(item, 'edit_description'));
-
-                    var d = uif.itemDetails.get(item, r);
-                    itemDetails.details(d);
-                    itemDetails.activeDetails((d && d.length > 0) ? d[0] : null);
-                });
-            };
-            $activeDetails ? $activeDetails.slideUp({
-                complete: showDetails
-            }) : showDetails();
         }
     });
 
@@ -99,32 +42,7 @@ define(['plugins/router', 'kloudspeaker/config', 'kloudspeaker/session', 'klouds
         folder: ko.observable(null),
 
         dragHandler: ko.observable(null), //fsDnd.getDragHandler(),
-        dropHandler: ko.observable(null), //fsDnd.getDropHandler()
-
-        itemDetails: {
-            item: ko.observable(null),
-            loading: ko.observable(false),
-            data: ko.observable(null),
-            details: ko.observableArray([]),
-            showDescription: ko.observable(false),
-            canEditDescription: ko.observable(false),
-            metadata: ko.observable(null),
-            activeDetails: ko.observable(null),
-            setActiveDetails: function(d) {
-                var c = model.itemDetails.activeDetails();
-                if (c) c.active = false;
-
-                d.active = true;
-                model.itemDetails.activeDetails(d);
-            },
-            setDescription: function(d) {
-                fs.setItemDescription(model.itemDetails.item(), d).done(function() {
-                    var md = model.itemDetails.metadata();
-                    md.description = d;
-                    model.itemDetails.metadata(md);
-                });
-            }
-        }
+        dropHandler: ko.observable(null) //fsDnd.getDropHandler()
     };
     var onListWidgetReady = function(o) {
         model.activeListWidget = o;
@@ -145,8 +63,6 @@ define(['plugins/router', 'kloudspeaker/config', 'kloudspeaker/session', 'klouds
 
         console.log("Files load " + model.folderId);
         fs.folderInfo(model.folderId || 'roots', rqData).then(function(r) {
-            console.log("items");
-            console.log(r.items);
             model.loading(false);
             model.items(r.items);
             model.root(r.hierarchy ? r.hierarchy[0] : null);
@@ -166,6 +82,11 @@ define(['plugins/router', 'kloudspeaker/config', 'kloudspeaker/session', 'klouds
             model.folderId = id;
             reset();
             if (model.activeListWidget) reload();
+
+            // update files view API
+            core.views.getById('files').api = {
+                id: id
+            };
 
             return true;
         },

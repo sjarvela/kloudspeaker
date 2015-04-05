@@ -1,4 +1,4 @@
-define(['kloudspeaker/session', 'kloudspeaker/core', 'knockout', 'jquery', 'i18next'], function(session, core, ko, $, i18n) {
+define(['kloudspeaker/session', 'kloudspeaker/core', 'kloudspeaker/ui', 'knockout', 'jquery', 'i18next'], function(session, core, ui, ko, $, i18n) {
     var router = core.routers.get('main');
 
     core.actions.register({
@@ -36,13 +36,14 @@ define(['kloudspeaker/session', 'kloudspeaker/core', 'knockout', 'jquery', 'i18n
         model.activeSecondLevelView(secondLevelView);
         model.secondLevelViews(core.views.get(firstLevel) || []);
 
-        core.activeViewInfo = {
+        ui.views.setActiveViewInfo({
             path: instruction.fragment,
             parts: parts,
             config: instruction.config,
             firstLevelView: firstLevelView,
-            secondLevelView: secondLevelView
-        };
+            secondLevelView: secondLevelView,
+            view: firstLevelView
+        });
 
         if (instruction.config.subViewTemplates)
             model.subviews({

@@ -1,0 +1,22 @@
+<div id="files-view-item-info" class="item-details-content" data-bind="if: model.item, class: { loading : model.loading() }">
+    <h2 data-bind="text: model.item().name"></h2>
+
+    <!-- ko if: model.showDescription -->
+    <!-- ko ifnot: model.canEditDescription -->
+    <div class="description-value" data-bind="text: model.metadata().description">
+    </div>
+    <!-- /ko -->
+    <!-- ko if: model.canEditDescription -->
+    <div class="description-editor" data-bind="inplace-editor: {value: model.metadata().description, action: setDescription}"></div>
+    <!-- /ko -->
+	<!-- /ko -->
+
+    <ul class="nav nav-tabs item-details-tabs" role="tablist" data-bind="foreach: { data: model.details(), as: 'tab' }">
+        <li role="presentation" class="item-details-tab" data-bind="class: { active : tab.active }" ><a data-bind="i18n: titleKey, click: $root.setActiveDetails" href="#"></a></li>
+    </ul>
+
+    <!-- ko if: model.activeDetails() != null -->
+    <div class="item-details-active-tab" data-bind="compose: { model: model.activeDetails().module, activationData: model }">
+    </div>
+    <!-- /ko -->
+</div>

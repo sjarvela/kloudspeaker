@@ -22,7 +22,7 @@ define(['require', 'jquery', 'durandal/system', 'durandal/app', 'durandal/viewLo
                 }
             },
             "actions": {
-                "click": "view/details",
+                "click": "files/info",
                 "dbl-click": "filesystem/open",
                 "right-click": "view/menu",
                 "mouse-over": "quickactions"
