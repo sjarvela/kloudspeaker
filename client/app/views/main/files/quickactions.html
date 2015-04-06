@@ -1,5 +1,5 @@
 <div id="files-view-quickactions" class="quickactions-content" data-bind="if: model.item, class: { loading : model.loading() }">
     <ul data-bind="foreach: model.actions()">
-        <li data-bind="text: id, click: $root.onAction"></li>
+        <li data-bind="click: $root.onAction, attr: { title: id }"><i data-bind="attr: { class: 'fa fa-'+(icon || 'crosshairs')}"></i></li>
     </ul>
 </div>

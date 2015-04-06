@@ -2,6 +2,7 @@ define(['plugins/router', 'kloudspeaker/instance', 'kloudspeaker/config', 'kloud
     core.actions.register({
         id: 'filesystem/open',
         type: 'filesystem',
+        icon: 'folder-open-o',
         titleKey: 'core.action.filesystem.open',
         isApplicable: function(item) {
             return !item.is_file;

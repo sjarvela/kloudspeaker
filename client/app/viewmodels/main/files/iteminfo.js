@@ -61,6 +61,7 @@ define(['kloudspeaker/core', 'kloudspeaker/features', 'kloudspeaker/permissions'
     core.actions.register({
         id: 'files-view/info',
         type: 'filesystem',
+        icon: 'info',
         titleKey: 'core.action.filesystem.open',
         handler: function(item, ctx) {
             console.log("info " + item.name);

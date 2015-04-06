@@ -33,20 +33,25 @@ define(['kloudspeaker/core', 'kloudspeaker/instance', 'kloudspeaker/config', 'kl
         //TODO valid
         model.actions(actions);
 
-        $("#files-view-quickactions").remove().appendTo($container.empty());
-        $activeActions = $container.show();
+        var $qa = $("#files-view-quickactions").remove().appendTo($container.empty());
 
         //TODO get actions
         model.loading(false);
         model.item(item);
+
+        $qa.find("ul").css("width", (actions.length * 20) + "px");
+        $activeActions = $container.show();
     };
 
     var hoverTimeout = false;
     var outTimeout = false;
     ks.on('files-view:load').then(function(files) {
         $(".filelist-item").hover(function() {
-            var t = this;
+            console.log("hover");
+
             var $t = $(this);
+
+            // cancel out
             if (outTimeout) clearTimeout(outTimeout);
             outTimeout = false;
 
@@ -55,18 +60,23 @@ define(['kloudspeaker/core', 'kloudspeaker/instance', 'kloudspeaker/config', 'kl
 
             // same item already visible, just cancel
             if ($activeActions && oldItem && item.id == oldItem.id) {
+                console.log("cancel hover");
                 return;
             }
-
+            
             if (hoverTimeout) clearTimeout(hoverTimeout);
             hoverTimeout = setTimeout(function() {
+                hoverTimeout = false;
                 showActions(item);
             }, 500);
         }, function() {
-            if (outTimeout) clearTimeout(outTimeout);
-            outTimeout = setTimeout(function() {
-                reset();
-            }, 500);
+            console.log("out");
+            if (!hoverTimeout) {
+                if (outTimeout) clearTimeout(outTimeout);
+                outTimeout = setTimeout(function() {                    
+                    reset();
+                }, 500);
+            }
         });
     });
 
