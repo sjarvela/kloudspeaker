@@ -17,8 +17,14 @@ define(['kloudspeaker/comments/repository', 'kloudspeaker/utils'], function(repo
             id: 'id',
             titleKey: 'main.config.list.id'
         }, {
-            id: 'name',
-            titleKey: 'user.name'
+            id: 'time',
+            titleKey: 'comment:config.list.time'
+        }, {
+            id: 'item_id',
+            titleKey: 'comment:config.list.item'
+        }, {
+            id: 'user_id',
+            titleKey: 'comment:config.list.user'
         }, {
             id: 'remove',
             type: 'action',

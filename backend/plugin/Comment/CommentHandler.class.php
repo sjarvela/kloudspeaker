@@ -72,6 +72,10 @@ class CommentHandler extends BaseSearcher {
 		return $this->getDao()->getComments($item);
 	}
 
+	public function processQuery($data) {
+		return $this->getDao()->processQuery($data);
+	}
+
 	public function addComment($user, $item, $comment) {
 		if (!$this->env->permissions()->hasFilesystemPermission("comment_item", $item)) {
 			throw new ServiceException("INSUFFICIENT_PERMISSIONS");

@@ -25,11 +25,11 @@ class CommentDao {
 		$db = $this->env->db();
 		//$parentLocation = $db->string(str_replace("\\", "\\\\", $parent->location()));	//itemidprovider
 		$pathFilter = $this->env->filesystem()->itemIdProvider()->pathQueryFilter($parent, FALSE, NULL);
-		$itemFilter = "select id from " . $db->table("item_id") . " where ".$pathFilter;
+		$itemFilter = "select id from " . $db->table("item_id") . " where " . $pathFilter;
 		/*if (strcasecmp("mysql", $this->env->db()->type()) == 0) {
-			$itemFilter = "select id from " . $db->table("item_id") . " where path REGEXP '^" . $parentLocation . "[^/]+[/]?$'";
+		$itemFilter = "select id from " . $db->table("item_id") . " where path REGEXP '^" . $parentLocation . "[^/]+[/]?$'";
 		} else {
-			$itemFilter = "select id from " . $db->table("item_id") . " where REGEX(path, \"#^" . $parentLocation . "[^/]+[/]?$#\")";
+		$itemFilter = "select id from " . $db->table("item_id") . " where REGEX(path, \"#^" . $parentLocation . "[^/]+[/]?$#\")";
 		}*/
 		return $db->query("select item_id, count(`id`) as count from " . $db->table("comment") . " where item_id in (" . $itemFilter . ") group by item_id")->valueMap("item_id", "count");
 	}
@@ -46,7 +46,7 @@ class CommentDao {
 
 	public function findItemsWithComment($parent, $text = FALSE, $recursive = FALSE) {
 		$db = $this->env->db();
-		$p = $db->string(str_replace("\\", "\\\\", str_replace("'", "\'", $parent->location())));	//itemidprovider
+		$p = $db->string(str_replace("\\", "\\\\", str_replace("'", "\'", $parent->location()))); //itemidprovider
 
 		if ($recursive) {
 			$pathFilter = "i.path like '" . $p . "%'";
@@ -69,6 +69,47 @@ class CommentDao {
 	public function getComments($item) {
 		$db = $this->env->db();
 		return $db->query("select c.id as id, u.id as user_id, u.name as username, c.time as time, c.comment as comment from " . $db->table("comment") . " c, " . $db->table("user") . " u where c.`item_id` = " . $db->string($item->id(), TRUE) . " and u.id = c.user_id order by time desc")->rows();
+	}
+
+	public function processQuery($data) {
+		if (!isset($data)) {
+			throw new ServiceException("INVALID_REQUEST");
+		}
+
+		$db = $this->env->db();
+		$query = "from " . $db->table("comment") . " where 1 = 1 ";
+
+		if (!$this->env->authentication()->isAdmin()) {
+			$query .= " and user_id = ".$db->string($this->env->session()->userId());
+		}
+		/*if (isset($data['user'])) {
+			$query .= " and u.name like '" . str_replace("*", "%", $db->string($data['user'])) . "'";
+		}
+		if (isset($data['item'])) {
+			$query .= " and item like '" . str_replace("*", "%", $db->string($data['item'])) . "'";
+		}*/
+
+		$query .= ' order by ';
+		if (isset($data["sort"]) and isset($data["sort"]["id"])) {
+			$sort = $data["sort"];
+
+			if (in_array($sort["id"], array("time", "user"))) {
+				$query .= $sort["id"];
+			} else {
+				throw new ServiceException("INVALID_REQUEST");
+			}
+
+			$query .= ' ' . ((isset($sort["asc"]) and $sort["asc"]) ? "asc" : "desc");
+		} else {
+			$query .= ' time desc';
+		}
+
+		$count = $db->query("select count(id) " . $query)->value(0);
+		$rows = isset($data["count"]) ? $data["count"] : 50;
+		$start = isset($data["start"]) ? $data["start"] : 0;
+		$result = $db->query("select id, time, user_id, item_id " . $query . " limit " . $rows . " offset " . $start)->rows();
+
+		return array("start" => $start, "count" => count($result), "total" => $count, "data" => $result);
 	}
 
 	public function addComment($userId, $item, $time, $comment) {

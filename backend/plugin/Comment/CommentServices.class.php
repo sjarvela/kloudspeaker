@@ -32,7 +32,7 @@ class CommentServices extends ServicesBase {
 		} else {
 			$this->response()->success(array(
 				"comments" => $comments,
-				"permission" => $this->env->permissions()->getFilesystemPermission("comment_item", $item)
+				"permission" => $this->env->permissions()->getFilesystemPermission("comment_item", $item),
 			));
 		}
 	}
@@ -40,6 +40,11 @@ class CommentServices extends ServicesBase {
 	public function processPost() {
 		if (count($this->path) != 1) {
 			throw $this->invalidRequestException();
+		}
+
+		if (count($this->path) == 1 and $this->path[0] === 'query') {
+			$this->response()->success($this->handler()->processQuery($this->request->data));
+			return;
 		}
 
 		$item = $this->item($this->path[0]);
