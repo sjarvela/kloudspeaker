@@ -1,3 +1,5 @@
 <div id="files-view-quickactions" class="quickactions-content" data-bind="if: model.item, class: { loading : model.loading() }">
-    <span data-bind="text: model.item().name"></span>
+    <ul data-bind="foreach: model.actions()">
+        <li data-bind="text: id, click: $root.onAction"></li>
+    </ul>
 </div>

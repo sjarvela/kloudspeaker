@@ -8848,12 +8848,17 @@ button.close {
 #kloudspeaker .main-view .files-view .filelist-table .filelist-items .filelist-item.dragover {
   background-color: red;
 }
+#kloudspeaker .main-view .files-view .filelist-table .filelist-items .filelist-item .quickactions-container {
+  position: absolute;
+  right: 0;
+}
 #kloudspeaker .main-view .files-view .filelist-table .filelist-header-col,
 #kloudspeaker .main-view .files-view .filelist-table .filelist-item-value {
   padding: 8px;
 }
 #kloudspeaker .main-view .files-view .filelist-table .col {
   width: 175px;
+  position: relative;
 }
 #kloudspeaker .main-view .files-view .filelist-table .col-name {
   width: 275px;

@@ -7,10 +7,13 @@
     <div class="filelist-items" data-bind="foreach: { data: model.items, as: 'item' }">
         <div class="filelist-item" data-bind="attr: { id: 'filelist-item-'+item.id }">
             <!-- ko foreach: { data: $parent.cols, as: 'col' } -->
-            <div data-bind="attr: { class: 'filelist-item-value col col-'+col.id }, html: $root.getCell(col, item)">
+            <div data-bind="attr: { class: 'filelist-item-value col col-'+col.id }">
+                <div class="filelist-item-content" data-bind="html: $root.getCell(col, item)"></div>
+                <!-- ko if: col.id=='name' -->
+                <div class="quickactions-container" style="display: none"></div>
+                <!-- /ko -->
             </div>
             <!-- /ko -->
-            <div class="quickactions-container"></div>
             <div class="iteminfo-container"></div>
         </div>
     </div>

@@ -44,9 +44,23 @@ define(['plugins/router', 'kloudspeaker/filesystem'],
                 get: function(type) {
                     return actions[type || '_'] || [];
                 },
-                getById: function(id) {
+                getById: function(id, subject) {
+                    if (window.isArray(id)) {
+                        var result = [];
+                        _.each(id, function(t) {
+                            var a = core.actions.getById(t, subject);
+                            if (a) result.push(a);
+                        });
+                        return result;
+                    }
                     if (!id) return null;
-                    return actionsById[id];
+                    var ac = actionsById[id];
+                    if (subject && !core.actions.isApplicable(ac, subject)) return null; 
+                    return ac;
+                },
+                isApplicable: function(ac, subj) {
+                    if (ac.isApplicable) return ac.isApplicable(subj);
+                    return true;
                 },
                 trigger: function(ac, subj, ctx) {
                     if (!ac) return;

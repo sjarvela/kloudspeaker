@@ -22,11 +22,13 @@ define(['require', 'jquery', 'durandal/system', 'durandal/app', 'durandal/viewLo
                 }
             },
             "actions": {
-                "click": "files/info",
+                "click": "files-view/info",
                 "dbl-click": "filesystem/open",
-                "right-click": "view/menu",
-                "mouse-over": "quickactions"
-            }
+                "right-click": "files-view/menu"
+            },
+            "quick-actions": [
+                "filesystem/open", "files-view/info"
+            ]
         },
         "html5-uploader": {
             maxChunkSize: 0
@@ -54,7 +56,7 @@ define(['require', 'jquery', 'durandal/system', 'durandal/app', 'durandal/viewLo
         kloudspeakerApp.config = $.extend({}, _kloudspeakerDefaults, cfg);
 
         events.includeIn(kloudspeakerApp);
-        
+
         define("kloudspeaker/config", function() {
             return kloudspeakerApp.config;
         });

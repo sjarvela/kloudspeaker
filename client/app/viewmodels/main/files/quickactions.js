@@ -1,9 +1,10 @@
-define(['kloudspeaker/core', 'kloudspeaker/instance', 'kloudspeaker/features', 'kloudspeaker/permissions', 'kloudspeaker/filesystem', 'kloudspeaker/ui', 'kloudspeaker/ui/files', 'knockout'], function(core, ks, features, permissions, fs, ui, uif, ko) {
+define(['kloudspeaker/core', 'kloudspeaker/instance', 'kloudspeaker/config', 'kloudspeaker/features', 'kloudspeaker/permissions', 'kloudspeaker/filesystem', 'kloudspeaker/ui', 'kloudspeaker/ui/files', 'knockout'], function(core, ks, config, features, permissions, fs, ui, uif, ko) {
     console.log("quickactions module");
 
     var model = {
         item: ko.observable(null),
-        loading: ko.observable(false)
+        loading: ko.observable(false),
+        actions: ko.observableArray([])
     };
 
     var $activeActions = null;
@@ -16,6 +17,7 @@ define(['kloudspeaker/core', 'kloudspeaker/instance', 'kloudspeaker/features', '
 
         model.item(null);
         model.loading(false);
+        model.actions([]);
     };
     var showActions = function(item) {
         if ($activeActions) $activeActions.hide();
@@ -27,7 +29,11 @@ define(['kloudspeaker/core', 'kloudspeaker/instance', 'kloudspeaker/features', '
 
         model.loading(true);
 
-        $("#files-view-quickactions").remove().appendTo($container);
+        var actions = core.actions.getById(config['file-view']['quick-actions'], item);
+        //TODO valid
+        model.actions(actions);
+
+        $("#files-view-quickactions").remove().appendTo($container.empty());
         $activeActions = $container.show();
 
         //TODO get actions
@@ -69,6 +75,11 @@ define(['kloudspeaker/core', 'kloudspeaker/instance', 'kloudspeaker/features', '
             model.activeListWidget = data.model.activeListWidget;
             reset();
         },
-        model: model
+        model: model,
+        onAction: function(ac) {
+            var item = model.item();
+            reset();
+            core.actions.trigger(ac, item);
+        }
     }
 });

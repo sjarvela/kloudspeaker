@@ -66,13 +66,19 @@
                         &.dragover {
                             background-color: red;
                         }
+                        .quickactions-container {
+                            position: absolute;
+                            right: 0;
+                        }
                     }
                 }
-                .filelist-header-col, .filelist-item-value {
+                .filelist-header-col,
+                .filelist-item-value {
                     padding: 8px;
                 }
                 .col {
                     width: 175px;
+                    position: relative;
                 }
                 .col-name {
                     width: 275px;
@@ -83,16 +89,15 @@
                 width: 100%;
                 background-color: #ababab;
                 display: none;
-
                 .iteminfo.content {
-
                     &.loading {
                         background-color: red;
                     }
                 }
             }
         }
-        .popupmenu-container, .quickaction-container {
+        .popupmenu-container,
+        .quickaction-container {
             position: absolute;
             display: none;
         }
@@ -145,11 +150,9 @@
         .config-list {
             .header {
                 clear: both;
-
                 .header-title {
                     float: left;
                 }
-
                 .toolbar {
                     float: left;
                 }

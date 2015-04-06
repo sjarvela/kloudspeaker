@@ -3,11 +3,10 @@ define(['plugins/router', 'kloudspeaker/instance', 'kloudspeaker/config', 'kloud
         id: 'filesystem/open',
         type: 'filesystem',
         titleKey: 'core.action.filesystem.open',
+        isApplicable: function(item) {
+            return !item.is_file;
+        },
         handler: function(item) {
-            if (item.is_file) {
-                alert("open " + item.name);
-                return;
-            }
             router.navigate("files/" + item.id);
         }
     });
