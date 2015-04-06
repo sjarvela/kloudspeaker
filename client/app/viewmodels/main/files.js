@@ -1,4 +1,4 @@
-define(['plugins/router', 'kloudspeaker/config', 'kloudspeaker/session', 'kloudspeaker/permissions', 'kloudspeaker/filesystem', 'kloudspeaker/core', 'kloudspeaker/features', 'kloudspeaker/ui/files', 'kloudspeaker/ui', 'kloudspeaker/filesystem/dnd', 'knockout', 'jquery'], function(router, config, session, permissions, fs, core, features, uif, ui, fsDnd, ko, $) {
+define(['plugins/router', 'kloudspeaker/instance', 'kloudspeaker/config', 'kloudspeaker/session', 'kloudspeaker/permissions', 'kloudspeaker/filesystem', 'kloudspeaker/core', 'kloudspeaker/features', 'kloudspeaker/ui/files', 'kloudspeaker/ui', 'kloudspeaker/filesystem/dnd', 'knockout', 'jquery'], function(router, ks, config, session, permissions, fs, core, features, uif, ui, fsDnd, ko, $) {
     core.actions.register({
         id: 'filesystem/open',
         type: 'filesystem',
@@ -72,6 +72,8 @@ define(['plugins/router', 'kloudspeaker/config', 'kloudspeaker/session', 'klouds
             // trigger dnd init
             model.dragHandler(fsDnd.getDragHandler());
             model.dropHandler(fsDnd.getDropHandler());
+
+            ks.trigger('files-view:load', { folder: r.item, items: r.items });
         });
     };
     return {

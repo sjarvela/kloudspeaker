@@ -33,11 +33,11 @@ define(['kloudspeaker/core', 'kloudspeaker/features', 'kloudspeaker/permissions'
 
         // find DOM elements where info is rendered into
         var $itemElement = model.activeListWidget.getItemDOMObject(item);
-        var $container = $itemElement.find(".item-details-container").hide();
+        var $container = $itemElement.find(".iteminfo-container").hide();
 
         model.loading(true);
 
-        $("#files-view-item-info").remove().appendTo($container);
+        $("#files-view-iteminfo").remove().appendTo($container);
         $container.slideDown();
         $activeInfo = $container;
 
@@ -68,7 +68,6 @@ define(['kloudspeaker/core', 'kloudspeaker/features', 'kloudspeaker/permissions'
             var av = ui.views.getActiveView();
             if (!av || av.id != 'files') return;
 
-            var files = av.api;
             $activeInfo ? $activeInfo.slideUp({
                 complete: function() {
                     showItemInfo(item);

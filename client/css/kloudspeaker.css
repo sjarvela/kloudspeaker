@@ -8858,13 +8858,13 @@ button.close {
 #kloudspeaker .main-view .files-view .filelist-table .col-name {
   width: 275px;
 }
-#kloudspeaker .main-view .files-view .item-details-container {
+#kloudspeaker .main-view .files-view .iteminfo-container {
   float: left;
   width: 100%;
   background-color: #ababab;
   display: none;
 }
-#kloudspeaker .main-view .files-view .item-details-container .item-details.content.loading {
+#kloudspeaker .main-view .files-view .iteminfo-container .iteminfo.content.loading {
   background-color: red;
 }
 #kloudspeaker .main-view .popupmenu-container,

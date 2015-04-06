@@ -1,4 +1,4 @@
-define(['require', 'jquery', 'durandal/system', 'durandal/app', 'durandal/viewLocator', 'durandal/binder'], function(require, $, system, app, viewLocator, binder) {
+define(['require', 'jquery', 'durandal/system', 'durandal/app', 'durandal/viewLocator', 'durandal/binder', 'durandal/events'], function(require, $, system, app, viewLocator, binder, events) {
     var _kloudspeakerDefaults = {
         "localization-debug": false,
         "language": {
@@ -53,9 +53,12 @@ define(['require', 'jquery', 'durandal/system', 'durandal/app', 'durandal/viewLo
     kloudspeakerApp.init = function(cfg) {
         kloudspeakerApp.config = $.extend({}, _kloudspeakerDefaults, cfg);
 
+        events.includeIn(kloudspeakerApp);
+        
         define("kloudspeaker/config", function() {
             return kloudspeakerApp.config;
         });
+
         define("kloudspeaker/instance", function() {
             return kloudspeakerApp;
         });
