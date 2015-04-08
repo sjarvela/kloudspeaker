@@ -63,7 +63,7 @@ define(['kloudspeaker/core', 'kloudspeaker/instance', 'kloudspeaker/config', 'kl
                 console.log("cancel hover");
                 return;
             }
-            
+
             if (hoverTimeout) clearTimeout(hoverTimeout);
             hoverTimeout = setTimeout(function() {
                 hoverTimeout = false;
@@ -73,7 +73,7 @@ define(['kloudspeaker/core', 'kloudspeaker/instance', 'kloudspeaker/config', 'kl
             console.log("out");
             if (!hoverTimeout) {
                 if (outTimeout) clearTimeout(outTimeout);
-                outTimeout = setTimeout(function() {                    
+                outTimeout = setTimeout(function() {
                     reset();
                 }, 500);
             }
