@@ -72,6 +72,14 @@ class FileViewerEditorController {
 		return $this->handlers[$item["item_type"]]->handleViewerContent($item);
 	}
 
+	public function getItemContent($item) {
+		if (is_array($item)) {
+			return $this->handlers[$item["item_type"]]->getItemContent($item)["stream"];
+		} else {
+			return $item->read();
+		}
+	}
+
 	private function registerPreviewer($types, $cls) {
 		foreach ($types as $t) {
 			$this->previewers[$t] = $cls;
