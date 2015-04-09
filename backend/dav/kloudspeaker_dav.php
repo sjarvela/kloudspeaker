@@ -342,14 +342,17 @@ try {
 			die();
 		}
 
-		$userAuth = $env->configuration()->getUserAuth($user["id"]);
-		if (!$env->passwordHash()->isEqual($result[1], $userAuth["hash"], $userAuth["salt"])) {
+		if (!$env->authentication()->authenticate($user["id"], $result[1])) {
+			//$userAuth = $env->configuration()->getUserAuth($user["id"]);
+			//if (!$env->passwordHash()->isEqual($result[1], $userAuth["hash"], $userAuth["salt"])) {
 			Logging::logDebug("DAV authentication failure");
 			$auth->requireLogin();
 			echo "Authentication required\n";
 			die();
 		}
-		$env->authentication()->setAuth($user, "pw");
+		//$env->authentication()->setAuth($user, "pw");
+		$userAuth = $env->configuration()->getUserAuth($user["id"]);
+		$env->authentication()->setAuth($user, $userAuth["type"]);
 	} else {
 		$auth = new Sabre_HTTP_DigestAuth();
 		$auth->setRealm($env->authentication()->realm());
