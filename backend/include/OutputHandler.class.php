@@ -128,7 +128,7 @@
 		}
 		
 		private function sendDownloadHeaders($filename, $type, $mobile, $size) {
-			header("Content-Disposition: attachment; filename=\"".$filename."\";");
+			header('Content-Disposition: attachment; filename*=UTF-8\'\''.rawurlencode($filename));
 			if ($size) header("Content-Length: ".$size);
 			header("Pragma: public");
 			header("Expires: 0");
