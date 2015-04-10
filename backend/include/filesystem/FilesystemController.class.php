@@ -52,6 +52,7 @@ class FilesystemController {
 
 		$this->allowedUploadTypes = $env->settings()->setting('allowed_file_upload_types');
 		$this->forbiddenUploadTypes = $env->settings()->setting('forbidden_file_upload_types');
+		$this->ignoredItems = $env->settings()->setting('ignored_items');
 	}
 
 	public function initialize() {
@@ -476,8 +477,16 @@ class FilesystemController {
 		$this->filesystem($folderDef, TRUE);
 	}
 
-	public function ignoredItems($filesystem, $path) {
-		return array('kloudspeaker.dsc', 'kloudspeaker.uac'); //TODO get from settings and/or configuration etc
+	public function isItemIgnored($filesystem, $name, $path) {
+		if (!$this->ignoredItems or count($this->ignoredItems) == 0) return FALSE;
+		//Logging::logDebug("isItemIgnored: ".$name."/".$path);
+
+		foreach ($this->ignoredItems as $p) {
+			if (preg_match($p, $path)) {
+				return TRUE;
+			}
+		}
+		return FALSE;
 	}
 
 	public function items($folder) {

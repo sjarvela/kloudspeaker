@@ -119,7 +119,7 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 			throw new ServiceException("INVALID_PATH", $parent->id());
 		}
 
-		$ignored = $this->ignoredItems($this->publicPath($parentPath));
+		//$ignored = $this->ignoredItems($this->publicPath($parentPath));
 
 		$result = array();
 		foreach ($items as $i => $name) {
@@ -127,12 +127,14 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 				continue;
 			}
 
-			if (in_array(strtolower($name), $ignored)) {
-				continue;
-			}
+			//if (in_array(strtolower($name), $ignored)) {
+			//	continue;
+			//}
 
 			$path = self::joinPath($parentPath, $this->filesystemInfo->env()->convertCharset($name));
 			$nativePath = self::joinPath($nativeParentPath, $name);
+			if ($this->isItemIgnored($name, $nativePath)) continue;
+
 			$itemName = $this->filesystemInfo->env()->convertCharset($name);
 
 			if (is_link($nativePath) and !file_exists($nativePath)) {
@@ -163,15 +165,17 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 			throw new ServiceException("INVALID_PATH", $this->path);
 		}
 
-		$ignored = $this->ignoredItems($this->publicPath($nativePath));
+		//$ignored = $this->ignoredItems($this->publicPath($nativePath));
 		$size = 0;
 
 		foreach ($files as $i => $name) {
-			if (substr($name, 0, 1) == '.' || in_array(strtolower($name), $ignored)) {
+			if (substr($name, 0, 1) == '.') {
 				continue;
 			}
 
 			$fullPath = self::joinPath($nativePath, $name);
+			if ($this->isItemIgnored($name, $fullPath)) continue;
+			
 			if (is_link($fullPath) and !file_exists($fullPath)) {
 				Logging::logError("Symbolic link broken: " . $fullPath);
 				continue;
@@ -215,15 +219,17 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 			throw new ServiceException("INVALID_PATH", $this->path);
 		}
 
-		$ignored = $this->ignoredItems($this->publicPath($nativePath));
+		//$ignored = $this->ignoredItems($this->publicPath($nativePath));
 		$result = array();
 
 		foreach ($files as $i => $name) {
-			if (substr($name, 0, 1) == '.' || in_array(strtolower($name), $ignored)) {
+			if (substr($name, 0, 1) == '.') {
 				continue;
 			}
 
 			$fullPath = self::joinPath($nativePath, $name);
+			if ($this->isItemIgnored($name, $fullPath)) continue;
+
 			if (is_dir($fullPath)) {
 				$result = array_merge($result, $this->allFilesRecursively($fullPath));
 				continue;
