@@ -198,8 +198,7 @@ module.exports = function(grunt) {
                     '!backend/plugin/FileViewerEditor/viewers/JPlayer/**',
                     '!backend/plugin/FileViewerEditor/viewers/TextFile/**',
                     '!backend/plugin/FileViewerEditor/viewers/FlexPaper/**',
-                    '!backend/plugin/FileViewerEditor/editors/CKEditor/**',
-                    '!backend/plugin/SendViaEmail/**'
+                    '!backend/plugin/FileViewerEditor/editors/CKEditor/**'
                 ],
                 dest: 'dist/'
             },
