@@ -16,6 +16,24 @@
     kloudspeaker.plugin.Core = function() {
         var that = this;
 
+        var doDelete = function(items) {
+            var many = (window.isArray(items) && items.length > 1);
+            var single = many ? null : (window.isArray(items) ? items[0] : items);
+
+            var title = many ? kloudspeaker.ui.texts.get("deleteManyConfirmationDialogTitle") : (single.is_file ? kloudspeaker.ui.texts.get("deleteFileConfirmationDialogTitle") : kloudspeaker.ui.texts.get("deleteFolderConfirmationDialogTitle"));
+            var msg = many ? kloudspeaker.ui.texts.get("confirmDeleteManyMessage", items.length) : kloudspeaker.ui.texts.get(single.is_file ? "confirmFileDeleteMessage" : "confirmFolderDeleteMessage", [single.name]);
+
+            var df = $.Deferred();
+            kloudspeaker.ui.dialogs.confirmation({
+                title: title,
+                message: msg,
+                callback: function() {
+                    $.when(kloudspeaker.filesystem.del(items)).then(df.resolve, df.reject);
+                }
+            });
+            return df.promise();
+        };
+
         return {
             id: "plugin-core",
             itemContextHandler: function(item, ctx, data) {
@@ -103,15 +121,7 @@
                             'title-key': 'actionDeleteItem',
                             icon: 'trash',
                             callback: function() {
-                                var df = $.Deferred();
-                                kloudspeaker.ui.dialogs.confirmation({
-                                    title: item.is_file ? kloudspeaker.ui.texts.get("deleteFileConfirmationDialogTitle") : kloudspeaker.ui.texts.get("deleteFolderConfirmationDialogTitle"),
-                                    message: kloudspeaker.ui.texts.get(item.is_file ? "confirmFileDeleteMessage" : "confirmFolderDeleteMessage", [item.name]),
-                                    callback: function() {
-                                        $.when(kloudspeaker.filesystem.del(item)).then(df.resolve, df.reject);
-                                    }
-                                });
-                                return df.promise();
+                                return doDelete(item);
                             }
                         });
                 }
@@ -148,7 +158,7 @@
                         'title-key': 'actionDeleteMultiple',
                         icon: 'trash',
                         callback: function() {
-                            return kloudspeaker.filesystem.del(items);
+                            return doDelete(items);
                         }
                     });
                 }

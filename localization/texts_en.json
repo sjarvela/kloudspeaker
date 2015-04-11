@@ -194,8 +194,10 @@
 
 		"deleteFileConfirmationDialogTitle": "Delete File",
 		"deleteFolderConfirmationDialogTitle": "Delete Folder",
+		"deleteManyConfirmationDialogTitle": "Delete",
 		"confirmFileDeleteMessage": "Are you sure you want to delete \"{0}\"?",
 		"confirmFolderDeleteMessage": "Are you sure you want to delete \"{0}\" and all its files and subfolders?",
+		"confirmDeleteManyMessage": "Are you sure you want to delete {0} files/folders?",
 
 		"dropboxEmpty": "Clear",
 
