@@ -923,6 +923,7 @@ var kloudspeaker_defaults = {
     pl.register = function(p) {
         var id = p.id;
         if (!id) return;
+        if (pl._list[id]) return;
 
         pl._list[id] = p;
     };

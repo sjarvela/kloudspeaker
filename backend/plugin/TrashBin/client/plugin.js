@@ -17,7 +17,11 @@
     var TrashBinPlugin = function() {
         var that = this;
 
-        this.initialize = function() {};
+        this.initialize = function() {
+            kloudspeaker.events.addEventHandler(function(e) {
+                that._softDelete = (kloudspeaker.session && kloudspeaker.session.data.plugins["TrashBin"] && kloudspeaker.session.data.plugins["TrashBin"]["soft_delete"]);
+            }, "session/start");
+        };
 
         this._onDrop = function(items) {
             var many = (window.isArray(items) && items.length > 1);
@@ -40,7 +44,7 @@
         this._onFileViewInit = function(fv) {
             that._fileView = fv;
             that.$el = $('<div id="kloudspeaker-trashbin" style="display: none"><i class="icon-trash drop-target"></i></div>').appendTo($("body"));
-            console.log("trash bin init");
+            console.log("trash bin init " + that._softDelete);
             kloudspeaker.ui.draganddrop.enableDrop(that.$el.find(".drop-target"), {
                 canDrop: function($e, e, obj) {
                     if (!obj || obj.type != 'filesystemitem') return false;
@@ -56,16 +60,73 @@
                     that._onDrop(items);
                 }
             });
+
+            if (!that._softDelete) return;
+
+            that.$el.click(function() {
+                that._fileView.changeToFolder('trash/');
+            });
+
+            that._fileView.addCustomFolderType("trash", {
+                onSelectFolder: function(id) {
+                    var df = $.Deferred();
+                    kloudspeaker.service.post("trash/data", {
+                        rq_data: that._fileView.getDataRequest()
+                    }).done(function(r) {
+                        //that._collectionsNav.setActive(r.ic);
+
+                        var fo = {
+                            type: "trash",
+                            id: ""
+                        };
+                        var data = {
+                            items: r.items,
+                            data: r.data
+                        };
+                        df.resolve(fo, data);
+                    });
+                    
+                    return df.promise();
+                },
+
+                onFolderDeselect: function(f) {
+                    //that._collectionsNav.setActive(false);
+                },
+
+                onRenderFolderView: function(f, data, $h, $tb) {
+                    kloudspeaker.dom.template("kloudspeaker-tmpl-fileview-header-custom", {
+                        folder: f
+                    }).appendTo($h);
+
+                    var opt = {
+                        title: function() {
+                            return this.data.title ? this.data.title : kloudspeaker.ui.texts.get(this.data['title-key']);
+                        }
+                    };
+                    var $fa = $("#kloudspeaker-fileview-folder-actions");
+                    var actionsElement = kloudspeaker.dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
+                        icon: 'icon-cog',
+                        dropdown: true
+                    }, opt).appendTo($fa);
+                    /*kloudspeaker.ui.controls.dropdown({
+                        element: actionsElement,
+                        items: that._getItemActions(data.ic),
+                        hideDelay: 0,
+                        style: 'submenu'
+                    });
+                    that._fileView.addCommonFileviewActions($fa);*/
+                }
+            });
         };
 
-        this._onFileViewActivate = function(fv) {
-            that._fileView = fv;
+        this._onFileViewActivate = function($mv, h) {
+            //that._fileView = fv;
             console.log("trash bin act");
             that.$el.show();
         };
 
-        this._onFileViewDeactivate = function(fv) {
-            that._fileView = fv;
+        this._onFileViewDeactivate = function($mv, h) {
+            //that._fileView = fv;
             console.log("trash bin deact");
             that.$el.hide();
         };

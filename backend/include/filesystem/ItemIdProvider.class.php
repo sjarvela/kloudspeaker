@@ -120,7 +120,7 @@ class ItemIdProvider {
 			return $db->update("UPDATE " . $db->table("item_id") . " SET path = " . $p . " where id = " . $db->string($item->id(), TRUE));
 		} else {
 			$path = $this->itemQueryPath($item);
-			$toPath = rtrim($this->itemQueryPath($to), "/");
+			$toPath = rtrim($this->itemQueryPath($to), self::PATH_DELIMITER);
 
 			$len = mb_strlen($path, "UTF-8");
 			//Logging::logDebug("len ".$path." = ".$len);
@@ -137,7 +137,7 @@ class ItemIdProvider {
 	}
 
 	public function itemQueryPath($i) {
-		$path = $i->location();
+		$path = is_string($i) ? $i : $i->location();
 		if ($this->convertPathDelimiter) {
 			$path = str_replace(DIRECTORY_SEPARATOR, self::PATH_DELIMITER, $path);
 		}
