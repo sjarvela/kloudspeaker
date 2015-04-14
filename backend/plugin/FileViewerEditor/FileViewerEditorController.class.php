@@ -74,7 +74,8 @@ class FileViewerEditorController {
 
 	public function getItemContent($item) {
 		if (is_array($item)) {
-			return $this->handlers[$item["item_type"]]->getItemContent($item)["stream"];
+			$c = $this->handlers[$item["item_type"]]->getItemContent($item);
+			return $c["stream"];
 		} else {
 			return $item->read();
 		}
