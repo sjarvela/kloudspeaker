@@ -77,7 +77,8 @@
 
                         var fo = {
                             type: "trash",
-                            id: ""
+                            id: "",
+                            name: kloudspeaker.ui.texts.get('pluginTrashBinViewTitle')
                         };
                         var data = {
                             items: r.items,
@@ -108,15 +109,19 @@
                         icon: 'icon-cog',
                         dropdown: true
                     }, opt).appendTo($fa);
-                    /*kloudspeaker.ui.controls.dropdown({
+                    kloudspeaker.ui.controls.dropdown({
                         element: actionsElement,
-                        items: that._getItemActions(data.ic),
+                        items: that._getItemActions(data),
                         hideDelay: 0,
                         style: 'submenu'
                     });
-                    that._fileView.addCommonFileviewActions($fa);*/
+                    that._fileView.addCommonFileviewActions($fa);
                 }
             });
+        };
+
+        this._getItemActions = function(d) {
+            return [];
         };
 
         this._onFileViewActivate = function($mv, h) {

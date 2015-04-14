@@ -39,7 +39,7 @@ class TrashBinManager {
 			$this->moveToTrash($item);
 		}
 
-		$this->env->events()->onEvent(TrashBinEvent::trash($items));
+		$this->env->events()->onEvent(TrashBinEvent::trashed($items));
 
 		return TRUE;
 	}
@@ -65,7 +65,7 @@ class TrashBinManager {
 		$result = array();
 		$items = $this->dao()->getUserItems($this->env->session()->userId());
 
-		$fs = new TrashBinFilesystem($this->folder);
+		$fs = new TrashBinFilesystem($this->env, $this->folder);
 		foreach ($items as $i) {
 			$path = $i["id"];
 			$isFile = (strcasecmp(substr($i["path"], -1), itemIdProvider::PATH_DELIMITER) != 0);
@@ -105,8 +105,25 @@ class TrashBinManager {
 }
 
 class TrashBinFilesystem extends LocalFilesystem {
-	function __construct($folder) {
+	private $env;
+
+	function __construct($env, $folder) {		
 		parent::__construct("trash", array("name" => "trash", "path" => $folder), $this);
+		$this->env = $env;
+	}
+
+	public function env() {
+		return $this->env;
+	}
+
+	public function itemIdProvider() {
+		return $this;
+	}
+
+	public function getItemId($loc) {
+		$l = substr($loc, 7);
+		Logging::logDebug($l);
+		return "foo";
 	}
 }
 ?>

@@ -19,7 +19,7 @@ class TrashBinDao {
 	public function addItem($trashId, $itemId, $folderId, $itemPath, $userId, $created) {
 		$db = $this->env->db();
 		$db->startTransaction();
-		$db->update(sprintf("INSERT INTO " . $db->table("trashbin") . " (id, item_id, folder_id, path, user_id, created) VALUES (%s, %s, %s, %s, %s, %s)", $db->string($trashId, TRUE), $db->string($itemId, TRUE), $db->string($folderId, TRUE), $db->string($path, TRUE), $db->string($userId, TRUE), $db->string($created)));
+		$db->update(sprintf("INSERT INTO " . $db->table("trashbin") . " (id, item_id, folder_id, path, user_id, created) VALUES (%s, %s, %s, %s, %s, %s)", $db->string($trashId, TRUE), $db->string($itemId, TRUE), $db->string($folderId, TRUE), $db->string($itemPath, TRUE), $db->string($userId, TRUE), $db->string($created)));
 		$db->commit();
 	}
 
