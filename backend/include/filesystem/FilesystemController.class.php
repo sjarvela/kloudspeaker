@@ -114,6 +114,22 @@ class FilesystemController {
 
 		$this->metadata->set($item, "created", $t);
 		$this->metadata->set($item, "created_by", $u);
+		$this->updateModifiedMetadata($item, $t, $u);
+	}
+
+	public function updateModifiedMetadata($item, $time = NULL, $by = NULL) {
+		$t = $time;
+		if ($t == NULL) {
+			$t = '' . $this->env->configuration()->formatTimestampInternal(time());
+		}
+
+		$u = $by;
+		if ($u == NULL) {
+			$u = $this->env->session()->userId();
+		}
+
+		$this->metadata->set($item, "modified", $t);
+		$this->metadata->set($item, "modified_by", $u);
 	}
 
 	public function getCreatedMetadataInfo($item, $raw = FALSE) {
@@ -123,6 +139,31 @@ class FilesystemController {
 		}
 
 		$by = $this->metadata->get($item, "created_by");
+		if ($by != NULL and !$raw) {
+			$user = $this->env->configuration()->getUser($by);
+			if ($user == NULL) {
+				$by = NULL;
+			} else {
+				$by = array(
+					"id" => $user["id"],
+					"name" => $user["name"],
+				);
+			}
+
+		}
+		return array(
+			"at" => $at,
+			"by" => $by,
+		);
+	}
+
+	public function getModifiedMetadataInfo($item, $raw = FALSE) {
+		$at = $this->metadata->get($item, "modified");
+		if ($at == NULL) {
+			return NULL;
+		}
+
+		$by = $this->metadata->get($item, "modified_by");
 		if ($by != NULL and !$raw) {
 			$user = $this->env->configuration()->getUser($by);
 			if ($user == NULL) {
@@ -792,6 +833,10 @@ class FilesystemController {
 			if ($meta != NULL) {
 				$this->setCreatedMetadata($target, $meta["at"], $meta["by"]);
 			}
+			$meta = $this->getModifiedMetadataInfo($item, TRUE);
+			if ($meta != NULL) {
+				$this->updateModifiedMetadata($target, $meta["at"], $meta["by"]);
+			}
 
 			$this->doDeleteItem($item, TRUE, TRUE, FALSE); // "hard-delete", remove also meta-data
 		}
@@ -1084,6 +1129,7 @@ class FilesystemController {
 		$this->assertRights($item, self::PERMISSION_LEVEL_READWRITE, "update content");
 
 		$item->put($content);
+		$this->updateModifiedMetadata($item);
 		$this->env->events()->onEvent(FileEvent::updateContent($item));
 	}
 

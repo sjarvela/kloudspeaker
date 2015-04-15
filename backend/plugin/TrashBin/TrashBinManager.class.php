@@ -10,6 +10,8 @@
  */
 
 require_once "dao/TrashBinDao.class.php";
+require_once "include/filesystem/KloudspeakerFilesystem.class.php";
+require_once "include/filesystem/LocalFilesystem.class.php";
 
 class TrashBinManager {
 	private $env;

@@ -80,6 +80,10 @@ class ItemDetails extends PluginBase {
 			return $this->env->filesystem()->getCreatedMetadataInfo($item);
 		}
 
+		if (strcmp($key, "metadata-modified") === 0) {
+			return $this->env->filesystem()->getModifiedMetadataInfo($item);
+		}
+
 		if (strcmp($key, "image-size") === 0) {
 			if (!$item->exists()) {
 				return "0x0";

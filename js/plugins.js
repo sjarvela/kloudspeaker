@@ -292,7 +292,12 @@
                 var spec = s[k];
 
                 var rowData = d[k];
-                if (!rowData) continue;
+                if (!rowData && k == 'metadata-modified') {
+                    rowData = d['metadata-created'];
+                }
+                if (!rowData) {
+                    continue;
+                }
 
                 rows.push({
                     title: that.getFileRowTitle(k, s[k]),
@@ -313,6 +318,7 @@
             if (dataKey == 'last-modified') return kloudspeaker.ui.texts.get('fileItemContextDataLastModified');
             if (dataKey == 'image-size') return kloudspeaker.ui.texts.get('fileItemContextDataImageSize');
             if (dataKey == 'metadata-created') return kloudspeaker.ui.texts.get('fileItemContextDataCreated');
+            if (dataKey == 'metadata-modified') return kloudspeaker.ui.texts.get('fileItemContextDataLastModified');
 
             /*if (that.specs[dataKey]) {
                 var spec = that.specs[dataKey];
@@ -327,6 +333,7 @@
             if (key == 'last-modified') return that.timestampFormatter.format(kloudspeaker.helpers.parseInternalTime(data));
             if (key == 'image-size') return kloudspeaker.ui.texts.get('fileItemContextDataImageSizePixels', [data]);
             if (key == 'metadata-created') return that.timestampFormatter.format(kloudspeaker.helpers.parseInternalTime(data.at)) + "&nbsp;<i class='icon-user'/>&nbsp;" + data.by.name;
+            if (key == 'metadata-modified') return that.timestampFormatter.format(kloudspeaker.helpers.parseInternalTime(data.at)) + "&nbsp;<i class='icon-user'/>&nbsp;" + data.by.name;
 
             if (that.specs[key]) {
                 var spec = that.specs[key];
