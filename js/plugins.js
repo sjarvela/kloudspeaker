@@ -888,7 +888,7 @@
                     }
                     document.getElementById('editor-frame').contentWindow.onEditorSave(function() {
                         d.close();
-                        //TODO dispatch changed event
+                        kloudspeaker.events.dispatch("filesystem/edit", item);
                     }, function(c, er) {
                         d.close();
                         return true;
