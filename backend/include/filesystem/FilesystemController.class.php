@@ -99,6 +99,14 @@ class FilesystemController {
 				$this->setCreatedMetadata($item);
 			}
 		}
+
+		if ($type === FileEvent::UPDATE_CONTENT) {
+			$items = array($e->item());
+
+			foreach ($items as $item) {
+				$this->updateModifiedMetadata($item);
+			}
+		}
 	}
 
 	public function setCreatedMetadata($item, $time = NULL, $by = NULL) {
@@ -1129,7 +1137,7 @@ class FilesystemController {
 		$this->assertRights($item, self::PERMISSION_LEVEL_READWRITE, "update content");
 
 		$item->put($content);
-		$this->updateModifiedMetadata($item);
+		
 		$this->env->events()->onEvent(FileEvent::updateContent($item));
 	}
 

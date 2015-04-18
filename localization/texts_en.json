@@ -96,6 +96,7 @@
 		"mainviewUploadProgressManyMessage": "Uploading {0} files",
 		"mainviewFileUploadFailed": "File upload failed",
 		"mainviewFileUploadComplete": "File upload complete",
+		"mainviewFileUploadAborted": "File upload aborted",
 		"mainviewFileUploadNotAllowed": "File upload not allowed",
 		"mainviewRetrieveFileTitle": "Retrieve file from URL:",
 		"mainviewRetrieveUrlTitle": "File URL",
@@ -385,6 +386,11 @@
 
 		"configviewMenuTitle": "Configuration",
 		"configViewUserNavTitle": "User",
+
+		"configSystemNavTitle": "System",
+		"configSystemVersionTitle": "Version",
+		"configSystemCheckNewVersion": "Check for Updates",
+		"configSystemVersionCheckUpgradeAvailable": "Kloudspeaker version {0} is available for <a href='{2}' target='_blank'>download</a>.",
 
 		"configUserAccountNavTitle": "Account",
 		"configUserAccountUsernameTitle": "User",

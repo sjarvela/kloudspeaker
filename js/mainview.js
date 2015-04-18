@@ -693,10 +693,10 @@
                     }
                     return allowed;
                 },
-                start: function(files, ready) {
+                start: function(files, ready, cancel) {
                     that.uploadProgress.show(kloudspeaker.ui.texts.get(files.length > 1 ? "mainviewUploadProgressManyMessage" : "mainviewUploadProgressOneMessage", files.length), function() {
                         ready();
-                    });
+                    }, cancel);
                 },
                 progress: function(pr, br) {
                     var speed = "";
@@ -709,6 +709,15 @@
                     kloudspeaker.ui.dialogs.notification({
                         message: kloudspeaker.ui.texts.get('mainviewFileUploadComplete'),
                         type: "success"
+                    });
+                    that.refresh();
+                },
+                aborted: function(f) {
+                    if (c) c.close();
+                    that.uploadProgress.hide();
+                    kloudspeaker.ui.dialogs.notification({
+                        message: kloudspeaker.ui.texts.get('mainviewFileUploadAborted'),
+                        type: "info"
                     });
                     that.refresh();
                 },
@@ -1442,13 +1451,17 @@
         t._$title = $e.find(".title");
         t._$speed = $e.find(".speed");
         t._$bar = $e.find(".bar");
+        t._$cancelBtn = $e.find(".close");
 
         return {
-            show: function(title, cb) {
+            show: function(title, cb, cancelCb) {
                 $e.css("bottom", (0 - t._h) + "px");
                 t._$title.text(title ? title : "");
                 t._$speed.text("");
                 t._$bar.css("width", "0%");
+                t._$cancelBtn.unbind("click").bind("click", function() {
+                    cancelCb();
+                });
                 $e.show().animate({
                     "bottom": "0"
                 }, 500, cb);

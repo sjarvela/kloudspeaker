@@ -8,6 +8,7 @@
  */
 
 var kloudspeaker_defaults = {
+    "version-check-url": "http://www.kloudspeaker.com/version.php",
     "language": {
         "default": "en",
         "options": ["en"]
@@ -149,7 +150,9 @@ var kloudspeaker_defaults = {
             user: user,
             features: s.features,
             plugins: s.plugins,
-            data: s
+            data: s,
+            version: s.version,
+            revision: s.revision
         };
 
         var onError = function() {

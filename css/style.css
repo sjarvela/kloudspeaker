@@ -368,11 +368,17 @@ input[type="color"],
 
 #kloudspeaker-mainview-progress .speed {
     float: right;
+    margin-right: 20px;
 }
 
 #kloudspeaker-mainview-progress .progress,
 #kloudspeaker-mainview-progress .title {
     float: left;
+}
+
+#kloudspeaker-mainview-progress .close {
+    float: right;
+    margin-top: -4px;
 }
 
 #kloudspeaker-mainview-progress .progress {

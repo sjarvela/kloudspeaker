@@ -50,6 +50,23 @@
 	</div>
 </script>
 
+<script id="kloudspeaker-tmpl-config-systemview" type="text/x-jquery-tmpl">
+	<div id="kloudspeaker-config-systemview">
+		<form class="form-horizontal">
+			<div class="control-group">
+				<label class="control-label localized" text-key="configSystemVersionTitle"></label>
+				<div class="controls">
+					<span class="uneditable-input">${session.version} (rev. ${session.revision})</span>
+					{{if versionCheck}}
+					<a id="system-check-new-version-btn" class="btn localized" href="javascript: void(0);" text-key="configSystemCheckNewVersion"></a>
+					<div id="version-check-result" class="alert" style="display:none; margin-top: 20px;"></div>
+					{{/if}}
+				</div>
+			</div>
+		</form>
+	</div>
+</script>
+
 <script id="kloudspeaker-tmpl-config-admin-user-searchoptions" type="text/x-jquery-tmpl">
 	<div class="kloudspeaker-admin-user-searchoptions accordion">
 		<div class="accordion-group">
