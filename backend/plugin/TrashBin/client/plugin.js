@@ -18,9 +18,11 @@
         var that = this;
 
         this.initialize = function() {
-            kloudspeaker.events.addEventHandler(function(e) {
+            var onSession = function() {
                 that._softDelete = (kloudspeaker.session && kloudspeaker.session.data.plugins["TrashBin"] && kloudspeaker.session.data.plugins["TrashBin"]["soft_delete"]);
-            }, "session/start");
+            };
+            kloudspeaker.events.addEventHandler(onSession, "session/start");
+            if (kloudspeaker.session) onSession();
         };
 
         this._onDrop = function(items) {
@@ -44,7 +46,7 @@
         this._onFileViewInit = function(fv) {
             that._fileView = fv;
             that.$el = $('<div id="kloudspeaker-trashbin" style="display: none"><i class="icon-trash drop-target"></i></div>').appendTo($("body"));
-            console.log("trash bin init " + that._softDelete);
+            
             kloudspeaker.ui.draganddrop.enableDrop(that.$el.find(".drop-target"), {
                 canDrop: function($e, e, obj) {
                     if (!obj || obj.type != 'filesystemitem') return false;
@@ -86,7 +88,7 @@
                         };
                         df.resolve(fo, data);
                     });
-                    
+
                     return df.promise();
                 },
 

@@ -88,8 +88,8 @@
 			return array();
 		}
 				
-		protected function isItemIgnored($name, $path) {
-			return $this->filesystemInfo->isItemIgnored($this, $name, $path);
+		protected function isItemIgnored($parentPath, $name, $path) {
+			return $this->filesystemInfo->isItemIgnored($this, $parentPath, $name, $path);
 		}
 		
 		protected function itemWithPath($path) {

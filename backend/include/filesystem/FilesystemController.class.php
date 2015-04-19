@@ -526,7 +526,7 @@ class FilesystemController {
 		$this->filesystem($folderDef, TRUE);
 	}
 
-	public function isItemIgnored($filesystem, $name, $path) {
+	public function isItemIgnored($filesystem, $parentPath, $name, $path) {
 		if (!$this->ignoredItems or count($this->ignoredItems) == 0) return FALSE;
 		//Logging::logDebug("isItemIgnored: ".$name."/".$path);
 

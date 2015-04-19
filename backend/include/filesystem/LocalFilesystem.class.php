@@ -133,9 +133,10 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 
 			$path = self::joinPath($parentPath, $this->filesystemInfo->env()->convertCharset($name));
 			$nativePath = self::joinPath($nativeParentPath, $name);
-			if ($this->isItemIgnored($name, $nativePath)) continue;
+			if ($this->isItemIgnored($parentPath, $name, $nativePath)) continue;
 
-			$itemName = $this->filesystemInfo->env()->convertCharset($name);
+			$itemName = $this->itemName($parentPath, $name, $nativePath);
+			if (!$itemName) continue;
 
 			if (is_link($nativePath) and !file_exists($nativePath)) {
 				Logging::logError("Symbolic link broken: " . $nativePath);
@@ -152,6 +153,10 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 		}
 
 		return $result;
+	}
+
+	protected function itemName($parentPath, $name, $nativePath) {
+		return $this->filesystemInfo->env()->convertCharset($name);
 	}
 
 	public function calculateRecursiveSize($folder) {
@@ -175,7 +180,7 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 
 			$fullPath = self::joinPath($nativePath, $name);
 			if ($this->isItemIgnored($name, $fullPath)) continue;
-			
+
 			if (is_link($fullPath) and !file_exists($fullPath)) {
 				Logging::logError("Symbolic link broken: " . $fullPath);
 				continue;

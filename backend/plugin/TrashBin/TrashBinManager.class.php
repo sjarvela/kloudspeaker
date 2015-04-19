@@ -67,13 +67,16 @@ class TrashBinManager {
 		$result = array();
 		$items = $this->dao()->getUserItems($this->env->session()->userId());
 
-		$fs = new TrashBinFilesystem($this->env, $this->folder);
-		foreach ($items as $i) {
+		$fs = new TrashBinFilesystem($this->env, $this->folder, $items);
+		foreach ($fs->root()->items() as $item) {
+			$result[] = $item->data();
+		}
+		/*foreach ($items as $i) {
 			$path = $i["id"];
 			$isFile = (strcasecmp(substr($i["path"], -1), itemIdProvider::PATH_DELIMITER) != 0);
 			$item = $fs->createItem($i["item_id"], $path);
 			$result[] = $item->data();
-		}
+		}*/
 		return $result;
 	}
 
@@ -108,10 +111,19 @@ class TrashBinManager {
 
 class TrashBinFilesystem extends LocalFilesystem {
 	private $env;
+	private $folder;
+	private $rootItems;
+	private $rootItemsById;
 
-	function __construct($env, $folder) {		
+	function __construct($env, $folder, $rootItems) {		
 		parent::__construct("trash", array("name" => "trash", "path" => $folder), $this);
 		$this->env = $env;
+		$this->folder = $folder;
+		$this->rootItems = $rootItems;
+		$this->rootItemsById = array();
+		foreach ($this->rootItems as $item) {
+			$this->rootItemsById[$item["id"]] = $item;
+		}
 	}
 
 	public function env() {
@@ -122,10 +134,31 @@ class TrashBinFilesystem extends LocalFilesystem {
 		return $this;
 	}
 
+	public function isItemIgnored($parentPath, $name, $nativePath) {
+		$p = substr($parentPath, strlen($this->folder));
+		if (strlen($p) == 0 and !array_key_exists($name, $this->rootItemsById)) return TRUE;
+		return FALSE;
+	}
+
+	protected function itemName($parentPath, $name, $nativePath) {
+		$p = substr($parentPath, strlen($this->folder));
+		if (strlen($p) == 0) {
+			$item = array_key_exists($name, $this->rootItemsById) ? $this->rootItemsById[$name] : FALSE;
+			if (!$item) return FALSE;
+
+			$n = $item["path"];
+			$n = strrchr(rtrim($n, DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR);
+			if ($n !== FALSE) return $n;
+			return $item["path"];
+		}
+		return $this->env->convertCharset($name);
+	}
+
 	public function getItemId($loc) {
 		$l = substr($loc, 7);
-		Logging::logDebug($l);
-		return "foo";
+		Logging::logDebug("ID: ".$loc."-".$l);
+		if (strlen($l) == 0) return "trash";
+		return $l;
 	}
 }
 ?>
