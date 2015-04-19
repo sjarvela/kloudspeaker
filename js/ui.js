@@ -411,6 +411,12 @@
                     onedit: function(desc) {
                         kloudspeaker.service.put("filesystem/" + item.id + "/description/", {
                             description: desc
+                        }).done(function() {
+                            kloudspeaker.events.dispatch("filesystem/item-update", {
+                                item: item,
+                                property: 'description',
+                                value: desc
+                            });
                         });
                     }
                 });
@@ -823,9 +829,9 @@
                 $tip = $el;
                 kloudspeaker.ui.activePopup(api);
                 /*$tip.click(function(e) {
-					e.preventDefault();
-					return false;
-				});*/
+                    e.preventDefault();
+                    return false;
+                });*/
                 if (!rendered) {
                     if (o.handler && o.handler.onRenderBubble) o.handler.onRenderBubble(actionId, api);
                     rendered = true;
@@ -974,11 +980,11 @@
                     if (current < (pages - 1)) $p.append(getNrBtn(current + 2));
 
                     /*if (current > 4 && current < (pages-3)) {
-						$p.append("<li class='page-break'>...</li>");
-						$p.append(getNrBtn(mid-1));
-						$p.append(getNrBtn(mid));
-						$p.append(getNrBtn(mid+1));
-					}*/
+                        $p.append("<li class='page-break'>...</li>");
+                        $p.append(getNrBtn(mid-1));
+                        $p.append(getNrBtn(mid));
+                        $p.append(getNrBtn(mid+1));
+                    }*/
 
                     if (current < (pages - 2)) $p.append("<li class='page-break'>...</li>");
                     if (current < (pages - 1)) $p.append(getNrBtn(pages - 1));
@@ -1629,13 +1635,13 @@
             }
         });
         /*var dlg = $("#kloudspeaker-tmpl-dialog-info").tmpl($.extend(spec, dialogDefaults)).dialog({
-			modal: true,
-			resizable: false,
-			height: 'auto',
-			minHeight: 50
-		});
-		kloudspeaker.ui.handlers.localize(dlg);
-		dlg.find("#kloudspeaker-info-dialog-close-button").click(function() { dlg.dialog('destroy'); dlg.remove(); });*/
+            modal: true,
+            resizable: false,
+            height: 'auto',
+            minHeight: 50
+        });
+        kloudspeaker.ui.handlers.localize(dlg);
+        dlg.find("#kloudspeaker-info-dialog-close-button").click(function() { dlg.dialog('destroy'); dlg.remove(); });*/
     };
 
     dh.showActionDeniedMessage = function(title, reasons) {
@@ -1913,7 +1919,7 @@
             var $header = $dlg.find(".modal-header");
             var $body = $dlg.find(".modal-body");
             var $footer = $dlg.find(".modal-footer");
-            var magicNr = 30; //$body.css("padding-top") + $body.css("padding-bottom");	//TODO??
+            var magicNr = 30; //$body.css("padding-top") + $body.css("padding-bottom"); //TODO??
 
             $body.css({
                 "max-height": "none",
@@ -2101,7 +2107,7 @@
             return false;
         });
 
-        // preload drag images		
+        // preload drag images      
         setTimeout(function() {
             var dragImages = [];
             for (var key in kloudspeaker.settings.dnd.dragimages) {

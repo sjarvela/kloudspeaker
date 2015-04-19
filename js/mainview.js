@@ -803,6 +803,20 @@
 
         this.onEvent = function(e) {
             if (!e.type.startsWith('filesystem/')) return;
+
+            if (e.type == "filesystem/item-update") {
+                if (!that._currentFolderData) return;
+
+                var item = e.payload.item;
+                if (e.payload.property == 'description') {
+                    //TODO better way to update data?
+                    if (that._currentFolderData.data['item-metadata'] && that._currentFolderData.data['item-metadata'][item.id]) {
+                        that._currentFolderData.data['item-metadata'][item.id].description = e.payload.value;
+                    }
+                }
+                that.itemWidget.updateItems([item], that._currentFolderData.data);
+                return;
+            }
             //var files = e.payload.items;
             //TODO check if affects this view
             that.refresh();
@@ -1121,6 +1135,12 @@
                     onedit: function(desc) {
                         kloudspeaker.service.put("filesystem/" + that._currentFolder.id + "/description/", {
                             description: desc
+                        }).done(function() {
+                            kloudspeaker.events.dispatch("filesystem/item-update", {
+                                item: that._currentFolder,
+                                property: 'description',
+                                value: desc
+                            });
                         });
                     }
                 });
@@ -1631,6 +1651,10 @@
                 t.$l.find("#kloudspeaker-iconview-item-" + itm.id).addClass("selected");
             });
         };
+
+        this.updateItems = function(i, data) {
+            //TODO
+        };
     };
 
     var FileList = function(container, $headerContainer, id, filelistSpec, columns) {
@@ -1646,7 +1670,7 @@
 
         for (var colId in columns) {
             if (columns[colId] === false) continue;
-            
+
             var col = filelistSpec.columns[colId];
             if (!col) continue;
 
@@ -1870,6 +1894,20 @@
             t.updateColWidths();
 
             t.p.onContentRendered(items, data);
+        };
+
+        this.updateItems = function(i, data) {
+            t.data = data;
+
+            $.each(i, function(ind, item) {
+                var $i = t.$i.find("#kloudspeaker-filelist-item-" + item.id);
+                if ($i.length === 0) return;
+
+                for (var ci = 0, j = t.cols.length; ci < j; ci++) {
+                    var col = t.cols[ci];
+                    $i.find(".kloudspeaker-filelist-col-" + col.id).html(col.content(item, t.data));
+                }
+            });
         };
 
         this.onItemClick = function($item, $el, left) {
