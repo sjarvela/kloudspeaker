@@ -887,9 +887,13 @@
             kloudspeaker.ui.hideActivePopup();
             that.showProgress();
 
+            that._currentFolderType = null;
             var idParts = id ? id.split("/") : [];
-            if (idParts.length > 1 && that._customFolderTypes[idParts[0]]) {
-                return that._customFolderTypes[idParts[0]].onSelectFolder(idParts[1]).done(that._setFolder).fail(onFail);
+            if (idParts.length > 1 && that._customFolderTypes[idParts[0]]) that._currentFolderType = idParts[0];
+            if (that._currentFolderType != oldType) that.initList();
+            
+            if (that._currentFolderType) {
+                return that._customFolderTypes[that._currentFolderType].onSelectFolder(idParts[1]).done(that._setFolder).fail(onFail);
             } else if (!id || idParts.length == 1) {
                 return kloudspeaker.filesystem.folderInfo(id ? idParts[0] : null, true, that.getDataRequest()).done(function(r) {
                     var folder = r.folder;
@@ -912,12 +916,9 @@
             that._onSelectFolder(that._getFolderPublicId(that._currentFolder));
         };
 
-        this._setFolder = function(folder, data, oldType) {
+        this._setFolder = function(folder, data) {
             that._currentFolder = folder;
             that._currentFolderData = data;
-
-            var type = (that._currentFolder && that._currentFolder.type) ? that._currentFolder.type : null;
-            if (type != oldType) that.initList();
 
             that.hideProgress();
             that._updateUI();
@@ -1355,8 +1356,8 @@
             var $h = $("#kloudspeaker-folderview-header-items").empty();
             if (that.isListView()) {
                 var cols = kloudspeaker.settings["file-view"]["list-view-columns"];
-                if (that._currentFolder && that._currentFolder.type && that._customFolderTypes[that._currentFolder.type] && that._customFolderTypes[that._currentFolder.type].getFileListCols) {
-                    cols = that._customFolderTypes[that._currentFolder.type].getFileListCols();
+                if (that._currentFolderType && that._customFolderTypes[that._currentFolderType] && that._customFolderTypes[that._currentFolderType].getFileListCols) {
+                    cols = that._customFolderTypes[that._currentFolderType].getFileListCols();
                 }
                 that.itemWidget = new FileList('kloudspeaker-folderview-items', $h, 'main', this._filelist, cols);
             } else {
@@ -1695,7 +1696,12 @@
             if (columns[colId] === false) continue;
 
             var col = filelistSpec.columns[colId];
-            if (!col) continue;
+            if (!col) {
+                if (columns[colId].content) {
+                    t.cols.push(columns[colId]);
+                }
+                continue;
+            }
 
             var colSpec = $.extend({}, col, columns[colId]);
             t.cols.push(colSpec);

@@ -129,7 +129,17 @@
 
                 handleAction: function(ac, item, t, ctx) {
                     console.log(ac);
-                    console.log(t);
+                    //console.log(t);
+                    if (ac == 'onClick') {
+                        if (t == 'restore') {
+                            that._onRestore(item);
+                            return true;
+                        }
+                        if (t == 'delete') {
+                            that._onDelete(item);
+                            return true;
+                        }
+                    }
                     that._fileView.showActionMenu(item, ctx.element);
                     return true;
                 },
@@ -142,6 +152,20 @@
                         "size": {},
                         "file-modified": {
                             width: 150
+                        },
+                        "restore": {
+                            id: "restore",
+                            content: function(item, data) {
+                                if (item.parent_id != item.root_id) return "";
+                                return "<i class='icon-reply'></i>";
+                            }
+                        },
+                        "delete": {
+                            id: "delete",
+                            content: function(item, data) {
+                                if (item.parent_id != item.root_id) return "";
+                                return "<i class='icon-trash'></i>";
+                            }
                         }
                     };
                 }
@@ -158,6 +182,16 @@
 
         this._onFileViewDeactivate = function($mv, h) {
             that.$el.hide();
+        };
+
+        this._onRestore = function(item) {
+            if (item.parent_id != item.root_id) return; //can restore only root items
+            console.log("restore "+ item.name);
+        };
+
+        this._onDelete = function(item) {
+            if (item.parent_id != item.root_id) return; //can delete only root items
+            console.log("delete "+ item.name);
         };
 
         return {
