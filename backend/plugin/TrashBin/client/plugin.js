@@ -46,7 +46,7 @@
         this._onFileViewInit = function(fv) {
             that._fileView = fv;
             that.$el = $('<div id="kloudspeaker-trashbin" style="display: none"><i class="icon-trash drop-target"></i></div>').appendTo($("body"));
-            
+
             kloudspeaker.ui.draganddrop.enableDrop(that.$el.find(".drop-target"), {
                 canDrop: function($e, e, obj) {
                     if (!obj || obj.type != 'filesystemitem') return false;
@@ -118,6 +118,32 @@
                         style: 'submenu'
                     });
                     that._fileView.addCommonFileviewActions($fa);
+                },
+
+                getItemActions: function(item) {
+                    return $.Deferred().resolve([{
+                        id: 'foo',
+                        title: "bar"
+                    }]);
+                },
+
+                handleAction: function(ac, item, t, ctx) {
+                    console.log(ac);
+                    console.log(t);
+                    that._fileView.showActionMenu(item, ctx.element);
+                    return true;
+                },
+
+                getFileListCols: function() {
+                    return {
+                        "name": {
+                            width: 250
+                        },
+                        "size": {},
+                        "file-modified": {
+                            width: 150
+                        }
+                    };
                 }
             });
         };
@@ -127,14 +153,10 @@
         };
 
         this._onFileViewActivate = function($mv, h) {
-            //that._fileView = fv;
-            console.log("trash bin act");
             that.$el.show();
         };
 
         this._onFileViewDeactivate = function($mv, h) {
-            //that._fileView = fv;
-            console.log("trash bin deact");
             that.$el.hide();
         };
 
