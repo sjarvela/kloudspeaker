@@ -127,6 +127,15 @@
                     }]);
                 },
 
+                getSelectionActions: function(selected) {
+                    var result = [];
+                    if (selected) result = [{
+                        id: 'foo',
+                        title: "bar"
+                    }];
+                    return $.Deferred().resolve(result);
+                },
+
                 handleAction: function(ac, item, t, ctx) {
                     console.log(ac);
                     //console.log(t);
@@ -157,14 +166,14 @@
                             id: "restore",
                             content: function(item, data) {
                                 if (item.parent_id != item.root_id) return "";
-                                return "<i class='icon-reply'></i>";
+                                return "<a href='javascript: void(0)'><i class='icon-reply'></i></a>";
                             }
                         },
                         "delete": {
                             id: "delete",
                             content: function(item, data) {
                                 if (item.parent_id != item.root_id) return "";
-                                return "<i class='icon-trash'></i>";
+                                return "<a href='javascript: void(0)'><i class='icon-trash'></i></a>";
                             }
                         }
                     };
@@ -186,12 +195,12 @@
 
         this._onRestore = function(item) {
             if (item.parent_id != item.root_id) return; //can restore only root items
-            console.log("restore "+ item.name);
+            console.log("restore " + item.name);
         };
 
         this._onDelete = function(item) {
             if (item.parent_id != item.root_id) return; //can delete only root items
-            console.log("delete "+ item.name);
+            console.log("delete " + item.name);
         };
 
         return {

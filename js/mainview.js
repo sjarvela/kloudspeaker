@@ -892,7 +892,7 @@
             var idParts = id ? id.split("/") : [];
             if (idParts.length > 1 && that._customFolderTypes[idParts[0]]) that._currentFolderType = idParts[0];
             if (that._currentFolderType != oldType) that.initList();
-            
+
             if (that._currentFolderType) {
                 return that._customFolderTypes[that._currentFolderType].onSelectFolder(idParts[1]).done(that._setFolder).fail(onFail);
             } else if (!id || idParts.length == 1) {
@@ -1212,28 +1212,41 @@
         };
 
         this._getSelectionActions = function(cb) {
-            var result = [];
-            if (that._selectMode && that._selectedItems.length > 0) {
-                var plugins = kloudspeaker.plugins.getItemCollectionPlugins(that._selectedItems);
-                result = kloudspeaker.helpers.getPluginActions(plugins);
+            var addDefaultActions = function(list) {
+                var result = list || [];
                 if (result.length > 0)
                     result.unshift({
                         "title": "-"
                     });
+                result.unshift({
+                    "title-key": "mainViewFileViewSelectNone",
+                    callback: function() {
+                        that._updateSelect([]);
+                    }
+                });
+                result.unshift({
+                    "title-key": "mainViewFileViewSelectAll",
+                    callback: function() {
+                        that._updateSelect(that._getViewItems());
+                    }
+                });
+                return result;
+            };
+
+            if (that._currentFolder && that._currentFolder.type && that._customFolderTypes[that._currentFolder.type] && that._customFolderTypes[that._currentFolder.type].getSelectionActions) {
+                that._customFolderTypes[that._currentFolder.type].getSelectionActions(that._selectMode && that._selectedItems.length > 0 ? that._selectedItems : []).done(function(a) {
+                    cb(addDefaultActions(a));
+                });
+                return;
             }
-            result.unshift({
-                "title-key": "mainViewFileViewSelectNone",
-                callback: function() {
-                    that._updateSelect([]);
-                }
-            });
-            result.unshift({
-                "title-key": "mainViewFileViewSelectAll",
-                callback: function() {
-                    that._updateSelect(that._getViewItems());
-                }
-            });
-            cb(kloudspeaker.helpers.cleanupActions(result));
+
+            var result = [];
+            if (that._selectMode && that._selectedItems.length > 0) {
+                var plugins = kloudspeaker.plugins.getItemCollectionPlugins(that._selectedItems);
+                result = kloudspeaker.helpers.getPluginActions(plugins);
+            }
+
+            cb(addDefaultActions(kloudspeaker.helpers.cleanupActions(result)));
         };
 
         this._onToggleSelect = function() {
