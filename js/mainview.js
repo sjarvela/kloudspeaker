@@ -866,6 +866,7 @@
             window.scrollTo(0, 0);
             that._selectedItems = [];
             that._currentFolder = false;
+            that._currentFolderType = null;
             that._currentFolderData = false;
             that.rootNav.setActive(false);
 
@@ -918,6 +919,7 @@
 
         this._setFolder = function(folder, data) {
             that._currentFolder = folder;
+            that._currentFolderType = folder.type ? folder.type : null;
             that._currentFolderData = data;
 
             that.hideProgress();

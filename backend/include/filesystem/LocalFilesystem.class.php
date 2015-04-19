@@ -179,7 +179,7 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 			}
 
 			$fullPath = self::joinPath($nativePath, $name);
-			if ($this->isItemIgnored($name, $fullPath)) continue;
+			if ($this->isItemIgnored($nativePath, $name, $fullPath)) continue;
 
 			if (is_link($fullPath) and !file_exists($fullPath)) {
 				Logging::logError("Symbolic link broken: " . $fullPath);
@@ -233,7 +233,7 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 			}
 
 			$fullPath = self::joinPath($nativePath, $name);
-			if ($this->isItemIgnored($name, $fullPath)) continue;
+			if ($this->isItemIgnored($nativePath, $name, $fullPath)) continue;
 
 			if (is_dir($fullPath)) {
 				$result = array_merge($result, $this->allFilesRecursively($fullPath));
