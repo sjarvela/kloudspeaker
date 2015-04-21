@@ -71,11 +71,12 @@ class TrashBinManager {
 		//TODO path
 
 		$result = array();
-		$fs = new TrashBinFilesystem($this->env, $this->folder, $this->getUserTrashItems());
+		$items = $this->getUserTrashItems();
+		$fs = new TrashBinFilesystem($this->env, $this->folder, $items);
 		foreach ($fs->root()->items() as $item) {
 			$result[] = $item->data();
 		}
-		return $result;
+		return array("items" => $result, "data" => $items);
 	}
 
 	public function deleteItems($items) {
@@ -106,12 +107,15 @@ class TrashBinManager {
 
 	public function restoreItems($itemIds) {
 		$items = array();
+		$originalItems = array();
 		$rejected = array();
 		foreach ($itemIds as $itemId) {
 			$i = $this->dao()->getItem($id);
 			$items[] = $i;
 
 			$originalItem = $this->getOriginalItem($i);
+			$originalItems[$i["id"]] = $originalItem;
+
 			$rejectReason = $this->isRestoreForbidden($i, $originalItem);
 			if ($rejectReason !== FALSE) {
 				if (!in_array($rejectReason, $rejected)) $rejected[$rejectReason] = array();
@@ -120,17 +124,19 @@ class TrashBinManager {
 		}
 		if (count($rejected) > 0) return $rejected;
 
-		var $restored = array();
+		$restored = array();
+		$result = array();
 		foreach ($items as $i) {
-			$restored[] = $this->restoreItem($i);
+			$originalItem = $originalItems[$i["id"]];
+			$this->restoreItem($i, $originalItem);
+			$restored[] = $originalItem;
+			$result[] = $originalItem->data();
 		}
 		$this->env->events()->onEvent(TrashBinEvent::restored($restored));
-		return array("restored" => $restored);
+		return array("restored" => $result);
 	}
 
-	public function restoreItem($i) {
-		$originalItem = $this->getOriginalItem($i);		
-
+	public function restoreItem($i, $originalItem) {
 		//restore file/folder
 		$src = $this->getItemPath($id, $$originalItem->isFile());
 		$target = $item->internalPath();
