@@ -28,6 +28,18 @@ class TrashBinDao {
 		return $db->query("select id, item_id, folder_id, path, user_id, created from " . $db->table("trashbin") . " where user_id = " . $db->string($userId, TRUE) . " order by created asc")->rows();
 	}
 
+	public function getItem($id) {
+		$db = $this->env->db();
+		return $db->query("select id, item_id, folder_id, path, user_id, created from " . $db->table("trashbin") . " where id = " . $db->string($id, TRUE))->firstRow();
+	}
+
+	public function removeItem($id) {
+		$db = $this->env->db();
+		$db->startTransaction();
+		$db->update(sprintf("DELETE FROM " . $db->table("trashbin") . " where id = " . $db->string($id, TRUE)));
+		$db->commit();
+	}
+
 	public function __toString() {
 		return "TrashBinDao";
 	}

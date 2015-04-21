@@ -23,11 +23,34 @@ class TrashBinServices extends ServicesBase {
 	}
 
 	public function processPost() {
-		if (count($this->path) != 1 and (strcmp($this->path[0], 'data') != 0)) {
+		if (count($this->path) != 1 or !in_array($this->path[0], array("data", "restore", "delete"))) {
 			throw $this->invalidRequestException();
 		}
-		$userItems = $this->trashBinManager()->getUserTrashItems();
-		$this->response()->success(array("items" => $userItems, "data" => array()));
+
+		// DATA
+		if ($this->path[0] == "data") {
+			//TODO path
+			$items = $this->trashBinManager()->getTrashItems();
+			$this->response()->success(array("items" => $items, "data" => array()));
+			return;
+		}
+
+		//DELETE or RESTORE
+		$data = $this->request->data;
+		if (!array_key_exists("items", $data) or !is_array($this->request->data["items"])) {
+			throw $this->invalidRequestException();
+		}
+
+		$items = $this->request->data["items"];
+		if (count($items) == 0) {
+			throw $this->invalidRequestException();
+		}
+
+		if ($this->path[0] == "delete") {
+			$this->trashBinManager()->deleteItems($items);
+			$this->response()->success(array());
+			return;
+		}
 	}
 
 	private function trashBinManager() {

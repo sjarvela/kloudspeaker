@@ -953,7 +953,7 @@ class FilesystemController {
 		$this->doDeleteItem($item);
 	}
 
-	private function doDeleteItem($item, $sendEvent = TRUE, $removeId = TRUE, $removeFile = TRUE) {
+	public function doDeleteItem($item, $sendEvent = TRUE, $removeId = TRUE, $removeFile = TRUE) {
 		if ($removeFile) {
 			$item->delete();
 		}

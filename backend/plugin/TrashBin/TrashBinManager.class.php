@@ -35,9 +35,9 @@ class TrashBinManager {
 
 		$items = is_array($i) ? $i : array($i);
 
-		foreach ($items as $item) {			
+		foreach ($items as $item) {
 			//TODO check if ignored (ignored roots?)
-			Logging::logDebug("Trashing ".$item->internalPath());
+			Logging::logDebug("Trashing " . $item->internalPath());
 			$this->moveToTrash($item);
 		}
 
@@ -59,25 +59,49 @@ class TrashBinManager {
 
 		$created = $this->env->configuration()->formatTimestampInternal(time());
 
-		$this->env->filesystem()->itemIdProvider()->move($item, "trash:/".$id);
+		$this->env->filesystem()->itemIdProvider()->move($item, "trash:/" . $id);
 		$this->dao()->addItem($id, $item->id(), $item->filesystem()->id(), $item->path(), $this->env->session()->userId(), $created);
 	}
 
 	public function getUserTrashItems() {
-		$result = array();
-		$items = $this->dao()->getUserItems($this->env->session()->userId());
+		return $this->dao()->getUserItems($this->env->session()->userId());
+	}
 
-		$fs = new TrashBinFilesystem($this->env, $this->folder, $items);
+	public function getTrashItems($path = "") {
+		//TODO path
+
+		$result = array();
+		$fs = new TrashBinFilesystem($this->env, $this->folder, $this->getUserTrashItems());
 		foreach ($fs->root()->items() as $item) {
 			$result[] = $item->data();
 		}
-		/*foreach ($items as $i) {
-			$path = $i["id"];
-			$isFile = (strcasecmp(substr($i["path"], -1), itemIdProvider::PATH_DELIMITER) != 0);
-			$item = $fs->createItem($i["item_id"], $path);
-			$result[] = $item->data();
-		}*/
 		return $result;
+	}
+
+	public function deleteItems($items) {
+		foreach ($items as $itemId) {
+			$this->deleteItem($itemId);
+		}
+	}
+
+	public function deleteItem($id) {
+		$i = $this->dao()->getItem($id);
+		if (!$this->env->authentication()->isAdmin() and strcasecmp($this->env->authentication() - userId(), $i["user_id"]) != 0) {
+			throw new ServiceException("UNAUTHORIZED");
+		}
+
+		//trash item
+		Logging::logDebug("Deleting trash item ".$id);
+		$fs = new TrashBinFilesystem($this->env, $this->folder, $this->getUserTrashItems());
+		$item = $fs->getItem($i["id"]);
+		$item->delete();
+
+		// original item
+		Logging::logDebug("Deleting original item metadata ".$i["item_id"]);
+		$originalItem = $this->env->filesystem()->filesystemFromId($i["folder_id"])->createItem($i["item_id"], $i["path"], TRUE);
+		$this->env->filesystem()->doDeleteItem($originalItem, TRUE, TRUE, FALSE);
+
+		$this->dao()->removeItem($i["id"]);
 	}
 
 	private function dao() {
@@ -115,7 +139,7 @@ class TrashBinFilesystem extends LocalFilesystem {
 	private $rootItems;
 	private $rootItemsById;
 
-	function __construct($env, $folder, $rootItems) {		
+	function __construct($env, $folder, $rootItems) {
 		parent::__construct("trash", array("name" => "trash", "path" => $folder), $this);
 		$this->env = $env;
 		$this->folder = $folder;
@@ -124,6 +148,15 @@ class TrashBinFilesystem extends LocalFilesystem {
 		foreach ($this->rootItems as $item) {
 			$this->rootItemsById[$item["id"]] = $item;
 		}
+	}
+
+	public function getItem($id) {
+		//TODO path?
+		$item = array_key_exists($id, $this->rootItemsById) ? $this->rootItemsById[$id] : FALSE;
+		if (!$item) return NULL;
+
+		$isFile = (strcasecmp(substr($item["path"], -1), itemIdProvider::PATH_DELIMITER) != 0);
+		return $this->createItem($id, $id.($isFile ? "" : DIRECTORY_SEPARATOR));
 	}
 
 	public function env() {
@@ -136,7 +169,10 @@ class TrashBinFilesystem extends LocalFilesystem {
 
 	public function isItemIgnored($parentPath, $name, $nativePath) {
 		$p = substr($parentPath, strlen($this->folder));
-		if (strlen($p) == 0 and !array_key_exists($name, $this->rootItemsById)) return TRUE;
+		if (strlen($p) == 0 and !array_key_exists($name, $this->rootItemsById)) {
+			return TRUE;
+		}
+
 		return FALSE;
 	}
 
@@ -144,11 +180,16 @@ class TrashBinFilesystem extends LocalFilesystem {
 		$p = substr($parentPath, strlen($this->folder));
 		if (strlen($p) == 0) {
 			$item = array_key_exists($name, $this->rootItemsById) ? $this->rootItemsById[$name] : FALSE;
-			if (!$item) return FALSE;
+			if (!$item) {
+				return FALSE;
+			}
 
 			$n = $item["path"];
 			$n = strrchr(rtrim($n, DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR);
-			if ($n !== FALSE) return $n;
+			if ($n !== FALSE) {
+				return $n;
+			}
+
 			return $item["path"];
 		}
 		return $this->env->convertCharset($name);
@@ -156,8 +197,11 @@ class TrashBinFilesystem extends LocalFilesystem {
 
 	public function getItemId($loc) {
 		$l = substr($loc, 7);
-		Logging::logDebug("ID: ".$loc."-".$l);
-		if (strlen($l) == 0) return "trash";
+		Logging::logDebug("ID: " . $loc . "-" . $l);
+		if (strlen($l) == 0) {
+			return "trash";
+		}
+
 		return $l;
 	}
 }

@@ -1,0 +1,11 @@
+{
+	"locale" : "en",
+	"texts": {
+		"pluginTrashBinViewTitle" : "Trash",
+		"pluginTrashBinEmptyAction" : "Empty trash...",
+		"pluginTrashBinRestoreAction" : "Restore",
+		"pluginTrashBinDeleteAction" : "Delete",
+		"pluginTrashBinDeleteSingleMessage" : "Are you sure want to permanently delete \"{0}\"?",
+		"pluginTrashBinDeleteMultiMessage" : "Are you sure want to permanently delete {0} files/folders?"
+	}
+}
