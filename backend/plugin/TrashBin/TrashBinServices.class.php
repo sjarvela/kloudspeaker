@@ -50,7 +50,12 @@ class TrashBinServices extends ServicesBase {
 			$this->trashBinManager()->deleteItems($items);
 			$this->response()->success(array());
 			return;
+		} else if ($this->path[0] == "restore") {
+			$this->trashBinManager()->restoreItems($items);
+			$this->response()->success(array());
+			return;
 		}
+		throw $this->invalidRequestException();
 	}
 
 	private function trashBinManager() {

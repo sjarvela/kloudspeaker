@@ -98,10 +98,73 @@ class TrashBinManager {
 
 		// original item
 		Logging::logDebug("Deleting original item metadata ".$i["item_id"]);
-		$originalItem = $this->env->filesystem()->filesystemFromId($i["folder_id"])->createItem($i["item_id"], $i["path"], TRUE);
+		$originalItem = $this->getOriginalItem($i);
 		$this->env->filesystem()->doDeleteItem($originalItem, TRUE, TRUE, FALSE);
 
 		$this->dao()->removeItem($i["id"]);
+	}
+
+	public function restoreItems($itemIds) {
+		$items = array();
+		$rejected = array();
+		foreach ($itemIds as $itemId) {
+			$i = $this->dao()->getItem($id);
+			$items[] = $i;
+
+			$originalItem = $this->getOriginalItem($i);
+			$rejectReason = $this->isRestoreForbidden($i, $originalItem);
+			if ($rejectReason !== FALSE) {
+				if (!in_array($rejectReason, $rejected)) $rejected[$rejectReason] = array();
+				$rejected[$rejectReason][] = $i;
+			}
+		}
+		if (count($rejected) > 0) return $rejected;
+
+		var $restored = array();
+		foreach ($items as $i) {
+			$restored[] = $this->restoreItem($i);
+		}
+		$this->env->events()->onEvent(TrashBinEvent::restored($restored));
+		return array("restored" => $restored);
+	}
+
+	public function restoreItem($i) {
+		$originalItem = $this->getOriginalItem($i);		
+
+		//restore file/folder
+		$src = $this->getItemPath($id, $$originalItem->isFile());
+		$target = $item->internalPath();
+
+		Logging::logDebug("Restoring item ".$id." -> ".$target);
+
+		if (!rename($src, $target)) {
+			Logging::logError("Could not move item to trash");
+			return FALSE;
+		}
+
+		//restore item id
+		$this->env->filesystem()->itemIdProvider()->move($item, $i["folder"]. ":/" . $i["path"]);
+
+		$this->dao()->removeItem($i["id"]);
+
+		return $originalItem;
+	}
+
+	private function isRestoreForbidden($item, $originalItem) {
+		if (!$this->env->authentication()->isAdmin() and strcasecmp($this->env->authentication() - userId(), $i["user_id"]) != 0) {
+			return "unauthorized";
+		}
+		if ($originalItem->exists()) {
+			return "item_exists";
+		}
+		if (!$originalItem->parent()->exists()) {
+			return "parent_missing";
+		}
+		return FALSE;
+	}
+
+	private function getOriginalItem($i) {
+		return $this->env->filesystem()->filesystemFromId($i["folder_id"])->createItem($i["item_id"], $i["path"], TRUE);
 	}
 
 	private function dao() {
