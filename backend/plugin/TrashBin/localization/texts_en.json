@@ -2,10 +2,15 @@
 	"locale" : "en",
 	"texts": {
 		"pluginTrashBinViewTitle" : "Trash",
+		"pluginTrashBinOpenAction" : "Open",
 		"pluginTrashBinEmptyAction" : "Empty trash...",
 		"pluginTrashBinRestoreAction" : "Restore",
 		"pluginTrashBinDeleteAction" : "Delete",
+		"pluginTrashBinOriginalPathCol" : "From",
+		"pluginTrashBinTrashedCol" : "Trashed",
 		"pluginTrashBinDeleteSingleMessage" : "Are you sure want to permanently delete \"{0}\"?",
-		"pluginTrashBinDeleteMultiMessage" : "Are you sure want to permanently delete {0} files/folders?"
+		"pluginTrashBinDeleteMultiMessage" : "Are you sure you want to permanently delete {0} files/folders?",
+		"pluginTrashBinEmptyTitle" : "Empty trash",
+		"pluginTrashBinEmptyConfirmation" : "Are you sure you want to permanently delete all files/folders in trash?"
 	}
 }

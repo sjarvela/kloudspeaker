@@ -18,6 +18,8 @@
         var that = this;
 
         this.initialize = function() {
+            that._timestampFormatter = new kloudspeaker.ui.formatters.Timestamp(kloudspeaker.ui.texts.get('shortDateTimeFormat'));
+
             var onSession = function() {
                 that._softDelete = (kloudspeaker.session && kloudspeaker.session.data.plugins["TrashBin"] && kloudspeaker.session.data.plugins["TrashBin"]["soft_delete"]);
             };
@@ -45,7 +47,7 @@
 
         this._onFileViewInit = function(fv) {
             that._fileView = fv;
-            that.$el = $('<div id="kloudspeaker-trashbin" style="display: none"><i class="icon-trash drop-target"></i></div>').appendTo($("body"));
+            that.$el = $('<div id="kloudspeaker-trashbin" style="display: none"><i class="icon-trash drop-target dropdown-toggle"></i></div>').appendTo($("body"));
 
             kloudspeaker.ui.draganddrop.enableDrop(that.$el.find(".drop-target"), {
                 canDrop: function($e, e, obj) {
@@ -65,8 +67,21 @@
 
             if (!that._softDelete) return;
 
-            that.$el.click(function() {
-                that._fileView.changeToFolder('trash/');
+            that.$el.addClass("folder");
+
+            kloudspeaker.ui.controls.dropdown({
+                element: that.$el,
+                items: [{
+                    title: kloudspeaker.ui.texts.get('pluginTrashBinOpenAction'),
+                    callback: function() {
+                        that._fileView.changeToFolder('trash/');
+                    }
+                }, {
+                    title: '-'
+                }, {
+                    title: kloudspeaker.ui.texts.get('pluginTrashBinEmptyAction'),
+                    callback: that._onEmptyTrash
+                }],
             });
 
             that._fileView.addCustomFolderType("trash", {
@@ -82,9 +97,23 @@
                             id: "",
                             name: kloudspeaker.ui.texts.get('pluginTrashBinViewTitle')
                         };
+                        var d = {};
+                        $.each(r.data, function(i, item) {
+                            item.created = that._timestampFormatter.format(item.created);
+                            item.location = kloudspeaker.filesystem.rootsByFolderId[item.folder_id].name;
+
+                            var p = item.path.endsWith('/') ? item.path.substring(0, item.path.length - 1) : item.path;
+                            var folderPathIndex = p.lastIndexOf('/');
+                            if (folderPathIndex > 0)
+                                item.folderPath = item.path.substring(0, folderPathIndex + 1);
+                            else
+                                item.folderPath = false;
+
+                            d[item.id] = item;
+                        });
                         var data = {
                             items: r.items,
-                            data: r.data
+                            data: d
                         };
                         df.resolve(fo, data);
                     });
@@ -120,19 +149,23 @@
                     that._fileView.addCommonFileviewActions($fa);
                 },
 
+                dragType: function() {
+                    return false; //disable dragging
+                },
+
                 getItemActions: function(item) {
                     var result = [];
                     if (that._canRestore(item)) result.push({
                         id: 'restore',
                         title: kloudspeaker.ui.texts.get("pluginTrashBinRestoreAction"),
-                        handler: function() {
+                        callback: function() {
                             that._onRestore(item);
                         }
                     });
                     if (that._canDelete(item)) result.push({
                         id: 'delete',
                         title: kloudspeaker.ui.texts.get("pluginTrashBinDeleteAction"),
-                        handler: function() {
+                        callback: function() {
                             that._onDelete(item);
                         }
                     });
@@ -152,14 +185,14 @@
                         if (restore) result.push({
                             id: 'restore',
                             title: kloudspeaker.ui.texts.get("pluginTrashBinRestoreAction"),
-                            handler: function() {
+                            callback: function() {
                                 that._onRestore(selected);
                             }
                         });
                         if (del) result.push({
                             id: 'delete',
                             title: kloudspeaker.ui.texts.get("pluginTrashBinDeleteAction"),
-                            handler: function() {
+                            callback: function() {
                                 that._onDelete(selected);
                             }
                         });
@@ -188,8 +221,20 @@
                             width: 250
                         },
                         "size": {},
-                        "file-modified": {
-                            width: 150
+                        "original-path": {
+                            "title-key": 'pluginTrashBinOriginalPathCol',
+                            width: 150,
+                            content: function(item, data) {
+                                var id = data[item.id];
+                                return id.location + (id.folderPath ? ":/" + id.folderPath : '');
+                            }
+                        },
+                        "trashed": {
+                            "title-key": 'pluginTrashBinTrashedCol',
+                            width: 150,
+                            content: function(item, data) {
+                                return data[item.id].created;
+                            }
                         },
                         "restore": {
                             id: "restore",
@@ -223,7 +268,7 @@
         this._getToolActions = function(d) {
             return [{
                 title: kloudspeaker.ui.texts.get('pluginTrashBinEmptyAction'),
-                handler: that._onEmptyTrash
+                callback: that._onEmptyTrash
             }];
         };
 
@@ -266,6 +311,18 @@
                     kloudspeaker.service.post('trash/delete', {
                         items: kloudspeaker.helpers.extractValue(items, 'id')
                     }).done(function() {
+                        that._fileView.refresh();
+                    });
+                }
+            });
+        };
+
+        this._onEmptyTrash = function() {
+            kloudspeaker.ui.dialogs.confirmation({
+                title: kloudspeaker.ui.texts.get("pluginTrashBinEmptyTitle"),
+                message: kloudspeaker.ui.texts.get("pluginTrashBinEmptyConfirmation"),
+                callback: function() {
+                    kloudspeaker.service.post('trash/empty').done(function() {
                         that._fileView.refresh();
                     });
                 }

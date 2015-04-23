@@ -434,6 +434,7 @@ var kloudspeaker_defaults = {
         kloudspeaker.filesystem.roots = [];
         kloudspeaker.filesystem.allRoots = false;
         kloudspeaker.filesystem.rootsById = {};
+        kloudspeaker.filesystem.rootsByFolderId = {};
 
         mfs.updateRoots(f, allRoots);
     };
@@ -443,14 +444,18 @@ var kloudspeaker_defaults = {
             kloudspeaker.filesystem.roots = f.sort(function(a, b) {
                 return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
             });
-            for (var i = 0, j = f.length; i < j; i++)
+            for (var i = 0, j = f.length; i < j; i++) {
                 kloudspeaker.filesystem.rootsById[f[i].id] = f[i];
+                kloudspeaker.filesystem.rootsByFolderId[f[i].folder_id] = f[i];
+            }
 
             if (allRoots) {
                 kloudspeaker.filesystem.allRoots = allRoots;
                 for (var k = 0, l = allRoots.length; k < l; k++)
-                    if (!kloudspeaker.filesystem.rootsById[allRoots[k].id])
+                    if (!kloudspeaker.filesystem.rootsById[allRoots[k].id]) {
                         kloudspeaker.filesystem.rootsById[allRoots[k].id] = allRoots[k];
+                        kloudspeaker.filesystem.rootsById[allRoots[k].folder_id] = allRoots[k];
+                    }
             }
         }
     };
@@ -1427,6 +1432,13 @@ var kloudspeaker_defaults = {
         String.prototype.startsWith = function(s) {
             if (!s || s.length === 0) return false;
             return this.substring(0, s.length) == s;
+        }
+    }
+
+    if (typeof String.prototype.endsWith !== 'function') {
+        String.prototype.endsWith = function(s) {
+            if (!s || s.length === 0) return false;
+            return this.substring(s.length-1, 1) == s;
         }
     }
 

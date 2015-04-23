@@ -14,6 +14,10 @@
     background-color: #c8c8c8;
 }
 
+#kloudspeaker-trashbin.folder {
+    cursor: pointer;
+}
+
 #kloudspeaker-trashbin > .drop-target {
     float: left;
     width: 100%;
@@ -23,6 +27,14 @@
 
 #kloudspeaker-trashbin > .drop-target.dragover {
     background-color: #a8a8a8;
+}
+
+#kloudspeaker-trashbin .dropdown-menu {
+    position: fixed;
+    bottom: 50px;
+    top: initial;
+    right: 0;
+    left: initial;
 }
 
 @media (max-width: 767px) {

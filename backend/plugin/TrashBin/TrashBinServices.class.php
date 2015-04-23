@@ -23,7 +23,7 @@ class TrashBinServices extends ServicesBase {
 	}
 
 	public function processPost() {
-		if (count($this->path) != 1 or !in_array($this->path[0], array("data", "restore", "delete"))) {
+		if (count($this->path) != 1 or !in_array($this->path[0], array("data", "restore", "delete", "empty"))) {
 			throw $this->invalidRequestException();
 		}
 
@@ -32,6 +32,13 @@ class TrashBinServices extends ServicesBase {
 			//TODO path
 			$result = $this->trashBinManager()->getTrashItems();
 			$this->response()->success($result);
+			return;
+		}
+
+		//EMPTY
+		if ($this->path[0] == "empty") {
+			$this->trashBinManager()->deleteAllItems();
+			$this->response()->success(array());
 			return;
 		}
 

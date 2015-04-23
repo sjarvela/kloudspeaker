@@ -951,6 +951,13 @@
             });
         };
 
+        this.dragType = function() {
+            if (that._currentFolder && that._currentFolder.type && that._customFolderTypes[that._currentFolder.type]) {
+                if (that._customFolderTypes[that._currentFolder.type].dragType) return that._customFolderTypes[that._currentFolder.type].dragType();
+            }
+            return "filesystemitem";
+        };
+
         this.dropType = function(to, i) {
             var single = false;
             if (!window.isArray(i)) single = i;
@@ -1382,6 +1389,7 @@
 
             that.itemWidget.init({
                 onFolderSelected: that.onFolderSelected,
+                dragType: that.dragType,
                 canDrop: that.canDragAndDrop,
                 dropType: that.dropType,
                 onDrop: that.onDragAndDrop,
@@ -1622,18 +1630,21 @@
             })*/
 
             if (kloudspeaker.ui.draganddrop) {
-                kloudspeaker.ui.draganddrop.enableDrag($items, {
-                    onDragStart: function($e, e) {
-                        var item = $e.tmplItem().data;
-                        var sel = t.p.getSelectedItems();
-                        if (!sel) sel = item;
-                        else if (sel.indexOf(item) < 0) sel.push(item);
-                        return {
-                            type: 'filesystemitem',
-                            payload: sel
-                        };
-                    }
-                });
+                var dragType = t.p.dragType();
+                if (dragType) {
+                    kloudspeaker.ui.draganddrop.enableDrag($items, {
+                        onDragStart: function($e, e) {
+                            var item = $e.tmplItem().data;
+                            var sel = t.p.getSelectedItems();
+                            if (!sel) sel = item;
+                            else if (sel.indexOf(item) < 0) sel.push(item);
+                            return {
+                                type: dragType,
+                                payload: sel
+                            };
+                        }
+                    });
+                }
                 kloudspeaker.ui.draganddrop.enableDrop(t.$l.find(".kloudspeaker-iconview-item.item-folder"), {
                     canDrop: function($e, e, obj) {
                         if (!t.p.canDrop || !obj || obj.type != 'filesystemitem') return false;
@@ -1880,18 +1891,21 @@
             });
 
             if (kloudspeaker.ui.draganddrop) {
-                kloudspeaker.ui.draganddrop.enableDrag($items, {
-                    onDragStart: function($e, e) {
-                        var item = $e.tmplItem().data;
-                        var sel = t.p.getSelectedItems();
-                        if (!sel) sel = item;
-                        else if (sel.indexOf(item) < 0) sel.push(item);
-                        return {
-                            type: 'filesystemitem',
-                            payload: sel
-                        };
-                    }
-                });
+                var dragType = t.p.dragType();
+                if (dragType) {
+                    kloudspeaker.ui.draganddrop.enableDrag($items, {
+                        onDragStart: function($e, e) {
+                            var item = $e.tmplItem().data;
+                            var sel = t.p.getSelectedItems();
+                            if (!sel) sel = item;
+                            else if (sel.indexOf(item) < 0) sel.push(item);
+                            return {
+                                type: dragType,
+                                payload: sel
+                            };
+                        }
+                    });
+                }
                 kloudspeaker.ui.draganddrop.enableDrop(t.$i.find(".kloudspeaker-filelist-item.item-folder"), {
                     canDrop: function($e, e, obj) {
                         if (!t.p.canDrop || !obj || obj.type != 'filesystemitem') return false;

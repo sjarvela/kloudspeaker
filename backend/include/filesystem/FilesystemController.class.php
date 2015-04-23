@@ -433,6 +433,7 @@ class FilesystemController {
 			$name = array_pop($nameParts);
 
 			$result["folders"][] = array(
+				"folder_id" => $folder->filesystem()->id(),
 				"id" => $folder->id(),
 				"name" => $name,
 				"group" => implode("/", $nameParts),

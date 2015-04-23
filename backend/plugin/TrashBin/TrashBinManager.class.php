@@ -79,14 +79,20 @@ class TrashBinManager {
 		return array("items" => $result, "data" => $items);
 	}
 
+	public function deleteAllItems() {
+		foreach ($this->getUserTrashItems() as $item) {
+			$this->deleteItem($item);
+		}
+	}
+
 	public function deleteItems($items) {
 		foreach ($items as $itemId) {
 			$this->deleteItem($itemId);
 		}
 	}
 
-	public function deleteItem($id) {
-		$i = $this->dao()->getItem($id);
+	public function deleteItem($it) {
+		$i = is_array($it) ? $it : $this->dao()->getItem($it);
 		if (!$this->env->authentication()->isAdmin() and strcasecmp($this->env->authentication() - userId(), $i["user_id"]) != 0) {
 			throw new ServiceException("UNAUTHORIZED");
 		}
@@ -110,7 +116,7 @@ class TrashBinManager {
 		$originalItems = array();
 		$rejected = array();
 		foreach ($itemIds as $itemId) {
-			$i = $this->dao()->getItem($id);
+			$i = $this->dao()->getItem($itemId);
 			$items[] = $i;
 
 			$originalItem = $this->getOriginalItem($i);
@@ -138,18 +144,18 @@ class TrashBinManager {
 
 	public function restoreItem($i, $originalItem) {
 		//restore file/folder
-		$src = $this->getItemPath($id, $$originalItem->isFile());
-		$target = $item->internalPath();
+		$src = $this->getItemPath($i["id"], $originalItem->isFile());
+		$target = $originalItem->internalPath();
 
-		Logging::logDebug("Restoring item ".$id." -> ".$target);
+		Logging::logDebug("Restoring item ".$i["id"]." -> ".$target);
 
 		if (!rename($src, $target)) {
-			Logging::logError("Could not move item to trash");
+			Logging::logError("Could not restore item from trash to ".$target);
 			return FALSE;
 		}
 
 		//restore item id
-		$this->env->filesystem()->itemIdProvider()->move($item, $i["folder"]. ":/" . $i["path"]);
+		$this->env->filesystem()->itemIdProvider()->move($originalItem, $i["folder"]. ":/" . $i["path"]);
 
 		$this->dao()->removeItem($i["id"]);
 
@@ -253,19 +259,19 @@ class TrashBinFilesystem extends LocalFilesystem {
 				return FALSE;
 			}
 
-			$n = $item["path"];
-			$n = strrchr(rtrim($n, DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR);
+			$realName = rtrim($item["path"], DIRECTORY_SEPARATOR);
+			$n = strrchr($realName, DIRECTORY_SEPARATOR);
 			if ($n !== FALSE) {
-				return $n;
+				return ltrim($n, DIRECTORY_SEPARATOR);
 			}
 
-			return $item["path"];
+			return $realName;
 		}
 		return $this->env->convertCharset($name);
 	}
 
 	public function getItemId($loc) {
-		$l = substr($loc, 7);
+		$l = rtrim(substr($loc, 7), DIRECTORY_SEPARATOR);
 		Logging::logDebug("ID: " . $loc . "-" . $l);
 		if (strlen($l) == 0) {
 			return "trash";
