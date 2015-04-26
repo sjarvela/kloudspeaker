@@ -10,6 +10,7 @@
  */
 
 require_once "TrashBinManager.class.php";
+require_once "TrashBinFS.class.php";
 
 class TrashBin extends PluginBase {
 	private $trashManager;
@@ -21,7 +22,7 @@ class TrashBin extends PluginBase {
 	public function versionHistory() {
 		return array("1_0");
 	}
-	
+
 	public function setup() {
 		if (!$this->hasSetting("folder")) return;
 
@@ -30,6 +31,7 @@ class TrashBin extends PluginBase {
 
 		$this->addService("trash", "TrashBinServices");
 		$this->env->filesystem()->registerActionInterceptor("plugin-trashbin", $this->trashBinManager);
+		$this->env->filesystem()->registerFilesystemId("trash", $this->trashBinManager);
 	}
 
 	public function getClientPlugin() {
@@ -54,19 +56,19 @@ class TrashBinEvent extends MultiFileEvent {
 	const EVENT_TYPE = 'trash';
 
 	const TRASH = "trash";
-	const UNTRASH = "untrash";
+	const RESTORE = "restore";
 
 	static function register($eventHandler) {
 		$eventHandler->registerEventType(TrashBinEvent::EVENT_TYPE, self::TRASH, "Items trashed");
-		$eventHandler->registerEventType(TrashBinEvent::EVENT_TYPE, self::UNTRASH, "Items untrashed");
+		$eventHandler->registerEventType(TrashBinEvent::EVENT_TYPE, self::RESTORE, "Items restored");
 	}
 
 	static function trashed($items) {
 		return new TrashBinEvent($items, self::TRASH);
 	}
 
-	static function untrashed($items) {
-		return new TrashBinEvent($items, self::UNTRASH);
+	static function restored($items) {
+		return new TrashBinEvent($items, self::RESTORE);
 	}
 }
 ?>

@@ -11,6 +11,9 @@
 		"pluginTrashBinDeleteSingleMessage" : "Are you sure want to permanently delete \"{0}\"?",
 		"pluginTrashBinDeleteMultiMessage" : "Are you sure you want to permanently delete {0} files/folders?",
 		"pluginTrashBinEmptyTitle" : "Empty trash",
-		"pluginTrashBinEmptyConfirmation" : "Are you sure you want to permanently delete all files/folders in trash?"
+		"pluginTrashBinEmptyConfirmation" : "Are you sure you want to permanently delete all files/folders in trash?",
+		"pluginTrashBinRestoreFailedParentMissing" : "File/folder could not be restored, because original location does not exist anymore",
+		"pluginTrashBinRestoreFailedItemExists" : "File/folder could not be restored, because item with same name exists in the original location",
+		"pluginTrashBinRestoreFailed" : "File/folder could not be restored"
 	}
 }

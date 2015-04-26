@@ -32,6 +32,7 @@ class FilesystemController {
 	private $itemCleanupHandlers = array();
 	private $searchers = array();
 	private $filesystems = array();
+	private $registeredFilesystemIds = array();
 	private $idProvider;
 
 	public $allowFilesystems = FALSE;
@@ -225,6 +226,10 @@ class FilesystemController {
 		}
 	}
 
+	public function registerFilesystemId($id, $factory) {
+		$this->registeredFilesystemIds[$id] = $factory;
+	}
+
 	public function getDataRequestPlugins() {
 		return $this->dataRequestPlugins;
 	}
@@ -401,17 +406,23 @@ class FilesystemController {
 		$id = isset($folderDef['id']) ? $folderDef['id'] : '';
 		$type = isset($folderDef['type']) ? $folderDef['type'] : NULL;
 
-		if ($type == NULL or !isset($this->filesystems[$type])) {
-			throw new ServiceException("INVALID_CONFIGURATION", "Invalid root folder definition (" . $id . "), type unknown [" . $type . "]");
+		if (array_key_exists($id, $this->registeredFilesystemIds)) {
+			$factory = $this->registeredFilesystemIds[$id];
+		} else {
+			if ($type == NULL or !isset($this->filesystems[$type])) {
+				throw new ServiceException("INVALID_CONFIGURATION", "Invalid root folder definition (" . $id . "), type unknown [" . $type . "]");
+			}
+
+
+			//TODO this is hack, support real filesystem types
+			/*if (array_key_exists("S3FS", $this->filesystems)) {
+			$factory = $this->filesystems["S3FS"];
+			return $factory->createFilesystem($id, $folderDef, $this);
+			}*/
+
+			$factory = $this->filesystems[$type];
 		}
 
-		//TODO this is hack, support real filesystem types
-		/*if (array_key_exists("S3FS", $this->filesystems)) {
-		$factory = $this->filesystems["S3FS"];
-		return $factory->createFilesystem($id, $folderDef, $this);
-		}*/
-
-		$factory = $this->filesystems[$type];
 		return $factory->createFilesystem($id, $folderDef, $this);
 	}
 
@@ -464,6 +475,11 @@ class FilesystemController {
 	}
 
 	public function filesystemFromId($id, $assert = TRUE) {
+		if (array_key_exists($id, $this->registeredFilesystemIds)) {
+			$factory = $this->registeredFilesystemIds[$id];
+			$folderDef = $factory->getFolderDef($id);
+			return $this->filesystem($folderDef, $assert);
+		}
 		return $this->filesystem($this->env->configuration()->getFolder($id), $assert);
 	}
 
@@ -491,6 +507,9 @@ class FilesystemController {
 
 		if (array_key_exists($filesystemId, $this->folderCache)) {
 			$folderDef = $this->folderCache[$filesystemId];
+		} else if (array_key_exists($filesystemId, $this->registeredFilesystemIds)) {
+			$factory = $this->registeredFilesystemIds[$filesystemId];
+			$folderDef = $factory->getFolderDef($filesystemId);
 		} else {
 			$folderDef = $this->env->configuration()->getFolder($filesystemId);
 			if (!$folderDef) {
@@ -528,7 +547,10 @@ class FilesystemController {
 	}
 
 	public function isItemIgnored($filesystem, $parentPath, $name, $path) {
-		if (!$this->ignoredItems or count($this->ignoredItems) == 0) return FALSE;
+		if (!$this->ignoredItems or count($this->ignoredItems) == 0) {
+			return FALSE;
+		}
+
 		//Logging::logDebug("isItemIgnored: ".$name."/".$path);
 
 		foreach ($this->ignoredItems as $p) {
@@ -1138,7 +1160,7 @@ class FilesystemController {
 		$this->assertRights($item, self::PERMISSION_LEVEL_READWRITE, "update content");
 
 		$item->put($content);
-		
+
 		$this->env->events()->onEvent(FileEvent::updateContent($item));
 	}
 

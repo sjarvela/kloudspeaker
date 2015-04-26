@@ -10,13 +10,12 @@
  */
 
 require_once "dao/TrashBinDao.class.php";
-require_once "include/filesystem/KloudspeakerFilesystem.class.php";
-require_once "include/filesystem/LocalFilesystem.class.php";
 
 class TrashBinManager {
 	private $env;
 	private $settings;
 	private $folder;
+	private $allowFS = FALSE;
 
 	function __construct($env, $settings) {
 		$this->env = $env;
@@ -26,6 +25,17 @@ class TrashBinManager {
 		if (!file_exists($this->folder)) {
 			throw new ServiceException("Trash folder does not exist: " . $this->folder);
 		}
+	}
+
+	public function getFolderDef($id) {
+		return array("id" => "trash");
+	}
+
+	public function createFilesystem($id, $folderDef, $ctrl) {
+		if (!$this->allowFS) throw new ServiceException("INVALID_REQUEST", "Trash access not allowed");
+
+		$fs = new TrashBinFS($this->env, $this->folder, $this->getUserTrashItems());
+		return $fs;
 	}
 
 	public function onAction($ac, $i, $info) {
@@ -71,12 +81,14 @@ class TrashBinManager {
 		//TODO path
 
 		$result = array();
-		$items = $this->getUserTrashItems();
-		$fs = new TrashBinFilesystem($this->env, $this->folder, $items);
+		$this->allowFS = TRUE;
+		$fs = $this->env->filesystem()->filesystemFromId("trash");
+		//$items = $this->getUserTrashItems();
+		//$fs = new TrashBinFilesystem($this->env, $this->folder, $items);
 		foreach ($fs->root()->items() as $item) {
 			$result[] = $item->data();
 		}
-		return array("items" => $result, "data" => $items);
+		return array("items" => $result, "data" => $this->getUserTrashItems());
 	}
 
 	public function deleteAllItems() {
@@ -98,15 +110,18 @@ class TrashBinManager {
 		}
 
 		//trash item
-		Logging::logDebug("Deleting trash item ".$id);
-		$fs = new TrashBinFilesystem($this->env, $this->folder, $this->getUserTrashItems());
-		$item = $fs->getItem($i["id"]);
-		$item->delete();
+		Logging::logDebug("Deleting trash item ".$i["id"]."/".$i["item_id"]);
+		$this->allowFS = TRUE;
+		//$fs = new TrashBinFilesystem($this->env, $this->folder, $this->getUserTrashItems());
+		//$fs = $this->env->filesystem()->filesystemFromId("trash");
+		//$item = $fs->getItem($i["id"]);
+		$item = $this->env->filesystem()->item($i["item_id"]);
+		//$item->delete();
 
 		// original item
-		Logging::logDebug("Deleting original item metadata ".$i["item_id"]);
-		$originalItem = $this->getOriginalItem($i);
-		$this->env->filesystem()->doDeleteItem($originalItem, TRUE, TRUE, FALSE);
+		//Logging::logDebug("Deleting original item metadata ".$i["item_id"]);
+		//$originalItem = $this->getOriginalItem($i);
+		$this->env->filesystem()->doDeleteItem($item, TRUE, TRUE, TRUE);
 
 		$this->dao()->removeItem($i["id"]);
 	}
@@ -143,8 +158,11 @@ class TrashBinManager {
 	}
 
 	public function restoreItem($i, $originalItem) {
+		$this->allowFS = TRUE;
+		$item = $this->env->filesystem()->item($i["item_id"]);
+
 		//restore file/folder
-		$src = $this->getItemPath($i["id"], $originalItem->isFile());
+		$src = $this->getItemPath($i["id"], $item->isFile());
 		$target = $originalItem->internalPath();
 
 		Logging::logDebug("Restoring item ".$i["id"]." -> ".$target);
@@ -155,7 +173,7 @@ class TrashBinManager {
 		}
 
 		//restore item id
-		$this->env->filesystem()->itemIdProvider()->move($originalItem, $i["folder"]. ":/" . $i["path"]);
+		$this->env->filesystem()->itemIdProvider()->move($item, $i["folder_id"]. ":/" . $i["path"]);
 
 		$this->dao()->removeItem($i["id"]);
 
@@ -205,79 +223,6 @@ class TrashBinManager {
 
 	public function __toString() {
 		return "TrashBinManager";
-	}
-}
-
-class TrashBinFilesystem extends LocalFilesystem {
-	private $env;
-	private $folder;
-	private $rootItems;
-	private $rootItemsById;
-
-	function __construct($env, $folder, $rootItems) {
-		parent::__construct("trash", array("name" => "trash", "path" => $folder), $this);
-		$this->env = $env;
-		$this->folder = $folder;
-		$this->rootItems = $rootItems;
-		$this->rootItemsById = array();
-		foreach ($this->rootItems as $item) {
-			$this->rootItemsById[$item["id"]] = $item;
-		}
-	}
-
-	public function getItem($id) {
-		//TODO path?
-		$item = array_key_exists($id, $this->rootItemsById) ? $this->rootItemsById[$id] : FALSE;
-		if (!$item) return NULL;
-
-		$isFile = (strcasecmp(substr($item["path"], -1), itemIdProvider::PATH_DELIMITER) != 0);
-		return $this->createItem($id, $id.($isFile ? "" : DIRECTORY_SEPARATOR));
-	}
-
-	public function env() {
-		return $this->env;
-	}
-
-	public function itemIdProvider() {
-		return $this;
-	}
-
-	public function isItemIgnored($parentPath, $name, $nativePath) {
-		$p = substr($parentPath, strlen($this->folder));
-		if (strlen($p) == 0 and !array_key_exists($name, $this->rootItemsById)) {
-			return TRUE;
-		}
-
-		return FALSE;
-	}
-
-	protected function itemName($parentPath, $name, $nativePath) {
-		$p = substr($parentPath, strlen($this->folder));
-		if (strlen($p) == 0) {
-			$item = array_key_exists($name, $this->rootItemsById) ? $this->rootItemsById[$name] : FALSE;
-			if (!$item) {
-				return FALSE;
-			}
-
-			$realName = rtrim($item["path"], DIRECTORY_SEPARATOR);
-			$n = strrchr($realName, DIRECTORY_SEPARATOR);
-			if ($n !== FALSE) {
-				return ltrim($n, DIRECTORY_SEPARATOR);
-			}
-
-			return $realName;
-		}
-		return $this->env->convertCharset($name);
-	}
-
-	public function getItemId($loc) {
-		$l = rtrim(substr($loc, 7), DIRECTORY_SEPARATOR);
-		Logging::logDebug("ID: " . $loc . "-" . $l);
-		if (strlen($l) == 0) {
-			return "trash";
-		}
-
-		return $l;
 	}
 }
 ?>

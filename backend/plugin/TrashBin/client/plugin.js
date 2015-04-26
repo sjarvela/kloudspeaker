@@ -109,7 +109,11 @@
                             else
                                 item.folderPath = false;
 
-                            d[item.id] = item;
+                            d[item["item_id"]] = item;
+                        });
+                        $.each(r.items, function(i, item) {
+                            item.data = d[item.id];
+                            item.trash_id = item.data.id;
                         });
                         var data = {
                             items: r.items,
@@ -289,9 +293,28 @@
             if (items.length === 0 || !allowed) return;
 
             kloudspeaker.service.post('trash/restore', {
-                items: kloudspeaker.helpers.extractValue(items, 'id')
+                items: kloudspeaker.helpers.extractValue(items, 'trash_id')
             }).done(function() {
                 that._fileView.refresh();
+            }).fail(function(e) {
+                if (e.code == 201) {
+                    this.handled = true;
+
+                    if (e.details.parent_missing) {
+                        kloudspeaker.ui.dialogs.info({
+                            message: kloudspeaker.ui.texts.get('pluginTrashBinRestoreFailedParentMissing')
+                        });
+                    } else if (e.details.item_exists) {
+                        //TODO confirm and overwrite
+                        kloudspeaker.ui.dialogs.info({
+                            message: kloudspeaker.ui.texts.get('pluginTrashBinRestoreFailedItemExists')
+                        });
+                    } else {
+                        kloudspeaker.ui.dialogs.info({
+                            message: kloudspeaker.ui.texts.get('pluginTrashBinRestoreFailed')
+                        });
+                    }
+                }
             });
         };
 
@@ -309,7 +332,7 @@
                 message: msg,
                 callback: function() {
                     kloudspeaker.service.post('trash/delete', {
-                        items: kloudspeaker.helpers.extractValue(items, 'id')
+                        items: kloudspeaker.helpers.extractValue(items, 'trash_id')
                     }).done(function() {
                         that._fileView.refresh();
                     });
