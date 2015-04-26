@@ -493,7 +493,10 @@ class FilesystemController {
 	}
 
 	public function item($id, $nonexisting = FALSE) {
-		$location = $this->itemIdProvider()->getLocation($id);
+		return $this->itemWithLocation($this->itemIdProvider()->getLocation($id), $nonexisting);
+	}
+
+	public function itemWithLocation($location, $nonexisting = FALSE) {
 		$parts = explode(":" . DIRECTORY_SEPARATOR, $location);
 		if (count($parts) != 2) {
 			throw new ServiceException("INVALID_CONFIGURATION", "Invalid item location: " . $location);
@@ -513,11 +516,11 @@ class FilesystemController {
 		} else {
 			$folderDef = $this->env->configuration()->getFolder($filesystemId);
 			if (!$folderDef) {
-				Logging::logDebug("Root folder does not exist: " . $location . " (" . $id . ")");
+				Logging::logDebug("Root folder does not exist: " . $location);
 				throw new ServiceException("REQUEST_FAILED");
 			}
 			if (!$this->isFolderValid($folderDef)) {
-				Logging::logDebug("No permissions for root folder: " . $location . " (" . $id . ")");
+				Logging::logDebug("No permissions for root folder: " . $location);
 				throw new ServiceException("INSUFFICIENT_PERMISSIONS");
 			}
 
@@ -527,6 +530,7 @@ class FilesystemController {
 			return $this->filesystem($folderDef)->root();
 		}
 
+		$id = $this->itemIdProvider()->getItemId($location);
 		return $this->filesystem($folderDef)->createItem($id, $path, $nonexisting);
 	}
 
@@ -1568,23 +1572,23 @@ class MultiFileEvent extends Event {
 	private $items;
 
 	static function download($items) {
-		return new MultiFileEvent($items, FileEvent::DOWNLOAD);
+		return new MultiFileEvent($items, FileSystemController::EVENT_TYPE_FILE, FileEvent::DOWNLOAD);
 	}
 
 	static function copy($items, $to, $targets = NULL, $replace = FALSE) {
-		return new MultiFileEvent($items, FileEvent::COPY, array("to" => $to, "targets" => $targets, "replace" => $replace));
+		return new MultiFileEvent($items, FileSystemController::EVENT_TYPE_FILE, FileEvent::COPY, array("to" => $to, "targets" => $targets, "replace" => $replace));
 	}
 
 	static function move($items, $to, $targets = NULL, $replace = FALSE) {
-		return new MultiFileEvent($items, FileEvent::MOVE, array("to" => $to, "targets" => $targets, "replace" => $replace));
+		return new MultiFileEvent($items, FileSystemController::EVENT_TYPE_FILE, FileEvent::MOVE, array("to" => $to, "targets" => $targets, "replace" => $replace));
 	}
 
 	static function delete($items) {
-		return new MultiFileEvent($items, FileEvent::DELETE);
+		return new MultiFileEvent($items, FileSystemController::EVENT_TYPE_FILE, FileEvent::DELETE);
 	}
 
-	function __construct($items, $type, $info = NULL) {
-		parent::__construct(time(), FileSystemController::EVENT_TYPE_FILE, $type);
+	function __construct($items, $type, $subtype, $info = NULL) {
+		parent::__construct(time(), $type, $subtype);
 		$this->items = $items;
 		$this->info = $info;
 	}
