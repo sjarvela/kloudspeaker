@@ -46,6 +46,7 @@ class FilesystemController {
 		require_once "CoreFileDataProvider.class.php";
 		require_once "ItemIdProvider.class.php";
 		require_once "include/metadata/MetadataController.class.php";
+		require_once "FilesystemCommands.class.php";
 
 		$this->env = $env;
 		$this->idProvider = new ItemIdProvider($env);
@@ -78,6 +79,9 @@ class FilesystemController {
 		$this->metadata->initialize();
 		$this->env->events()->register("filesystem/", $this);
 
+		// register filesystem commands
+		$cmds = new Kloudspeaker_FilesystemCommands($this->env);
+		$cmds->initialize();
 	}
 
 	public function onEvent($e) {

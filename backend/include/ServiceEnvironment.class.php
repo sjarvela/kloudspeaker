@@ -20,6 +20,7 @@ require_once "Formatter.class.php";
 require_once "Cookie.class.php";
 require_once "ResourceLoader.class.php";
 require_once "auth/PasswordHash.class.php";
+require_once "commands/CommandsController.class.php";
 
 class ServiceEnvironment {
 	const ENTRY_SCRIPT = 'r.php';
@@ -58,6 +59,7 @@ class ServiceEnvironment {
 		$this->plugins = new PluginController($this);
 		$this->resources = new ResourceLoader($this);
 		$this->passwordHash = new Kloudspeaker_PasswordHash($this->settings);
+		$this->commands = new Kloudspeaker_CommandsController($this);
 
 		if ($settings->hasSetting('timezone')) {
 			date_default_timezone_set($settings->setting('timezone'));
@@ -138,6 +140,10 @@ class ServiceEnvironment {
 
 	public function passwordHash() {
 		return $this->passwordHash;
+	}
+
+	public function commands() {
+		return $this->commands;
 	}
 
 	public function mailer() {

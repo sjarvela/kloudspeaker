@@ -1,5 +1,6 @@
 #!/usr/bin/php
 <?php
+
 echo "Kloudspeaker CMD\n";
 
 $inc = dirname(__FILE__) . "/.";
@@ -35,8 +36,40 @@ if (count($opts["commands"]) === 0) {
 	exit(0);
 }
 
+class CMDSession extends Session {
+	public function __construct() {
+		parent::__construct(FALSE); // don't use cookies
+	}
+
+	protected function getDao() {
+		return $this;
+	}
+
+	// override session DAO persistence functions ->
+
+	public function getSession($id, $lastValid = NULL) {
+		return NULL;
+	}
+
+	public function getSessionData($id) {
+		return array();
+	}
+
+	public function addSession($id, $userId, $ip, $time) {}
+
+	public function addSessionData($id, $data) {}
+
+	public function addOrSetSessionData($id, $name, $value) {}
+
+	public function removeSession($id) {}
+
+	public function updateSessionTime($id, $time) {}
+
+	public function removeAllSessionBefore($time) {}
+}
+
 $settings = new Settings($CONFIGURATION);
-$session = new Session(FALSE);
+$session = new CMDSession();
 
 $f = new DBConnectionFactory();
 $db = $f->createConnection($settings);
@@ -59,150 +92,22 @@ if (isset($options["user"])) {
 }
 
 $command = $opts["commands"][0];
+if (!$env->commands()->exists($command)) {
+	echo "Invalid command: " . $command. "\n";
+	return;
+}
+
 echo "Command [" . $command . "]\n";
 
 //TODO allow command registrations from plugins etc
 try {
-	if (strcasecmp($command, "copy") == 0) {
-		processCopy($env, $options);
-	} else if (strcasecmp($command, "upload") == 0) {
-		processUpload($env, $options);
-	} else {
-		echo "Invalid command: " . $command. "\n";
-	}
+	$env->commands()->execute($command, $options);
 } catch (ServiceException $e) {
 	Logging::logException($e);
 	echo "ERROR: ".$e->type()." ".$e->details()." (".Util::array2str($e->data()).")\n";
 } catch (Exception $e) {
 	Logging::logException($e);
 	echo "ERROR: ".$e->getMessage()."\n";
-}
-
-//TODO move actual commands into separate file
-
-function processUpload($env, $opts) {
-	$ctx = array(
-		"src" => isset($opts["src"]) ? $opts["src"] : NULL,
-		"target" => isset($opts["target"]) ? $opts["target"] : NULL,
-		"name" => isset($opts["name"]) ? $opts["name"] : NULL
-	);
-
-	if (!$ctx["src"]) {
-		echo "UPLOAD: src missing\n";
-		return;
-	}
-
-	//validate target
-	if (!$ctx["target"]) {
-		echo "UPLOAD: target missing\n";
-		return;
-	}
-	if (!strpos($ctx["target"], ":/") ) {
-		echo "UPLOAD: target not right format: \"[FID]:[PATH]/\"\n";
-		return;
-	}
-	if (substr($ctx["target"], -1) != "/") {
-		// make sure path is folder path
-		$ctx["target"] = $ctx["target"]."/";
-	}
-
-	// validate src
-	if (!file_exists($ctx["src"]) or !is_file($ctx["src"])) {
-		echo "UPLOAD: src does not exist: " . $ctx["src"] . "\n";
-		return;
-	}
-	if (!is_file($ctx["src"])) {
-		echo "UPLOAD: src is not a file: " . $ctx["src"] . "\n";
-		return;
-	}
-	echo "UPLOAD: " . Util::array2str($ctx) . "\n";
-
-	$name = basename($ctx["src"]);
-	if ($ctx["name"] != NULL) $name = $ctx["name"];
-
-	$target = $env->filesystem()->itemWithLocation($ctx["target"], TRUE);
-	if (!$target->exists()) {
-		echo "UPLOAD: target folder does not exist: " . $ctx["target"] . "\n";
-		return;
-	}
-	if ($target->isFile()) {
-		echo "UPLOAD: target is not a folder: " . $ctx["target"] . "\n";
-		return;
-	}
-	if ($target->fileExists($name)) {
-		echo "UPLOAD: target (".$ctx["target"].") already has a file with name \"" . $name . "\"\n";
-		return;
-	}
-
-	$content = fopen($ctx["src"], "rb");
-	if (!$content) {
-		echo "UPLOAD: could not read source file: " . $ctx["target"] . "\n";
-		return;
-	}
-	$created = $env->filesystem()->createFile($target, $name, $content);
-	fclose($content);
-
-	echo "UPLOAD: file copied successfully into ".$created->internalPath()."\n";
-}
-
-function processCopy($env, $opts) {
-	$ctx = array(
-		"src" => isset($opts["src"]) ? $opts["src"] : NULL,
-		"target" => isset($opts["target"]) ? $opts["target"] : NULL,
-		"name" => isset($opts["name"]) ? $opts["name"] : NULL
-	);
-
-	if (!$ctx["src"]) {
-		echo "COPY: src missing\n";
-		return;
-	}
-
-	//validate target
-	if (!$ctx["target"]) {
-		echo "COPY: target missing\n";
-		return;
-	}
-	if (!strpos($ctx["target"], ":/") ) {
-		echo "COPY: target not right format: \"[FID]:[PATH]/\"\n";
-		return;
-	}
-	if (substr($ctx["target"], -1) != "/") {
-		// make sure path is folder path
-		$ctx["target"] = $ctx["target"]."/";
-	}
-
-	// validate src
-	if (!file_exists($ctx["src"]) or !is_file($ctx["src"])) {
-		echo "COPY: src does not exist: " . $ctx["src"] . "\n";
-		return;
-	}
-	if (!is_file($ctx["src"])) {
-		echo "COPY: src is not a file: " . $ctx["src"] . "\n";
-		return;
-	}
-	echo "COPY: " . Util::array2str($ctx) . "\n";
-
-	$name = basename($ctx["src"]);
-	if ($ctx["name"] != NULL) $name = $ctx["name"];
-
-	$target = $env->filesystem()->itemWithLocation($ctx["target"], TRUE);
-	if (!$target->exists()) {
-		echo "COPY: target folder does not exist: " . $ctx["target"] . "\n";
-		return;
-	}
-	if ($target->isFile()) {
-		echo "COPY: target is not a folder: " . $ctx["target"] . "\n";
-		return;
-	}
-	if ($target->fileExists($name)) {
-		echo "COPY: target (".$ctx["target"].") already has a file with name \"" . $name . "\"\n";
-		return;
-	}
-	$created = $target->fileWithName($name);
-
-	copy($ctx["src"], $created->internalPath());
-
-	echo "COPY: file copied successfully into ".$created->internalPath()."\n";
 }
 
 // TOOLS
