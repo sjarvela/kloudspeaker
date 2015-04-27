@@ -17,6 +17,7 @@ class Kloudspeaker_FilesystemCommands {
 	}
 
 	public function initialize() {
+		$this->env->commands()->register("copy", $this);
 		$this->env->commands()->register("upload", $this);
 	}
 
@@ -94,7 +95,7 @@ class Kloudspeaker_FilesystemCommands {
 		$created = $this->env->filesystem()->createFile($target, $name, $content);
 		fclose($content);
 
-		echo "UPLOAD: file copied successfully into " . $created->internalPath() . "\n";
+		echo "UPLOAD: file uploaded successfully into " . $created->internalPath() . "\n";
 	}
 
 	private function processCopy($opts) {

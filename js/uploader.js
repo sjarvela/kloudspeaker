@@ -159,7 +159,7 @@
                 fail: function(e, data) {
                     failed = true;
                     if (data.errorThrown == 'abort') {
-                        if (h.handler.aborted) h.handler.aborted(data.files);
+                        if (l.aborted) l.aborted(data.files);
                         return;
                     }
                     var r = data.response();
