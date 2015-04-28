@@ -89,7 +89,7 @@ class Kloudspeaker_FilesystemCommands {
 
 		$content = fopen($ctx["src"], "rb");
 		if (!$content) {
-			echo "UPLOAD: could not read source file: " . $ctx["target"] . "\n";
+			echo "UPLOAD: could not read source file: " . $ctx["src"] . "\n";
 			return;
 		}
 		$created = $this->env->filesystem()->createFile($target, $name, $content);
