@@ -738,6 +738,9 @@ class ConfigurationServices extends ServicesBase {
 
 		$roots = $this->env->filesystem()->getRootFoldersByKey(TRUE);
 
+		$delFolder = ($this->request->hasParam("delete") and strcasecmp("true", $this->request->param("delete")) == 0); // LJUmod.FilesystemFolderDelete
+		$problemFolders = array(); // LJUmod.FilesystemFolderDelete
+
 		// configuration/folders
 		if (count($this->path) == 1) {
 			$data = $this->request->data;
@@ -756,10 +759,36 @@ class ConfigurationServices extends ServicesBase {
 				}
 
 				$folder = $roots[$id];
+/* LJUmod.FilesystemFolderDelete - Replaced by LJUmod.FilesystemFolderDelete.1
 				$this->env->configuration()->removeFolder($id);
 			}
 			$this->response()->success(TRUE);
-
+*/
+// LJUmod.FilesystemFolderDelete.1 Begin
+				if ($delFolder) { // Make sure other folders aren't affected.
+					$folderRootPath = rtrim(rtrim($folder->internalPath()), "/");
+					$affectedRoots = $this->env->filesystem()->getRootFoldersInPath($folderRootPath);
+					if (count($affectedRoots) > 1 or !isset($affectedRoots[$id])) {
+						foreach ($affectedRoots as $aR) {
+							if (!in_array($aR['id'], $ids)) {
+								$problemFolders[$id] = array("name" => $folder->name(), "path" => $folderRootPath);
+								break;
+							}
+						}
+					}
+				}
+				if (!isset($problemFolders[$id])) {
+					$this->env->configuration()->removeFolder($id);
+					if ($delFolder and $folder->exists())
+						$this->env->filesystem()->delete($folder,TRUE);
+				}
+			}
+			if (count($problemFolders) > 0 ) {
+				$this->response()->error("INVALID_REQUEST", "One or more folders was not deleted from the filesystem because their path is in use by other folder(s).", $problemFolders);
+			} else {
+				$this->response()->success(TRUE);
+			}
+// LJUmod.FilesystemFolderDelete.1 End
 			return;
 
 		}
@@ -772,9 +801,23 @@ class ConfigurationServices extends ServicesBase {
 
 		$folder = $roots[$id];
 
+/* LJUmod.FilesystemFolderDelete - replaced by FilesystemFolderDelete.2
 		if ($this->request->hasParam("delete") and strcasecmp("true", $this->request->param("delete")) == 0) {
 			$this->env->filesystem()->delete($folder, TRUE);
 		}
+*/
+// LJUmod.FilesystemFolderDelete.2 Begin
+		if ($delFolder) {
+			$folderRootId = $folder->filesystem()->id();
+			$folderRootPath = rtrim(rtrim($folder->internalPath()), "/");
+			$affectedRoots = $this->env->filesystem()->getRootFoldersInPath($folderRootPath);
+			if (count($affectedRoots) > 1 or !isset($affectedRoots[$folderRootId])) {
+				throw new ServiceException("INVALID_CONFIGURATION", "Cannot delete folder \"".$folder->name()."\" (".$folderRootId.") from filesystem, the path is in use by other folder(s).");
+			} else {
+				$this->env->filesystem()->delete($folder, TRUE);
+			}
+		}
+// LJUmod.FilesystemFolderDelete.2 End
 
 		$this->env->configuration()->removeFolder($id);
 
