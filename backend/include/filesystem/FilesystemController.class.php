@@ -336,6 +336,24 @@ class FilesystemController {
 		return $list;
 	}
 
+// LJUmod.FilesystemFolderDelete.1 || LJUmod.AutoDeleteUserFolder.1 Begin
+		public function getRootFoldersInPath($path) {
+			$list = array();			
+			if (!$this->env->authentication()->isAdmin()) {
+				throw new ServiceException("NOT_AN_ADMIN");
+			} else {
+				$folderDefs = $this->env->configuration()->getFolders();
+				foreach($folderDefs as $folderDef) {
+					if (isset($folderDef["path"])) {
+						if ($folderDef["path"] == $path or (substr($folderDef["path"], 0, strlen($path)+1) == $path."/") )
+							$list[$folderDef['id']] = $folderDef;
+					}
+				}
+		  }
+			return $list;
+		}
+// LJUmod.FilesystemFolderDelete.1 || LJUmod.AutoDeleteUserFolder.1 End
+
 	private function getFolderDefs($all = FALSE) {
 		if (!$all) {
 			$folderDefs = $this->env->configuration()->getUserFolders($this->env->session()->userId(), TRUE);
