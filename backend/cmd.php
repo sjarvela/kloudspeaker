@@ -144,7 +144,7 @@ function getOpts($args) {
 
 			// is it the syntax '--option=argument'?
 			if (strpos($com, '=')) {
-				list($com, $value) = split("=", $com, 2);
+				list($com, $value) = explode("=", $com, 2);
 			}
 
 			// is the option not followed by another option but by arguments
@@ -174,10 +174,10 @@ function getOpts($args) {
 		continue;
 	}
 
-	if (!count($ret['options']) && !count($ret['flags'])) {
+	/*if (!count($ret['options']) && !count($ret['flags'])) {
 		$ret['arguments'] = array_merge($ret['commands'], $ret['arguments']);
 		$ret['commands'] = array();
-	}
+	}*/
 	Logging::logDebug("=>" . Util::array2str($ret));
 	return $ret;
 }
