@@ -27,7 +27,7 @@ CONFIGURATION
 
 3) Authentication
 
-	Dav plugin default authentication method is digest authentication. If basic authentication is required (not recommended), set "$BASIC_AUTH = TRUE;" in index.php
+	Currently only basic auth is possible.
 
 4) Locking
 
