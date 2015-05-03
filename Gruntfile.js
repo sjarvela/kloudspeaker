@@ -98,6 +98,7 @@ module.exports = function(grunt) {
                     'js/lib/jquery-file-uploader.js',
                     'js/lib/jquery-singledoubleclick.js',
                     'js/lib/ZeroClipboard.js',
+                    'js/lib/knockout-3.3.0.js',
 
                     'dist/js/<%= pkg.name %>.js',
                 ],

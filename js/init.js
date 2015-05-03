@@ -345,7 +345,7 @@ var kloudspeaker_defaults = {
         return kloudspeaker.App.baseUrl + url;
     };
 
-    st.get = function(url, s, err) {
+    st.get = function(url) {
         return st._do("GET", url, null);
     };
 
@@ -1180,6 +1180,11 @@ var kloudspeaker_defaults = {
         if (kloudspeaker.settings["resource-map"] && kloudspeaker.settings["resource-map"]["template:" + id])
             templateId = kloudspeaker.settings["resource-map"]["template:" + id];
         return $("#" + templateId).tmpl(data, opt);
+    };
+
+    md.bind = function(model, $e) {
+        if (!$e || $e.length === 0) return;
+        ko.applyBindings(model, $e[0]);
     };
 
     /* HELPERS */
