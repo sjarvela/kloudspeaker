@@ -323,67 +323,36 @@ try {
 	$rq = new Kloudspeaker_DAV_Request();
 	$env->initialize($rq);
 
-	if (isset($BASIC_AUTH) and $BASIC_AUTH == TRUE) {
-		$auth = new Sabre_HTTP_BasicAuth();
-		$result = $auth->getUserPass();
+	// only basic auth supported
+	$auth = new Sabre_HTTP_BasicAuth();
+	$result = $auth->getUserPass();
 
-		if (!$result) {
-			Logging::logDebug("DAV authentication missing");
-			$auth->requireLogin();
-			echo "Authentication required\n";
-			die();
-		}
-
-		$user = $env->configuration()->getUserByNameOrEmail($result[0]);
-		if (!$user) {
-			Logging::logDebug("DAV authentication failure");
-			$auth->requireLogin();
-			echo "Authentication required\n";
-			die();
-		}
-
-		if (!$env->authentication()->authenticate($user["id"], $result[1])) {
-			//$userAuth = $env->configuration()->getUserAuth($user["id"]);
-			//if (!$env->passwordHash()->isEqual($result[1], $userAuth["hash"], $userAuth["salt"])) {
-			Logging::logDebug("DAV authentication failure");
-			$auth->requireLogin();
-			echo "Authentication required\n";
-			die();
-		}
-		//$env->authentication()->setAuth($user, "pw");
-		$userAuth = $env->configuration()->getUserAuth($user["id"]);
-		$env->authentication()->setAuth($user, $userAuth["type"]);
-	} else {
-		$auth = new Sabre_HTTP_DigestAuth();
-		$auth->setRealm($env->authentication()->realm());
-		$auth->init();
-		$username = $auth->getUserName();
-
-		if (!$username) {
-			Logging::logDebug("DAV digest authentication missing");
-			$auth->requireLogin();
-			echo "Authentication required\n";
-			die();
-		}
-
-		$user = $env->configuration()->getUserByNameOrEmail($username);
-		if (!$user) {
-			Logging::logDebug("DAV digest authentication failure");
-			$auth->requireLogin();
-			echo "Authentication required\n";
-			die();
-		}
-
-		$userAuth = $env->configuration()->getUserAuth($user["id"]);
-
-		if (!$auth->validateA1($userAuth["a1hash"])) {
-			Logging::logDebug("DAV digest authentication failure");
-			$auth->requireLogin();
-			echo "Authentication required\n";
-			die();
-		}
-		$env->authentication()->setAuth($user, "pw");
+	if (!$result) {
+		Logging::logDebug("DAV authentication missing");
+		$auth->requireLogin();
+		echo "Authentication required\n";
+		die();
 	}
+
+	$user = $env->configuration()->getUserByNameOrEmail($result[0]);
+	if (!$user) {
+		Logging::logDebug("DAV authentication failure");
+		$auth->requireLogin();
+		echo "Authentication required\n";
+		die();
+	}
+
+	if (!$env->authentication()->authenticate($user["id"], $result[1])) {
+		//$userAuth = $env->configuration()->getUserAuth($user["id"]);
+		//if (!$env->passwordHash()->isEqual($result[1], $userAuth["hash"], $userAuth["salt"])) {
+		Logging::logDebug("DAV authentication failure");
+		$auth->requireLogin();
+		echo "Authentication required\n";
+		die();
+	}
+	//$env->authentication()->setAuth($user, "pw");
+	$userAuth = $env->configuration()->getUserAuth($user["id"]);
+	$env->authentication()->setAuth($user, $userAuth["type"]);
 
 	$session->init($user);
 
