@@ -1185,6 +1185,7 @@ var kloudspeaker_defaults = {
     md.bind = function(model, $e) {
         if (!$e || $e.length === 0) return;
         ko.applyBindings(model, $e[0]);
+        if (model.onAttach) model.onAttach($e);
     };
 
     /* HELPERS */

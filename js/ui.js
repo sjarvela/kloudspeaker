@@ -1915,9 +1915,9 @@
             var btn = spec.buttons[ind];
             if (spec["on-button"]) spec["on-button"](btn, h, $dlg);
         });
+        var $body = $dlg.find(".modal-body");
         if (spec.resizable) {
             var $header = $dlg.find(".modal-header");
-            var $body = $dlg.find(".modal-body");
             var $footer = $dlg.find(".modal-footer");
             var magicNr = 30; //$body.css("padding-top") + $body.css("padding-bottom"); //TODO??
 
@@ -1945,6 +1945,18 @@
                 });
             }
             onResize();
+        }
+        if (spec.template) {
+            var tmpl = spec.template;
+            var d = null;
+            if (window.isArray(spec.template)) {
+                tmpl = spec.template[0];
+                d = spec.template[1];
+            }
+            kloudspeaker.dom.template(tmpl, d).appendTo($body);
+        }
+        if (spec.model) {
+            kloudspeaker.dom.bind(spec.model, $body);
         }
         if (spec["on-show"]) spec["on-show"](h, $dlg);
         dh._activeDialog = h;
