@@ -231,6 +231,12 @@ class KloudspeakerInstallProcessor {
 
 	public function registerSearcher($s) {}
 
+	public function registerFilesystemId($id) {}
+
+	public function commands() {
+		return $this;
+	}
+
 	public function installPlugins($util) {
 		$allPlugins = $this->plugins()->getPlugins();
 		$customPath = $this->resources()->getCustomizationsPath();
