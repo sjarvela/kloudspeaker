@@ -104,6 +104,7 @@ class FileViewerEditorController {
 			return FALSE;
 		}
 
+		$isCustom = (is_array($item));
 		$type = strtolower(is_array($item) ? $item["type"] : $item->extension());
 
 		$result = array();
@@ -115,7 +116,7 @@ class FileViewerEditorController {
 			$viewer = $this->getViewer($type);
 			$result["view"] = $viewer->getInfo($item);
 		}
-		if ($this->editEnabled and $this->isEditAllowed($type)) {
+		if (!$isCustom and $this->editEnabled and $this->isEditAllowed($type)) {
 			$editor = $this->getEditor($type);
 			$result["edit"] = $editor->getInfo($item);
 		}
