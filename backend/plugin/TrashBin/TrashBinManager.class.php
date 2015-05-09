@@ -32,7 +32,9 @@ class TrashBinManager {
 	}
 
 	public function createFilesystem($id, $folderDef, $ctrl) {
-		if (!$this->allowFS) throw new ServiceException("INVALID_REQUEST", "Trash access not allowed");
+		if (!$this->allowFS) {
+			throw new ServiceException("INVALID_REQUEST", "Trash access not allowed");
+		}
 
 		$fs = new TrashBinFS($this->env, $this->folder, $this->getUserTrashItems());
 		return $fs;
@@ -46,6 +48,10 @@ class TrashBinManager {
 		$items = is_array($i) ? $i : array($i);
 
 		foreach ($items as $item) {
+			if ($item->isRoot()) {
+				continue;
+			}
+
 			//TODO check if ignored (ignored roots?)
 			Logging::logDebug("Trashing " . $item->internalPath());
 			$this->moveToTrash($item);
@@ -57,6 +63,13 @@ class TrashBinManager {
 	}
 
 	private function moveToTrash($item) {
+		$this->env->filesystem()->assertRights($item, FilesystemController::PERMISSION_LEVEL_READWRITEDELETE, "trash");
+
+		$this->env->filesystem()->validateAction(TrashBinEvent::TRASH, $item, array("target" => $item));
+		if ($this->env->filesystem()->triggerActionInterceptor(TrashBinEvent::TRASH, $item, array("target" => $item))) {
+			return;
+		}
+
 		$id = $this->GUID();
 		$trashPath = $this->getItemPath($id, $item->isFile());
 
@@ -83,8 +96,6 @@ class TrashBinManager {
 		$result = array();
 		$this->allowFS = TRUE;
 		$fs = $this->env->filesystem()->filesystemFromId("trash");
-		//$items = $this->getUserTrashItems();
-		//$fs = new TrashBinFilesystem($this->env, $this->folder, $items);
 		foreach ($fs->root()->items() as $item) {
 			$result[] = $item->data();
 		}
@@ -110,17 +121,11 @@ class TrashBinManager {
 		}
 
 		//trash item
-		Logging::logDebug("Deleting trash item ".$i["id"]."/".$i["item_id"]);
+		Logging::logDebug("Deleting trash item " . $i["id"] . "/" . $i["item_id"]);
 		$this->allowFS = TRUE;
-		//$fs = new TrashBinFilesystem($this->env, $this->folder, $this->getUserTrashItems());
-		//$fs = $this->env->filesystem()->filesystemFromId("trash");
-		//$item = $fs->getItem($i["id"]);
 		$item = $this->env->filesystem()->item($i["item_id"]);
-		//$item->delete();
 
 		// original item
-		//Logging::logDebug("Deleting original item metadata ".$i["item_id"]);
-		//$originalItem = $this->getOriginalItem($i);
 		$this->env->filesystem()->doDeleteItem($item, TRUE, TRUE, TRUE);
 
 		$this->dao()->removeItem($i["id"]);
@@ -139,11 +144,16 @@ class TrashBinManager {
 
 			$rejectReason = $this->isRestoreForbidden($i, $originalItem);
 			if ($rejectReason !== FALSE) {
-				if (!in_array($rejectReason, $rejected)) $rejected[$rejectReason] = array();
+				if (!in_array($rejectReason, $rejected)) {
+					$rejected[$rejectReason] = array();
+				}
+
 				$rejected[$rejectReason][] = $i;
 			}
 		}
-		if (count($rejected) > 0) return $rejected;
+		if (count($rejected) > 0) {
+			return $rejected;
+		}
 
 		$restored = array();
 		$result = array();
@@ -153,11 +163,12 @@ class TrashBinManager {
 			$restored[] = $originalItem;
 			$result[] = $originalItem->data();
 		}
-		$this->env->events()->onEvent(TrashBinEvent::restored($restored));
 		return array("restored" => $result);
 	}
 
 	public function restoreItem($i, $originalItem) {
+		$this->env->filesystem()->assertRights($originalItem->parent(), FilesystemController::PERMISSION_LEVEL_READWRITE, "restore");
+
 		$this->allowFS = TRUE;
 		$item = $this->env->filesystem()->item($i["item_id"]);
 
@@ -165,23 +176,30 @@ class TrashBinManager {
 		$src = $this->getItemPath($i["id"], $item->isFile());
 		$target = $originalItem->internalPath();
 
-		Logging::logDebug("Restoring item ".$i["id"]." -> ".$target);
+		Logging::logDebug("Restoring item " . $i["id"] . " -> " . $target);
+
+		$this->env->filesystem()->validateAction(TrashBinEvent::RESTORE, $item, array("target" => $item, "to" => $originalItem->parent()));
+		if ($this->env->filesystem()->triggerActionInterceptor(TrashBinEvent::RESTORE, $item, array("target" => $originalItem, "to" => $originalItem->parent()))) {
+			return;
+		}
 
 		if (!rename($src, $target)) {
-			Logging::logError("Could not restore item from trash to ".$target);
+			Logging::logError("Could not restore item from trash to " . $target);
 			return FALSE;
 		}
 
 		//restore item id
-		$this->env->filesystem()->itemIdProvider()->move($item, $i["folder_id"]. ":/" . $i["path"]);
+		$this->env->filesystem()->itemIdProvider()->move($item, $i["folder_id"] . ":/" . $i["path"]);
 
 		$this->dao()->removeItem($i["id"]);
+
+		$this->env->events()->onEvent(TrashBinEvent::restored($item, $originalItem->parent()));
 
 		return $originalItem;
 	}
 
 	private function isRestoreForbidden($item, $originalItem) {
-		if (!$this->env->authentication()->isAdmin() and strcasecmp($this->env->authentication() - userId(), $i["user_id"]) != 0) {
+		if (!$this->env->authentication()->isAdmin() and strcasecmp($this->env->authentication()->userId(), $i["user_id"]) != 0) {
 			return "unauthorized";
 		}
 		if ($originalItem->exists()) {
@@ -189,6 +207,9 @@ class TrashBinManager {
 		}
 		if (!$originalItem->parent()->exists()) {
 			return "parent_missing";
+		}
+		if (!$this->env->filesystem()->hasRights($originalItem->parent(), FilesystemController::PERMISSION_LEVEL_READWRITE)) {
+			return "insufficient_permissions";
 		}
 		return FALSE;
 	}

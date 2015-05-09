@@ -369,7 +369,7 @@ class FilesystemController {
 		return $list;
 	}
 
-	private function hasRights($item, $required) {
+	public function hasRights($item, $required) {
 		if (is_array($item)) {
 			foreach ($item as $i) {
 				if (!$this->env->permissions()->hasFilesystemPermission("filesystem_item_access", $i, $required)) {

@@ -16,10 +16,12 @@ class TrashBin extends PluginBase {
 	private $trashManager;
 
 	public function version() {
+		if (!$this->hasSetting("folder")) return NULL;
 		return "1_0";
 	}
 
 	public function versionHistory() {
+		if (!$this->hasSetting("folder")) return NULL;
 		return array("1_0");
 	}
 
@@ -67,8 +69,8 @@ class TrashBinEvent extends MultiFileEvent {
 		return new TrashBinEvent($items, self::EVENT_TYPE, self::TRASH);
 	}
 
-	static function restored($items) {
-		return new TrashBinEvent($items, self::EVENT_TYPE, self::RESTORE);
+	static function restored($i, $to) {
+		return new TrashBinEvent(is_array($i) ? $i : array($i), self::EVENT_TYPE, self::RESTORE, array("to" => $to));
 	}
 }
 ?>
