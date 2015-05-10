@@ -69,8 +69,8 @@ class TrashBinEvent extends MultiFileEvent {
 		return new TrashBinEvent($items, self::EVENT_TYPE, self::TRASH);
 	}
 
-	static function restored($i, $to) {
-		return new TrashBinEvent(is_array($i) ? $i : array($i), self::EVENT_TYPE, self::RESTORE, array("to" => $to));
+	static function restored($i) {
+		return new TrashBinEvent(is_array($i) ? $i : array($i), self::EVENT_TYPE, self::RESTORE);
 	}
 }
 ?>
