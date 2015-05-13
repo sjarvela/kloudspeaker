@@ -62,6 +62,9 @@ define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/ui/texts'
         },
 
         onActivate: function() {
+            model.alertType(null);
+            model.msg('');
+
             var s = session.get();
             model.version(s.version);
             model.revision(s.revision);

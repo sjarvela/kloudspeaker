@@ -56,8 +56,7 @@
 			<div class="control-group">
 				<label class="control-label localized" text-key="configSystemVersionTitle"></label>
 				<div class="controls">
-					<span class="uneditable-input" data-bind="text: model.version"></span>
-					<span class="uneditable-input" data-bind="text: model.revision"></span>
+					<span class="uneditable-input" data-bind="text: model.version() + ' (rev. ' + model.revision() + ')'"></span>
 					
 					<!-- ko if: model.versionCheck -->
 					<a id="system-check-new-version-btn" class="btn localized" text-key="configSystemCheckNewVersion" data-bind="click: checkVersion"></a>
