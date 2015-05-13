@@ -114,27 +114,20 @@ var kloudspeaker_defaults = {
             new kloudspeaker.ui.FullErrorView('Failed to initialize Kloudspeaker').show();
             if (kloudspeaker.App._initDf.state() == "pending") kloudspeaker.App._initDf.reject();
         };
-        var _init = function() {
-            kloudspeaker.ui.initialize().done(function() {
-                kloudspeaker.plugins.initialize().done(function() {
-                    kloudspeaker.App._initialized = true;
-                    start();
-                }).fail(onError);
-            }).fail(onError);
-        };
 
-        if (kloudspeaker.settings.modules) {
+        kloudspeaker.ui.initialize().done(function() {
             kloudspeaker.App.initModules();
             var deps = kloudspeaker.settings.modules.load || [];
             deps.push("kloudspeaker/app");
 
             // wait for modules initialization
             require(deps, function(app) {
-                _init();
+                kloudspeaker.plugins.initialize().done(function() {
+                    kloudspeaker.App._initialized = true;
+                    start();
+                }).fail(onError);
             });
-        } else {
-            _init();
-        }
+        }).fail(onError);
 
         if (kloudspeaker.settings["view-url"])
             window.onpopstate = function(event) {
@@ -290,7 +283,7 @@ var kloudspeaker_defaults = {
 
     kloudspeaker.App.initModules = function() {
         require.config({
-            baseUrl: ".",
+            baseUrl: "js",
             paths: {},
             shim: {
                 'bootstrap': {
@@ -300,7 +293,9 @@ var kloudspeaker_defaults = {
             }
         });
         define('jquery', [], $);
+        define('ko', [], ko);
         define('kloudspeaker/app', [], kloudspeaker.App);
+        define('kloudspeaker/settings', [], kloudspeaker.settings);
         define('kloudspeaker/session', [], {
             get: function() {
                 return kloudspeaker.session;
@@ -318,13 +313,15 @@ var kloudspeaker_defaults = {
         define('kloudspeaker/ui/formatters', [], kloudspeaker.ui.formatters);
         define('kloudspeaker/ui/controls', [], kloudspeaker.ui.controls);
         define('kloudspeaker/ui/dialogs', [], kloudspeaker.ui.dialogs);
-        define('kloudspeaker/ui/dnd', [], kloudspeaker.ui.draganddrop);
         define('kloudspeaker/ui', [], {
             window: kloudspeaker.ui.window,
             process: kloudspeaker.ui.process,
             handlers: kloudspeaker.ui.handlers,
             viewmodel: kloudspeaker.ui.viewmodel,
         });
+        define('kloudspeaker/ui/dnd', [], kloudspeaker.ui.draganddrop);
+        define('kloudspeaker/ui/uploader', [], kloudspeaker.ui.uploader);
+        define('kloudspeaker/ui/clipboard', [], kloudspeaker.ui.clipboard);
     };
 
     kloudspeaker.getItemDownloadInfo = function(i) {
@@ -1257,6 +1254,7 @@ var kloudspeaker_defaults = {
 
     md.template = function(id, data, opt) {
         var templateId = id;
+        if (templateId.startsWith("#")) templateId = templateId.substring(1);
         if (kloudspeaker.settings["resource-map"] && kloudspeaker.settings["resource-map"]["template:" + id])
             templateId = kloudspeaker.settings["resource-map"]["template:" + id];
         return $("#" + templateId).tmpl(data, opt);

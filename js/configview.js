@@ -77,7 +77,12 @@
                         that._adminViews.unshift(new kloudspeaker.view.config.admin.FoldersView());
                         that._adminViews.unshift(new kloudspeaker.view.config.admin.GroupsView());
                         that._adminViews.unshift(new kloudspeaker.view.config.admin.UsersView());
-                        that._adminViews.unshift(new kloudspeaker.view.config.admin.SystemView());
+                        that._adminViews.unshift({
+                            viewId: 'system',
+                            title: kloudspeaker.ui.texts.get("configSystemNavTitle"),
+                            model: 'kloudspeaker/config/system',
+                            view: ['#kloudspeaker-tmpl-config-systemview']
+                        });
                     }
 
                     var plugins = [];
@@ -208,10 +213,23 @@
 
             that.showLoading(false);
 
-            that._activeView = v;
-            if (!noStore && that._activeView.viewId) kloudspeaker.App.storeView("admin/" + that._activeView.viewId);
-            $("#kloudspeaker-configview-header").html(v.title);
-            v.onActivate(that._getContentElement().empty(), that);
+            if (v.model && v.view) {
+                kloudspeaker.ui.viewmodel(v.view, v.model).done(function(m, $v) {
+                    that._activeView = m;
+
+                    if (!noStore && v.viewId) kloudspeaker.App.storeView("admin/" + v.viewId);
+                    $("#kloudspeaker-configview-header").html(m.title || v.title || '');
+
+                    that._getContentElement().empty().append($v);
+                    if (m.onActivate) m.onActivate(that);
+                });
+            } else {
+                that._activeView = v;
+
+                if (!noStore && that._activeView.viewId) kloudspeaker.App.storeView("admin/" + that._activeView.viewId);
+                $("#kloudspeaker-configview-header").html(v.title);
+                v.onActivate(that._getContentElement().empty(), that);
+            }
         }
 
         this._getContentElement = function() {
@@ -297,7 +315,7 @@
     }
 
     /* System */
-    kloudspeaker.view.config.admin.SystemView = function(mv) {
+    /*kloudspeaker.view.config.admin.SystemView = function(mv) {
         var that = this;
         this.viewId = "system";
         this.title = kloudspeaker.ui.texts.get("configSystemNavTitle");
@@ -331,7 +349,7 @@
                     });
                 });
         }
-    }
+    }*/
 
     /* Users */
     kloudspeaker.view.config.admin.UsersView = function() {

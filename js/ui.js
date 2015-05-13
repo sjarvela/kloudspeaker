@@ -515,9 +515,13 @@
     kloudspeaker.ui.viewmodel = function(view, model) {
         if (!view || !model) return null;
         
+        var df = $.Deferred();
         var $v = null;
         if (typeof(view) == "string") {
-            $v = kloudspeaker.dom.template(view);
+
+            if (view.startsWith("#"))
+                $v = kloudspeaker.dom.template(view.substring(1));
+            //else TODO require view id
         } else if (window.isArray(view)) {
             var tmpl = view[0], d = (view.length > 1) ? view[1] : null;
             $v = kloudspeaker.dom.template(tmpl, d);
@@ -530,8 +534,16 @@
             if (view.$target) view.$target.append($v);
         }
 
-        kloudspeaker.dom.bind(model, $v);
-        return $v;
+        if (typeof(model) == "string") {
+            require([model], function(m) {
+                kloudspeaker.dom.bind(m, $v);
+                df.resolve(m, $v);
+            });
+        } else {
+            kloudspeaker.dom.bind(model, $v);
+            df.resolve(model, $v);
+        }
+        return df;
     };
 
     /**/
