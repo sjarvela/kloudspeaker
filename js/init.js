@@ -9,6 +9,7 @@
 
 var kloudspeaker_defaults = {
     "version-check-url": "http://www.kloudspeaker.com/version.php",
+    "modules": false,
     "language": {
         "default": "en",
         "options": ["en"]
@@ -81,7 +82,7 @@ var kloudspeaker_defaults = {
         kloudspeaker.settings = $.extend(true, {}, kloudspeaker_defaults, s);
         // don't merge file list columns
         if (s["file-view"]["file-list-columns"]) kloudspeaker.settings["file-view"]["file-list-columns"] = s["file-view"]["file-list-columns"];
-        
+
         kloudspeaker.service.init(false, kloudspeaker.settings["service-param"]);
 
         kloudspeaker.plugins.register(new kloudspeaker.plugin.Core());
@@ -113,17 +114,33 @@ var kloudspeaker_defaults = {
             new kloudspeaker.ui.FullErrorView('Failed to initialize Kloudspeaker').show();
             if (kloudspeaker.App._initDf.state() == "pending") kloudspeaker.App._initDf.reject();
         };
-        kloudspeaker.ui.initialize().done(function() {
-            kloudspeaker.plugins.initialize().done(function() {
-                kloudspeaker.App._initialized = true;
-                start();
+        var _init = function() {
+            kloudspeaker.ui.initialize().done(function() {
+                kloudspeaker.plugins.initialize().done(function() {
+                    kloudspeaker.App._initialized = true;
+                    start();
+                }).fail(onError);
             }).fail(onError);
-        }).fail(onError);
+        };
+
+        if (kloudspeaker.settings.modules) {
+            kloudspeaker.App.initModules();
+            var deps = kloudspeaker.settings.modules.load || [];
+            deps.push("kloudspeaker/app");
+
+            // wait for modules initialization
+            require(deps, function(app) {
+                _init();
+            });
+        } else {
+            _init();
+        }
 
         if (kloudspeaker.settings["view-url"])
             window.onpopstate = function(event) {
                 kloudspeaker.App.onRestoreState(document.location.href, event.state);
             };
+
         return kloudspeaker.App._initDf;
     };
 
@@ -161,10 +178,34 @@ var kloudspeaker_defaults = {
 
         kloudspeaker.service.init(s.features['limited_http_methods']);
 
-        kloudspeaker.plugins.load(s.plugins).done(function() {
-            kloudspeaker.filesystem.init(kloudspeaker.session.data.folders, ((kloudspeaker.session.user && kloudspeaker.session.user.admin) ? kloudspeaker.session.data.roots : false));
-            kloudspeaker.ui.initializeLang().done(kloudspeaker.App._doStart).fail(onError);
-        }).fail(onError);
+        var modules = [];
+        var packages = [];
+        _.each(s.plugins, function(pl) {
+            if (pl["client_module_path"]) {
+                modules.push(pl["client_module_id"]);
+                packages.push({
+                    name: pl["client_module_id"],
+                    location: pl["client_module_path"]
+                });
+            }
+        });
+        var df = $.Deferred();
+        if (modules.length > 0) {
+            requirejs.config({
+                packages: packages
+            });
+            require(modules, function() {
+                df.resolve();
+            });
+        } else
+            df.resolve();
+
+        df.done(function() {
+            kloudspeaker.plugins.load(s.plugins).done(function() {
+                kloudspeaker.filesystem.init(kloudspeaker.session.data.folders, ((kloudspeaker.session.user && kloudspeaker.session.user.admin) ? kloudspeaker.session.data.roots : false));
+                kloudspeaker.ui.initializeLang().done(kloudspeaker.App._doStart).fail(onError);
+            }).fail(onError);
+        });
     };
 
     kloudspeaker.App._doStart = function() {
@@ -245,7 +286,46 @@ var kloudspeaker_defaults = {
 
     kloudspeaker.App.getPageUrl = function(pageUrl) {
         return kloudspeaker.App.pageUrl + "?v=" + pageUrl;
-    }
+    };
+
+    kloudspeaker.App.initModules = function() {
+        require.config({
+            baseUrl: ".",
+            paths: {},
+            shim: {
+                'bootstrap': {
+                    deps: ['jquery'],
+                    exports: 'jQuery'
+                }
+            }
+        });
+        define('jquery', [], $);
+        define('kloudspeaker/app', [], kloudspeaker.App);
+        define('kloudspeaker/session', [], {
+            get: function() {
+                return kloudspeaker.session;
+            }
+        });
+        define('kloudspeaker/filesystem', [], kloudspeaker.filesystem);
+        define('kloudspeaker/events', [], kloudspeaker.events);
+        define('kloudspeaker/request', [], kloudspeaker.request);
+        define('kloudspeaker/service', [], kloudspeaker.service);
+        define('kloudspeaker/plugins', [], kloudspeaker.plugins);
+        define('kloudspeaker/features', [], kloudspeaker.features);
+        define('kloudspeaker/dom', [], kloudspeaker.dom);
+        define('kloudspeaker/utils', [], kloudspeaker.helpers);
+        define('kloudspeaker/ui/texts', [], kloudspeaker.ui.texts);
+        define('kloudspeaker/ui/formatters', [], kloudspeaker.ui.formatters);
+        define('kloudspeaker/ui/controls', [], kloudspeaker.ui.controls);
+        define('kloudspeaker/ui/dialogs', [], kloudspeaker.ui.dialogs);
+        define('kloudspeaker/ui/dnd', [], kloudspeaker.ui.draganddrop);
+        define('kloudspeaker/ui', [], {
+            window: kloudspeaker.ui.window,
+            process: kloudspeaker.ui.process,
+            handlers: kloudspeaker.ui.handlers,
+            viewmodel: kloudspeaker.ui.viewmodel,
+        });
+    };
 
     kloudspeaker.getItemDownloadInfo = function(i) {
         if (!i) return false;
@@ -1444,7 +1524,7 @@ var kloudspeaker_defaults = {
     if (typeof String.prototype.endsWith !== 'function') {
         String.prototype.endsWith = function(s) {
             if (!s || s.length === 0) return false;
-            return this.substring(s.length-1, 1) == s;
+            return this.substring(s.length - 1, 1) == s;
         }
     }
 

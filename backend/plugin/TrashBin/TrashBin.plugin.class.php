@@ -36,8 +36,12 @@ class TrashBin extends PluginBase {
 		$this->env->filesystem()->registerFilesystemId("trash", $this->trashBinManager);
 	}
 
-	public function getClientPlugin() {
-		return "client/plugin.js";
+	//public function getClientPlugin() {
+	//	return "client/plugin.js";
+	//}
+
+	public function getClientModuleId() {
+		return "kloudspeaker/trashbin";
 	}
 
 	public function getTrashBinManager() {

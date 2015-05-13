@@ -84,6 +84,13 @@ class PluginController {
 				$info["client_plugin"] = $custom ? $this->env->resources()->getCustomPluginUrl($id, $clientPlugin) : $this->env->getPluginUrl($id, $clientPlugin, TRUE);
 			}
 
+			$clientModule = $p->getClientModuleId();
+			if ($clientModule != NULL) {
+				$path = "client/";
+				$info["client_module_path"] = $custom ? $this->env->resources()->getCustomPluginUrl($id, $path) : $this->env->getPluginUrl($id, $path, TRUE);
+				$info["client_module_id"] = $clientModule;
+			}
+			
 			$result[$id] = $info;
 		}
 		return $result;
