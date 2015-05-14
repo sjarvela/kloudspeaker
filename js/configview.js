@@ -40,10 +40,12 @@
                 });
             });
             _.each(kloudspeaker.ui._configViews, function(v) {
-                if (v.admin)
-                    that._adminViews.push(v);
-                else
+                if (v.admin) {
+                    if (kloudspeaker.session.user.admin || (v.requiresPermission && kloudspeaker.session.user.hasPermission(v.requiresPermission)))
+                        that._adminViews.push(v);
+                } else {
                     that._views.push(v);
+                }
             });
         }
 
@@ -318,43 +320,6 @@
             $("#user-account-change-password-btn").click(mv.changePassword);
         }
     }
-
-    /* System */
-    /*kloudspeaker.view.config.admin.SystemView = function(mv) {
-        var that = this;
-        this.viewId = "system";
-        this.title = kloudspeaker.ui.texts.get("configSystemNavTitle");
-
-        this.onActivate = function($c) {
-            var versionCheckUrl = kloudspeaker.settings["version-check-url"];
-
-            kloudspeaker.dom.template("kloudspeaker-tmpl-config-systemview", {
-                session: kloudspeaker.session,
-                versionCheck: !!versionCheckUrl
-            }).appendTo($c);
-            kloudspeaker.ui.process($c, ["localize"]);
-
-            if (!!versionCheckUrl)
-                $("#system-check-new-version-btn").click(function() {
-                    $("#version-check-result").removeClass("alert-error alert-info alert-success").hide();
-
-                    $.ajax({
-                        type: 'get',
-                        jsonp: "callback",
-                        dataType: "jsonp",
-                        url: kloudspeaker.settings["version-check-url"]
-                    }).done(function(v) {
-                        if (kloudspeaker.session.version != v.version) {
-                            $("#version-check-result").addClass("alert-info").html(kloudspeaker.ui.texts.get("configSystemVersionCheckUpgradeAvailable", [v["version"], v["date"], v["url"]])).show();
-                        } else {
-                            $("#version-check-result").addClass("alert-success").html(kloudspeaker.ui.texts.get("configSystemVersionCheckLatest")).show();
-                        }
-                    }).fail(function() {
-                        $("#version-check-result").addClass("alert-error").html(kloudspeaker.ui.texts.get("configSystemVersionCheckFailed")).show();
-                    });
-                });
-        }
-    }*/
 
     /* Users */
     kloudspeaker.view.config.admin.UsersView = function() {

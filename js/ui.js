@@ -520,11 +520,10 @@
         if (typeof(view) == "string") {
             if (view.startsWith("#"))
                 $v = kloudspeaker.dom.template(view.substring(1));
-            //else TODO require view id
+            //otherwise considered view id resolved via composition & requirejs
         } else if (window.isArray(view)) {
             var tmpl = view[0], d = (view.length > 1) ? view[1] : null;
             $v = kloudspeaker.dom.template(tmpl, d);
-            //if (view.length > 2) view[2].append($v);
         } else if (typeof(view) == "object") {
             $v = view;
         }

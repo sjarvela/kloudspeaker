@@ -365,9 +365,13 @@ var kloudspeaker_defaults = {
         define('kloudspeaker/ui/clipboard', [], kloudspeaker.ui.clipboard);
 
         kloudspeaker.ui._configViews = {};
+        kloudspeaker.ui._fileViewHandlers = [];
         define('kloudspeaker/ui/views', [], {
             registerConfigView: function(v) {
                 kloudspeaker.ui._configViews[v.id] = v;
+            },
+            registerFileViewHandler: function(h) {
+                kloudspeaker.ui._fileViewHandlers.push(h);
             }
         });
     };

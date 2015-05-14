@@ -554,6 +554,17 @@
                     that._filelist.addColumn(cols[j]);
             });
 
+            _.each(kloudspeaker.ui._fileViewHandlers, function(h) {
+                if (h.onInit) h.onInit(that);
+
+                if (!h.filelistColumns) return;
+                var cols = h.filelistColumns();
+                if (!cols) return;
+
+                for (var j = 0; j < cols.length; j++)
+                    that._filelist.addColumn(cols[j]);
+            });
+
             that.itemContext = new kloudspeaker.ui.itemContext();
         }
 
@@ -626,6 +637,10 @@
             $.each(kloudspeaker.plugins.getFileViewPlugins(), function(i, p) {
                 if (p.fileViewHandler.onActivate)
                     p.fileViewHandler.onActivate(kloudspeaker.App.getElement(), h);
+            });
+            _.each(kloudspeaker.ui._fileViewHandlers, function(fvh) {
+                if (fvh.onActivate)
+                    fvh.onActivate(kloudspeaker.App.getElement(), h);
             });
 
             if (kloudspeaker.filesystem.roots.length === 0) {
@@ -762,6 +777,10 @@
             $.each(kloudspeaker.plugins.getFileViewPlugins(), function(i, p) {
                 if (p.fileViewHandler.onDeactivate)
                     p.fileViewHandler.onDeactivate();
+            });
+            _.each(kloudspeaker.ui._fileViewHandlers, function(fvh) {
+                if (fvh.onDeactivate)
+                    fvh.onDeactivate();
             });
         };
 
