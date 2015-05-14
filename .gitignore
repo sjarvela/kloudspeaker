@@ -4,3 +4,5 @@ bower_components/
 jspm_packages/
 npm-debug.log
 backend/configuration.php
+
+out/modules.js

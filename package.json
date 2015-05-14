@@ -33,6 +33,7 @@
         "grunt-contrib-uglify": "~0.3.0",
         "grunt-contrib-watch": "~0.5.3",
         "grunt-contrib-compress": "~0.6.0",
+        "grunt-contrib-requirejs": "~0.4.4",
         "grunt-csscomb": "~2.0.1",
         "grunt-exec": "0.4.3",
         "grunt-jscs-checker": "~0.3.0",
