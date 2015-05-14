@@ -117,11 +117,37 @@ var kloudspeaker_defaults = {
 
         kloudspeaker.ui.initialize().done(function() {
             kloudspeaker.App.initModules();
-            var deps = kloudspeaker.settings.modules.load || [];
-            deps.push("kloudspeaker/app");
+            var deps = ['durandal/system', 'durandal/viewlocator', 'durandal/composition', 'kloudspeaker/app'];
+            if (kloudspeaker.settings.modules.load) deps = deps.concat(kloudspeaker.settings.modules.load);
 
             // wait for modules initialization
-            require(deps, function(app) {
+            require(deps, function(ds, vl, comp, app) {
+                kloudspeaker.ui._composition = comp;
+
+                ds.debug(!!kloudspeaker.settings.debug); //TODO remove
+
+                var modulesPath = 'viewmodels';
+                vl.useConvention(modulesPath, kloudspeaker.settings['templates-path']);
+                var reg = new RegExp(escape(modulesPath), 'gi');
+                vl.convertModuleIdToViewId = function(moduleId) {
+                    //var path = moduleId.replace(reg, viewsPath);
+                    var path = moduleId;
+                    if (moduleId.startsWith('viewmodels/'))
+                        path = viewsPath + moduleId.substring(11);
+                    else {
+                        _.each(packages, function(p) {
+                            var pn = p.name + '/';
+                            if (moduleId.startsWith(pn)) {
+                                path = p.location + "/views/" + moduleId.substring(pn.length);
+                                return false;
+                            }
+                        });
+                    }
+                    //TODO map
+                    console.log("Resolve view:" + moduleId + " -> " + path);
+                    return path;
+                };
+
                 kloudspeaker.plugins.initialize().done(function() {
                     kloudspeaker.App._initialized = true;
                     start();
@@ -282,9 +308,24 @@ var kloudspeaker_defaults = {
     };
 
     kloudspeaker.App.initModules = function() {
+        var paths = {
+            'durandal': 'durandal/js/',
+            'text': 'requirejs-text/text'
+        };
+        var packages = [];
+        if (kloudspeaker.settings.modules && kloudspeaker.settings.modules.paths) {
+            _.each(kloudspeaker.helpers.getKeys(kloudspeaker.settings.modules.paths), function(k) {
+                packages.push({
+                    name: k,
+                    location: kloudspeaker.settings.modules.paths[k]
+                });
+            });
+        }
+
         require.config({
             baseUrl: "js",
-            paths: {},
+            paths: paths,
+            packages: packages,
             shim: {
                 'bootstrap': {
                     deps: ['jquery'],
@@ -292,8 +333,8 @@ var kloudspeaker_defaults = {
                 }
             }
         });
-        define('jquery', [], $);
-        define('ko', [], ko);
+        define('jquery', [], function () { return $; });
+        define('knockout', [], ko);
         define('kloudspeaker/app', [], kloudspeaker.App);
         define('kloudspeaker/settings', [], kloudspeaker.settings);
         define('kloudspeaker/session', [], {
@@ -322,6 +363,13 @@ var kloudspeaker_defaults = {
         define('kloudspeaker/ui/dnd', [], kloudspeaker.ui.draganddrop);
         define('kloudspeaker/ui/uploader', [], kloudspeaker.ui.uploader);
         define('kloudspeaker/ui/clipboard', [], kloudspeaker.ui.clipboard);
+
+        kloudspeaker.ui._configViews = {};
+        define('kloudspeaker/ui/views', [], {
+            registerConfigView: function(v) {
+                kloudspeaker.ui._configViews[v.id] = v;
+            }
+        });
     };
 
     kloudspeaker.getItemDownloadInfo = function(i) {

@@ -512,33 +512,39 @@
         };
     };
 
-    kloudspeaker.ui.viewmodel = function(view, model) {
+    kloudspeaker.ui.viewmodel = function(view, model, $target) {
         if (!view || !model) return null;
         
         var df = $.Deferred();
         var $v = null;
         if (typeof(view) == "string") {
-
             if (view.startsWith("#"))
                 $v = kloudspeaker.dom.template(view.substring(1));
             //else TODO require view id
         } else if (window.isArray(view)) {
             var tmpl = view[0], d = (view.length > 1) ? view[1] : null;
             $v = kloudspeaker.dom.template(tmpl, d);
-            if (view.length > 2) view[2].append($v);
+            //if (view.length > 2) view[2].append($v);
         } else if (typeof(view) == "object") {
             $v = view;
-            if (view.$element) {
-                $v = view.$element;
-            }
-            if (view.$target) view.$target.append($v);
         }
+        if ($target && $v) $target.append($v);
 
         if (typeof(model) == "string") {
-            require([model], function(m) {
-                kloudspeaker.dom.bind(m, $v);
-                df.resolve(m, $v);
-            });
+            if (!$v) {
+                kloudspeaker.ui._composition.compose($target[0], {
+                    model: model,
+                    view: view,
+                    compositionComplete: function() {
+                        df.resolve(this.model, $(this.parent));
+                    }
+                }, {});
+            } else {
+                require([model], function(m) {
+                    kloudspeaker.dom.bind(m, $v);
+                    df.resolve(m, $v);
+                });
+            }
         } else {
             kloudspeaker.dom.bind(model, $v);
             df.resolve(model, $v);

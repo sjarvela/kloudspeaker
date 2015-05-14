@@ -39,6 +39,12 @@
                         that._views.push(v);
                 });
             });
+            _.each(kloudspeaker.ui._configViews, function(v) {
+                if (v.admin)
+                    that._adminViews.push(v);
+                else
+                    that._views.push(v);
+            });
         }
 
         this.onResize = function() {}
@@ -214,13 +220,12 @@
             that.showLoading(false);
 
             if (v.model && v.view) {
-                kloudspeaker.ui.viewmodel(v.view, v.model).done(function(m, $v) {
+                kloudspeaker.ui.viewmodel(v.view, v.model, that._getContentElement().empty()).done(function(m) {
                     that._activeView = m;
 
                     if (!noStore && v.viewId) kloudspeaker.App.storeView("admin/" + v.viewId);
                     $("#kloudspeaker-configview-header").html(m.title || v.title || '');
 
-                    that._getContentElement().empty().append($v);
                     if (m.onActivate) m.onActivate(that);
                 });
             } else {
