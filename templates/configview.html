@@ -61,7 +61,7 @@
 					<!-- ko if: model.versionCheck -->
 					<a id="system-check-new-version-btn" class="btn localized" text-key="configSystemCheckNewVersion" data-bind="click: checkVersion"></a>
 						<!-- ko if: model.alertType -->
-						<div class="alert" style="margin-top: 20px;" data-bind="html: model.msg"></div>
+						<div style="margin-top: 20px;" data-bind="html: model.msg, attr: {class: 'alert alert-'+model.alertType()}"></div>
 						<!-- /ko -->
 					<!-- /ko -->
 				</div>
