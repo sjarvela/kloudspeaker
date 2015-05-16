@@ -82,14 +82,14 @@ define(['kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/ui/form
 
             getItemActions: function(item) {
                 var result = [];
-                if (that._canRestore(item)) result.push({
+                if (controller.canRestore(item)) result.push({
                     id: 'restore',
                     title: texts.get("pluginTrashBinRestoreAction"),
                     callback: function() {
                         controller.onRestore(item);
                     }
                 });
-                if (that._canDelete(item)) result.push({
+                if (controller.canDelete(item)) result.push({
                     id: 'delete',
                     title: texts.get("pluginTrashBinDeleteAction"),
                     callback: function() {

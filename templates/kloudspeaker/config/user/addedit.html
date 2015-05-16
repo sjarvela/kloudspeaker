@@ -1,0 +1,55 @@
+<div class="kloudspeaker-config-admin-userdialog-content">
+    <form class="form-horizontal">
+        <div class="control-group">
+            <label class="control-label localized" text-key="configAdminUserDialogUsernameTitle"></label>
+            <div class="controls">
+                <input type="text" data-bind="value: model.name"></input>
+            </div>
+        </div>
+        <div class="control-group" data-bind="if: showLanguages">
+            <label class="control-label localized" text-key="configAdminUserDialogLanguageTitle"></label>
+            <div class="controls">
+                <select data-bind="value: model.language, options: model.languageOptions, optionsText: model.languageOptionTitle, optionsCaption: model.languageNoneTitle">
+                </select>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label localized" text-key="configAdminUserDialogEmailTitle"></label>
+            <div class="controls">
+                <input type="text" data-bind="value: model.email"></input>
+            </div>
+        </div>
+        <div class="control-group" data-bind="if: !model.user">
+            <label class="control-label localized" text-key="configAdminUserDialogPasswordTitle"></label>
+            <div class="controls">
+                <input type="text" data-bind="value: model.password"></input>
+                <a class="btn localized" text-key="configAdminUserDialogGeneratePassword" data-bind="click: generatePassword"></a>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label localized" text-key="configAdminUserDialogTypeTitle"></label>
+            <div class="controls">
+                <select data-bind="value: model.type, options: model.userTypeOptions, optionsText: model.userTypeOptionTitle, optionsCaption: model.userTypeNoneTitle">
+                </select>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label localized" text-key="configAdminUserDialogAuthenticationTitle"></label>
+            <div class="controls">
+                <select data-bind="value: model.auth, options: model.authOptions, optionsText: model.authOptionTitle, optionsCaption: model.authNoneTitle">
+                </select>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label localized" text-key="configAdminUserDialogExpirationTitle"></label>
+            <div class="controls">
+                <div class="input-append">
+                    <input type="text" data-bind="value: model.expiration"></input>
+                    <span class="add-on">
+					      <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+					    </span>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

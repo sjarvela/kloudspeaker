@@ -513,39 +513,52 @@
     };
 
     kloudspeaker.ui.viewmodel = function(view, model, $target) {
-        if (!view || !model) return null;
-        
+        if (!model) return null;
+
         var df = $.Deferred();
         var $v = null;
-        if (typeof(view) == "string") {
-            if (view.startsWith("#"))
-                $v = kloudspeaker.dom.template(view.substring(1));
-            //otherwise considered view id resolved via composition & requirejs
-        } else if (window.isArray(view)) {
-            var tmpl = view[0], d = (view.length > 1) ? view[1] : null;
-            $v = kloudspeaker.dom.template(tmpl, d);
-        } else if (typeof(view) == "object") {
-            $v = view;
+        if (view) {
+            if (typeof(view) == "string") {
+                if (view.startsWith("#"))
+                    $v = kloudspeaker.dom.template(view.substring(1));
+                //otherwise considered view id resolved via composition & requirejs
+            } else if (window.isArray(view)) {
+                var tmpl = view[0],
+                    d = (view.length > 1) ? view[1] : null;
+                $v = kloudspeaker.dom.template(tmpl, d);
+            } else if (typeof(view) == "object") {
+                $v = view;
+            }
         }
         if ($target && $v) $target.append($v);
 
-        if (typeof(model) == "string") {
+        if (typeof(model) == "string" || window.isArray(model)) {
+            var _view = false;
+            var _model = window.isArray(model) ? model[0] : model;
+            if (!view) _view = _view = "templates/" + _model; //TODO platform
+            if (typeof(view) == "string") _view = "templates/" + view; //TODO platform
+
+            var ctx = (window.isArray(model) && model.length > 1) ? model[1] : {};
             if (!$v) {
-                kloudspeaker.ui._composition.compose($target[0], {
-                    model: model,
-                    view: view,
+                var c = {
+                    model: _model,
+                    activationData: ctx,
                     compositionComplete: function() {
-                        df.resolve(this.model, $(this.parent));
+                        var $e = $(this.parent);
+                        kloudspeaker.ui.process($e, ['localize']);
+                        df.resolve(this.model, $e);
                     }
-                }, {});
+                };
+                if (_view) c.view = _view;
+                kloudspeaker.ui._composition.compose($target[0], c, {});
             } else {
-                require([model], function(m) {
-                    kloudspeaker.dom.bind(m, $v);
+                require([_model], function(m) {
+                    kloudspeaker.dom.bind(m, ctx, $v);
                     df.resolve(m, $v);
                 });
             }
         } else {
-            kloudspeaker.dom.bind(model, $v);
+            kloudspeaker.dom.bind(model, null, $v);
             df.resolve(model, $v);
         }
         return df;
@@ -1924,16 +1937,14 @@
                 return "";
             }
         });
-        if (spec.element) $dlg.find(".modal-body").append(spec.element);
-
-        kloudspeaker.ui.handlers.localize($dlg);
         $dlg.on('hidden', function(e) {
             if (e.target != $dlg[0]) return;
             $dlg.remove();
         }).modal({
             backdrop: 'static', //!!spec.backdrop,
             show: true,
-            keyboard: true
+            keyboard: true,
+            show: false
         });
         var h = {
             close: function() {
@@ -1948,44 +1959,59 @@
                 if (n) $n.html(n);
             }
         };
+        var $body = $dlg.find(".modal-body");
+        var _model = false;
         $dlg.find(".modal-footer .btn").click(function(e) {
             e.preventDefault();
             var ind = $dlg.find(".modal-footer .btn").index($(this));
             var btn = spec.buttons[ind];
             if (spec["on-button"]) spec["on-button"](btn, h, $dlg);
+            if (_model && _model.onButton) _model.onButton(btn, h);
         });
-        var $body = $dlg.find(".modal-body");
-        if (spec.resizable) {
-            var $header = $dlg.find(".modal-header");
-            var $footer = $dlg.find(".modal-footer");
-            var magicNr = 30; //$body.css("padding-top") + $body.css("padding-bottom"); //TODO??
 
-            $body.css({
-                "max-height": "none",
-                "max-width": "none"
-            });
+        var _onDialogReady = function() {
+                if (spec.html || spec.content) kloudspeaker.ui.handlers.localize($dlg);
+                $dlg.modal('show');
+                if (spec.resizable) {
+                    var $header = $dlg.find(".modal-header");
+                    var $footer = $dlg.find(".modal-footer");
+                    var magicNr = 30; //$body.css("padding-top") + $body.css("padding-bottom"); //TODO??
 
-            var onResize = function() {
-                center($dlg);
-                var h = $dlg.innerHeight() - $header.outerHeight() - $footer.outerHeight() - magicNr;
-                $body.css("height", h);
+                    $body.css({
+                        "max-height": "none",
+                        "max-width": "none"
+                    });
+
+                    var onResize = function() {
+                        center($dlg);
+                        var h = $dlg.innerHeight() - $header.outerHeight() - $footer.outerHeight() - magicNr;
+                        $body.css("height", h);
+                    }
+
+                    $dlg.css({
+                        "max-height": "none",
+                        "max-width": "none",
+                        "min-height": $dlg.outerHeight() + "px",
+                        "min-width": $dlg.outerWidth() + "px"
+                    }).on("resize", onResize).resizable();
+                    if (spec.initSize) {
+                        $dlg.css({
+                            "width": spec.initSize[0] + "px",
+                            "height": spec.initSize[1] + "px"
+                        });
+                    }
+                    onResize();
+                }
+
+                if (spec["on-show"]) spec["on-show"](h, $dlg);
+                if (_model && _model.onShow) _model.onShow(h);
             }
-
-            $dlg.css({
-                "max-height": "none",
-                "max-width": "none",
-                "min-height": $dlg.outerHeight() + "px",
-                "min-width": $dlg.outerWidth() + "px"
-            }).on("resize", onResize).resizable();
-            if (spec.initSize) {
-                $dlg.css({
-                    "width": spec.initSize[0] + "px",
-                    "height": spec.initSize[1] + "px"
-                });
-            }
-            onResize();
-        }
-        if (spec.template) {
+            // content options: element, template, model or none
+        if (spec.element) {
+            $dlg.find(".modal-body").append(spec.element);
+            kloudspeaker.ui.handlers.localize($dlg);
+            _onDialogReady();
+        } else if (spec.template) {
             var tmpl = spec.template;
             var d = null;
             if (window.isArray(spec.template)) {
@@ -1993,11 +2019,22 @@
                 d = spec.template.length > 1 ? spec.template[1] : null;
             }
             kloudspeaker.dom.template(tmpl, d).appendTo($body);
+            if (spec.model) {
+                _model = spec.model;
+                kloudspeaker.dom.bind(spec.model, $body);
+            } else {
+                kloudspeaker.ui.handlers.localize($dlg);
+            }
+            _onDialogReady();
+        } else if (spec.model) {
+            kloudspeaker.ui.viewmodel(spec.view, spec.model, $body).done(function(m) {
+                _model = m;
+                _onDialogReady();
+            });
+        } else {
+            _onDialogReady();
         }
-        if (spec.model) {
-            kloudspeaker.dom.bind(spec.model, $body);
-        }
-        if (spec["on-show"]) spec["on-show"](h, $dlg);
+
         dh._activeDialog = h;
         return h;
     };

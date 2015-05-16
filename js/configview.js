@@ -221,8 +221,8 @@
 
             that.showLoading(false);
 
-            if (v.model && v.view) {
-                kloudspeaker.ui.viewmodel(v.view, v.model, that._getContentElement().empty()).done(function(m) {
+            if (v.model) {
+                kloudspeaker.ui.viewmodel(v.view, [v.model, { settings: that._settings}], that._getContentElement().empty()).done(function(m) {
                     that._activeView = m;
 
                     if (!noStore && v.viewId) kloudspeaker.App.storeView("admin/" + v.viewId);
@@ -809,6 +809,23 @@
         }
 
         this.onAddEditUser = function(u, cb) {
+            if (kloudspeaker.settings.dev) {
+                kloudspeaker.ui.dialogs.custom({
+                    title: kloudspeaker.ui.texts.get(u ? 'configAdminUsersUserDialogEditTitle' : 'configAdminUsersUserDialogAddTitle'),
+                    model: ['kloudspeaker/config/user/addedit', {
+                        user: u,
+                        authenticationOptions: that._authenticationOptions
+                    }],
+                    buttons: [{
+                        id: "yes",
+                        "title": kloudspeaker.ui.texts.get('dialogSave')
+                    }, {
+                        id: "no",
+                        "title": kloudspeaker.ui.texts.get('dialogCancel')
+                    }]
+                });
+                return;
+            }
             var $content = false;
             var $name = false;
             var $email = false;

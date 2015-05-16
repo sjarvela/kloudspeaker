@@ -308,7 +308,10 @@ var kloudspeaker_defaults = {
     };
 
     kloudspeaker.App.initModules = function() {
-        var packages = [];
+        var packages = [{
+            name: 'templates',
+            location: '../templates'
+        }];
         if (kloudspeaker.settings.modules && kloudspeaker.settings.modules.paths) {
             _.each(kloudspeaker.helpers.getKeys(kloudspeaker.settings.modules.paths), function(k) {
                 packages.push({
@@ -1299,16 +1302,40 @@ var kloudspeaker_defaults = {
         return $("#" + templateId).tmpl(data, opt);
     };
 
-    md.bind = function(model, $e) {
+    md.bind = function(model, activationData, $e) {
         if (!$e || $e.length === 0) return;
+        if (model.activate) model.activate(activationData);
         ko.applyBindings(model, $e[0]);
         kloudspeaker.ui.process($e, ['localize']);
-        if (model.onAttach) model.onAttach($e);
+        if (model.activate) model.attached($e);
     };
 
     /* HELPERS */
 
     kloudspeaker.helpers = {
+        generatePassword: function(l) {
+            var length = l || 8;
+            var password = '';
+            var c;
+
+            for (var i = 0; i < length; i++) {
+                while (true) {
+                    c = (parseInt(Math.random() * 1000, 10) % 94) + 33;
+                    if (kloudspeaker.helpers.isValidPasswordChar(c)) break;
+                }
+                password += String.fromCharCode(c);
+            }
+            return password;
+        },
+
+        isValidPasswordChar: function(c) {
+            if (c >= 33 && c <= 47) return false;
+            if (c >= 58 && c <= 64) return false;
+            if (c >= 91 && c <= 96) return false;
+            if (c >= 123 && c <= 126) return false;
+            return true;
+        },
+
         getPluginActions: function(plugins) {
             var list = [];
 
