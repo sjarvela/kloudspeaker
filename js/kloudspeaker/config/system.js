@@ -28,7 +28,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/ui/texts'
                 }
             }).fail(function() {
                 model.msg(texts.get("configSystemVersionCheckFailed"));
-                model.alert('error');
+                model.alertType('error');
             });
         },
 

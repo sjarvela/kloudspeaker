@@ -308,10 +308,6 @@ var kloudspeaker_defaults = {
     };
 
     kloudspeaker.App.initModules = function() {
-        var paths = {
-            'durandal': 'durandal/js/',
-            'text': 'requirejs-text/text'
-        };
         var packages = [];
         if (kloudspeaker.settings.modules && kloudspeaker.settings.modules.paths) {
             _.each(kloudspeaker.helpers.getKeys(kloudspeaker.settings.modules.paths), function(k) {
@@ -323,18 +319,9 @@ var kloudspeaker_defaults = {
         }
 
         require.config({
-            baseUrl: "js",
-            paths: paths,
-            packages: packages,
-            shim: {
-                'bootstrap': {
-                    deps: ['jquery'],
-                    exports: 'jQuery'
-                }
-            }
+            packages: packages
         });
-        define('jquery', [], function () { return $; });
-        define('knockout', [], ko);
+
         define('kloudspeaker/app', [], kloudspeaker.App);
         define('kloudspeaker/settings', [], kloudspeaker.settings);
         define('kloudspeaker/session', [], {

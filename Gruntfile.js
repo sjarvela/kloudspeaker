@@ -81,7 +81,9 @@ module.exports = function(grunt) {
                     'js/plugins.js',
                     'js/configview.js',
                     'js/uploader.js',
-                    'out/modules.js'
+                    'js/lib/require.js',
+                    'js/module-config.js',
+                    'out/modules.js',
                 ],
                 dest: 'dist/js/<%= pkg.name %>.js'
             },
@@ -101,7 +103,6 @@ module.exports = function(grunt) {
                     'js/lib/jquery-singledoubleclick.js',
                     'js/lib/ZeroClipboard.js',
                     'js/lib/knockout-3.3.0.js',
-                    'js/lib/require.js',
 
                     'dist/js/<%= pkg.name %>.js',
                 ],
@@ -184,7 +185,7 @@ module.exports = function(grunt) {
                 options: {
                     baseUrl: "js",
                     //mainConfigFile: "path/to/config.js",
-                    name: "kloudspeaker/main",
+                    include: ['requirejs-text/text', 'durandal/system', 'durandal/viewlocator', 'durandal/composition', 'kloudspeaker/config/system'],
                     out: "out/modules.js",
                     paths: {
                         'jquery': 'empty:',
