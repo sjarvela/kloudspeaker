@@ -2011,21 +2011,27 @@
             $dlg.find(".modal-body").append(spec.element);
             kloudspeaker.ui.handlers.localize($dlg);
             _onDialogReady();
-        } else if (spec.template) {
+        /*} else if (spec.template) {
+            if (spec.model) {
+                kloudspeaker.ui.viewmodel(spec.view, spec.model, $body).done(function(m) {
+                    _model = m;
+                    _onDialogReady();
+                });
+            }
             var tmpl = spec.template;
             var d = null;
             if (window.isArray(spec.template)) {
                 tmpl = spec.template[0];
                 d = spec.template.length > 1 ? spec.template[1] : null;
             }
-            kloudspeaker.dom.template(tmpl, d).appendTo($body);
+            var $t = kloudspeaker.dom.template(tmpl, d).appendTo($body);
             if (spec.model) {
                 _model = spec.model;
-                kloudspeaker.dom.bind(spec.model, $body);
+                kloudspeaker.dom.bind(spec.model, {}, $body);
             } else {
                 kloudspeaker.ui.handlers.localize($dlg);
             }
-            _onDialogReady();
+            _onDialogReady();*/
         } else if (spec.model) {
             kloudspeaker.ui.viewmodel(spec.view, spec.model, $body).done(function(m) {
                 _model = m;

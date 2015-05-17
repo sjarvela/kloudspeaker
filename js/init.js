@@ -1321,7 +1321,7 @@ var kloudspeaker_defaults = {
         if (model.activate) model.activate(activationData);
         ko.applyBindings(model, $e[0]);
         kloudspeaker.ui.process($e, ['localize']);
-        if (model.activate) model.attached($e);
+        if (model.attached) model.attached($e);
     };
 
     /* HELPERS */
