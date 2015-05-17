@@ -117,16 +117,26 @@ var kloudspeaker_defaults = {
 
         kloudspeaker.ui.initialize().done(function() {
             kloudspeaker.App.initModules();
-            var deps = ['durandal/system', 'durandal/viewlocator', 'durandal/composition',  'durandal/plugins/widget', 'kloudspeaker/app'];
+            var deps = ['knockout', 'durandal/system', 'durandal/viewlocator', 'durandal/composition', 'durandal/plugins/widget', 'kloudspeaker/app'];
             if (kloudspeaker.settings.modules.load) deps = deps.concat(kloudspeaker.settings.modules.load);
 
             // wait for modules initialization
-            require(deps, function(ds, vl, comp, dw, app) {
+            require(deps, function(ko, ds, vl, comp, dw, app) {
                 kloudspeaker.ui._composition = comp;
 
                 //install durandal widget plugin
                 dw.install({});
                 dw.registerKind('time-picker');
+
+                //configure knockout validation
+                ko.validation.init({
+                    insertMessages: true,
+                    decorateInputElement: true,
+                    errorElementClass: 'error',
+                    errorMessageClass: 'help-inline',
+                    parseInputAttributes: true,
+                    //decorateElementOnModified: false,
+                });
 
                 ds.debug(!!kloudspeaker.settings.debug); //TODO remove
 
