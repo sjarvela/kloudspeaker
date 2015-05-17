@@ -117,12 +117,16 @@ var kloudspeaker_defaults = {
 
         kloudspeaker.ui.initialize().done(function() {
             kloudspeaker.App.initModules();
-            var deps = ['durandal/system', 'durandal/viewlocator', 'durandal/composition', 'kloudspeaker/app'];
+            var deps = ['durandal/system', 'durandal/viewlocator', 'durandal/composition',  'durandal/plugins/widget', 'kloudspeaker/app'];
             if (kloudspeaker.settings.modules.load) deps = deps.concat(kloudspeaker.settings.modules.load);
 
             // wait for modules initialization
-            require(deps, function(ds, vl, comp, app) {
+            require(deps, function(ds, vl, comp, dw, app) {
                 kloudspeaker.ui._composition = comp;
+
+                //install durandal widget plugin
+                dw.install({});
+                dw.registerKind('time-picker');
 
                 ds.debug(!!kloudspeaker.settings.debug); //TODO remove
 

@@ -18,22 +18,20 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils', 'kloudspeaker/ui/texts', 
 
         userTypeOptions: ['a'],
         userTypeOptionTitle: function(type) {
-            return "TODO "+type;
+            return texts.get('configAdminUsersType_' + type);
         },
-        userTypeNoneTitle: 'todo none',
+        userTypeNoneTitle: texts.get('configAdminUsersTypeNormal'),
 
         authOptions: [],
         authOptionTitle: function(ao) {
             return ao;
         },
-        authNoneTitle: 'todo none',
+        authNoneTitle: "",
     };
     return {
         activate: function(o) {
-            console.log("activate");
-            console.log(o);
             model.authOptions = o.authenticationOptions;
-
+            model.authNoneTitle = texts.get('configAdminUsersUserDialogAuthDefault', o.authenticationOptions[0]);
             if (o.user) {
                 model.user = o.user;
                 model.name(o.user.name);
@@ -47,11 +45,20 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils', 'kloudspeaker/ui/texts', 
         generatePassword: function() {
             model.password(utils.generatePassword());
         },
-        onButton: function(btn, d) {
-            if (btn.id == 'no') {
-                d.close();
+        onDialogButton: function(id) {
+            if (id == 'no') {
+                this.close();
                 return;
             }
+            var user = {
+                name: model.name(),
+                email: model.email(),
+                user_type: model.type(),
+                expiration: model.expiration(),
+                language: model.language(),
+                auth: model.auth()                
+            }
+            console.log(user);
         },
         showLanguages: showLanguages,
 

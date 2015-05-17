@@ -1966,7 +1966,7 @@
             var ind = $dlg.find(".modal-footer .btn").index($(this));
             var btn = spec.buttons[ind];
             if (spec["on-button"]) spec["on-button"](btn, h, $dlg);
-            if (_model && _model.onButton) _model.onButton(btn, h);
+            if (_model && _model.onDialogButton) _model.onDialogButton.apply(h, [btn.id]);
         });
 
         var _onDialogReady = function() {
