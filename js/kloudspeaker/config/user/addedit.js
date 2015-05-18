@@ -52,10 +52,10 @@ define(['kloudspeaker/core/user/repository', 'kloudspeaker/settings', 'kloudspea
 
                         model.name(u.name);
                         model.email(u.email);
-                        model.type(u.user_type);
+                        model.type(u.user_type ? u.user_type.toLowerCase() : null);
                         model.expiration(u.expiration);
-                        model.language(u.language);
-                        model.auth(u.auth);
+                        model.language(u.lang ? u.lang.toLowerCase() : null);
+                        model.auth(u.auth ? u.auth.toLowerCase() : null);
                     });
                 }
             },
