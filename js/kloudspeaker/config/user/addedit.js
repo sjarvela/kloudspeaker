@@ -1,8 +1,10 @@
-define(['kloudspeaker/settings', 'kloudspeaker/utils', 'kloudspeaker/ui/texts', 'knockout'], function(settings, utils, texts, ko) {
+define(['kloudspeaker/core/user/repository', 'kloudspeaker/settings', 'kloudspeaker/utils', 'kloudspeaker/ui/texts', 'knockout'], function(repository, settings, utils, texts, ko) {
     return function() {
         var showLanguages = (settings.language.options && settings.language.options.length > 1);
         var model = {
             user: null,
+            newUser: true,
+
             name: ko.observable('').extend({
                 required: true
             }),
@@ -12,6 +14,8 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils', 'kloudspeaker/ui/texts', 
             expiration: ko.observable(null),
             language: ko.observable(null),
             auth: ko.observable(null),
+
+            passwordMissing: ko.observable(false),
 
             languageOptions: settings.language.options,
             languageOptionTitle: function(l) {
@@ -40,17 +44,20 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils', 'kloudspeaker/ui/texts', 
             activate: function(o) {
                 model.authOptions = o.authenticationOptions;
                 model.authNoneTitle = texts.get('configAdminUsersUserDialogAuthDefault', o.authenticationOptions[0]);
-                if (o.user) {
-                    model.user = o.user;
-                    model.name(o.user.name);
-                    model.email(o.user.email);
-                    model.type(o.user.user_type);
-                    model.expiration(o.user.expiration);
-                    model.language(o.user.language);
-                    model.auth(o.user.auth);
+                if (o.userId) {
+                    model.newUser = false;
+
+                    repository.getUser(o.userId).done(function(u) {
+                        model.user = u;
+
+                        model.name(u.name);
+                        model.email(u.email);
+                        model.type(u.user_type);
+                        model.expiration(u.expiration);
+                        model.language(u.language);
+                        model.auth(u.auth);
+                    });
                 }
-            },
-            attached: function() {
             },
             generatePassword: function() {
                 model.password(utils.generatePassword());
@@ -60,19 +67,34 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils', 'kloudspeaker/ui/texts', 
                     this.close();
                     return;
                 }
+
+                //validate
+                model.passwordMissing(false);
+                if (model.newUser) {
+                    var effectiveAuth = model.auth() || model.authOptions[0];
+                    var pwRequired = (effectiveAuth === 'pw');
+                    if (pwRequired && (!model.password() || model.password().length === 0)) {
+                        model.passwordMissing(true);
+                        return;
+                    }
+                }
+                if (model.errors().length > 0) {
+                    return;
+                }
+
+                // store
                 var user = {
                     name: model.name(),
                     email: model.email(),
                     user_type: model.type(),
                     expiration: model.expiration(),
-                    language: model.language(),
+                    lang: model.language(),
                     auth: model.auth()
                 }
-                if (model.errors().length > 0) {
-                    console.log("invalid");
-                    console.log(model.errors());
-                }
-                console.log(user);
+                if (model.newUser) {
+                    user.password = model.password();
+                    repository.addUser(user).done(this.complete);
+                } else repository.updateUser(model.user.id, user).done(this.complete);
             },
             showLanguages: showLanguages,
 

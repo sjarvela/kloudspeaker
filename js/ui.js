@@ -553,6 +553,7 @@
                 kloudspeaker.ui._composition.compose($target[0], c, {});
             } else {
                 require([_model], function(m) {
+                    if (typeof(m) == 'function') m = m();
                     kloudspeaker.dom.bind(m, ctx, $v);
                     df.resolve(m, $v);
                 });
@@ -1946,6 +1947,7 @@
             keyboard: true,
             show: false
         });
+        var df = $.Deferred();
         var h = {
             close: function() {
                 $dlg.modal('hide');
@@ -1957,7 +1959,19 @@
             setInfo: function(n) {
                 var $n = $dlg.find(".modal-footer > .info").empty();
                 if (n) $n.html(n);
-            }
+            },
+            resolve: df.resolve,
+            complete: function(o) {
+                h.close();
+                df.resolve(o);
+            },
+            reject: df.reject,
+            cancel: function() {
+                h.close();
+                df.reject();
+            },
+            done: df.done,
+            fail: df.fail
         };
         var $body = $dlg.find(".modal-body");
         var _model = false;
@@ -2011,27 +2025,6 @@
             $dlg.find(".modal-body").append(spec.element);
             kloudspeaker.ui.handlers.localize($dlg);
             _onDialogReady();
-        /*} else if (spec.template) {
-            if (spec.model) {
-                kloudspeaker.ui.viewmodel(spec.view, spec.model, $body).done(function(m) {
-                    _model = m;
-                    _onDialogReady();
-                });
-            }
-            var tmpl = spec.template;
-            var d = null;
-            if (window.isArray(spec.template)) {
-                tmpl = spec.template[0];
-                d = spec.template.length > 1 ? spec.template[1] : null;
-            }
-            var $t = kloudspeaker.dom.template(tmpl, d).appendTo($body);
-            if (spec.model) {
-                _model = spec.model;
-                kloudspeaker.dom.bind(spec.model, {}, $body);
-            } else {
-                kloudspeaker.ui.handlers.localize($dlg);
-            }
-            _onDialogReady();*/
         } else if (spec.model) {
             kloudspeaker.ui.viewmodel(spec.view, spec.model, $body).done(function(m) {
                 _model = m;

@@ -3,7 +3,7 @@
         <div class="control-group" data-bind="validationElement: model.name">
             <label class="control-label localized" text-key="configAdminUserDialogUsernameTitle"></label>
             <div class="controls">
-                <input type="text" data-bind="value: model.name"></input>
+                <input type="text" data-bind="value: model.name" required autofocus></input>
             </div>
         </div>
         <div class="control-group" data-bind="if: showLanguages">
@@ -19,13 +19,15 @@
                 <input type="text" data-bind="value: model.email"></input>
             </div>
         </div>
-        <div class="control-group" data-bind="if: !model.user">
+        <!-- ko if: model.newUser -->
+        <div class="control-group" data-bind="validationElement: model.password, attr: {class: 'control-group ' + (model.passwordMissing() ? 'error' : '')}">
             <label class="control-label localized" text-key="configAdminUserDialogPasswordTitle"></label>
             <div class="controls">
                 <input type="text" data-bind="value: model.password"></input>
                 <a class="btn localized" text-key="configAdminUserDialogGeneratePassword" data-bind="click: generatePassword"></a>
             </div>
         </div>
+        <!-- /ko -->
         <div class="control-group">
             <label class="control-label localized" text-key="configAdminUserDialogTypeTitle"></label>
             <div class="controls">

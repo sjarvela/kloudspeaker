@@ -393,7 +393,7 @@
 		"configSystemVersionCheckUpgradeAvailable": "Kloudspeaker version {0} is available for <a href='{2}' target='_blank'>download</a>.",
 		"configSystemVersionCheckLatest": "Latest version is already installed",
 		"configSystemVersionCheckFailed": "Unable to check version",
-		
+
 		"configUserAccountNavTitle": "Account",
 		"configUserAccountUsernameTitle": "User",
 		"configUserAccountPasswordTitle": "Password",

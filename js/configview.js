@@ -89,7 +89,7 @@
                             viewId: 'system',
                             title: kloudspeaker.ui.texts.get("configSystemNavTitle"),
                             model: 'kloudspeaker/config/system',
-                            view: ['#kloudspeaker-tmpl-config-systemview']
+                            view: '#kloudspeaker-tmpl-config-systemview'
                         });
                     }
 
@@ -227,8 +227,6 @@
 
                     if (!noStore && v.viewId) kloudspeaker.App.storeView("admin/" + v.viewId);
                     $("#kloudspeaker-configview-header").html(m.title || v.title || '');
-
-                    if (m.onActivate) m.onActivate(that);
                 });
             } else {
                 that._activeView = v;
@@ -466,9 +464,7 @@
                     }],
                     onRowAction: function(id, u) {
                         if (id == "edit") {
-                            kloudspeaker.service.get("configuration/users/" + u.id).done(function(user) {
-                                that.onAddEditUser(user, updateUsers);
-                            });
+                            that.onAddEditUser(u.id, updateUsers);
                         } else if (id == "pw") {
                             that.onChangePassword(u);
                         } else if (id == "remove") {
@@ -808,25 +804,22 @@
             });
         }
 
-        this.onAddEditUser = function(u, cb) {
-            if (kloudspeaker.settings.dev) {
-                kloudspeaker.ui.dialogs.custom({
-                    title: kloudspeaker.ui.texts.get(u ? 'configAdminUsersUserDialogEditTitle' : 'configAdminUsersUserDialogAddTitle'),
-                    model: ['kloudspeaker/config/user/addedit', {
-                        user: u,
-                        authenticationOptions: that._authenticationOptions
-                    }],
-                    buttons: [{
-                        id: "yes",
-                        "title": kloudspeaker.ui.texts.get('dialogSave')
-                    }, {
-                        id: "no",
-                        "title": kloudspeaker.ui.texts.get('dialogCancel')
-                    }]
-                });
-                return;
-            }
-            var $content = false;
+        this.onAddEditUser = function(userId, cb) {
+            kloudspeaker.ui.dialogs.custom({
+                title: kloudspeaker.ui.texts.get(userId ? 'configAdminUsersUserDialogEditTitle' : 'configAdminUsersUserDialogAddTitle'),
+                model: ['kloudspeaker/config/user/addedit', {
+                    userId: userId,
+                    authenticationOptions: that._authenticationOptions
+                }],
+                buttons: [{
+                    id: "yes",
+                    "title": kloudspeaker.ui.texts.get('dialogSave')
+                }, {
+                    id: "no",
+                    "title": kloudspeaker.ui.texts.get('dialogCancel')
+                }]
+            }).done(cb);
+            /*var $content = false;
             var $name = false;
             var $email = false;
             var $password = false;
@@ -934,7 +927,7 @@
 
                     h.center();
                 }
-            });
+            });*/
         }
     }
 

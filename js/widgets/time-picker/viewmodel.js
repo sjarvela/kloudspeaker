@@ -1,7 +1,6 @@
 define(['durandal/composition', 'knockout', 'jquery', 'kloudspeaker/ui/texts'], function(composition, ko, $, texts) {
     var ctor = function() {};
     ctor.prototype.activate = function(settings) {
-        console.log("time-picker");
         this.settings = settings;
     };
     ctor.prototype.attached = function(e) {
@@ -16,6 +15,9 @@ define(['durandal/composition', 'knockout', 'jquery', 'kloudspeaker/ui/texts'], 
         });
         $e.on("changeDate", function(ev) {
             that.settings.value(api.get());
+        });
+        that.settings.value.subscribe(function(newValue) {
+            api.set(newValue);
         });
     }
     return ctor;

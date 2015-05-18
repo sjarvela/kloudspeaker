@@ -130,7 +130,7 @@ var kloudspeaker_defaults = {
 
                 //configure knockout validation
                 ko.validation.init({
-                    insertMessages: true,
+                    insertMessages: false,
                     decorateInputElement: true,
                     errorElementClass: 'error',
                     errorMessageClass: 'help-inline',
@@ -354,6 +354,7 @@ var kloudspeaker_defaults = {
         define('kloudspeaker/features', [], kloudspeaker.features);
         define('kloudspeaker/dom', [], kloudspeaker.dom);
         define('kloudspeaker/utils', [], kloudspeaker.helpers);
+        kloudspeaker.helpers.Base64 = window.Base64;
         define('kloudspeaker/ui/texts', [], kloudspeaker.ui.texts);
         define('kloudspeaker/ui/formatters', [], kloudspeaker.ui.formatters);
         define('kloudspeaker/ui/controls', [], kloudspeaker.ui.controls);
