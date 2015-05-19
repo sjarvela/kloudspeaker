@@ -34,6 +34,10 @@ class Registration extends PluginBase {
 		return array("require_approval" => $this->getSetting("require_approval", TRUE));
 	}
 
+	public function getClientModuleId() {
+		return "kloudspeaker/registration";
+	}
+
 	public function __toString() {
 		return "RegistrationPlugin";
 	}

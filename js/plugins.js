@@ -3649,7 +3649,7 @@
     /**
      *  Registration -plugin
      **/
-    kloudspeaker.plugin.RegistrationPlugin = function() {
+    /*kloudspeaker.plugin.RegistrationPlugin = function() {
         var that = this;
 
         this.initialize = function() {
@@ -3847,5 +3847,5 @@
                 kloudspeaker.App.openPage('registration/new');
             }
         };
-    }
+    }*/
 }(window.jQuery, window.kloudspeaker);

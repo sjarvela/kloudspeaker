@@ -24,7 +24,7 @@
             }
             if (kloudspeaker.features.hasFeature('registration') && kloudspeaker.plugins.exists("plugin-registration")) {
                 $("#kloudspeaker-login-register").click(function() {
-                    kloudspeaker.plugins.get("plugin-registration").show();
+                    kloudspeaker.plugins.get("plugin-registration").openRegistration();
                 }).show();
             }
 

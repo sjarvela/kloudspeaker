@@ -137,6 +137,17 @@ var kloudspeaker_defaults = {
                     parseInputAttributes: true,
                     //decorateElementOnModified: false,
                 });
+                ko.validation.rules['areSame'] = {
+                    getValue: function(o) {
+                        return (typeof o === 'function' ? o() : o);
+                    },
+                    validator: function(val, otherField) {
+                        var ov = this.getValue(otherField);
+                        return val === ov;
+                    },
+                    message: 'The fields must have the same value'
+                };
+                ko.validation.registerExtenders();
 
                 ds.debug(!!kloudspeaker.settings.debug); //TODO remove
 
@@ -220,6 +231,10 @@ var kloudspeaker_defaults = {
                     name: pl["client_module_id"],
                     location: pl["client_module_path"]
                 });
+                packages.push({
+                    name: "templates/" + pl["client_module_id"],
+                    location: pl["client_module_path"]
+                });
             }
         });
         var df = $.Deferred();
@@ -280,11 +295,32 @@ var kloudspeaker_defaults = {
 
     kloudspeaker.App._getView = function(id, cb) {
         var h = kloudspeaker.App._views[id[0]];
-        if (h && h.getView) {
-            var view = h.getView(id, kloudspeaker.App.pageParams);
-            if (view && view.done) view.done(cb);
-            else cb(view);
-        } else cb(false);
+        var view = false;
+        if (!h) {
+            cb(false);
+            return;
+        }
+        if (typeof(h) == 'function') {
+            view = h(id, kloudspeaker.App.pageParams);
+        } else if (h.model) {
+            view = h;
+        } else if (h.getView) {
+            view = h.getView(id, kloudspeaker.App.pageParams);
+        }
+        if (!view) {
+            cb(false);
+            return;
+        }
+
+        if (view.model) {
+            kloudspeaker.ui.viewmodel(view.view, view.model, kloudspeaker.App.getElement().empty()).done(function(m) {
+                kloudspeaker.App.activeView = m;
+                kloudspeaker.App.activeViewId = id[0];
+                if (kloudspeaker.App._initDf.state() == "pending") kloudspeaker.App._initDf.resolve();
+            });
+        } else if (view.done) {
+            view.done(cb);
+        } else cb(view);
     };
 
     kloudspeaker.App.onRestoreState = function(url, o) {
@@ -372,6 +408,9 @@ var kloudspeaker_defaults = {
         kloudspeaker.ui._configViews = {};
         kloudspeaker.ui._fileViewHandlers = [];
         define('kloudspeaker/ui/views', [], {
+            registerView: function(id, v) {
+                kloudspeaker.App.registerView(id, v);
+            },
             registerConfigView: function(v) {
                 kloudspeaker.ui._configViews[v.id] = v;
             },

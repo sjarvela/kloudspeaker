@@ -1,0 +1,22 @@
+@media (min-width: 980px) {
+    .kloudspeaker-registration-page {
+        margin-top: -70px;
+    }
+}
+
+@media (max-width: 979px) {
+    .kloudspeaker-registration-page {
+        margin-top: 20px;
+    }	
+}
+
+.kloudspeaker-registration-page .kloudspeaker-fullpage-form-bg {
+    position: fixed;
+    margin: 0;
+    z-index: 1;
+}
+
+.kloudspeaker-registration-page .kloudspeaker-fullpage-form {
+    position: relative;
+    z-index: 2;
+}

@@ -1,0 +1,44 @@
+<div class="kloudspeaker-fullpage-form-bg">
+	<div id="kloudspeaker-registration-main" class="container kloudspeaker-fullpage-form center">
+		<form id="kloudspeaker-registration-confirm-form" class="form" style="display: none">
+			<div class="kloudspeaker-logo"></div>
+			
+			<legend class="localized" text-key="registrationConfirmTitle"></legend>
+			
+			<p class="localized" text-key="registrationConfirmMessage"></p>
+			
+			<div class="control-group">
+				<label class="control-label localized" for="registration-confirm-email" text-key="registrationConfirmEmail"></label>
+				<div class="controls">
+					<input type="text" id="registration-confirm-email" class="hintbox" hint-key="registrationConfirmEmail" disabled>
+				</div>
+			</div>
+			
+			<div class="control-group">
+				<label class="control-label localized" for="registration-confirm-key" text-key="registrationConfirmKey"></label>
+				<div class="controls">
+					<input type="text" id="registration-confirm-key" class="hintbox" hint-key="registrationConfirmKey">
+				</div>
+			</div>
+	
+			<div class="control-group">
+				<div class="controls">
+					<a id="register-confirm-button" class="localized btn btn-large btn-primary primary-action" text-key="registrationConfirmSubmit"></a>
+				</div>
+			</div>
+		</form>
+		<div id="kloudspeaker-registration-confirm-success" style="display: none">
+			<h1><i class="icon-ok"></i>&nbsp;&nbsp;<span class="localized" text-key="registrationConfirmSuccessTitle"></span></h1>
+			<p class="localized"text-key="registrationConfirmSuccessMessage"></p>
+			<a id="register-login-button" class="localized btn btn-large btn-primary primary-action" text-key="registrationContinueButton" href="?"></a>
+		</div>
+		<div id="kloudspeaker-registration-confirm-success-wait-approval" style="display: none">
+			<h1><i class="icon-ok"></i>&nbsp;&nbsp;<span class="localized" text-key="registrationConfirmSuccessWaitApprovalTitle"></span></h1>
+			<p class="localized"text-key="registrationConfirmSuccessWaitApprovalMessage"></p>
+		</div>
+	</div>
+</div>
+
+<script id="kloudspeaker-tmpl-registration-errormessage" type="text/x-jquery-tmpl">
+	<h2><i class="icon-exclamation-sign"></i>&nbsp;&nbsp;${message}</h2>
+</script>

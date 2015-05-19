@@ -74,7 +74,7 @@ define(['kloudspeaker/core/user/repository', 'kloudspeaker/settings', 'kloudspea
                     var effectiveAuth = model.auth() || model.authOptions[0];
                     var pwRequired = (effectiveAuth === 'pw');
                     if (pwRequired && (!model.password() || model.password().length === 0)) {
-                        model.passwordMissing(true);
+                        model.passwordMissing(true);    //TODO dynamic validation
                         return;
                     }
                 }
