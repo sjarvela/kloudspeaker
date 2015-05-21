@@ -222,7 +222,7 @@ class TrashBinManager {
 	}
 
 	private function isRestoreForbidden($item, $originalItem) {
-		if (!$this->env->authentication()->isAdmin() and strcasecmp($this->env->authentication()->userId(), $i["user_id"]) != 0) {
+		if (!$this->env->authentication()->isAdmin() and strcasecmp($this->env->session()->userId(), $item["user_id"]) != 0) {
 			return "unauthorized";
 		}
 		if ($originalItem->exists()) {
