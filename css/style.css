@@ -135,7 +135,7 @@ input[type="color"],
     display: none;
 }
 
-.kloudspeaker-fullpage-form-bg {
+.kloudspeaker-fullpage-form-bg, .kloudspeaker-fullpage-bg {
     position: absolute;
     top: 0;
     left: 0;
@@ -167,7 +167,18 @@ input[type="color"],
     /* IE6-9 */
 }
 
-.kloudspeaker-fullpage-form-bg .container.wide {
+.kloudspeaker-fullpage .kloudspeaker-fullpage-bg {
+    position: fixed;
+    margin: 0;
+    z-index: 1;
+}
+
+.kloudspeaker-fullpage .kloudspeaker-fullpage-form {
+    position: relative;
+    z-index: 2;
+}
+
+.kloudspeaker-fullpage-form-bg .container.wide, .kloudspeaker-fullpage-form.wide {
     max-width: 600px;
 }
 

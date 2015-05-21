@@ -117,11 +117,12 @@ var kloudspeaker_defaults = {
 
         kloudspeaker.ui.initialize().done(function() {
             kloudspeaker.App.initModules();
-            var deps = ['knockout', 'durandal/system', 'durandal/viewlocator', 'durandal/composition', 'durandal/plugins/widget', 'kloudspeaker/app'];
+            var deps = ['knockout', 'durandal/system', 'durandal/viewlocator', 'durandal/composition', 'durandal/binder', 'durandal/plugins/widget', 'kloudspeaker/app'];
             if (kloudspeaker.settings.modules.load) deps = deps.concat(kloudspeaker.settings.modules.load);
 
             // wait for modules initialization
-            require(deps, function(ko, ds, vl, comp, dw, app) {
+            require(deps, function(ko, ds, vl, comp, binder, dw, app) {
+                ds.debug(!!kloudspeaker.settings.debug); //TODO remove
                 kloudspeaker.ui._composition = comp;
 
                 //install durandal widget plugin
@@ -149,7 +150,37 @@ var kloudspeaker_defaults = {
                 };
                 ko.validation.registerExtenders();
 
-                ds.debug(!!kloudspeaker.settings.debug); //TODO remove
+                // i18n
+                var _i18n = function(e, va) {
+                    var v = va();
+                    var value = ko.unwrap(v);
+                    var loc = kloudspeaker.ui.texts.get(value) || '';
+                    var $e = $(e);
+                    var target = $e.attr('data-i18n-bind-target');
+                    if (target && target != 'text')
+                        $a.attr(target, loc);
+                    else
+                        $e.text(loc);
+                }
+                comp.addBindingHandler('i18n', {
+                    //init: _i18n,
+                    update: _i18n
+                });
+
+                binder.binding = function(obj, view) {
+                    $(view).find("[data-i18n]").each(function() {
+                        var $t = $(this);
+                        var key = $t.attr("data-i18n");
+                        var attr = false;
+                        if (key.indexOf('[') === 0) {
+                            var parts = key.split(']');
+                            key = parts[1];
+                            attr = parts[0].substr(1, parts[0].length - 1);
+                        }
+                        if (!attr) $t.text(kloudspeaker.ui.texts.get(key));
+                        else $t.attr(attr, kloudspeaker.ui.texts.get(key));
+                    });
+                };
 
                 var modulesPath = 'viewmodels';
                 vl.useConvention(modulesPath, kloudspeaker.settings['templates-path']);

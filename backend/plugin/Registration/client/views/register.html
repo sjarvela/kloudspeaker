@@ -1,61 +1,51 @@
-<div class="kloudspeaker-registration-page">
-	<div class="kloudspeaker-fullpage-form-bg"></div>
-
-	<!-- ko ifnot: model.success -->
-	<div id="kloudspeaker-registration-main" class="container kloudspeaker-fullpage-form center">
-		<form id="kloudspeaker-registration-form" class="form">
-			<div class="kloudspeaker-logo"></div>
-			
-			<legend class="localized" text-key="registrationNewTitle"></legend>
-			
-			<div class="control-group" data-bind="validationElement: model.name">
-				<label class="control-label localized" for="registration-new-name" text-key="registrationNewName"></label>
-				<div class="controls">
-					<input type="text" class="hintbox" hint-key="registrationNewName" data-bind="value: model.name" autofocus>
-				</div>
-			</div>
-			
-			<div class="control-group" data-bind="validationElement: model.password">
-				<label class="control-label localized" for="registration-new-pw" text-key="registrationNewPw"></label>
-				<div class="controls">
-					<input type="password" class="hintbox" hint-key="registrationNewPw" data-bind="value: model.password">
-				</div>
-			</div>
-	
-			<div class="control-group" data-bind="validationElement: model.passwordConfirm">
-				<div class="controls">
-					<input type="password" class="hintbox" hint-key="registrationNewPwConfirm" data-bind="value: model.passwordConfirm">
-				</div>
-			</div>
-			
-			<div class="control-group" data-bind="validationElement: model.email">
-				<label class="control-label localized" for="registration-new-email" text-key="registrationNewEmail"></label>
-				<div class="controls">
-					<input type="text" class="hintbox" hint-key="registrationNewEmail" data-bind="value: model.email">
-				</div>
-			</div>
-
-			<div class="control-group">
-				<label class="control-label localized" for="registration-new-hint" text-key="registrationNewHint"></label>
-				<div class="controls">
-					<input type="text" class="hintbox" hint-key="registrationNewHint" data-bind="value: model.hint">
-				</div>
-			</div>
-	
-			<div class="control-group">
-				<div class="controls">
-					<a class="localized btn btn-large btn-primary primary-action" text-key="registrationNewSubmit" data-bind="click: onRegister"></a>
-				</div>
-			</div>
-		</form>
-	</div>
-	<!-- /ko -->
-	<!-- ko if: model.success -->
-	<div id="kloudspeaker-registration-main" class="container kloudspeaker-fullpage-form center wide">
-		<div id="kloudspeaker-registration-success">
-			<h1><i class="icon-ok"></i>&nbsp;&nbsp;<span class="localized" text-key="registrationNewSuccessTitle"></span></h1>
-			<p class="localized" text-key="registrationNewSuccessMessage"></p>
-		</div>
-	</div>
-	<!-- /ko -->
+<div class="kloudspeaker-fullpage kloudspeaker-registration-page">
+    <div class="kloudspeaker-fullpage-bg"></div>
+    <!-- ko ifnot: model.success -->
+    <div class="kloudspeaker-fullpage-form center container">
+        <form class="form">
+            <div class="kloudspeaker-logo"></div>
+            <legend data-i18n="registrationNewTitle"></legend>
+            <div class="control-group" data-bind="validationElement: model.name">
+                <label class="control-label" for="registration-new-name" data-i18n="registrationNewName"></label>
+                <div class="controls">
+                    <input type="text" data-i18n="[placeholder]registrationNewName" data-bind="value: model.name" autofocus>
+                </div>
+            </div>
+            <div class="control-group" data-bind="validationElement: model.password">
+                <label class="control-label" for="registration-new-pw" data-i18n="registrationNewPw"></label>
+                <div class="controls">
+                    <input type="password" data-i18n="[placeholder]registrationNewPw" data-bind="value: model.password">
+                </div>
+            </div>
+            <div class="control-group" data-bind="validationElement: model.passwordConfirm">
+                <div class="controls">
+                    <input type="password" data-i18n="[placeholder]registrationNewPwConfirm" data-bind="value: model.passwordConfirm">
+                </div>
+            </div>
+            <div class="control-group" data-bind="validationElement: model.email">
+                <label class="control-label" for="registration-new-email" data-i18n="registrationNewEmail"></label>
+                <div class="controls">
+                    <input type="text" data-i18n="[placeholder]registrationNewEmail" data-bind="value: model.email">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="registration-new-hint" data-i18n="registrationNewHint"></label>
+                <div class="controls">
+                    <input type="text" data-i18n="[placeholder]registrationNewHint" data-bind="value: model.hint">
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <a class="btn btn-large btn-primary primary-action" data-i18n="registrationNewSubmit" data-bind="click: onRegister"></a>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- /ko -->
+    <!-- ko if: model.success -->
+    <div class="kloudspeaker-fullpage-form center wide container">
+        <h1><i class="icon-ok"></i>&nbsp;&nbsp;<span data-i18n="registrationNewSuccessTitle"></span></h1>
+        <p data-i18n="registrationNewSuccessMessage"></p>
+    </div>
+    <!-- /ko -->
 </div>

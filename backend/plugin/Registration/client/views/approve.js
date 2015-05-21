@@ -1,47 +1,36 @@
-define(['kloudspeaker/app', 'kloudspeaker/service', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/texts'], function(app, service, dialogs, texts) {
+define(['kloudspeaker/app', 'kloudspeaker/service', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/texts', 'knockout'], function(app, service, dialogs, texts, ko) {
     return function() {
         var that = this;
         var model = {
-            name: ko.observable('').extend({
-                required: true
-            }),
-            email: ko.observable('').extend({
-                required: true
-            }),
-            password: ko.observable('').extend({
-                required: true
-            }),
-            passwordConfirm: ko.observable('').extend({
-                required: true
-            }),
-            hint: ko.observable(''),
+            loading: ko.observable(false),
 
-            success: ko.observable(false)
+            success: ko.observable(false),
+            failed: ko.observable(false)
+        };
+
+        var doApprove = function(id) {
+            model.loading(true);
+            service.post("registration/approve/" + id, {}).done(function(r) {
+                model.loading(false);
+                model.success(texts.get('registrationApprovalSuccessMessage', [r.name, r.email]));
+            }).fail(function(error) {
+                this.handled = true;
+                model.loading(false);
+                model.failed(texts.get('registrationApprovalFailed'));
+            });
         };
 
         return {
-            model: model,
-            onRegister: function() {
-                service.post("registration/create", {
-                    name: model.name(),
-                    password: window.Base64.encode(model.password()),
-                    email: model.email(),
-                    hint: model.hint(),
-                    data: null
-                }).done(function() {
-                    model.success(true);
-                }).fail(function(er) {
-                    this.handled = true;
-                    if (er.code == 301)
-                        dialogs.error({
-                            message: texts.get('registrationFailedDuplicateNameOrEmail')
-                        });
-                    else
-                        dialogs.error({
-                            message: texts.get('registrationFailed')
-                        });
-                });
-            }
+            activate: function(data) {
+                var urlParams = data.urlParams;
+
+                if (!urlParams || !urlParams.id || urlParams.id.length === 0) {
+                    model.failed(texts.get('registrationInvalidApproval'));
+                    return;
+                }
+                doApprove(urlParams.id);
+            },
+            model: model
         };
     }
 });
