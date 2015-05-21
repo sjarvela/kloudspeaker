@@ -535,8 +535,8 @@
         if (typeof(model) == "string" || window.isArray(model)) {
             var _view = false;
             var _model = window.isArray(model) ? model[0] : model;
-            if (!view) _view = _view = "templates/" + _model; //TODO platform
-            if (typeof(view) == "string") _view = "templates/" + view; //TODO platform
+            if (!view) _view = _model; //TODO platform
+            else if (typeof(view) == "string") _view = view; //TODO platform
 
             var ctx = (window.isArray(model) && model.length > 1) ? model[1] : {};
             if (!$v) {
@@ -546,6 +546,7 @@
                     compositionComplete: function() {
                         var $e = $(this.parent);
                         kloudspeaker.ui.process($e, ['localize']);
+
                         df.resolve(this.model, $e);
                     }
                 };
@@ -2016,6 +2017,9 @@
                     }
                     onResize();
                 }
+
+                var $f = $dlg.find("input[autofocus]");
+                if ($f.length > 0) $f.focus();
 
                 if (spec["on-show"]) spec["on-show"](h, $dlg);
                 if (_model && _model.onShow) _model.onShow(h);

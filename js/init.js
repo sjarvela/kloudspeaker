@@ -262,10 +262,10 @@ var kloudspeaker_defaults = {
                     name: pl["client_module_id"],
                     location: pl["client_module_path"]
                 });
-                packages.push({
+                /*packages.push({
                     name: "templates/" + pl["client_module_id"],
                     location: pl["client_module_path"]
-                });
+                });*/
             }
         });
         var df = $.Deferred();

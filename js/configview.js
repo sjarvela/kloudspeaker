@@ -59,8 +59,12 @@
 
                 var navBarItems = [];
                 $.each(that._views, function(i, v) {
+                    var title = v.title;
+                    if (typeof(title) === "string" && title.startsWith("i18n:")) title = kloudspeaker.ui.texts.get(title.substring(5));
+                    if (window.isArray(title)) title = kloudspeaker.ui.texts.get(title[0], title.slice(1));
+
                     navBarItems.push({
-                        title: v.title,
+                        title: title,
                         obj: v,
                         callback: function() {
                             that._activateView(v);
@@ -154,8 +158,12 @@
 
                 var navBarItems = [];
                 $.each(that._adminViews, function(i, v) {
+                    var title = v.title;
+                    if (typeof(title) === "string" && title.startsWith("i18n:")) title = kloudspeaker.ui.texts.get(title.substring(5));
+                    if (window.isArray(title)) title = kloudspeaker.ui.texts.get(title[0], title.slice(1));
+
                     navBarItems.push({
-                        title: v.title,
+                        title: title,
                         obj: v,
                         callback: function() {
                             that._activateView(v, true);
@@ -221,18 +229,24 @@
 
             that.showLoading(false);
 
+            var title = v.title;
+            if (typeof(title) === "string" && title.startsWith("i18n:")) title = kloudspeaker.ui.texts.get(title.substring(5));
+            if (window.isArray(title)) title = kloudspeaker.ui.texts.get(title[0], title.slice(1));
+
             if (v.model) {
-                kloudspeaker.ui.viewmodel(v.view, [v.model, { settings: that._settings}], that._getContentElement().empty()).done(function(m) {
+                kloudspeaker.ui.viewmodel(v.view, [v.model, {
+                    settings: that._settings
+                }], that._getContentElement().empty()).done(function(m) {
                     that._activeView = m;
 
                     if (!noStore && v.viewId) kloudspeaker.App.storeView("admin/" + v.viewId);
-                    $("#kloudspeaker-configview-header").html(m.title || v.title || '');
+                    $("#kloudspeaker-configview-header").html(m.title || title || '');
                 });
             } else {
                 that._activeView = v;
 
                 if (!noStore && that._activeView.viewId) kloudspeaker.App.storeView("admin/" + that._activeView.viewId);
-                $("#kloudspeaker-configview-header").html(v.title);
+                $("#kloudspeaker-configview-header").html(title);
                 v.onActivate(that._getContentElement().empty(), that);
             }
         }
@@ -811,6 +825,7 @@
                     userId: userId,
                     authenticationOptions: that._authenticationOptions
                 }],
+                view: 'templates/kloudspeaker/config/user/addedit',
                 buttons: [{
                     id: "yes",
                     "title": kloudspeaker.ui.texts.get('dialogSave')
@@ -819,115 +834,6 @@
                     "title": kloudspeaker.ui.texts.get('dialogCancel')
                 }]
             }).done(cb);
-            /*var $content = false;
-            var $name = false;
-            var $email = false;
-            var $password = false;
-            var $type = false;
-            var $authentication = false;
-            var $language = false;
-            var $expiration = false;
-            var showLanguages = (kloudspeaker.settings.language.options && kloudspeaker.settings.language.options.length > 1);
-
-            kloudspeaker.ui.dialogs.custom({
-                resizable: true,
-                initSize: [600, 400],
-                title: kloudspeaker.ui.texts.get(u ? 'configAdminUsersUserDialogEditTitle' : 'configAdminUsersUserDialogAddTitle'),
-                content: kloudspeaker.dom.template("kloudspeaker-tmpl-config-admin-userdialog", {
-                    user: u,
-                    showLanguages: showLanguages
-                }),
-                buttons: [{
-                    id: "yes",
-                    "title": kloudspeaker.ui.texts.get('dialogSave')
-                }, {
-                    id: "no",
-                    "title": kloudspeaker.ui.texts.get('dialogCancel')
-                }],
-                "on-button": function(btn, d) {
-                    if (btn.id == 'no') {
-                        d.close();
-                        return;
-                    }
-                    var username = $name.val();
-                    var email = $email.val();
-                    var type = $type.selected();
-                    var expiration = kloudspeaker.helpers.formatInternalTime($expiration.get());
-                    var auth = $authentication.selected();
-                    if (!username || username.length === 0) return;
-                    var lang = null;
-                    if (showLanguages) lang = $language.selected();
-
-                    var effectiveAuth = auth;
-                    if (!effectiveAuth) effectiveAuth = that._defaultAuthMethod;
-
-                    var user = {
-                        name: username,
-                        email: email,
-                        user_type: type,
-                        expiration: expiration,
-                        auth: auth,
-                        lang: lang
-                    };
-
-                    if (u) {
-                        kloudspeaker.service.put("configuration/users/" + u.id, user).done(d.close).done(cb);
-                    } else {
-                        var pwRequired = (effectiveAuth === 'pw');
-                        var password = $password.val();
-                        if (pwRequired && (!password || password.length === 0)) return;
-
-                        user.password = password ? window.Base64.encode(password) : '';
-                        kloudspeaker.service.post("configuration/users", user).done(d.close).done(cb);
-                    }
-                },
-                "on-show": function(h, $d) {
-                    $content = $d.find("#kloudspeaker-config-admin-userdialog-content");
-                    $name = $d.find("#usernameField");
-                    $email = $d.find("#emailField");
-                    $password = $d.find("#passwordField");
-                    $("#generatePasswordBtn").click(function() {
-                        $password.val(that._generatePassword());
-                        return false;
-                    });
-                    $type = kloudspeaker.ui.controls.select("typeField", {
-                        values: ['a'],
-                        none: kloudspeaker.ui.texts.get('configAdminUsersTypeNormal'),
-                        formatter: function(t) {
-                            return kloudspeaker.ui.texts.get('configAdminUsersType_' + t);
-                        }
-                    });
-                    $authentication = kloudspeaker.ui.controls.select("authenticationField", {
-                        values: that._authenticationOptions,
-                        none: kloudspeaker.ui.texts.get('configAdminUsersUserDialogAuthDefault', that._defaultAuthMethod),
-                        formatter: that._authFormatter
-                    });
-                    if (showLanguages)
-                        $language = kloudspeaker.ui.controls.select("languageField", {
-                            values: kloudspeaker.settings.language.options,
-                            none: kloudspeaker.ui.texts.get('configAdminUsersUserDialogLangDefault', (kloudspeaker.settings.language["default"] || 'en')),
-                            formatter: that._langFormatter
-                        });
-                    $expiration = kloudspeaker.ui.controls.datepicker("expirationField", {
-                        format: kloudspeaker.ui.texts.get('shortDateTimeFormat'),
-                        time: true
-                    });
-
-                    if (u) {
-                        $name.val(u.name);
-                        $email.val(u.email || "");
-                        $type.select(u.user_type ? u.user_type.toLowerCase() : null);
-                        $authentication.select(u.auth ? u.auth.toLowerCase() : null);
-                        $expiration.set(kloudspeaker.helpers.parseInternalTime(u.expiration));
-                        if (showLanguages && u.lang) $language.select(u.lang);
-                    } else {
-                        $type.select(null);
-                    }
-                    $name.focus();
-
-                    h.center();
-                }
-            });*/
         }
     }
 

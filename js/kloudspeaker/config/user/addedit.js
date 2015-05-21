@@ -69,6 +69,7 @@ define(['kloudspeaker/core/user/repository', 'kloudspeaker/settings', 'kloudspea
                 }
 
                 //validate
+                model.name.valueHasMutated();
                 model.passwordMissing(false);
                 if (model.newUser) {
                     var effectiveAuth = model.auth() || model.authOptions[0];
