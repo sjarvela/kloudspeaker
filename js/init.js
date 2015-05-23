@@ -117,17 +117,18 @@ var kloudspeaker_defaults = {
 
         kloudspeaker.ui.initialize().done(function() {
             kloudspeaker.App.initModules();
-            var deps = ['knockout', 'durandal/system', 'durandal/viewlocator', 'durandal/composition', 'durandal/binder', 'durandal/plugins/widget', 'kloudspeaker/app'];
+            var deps = ['knockout', 'text', 'durandal/system', 'durandal/viewlocator', 'durandal/composition', 'durandal/binder', 'durandal/plugins/widget', 'kloudspeaker/app'];
             if (kloudspeaker.settings.modules.load) deps = deps.concat(kloudspeaker.settings.modules.load);
 
             // wait for modules initialization
-            require(deps, function(ko, ds, vl, comp, binder, dw, app) {
+            require(deps, function(ko, txt, ds, vl, comp, binder, dw, app) {
                 ds.debug(!!kloudspeaker.settings.debug); //TODO remove
                 kloudspeaker.ui._composition = comp;
 
                 //install durandal widget plugin
                 dw.install({});
                 dw.registerKind('time-picker');
+                dw.registerKind('config-list');
 
                 //configure knockout validation
                 ko.validation.init({
@@ -389,10 +390,7 @@ var kloudspeaker_defaults = {
     };
 
     kloudspeaker.App.initModules = function() {
-        var packages = [{
-            name: 'templates',
-            location: '../templates'
-        }];
+        var packages = [];
         if (kloudspeaker.settings.modules && kloudspeaker.settings.modules.paths) {
             _.each(kloudspeaker.helpers.getKeys(kloudspeaker.settings.modules.paths), function(k) {
                 packages.push({
@@ -430,6 +428,7 @@ var kloudspeaker_defaults = {
             window: kloudspeaker.ui.window,
             process: kloudspeaker.ui.process,
             handlers: kloudspeaker.ui.handlers,
+            itemContext: kloudspeaker.ui.itemContext,
             viewmodel: kloudspeaker.ui.viewmodel,
         });
         define('kloudspeaker/ui/dnd', [], kloudspeaker.ui.draganddrop);
@@ -1647,6 +1646,22 @@ var kloudspeaker_defaults = {
                 return i;
             }
             return a;
+        },
+
+        createNotifier: function() {
+            return function() {
+                var listeners = [];
+                return {
+                    trigger: function() {
+                        _.each(listeners, function(l) {
+                            l();
+                        });
+                    },
+                    listen: function(cb) {
+                        listeners.push(cb);
+                    }
+                }
+            }();
         }
     };
 

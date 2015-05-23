@@ -19,7 +19,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 
 
     if (settings.dev)
         views.registerConfigView({
-            id: 'trash',
+            viewId: 'trash',
             title: 'i18n:pluginTrashbinManageTitle',
             model: 'kloudspeaker/trashbin/manage',
             admin: true

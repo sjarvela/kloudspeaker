@@ -240,13 +240,14 @@
                     that._activeView = m;
 
                     if (!noStore && v.viewId) kloudspeaker.App.storeView("admin/" + v.viewId);
-                    $("#kloudspeaker-configview-header").html(m.title || title || '');
+                    if (m.customTitle) $("#kloudspeaker-configview-header").html("").hide()
+                    else $("#kloudspeaker-configview-header").html(m.title || title || '').show();
                 });
             } else {
                 that._activeView = v;
 
                 if (!noStore && that._activeView.viewId) kloudspeaker.App.storeView("admin/" + that._activeView.viewId);
-                $("#kloudspeaker-configview-header").html(title);
+                $("#kloudspeaker-configview-header").html(title).show();
                 v.onActivate(that._getContentElement().empty(), that);
             }
         }

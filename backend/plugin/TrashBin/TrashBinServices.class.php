@@ -19,6 +19,11 @@ class TrashBinServices extends ServicesBase {
 	}
 
 	public function processGet() {
+		if (count($this->path) != 1 or !in_array($this->path[0], array("users"))) {
+			throw $this->invalidRequestException();
+		}
+		if (!$this->env->authentication()->isAdmin()) throw $this->invalidRequestException();
+
 		$this->response()->success(array());
 	}
 

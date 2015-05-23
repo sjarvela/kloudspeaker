@@ -6,13 +6,15 @@
                 <input type="text" data-bind="value: model.name" required autofocus></input>
             </div>
         </div>
-        <div class="control-group" data-bind="if: showLanguages">
+        <!-- ko if: showLanguages -->
+        <div class="control-group">
             <label class="control-label localized" text-key="configAdminUserDialogLanguageTitle"></label>
             <div class="controls">
                 <select data-bind="value: model.language, options: model.languageOptions, optionsText: model.languageOptionTitle, optionsCaption: model.languageNoneTitle">
                 </select>
             </div>
         </div>
+        <!-- /ko -->
         <div class="control-group">
             <label class="control-label localized" text-key="configAdminUserDialogEmailTitle"></label>
             <div class="controls">

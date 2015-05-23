@@ -1,0 +1,61 @@
+<div class="config-list">
+    <div class="header">
+        <div class="header-title">
+            <div data-part="header-title"></div>
+        </div>
+        <!-- ko if: settings.tools -->
+        <div class="btn-toolbar tools" role="toolbar">
+            <!-- ko foreach: {data: settings.tools, as: 'tool'} -->
+            <button type="button" class="btn btn-default" data-bind="click: tool.action"><i data-bind="attr: {class: 'fa fa-'+tool.icon }"></i></button>
+            <!-- /ko -->
+        </div>
+        <!-- /ko -->
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr data-bind="foreach: {data: settings.cols, as: 'hcol'}">
+                    <th data-bind="text: $parent.getColTitle(hcol)"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- ko foreach: {data: settings.values, as: 'row'} -->
+                <tr>
+                    <!-- ko foreach: {data: $parent.settings.cols, as: 'col'} -->
+                    <!-- ko if: !col.type -->
+                    <td data-bind="text: row[col.id]"></td>
+                    <!-- /ko -->
+                    <!-- ko if: col.type == 'action' -->
+                    <td>
+                        <a href="#" data-bind="click: function() { col.action(row) }">
+                            <i data-bind="attr: {class: 'fa fa-'+col.icon }"></i>
+                        </a>
+                    </td>
+                    <!-- /ko -->
+                    <!-- /ko -->
+                </tr>
+                <!-- /ko -->
+            </tbody>
+        </table>
+    </div>
+    <nav class="config-list-pager" data-bind="if: settings.paging() != null">
+        <ul class="pagination">
+            <li class="page-btn page-next" data-bind="class: { disabled : (settings.paging().page < 2) }"><a href="#" data-bind="click: gotoPrev" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+
+            <!-- ko if: settings.paging().pages < 10 -->
+            <!-- ko foreach: new Array(settings.paging().pages) -->
+            <li class="page-btn page-nr"><a href="#" data-bind="text: ($index()+1), click: function(){ $parent.goto($index()+1) }"></a></li>
+            <!-- /ko -->
+            <!-- /ko -->
+
+            <!-- ko if: settings.paging().pages >= 10 -->
+
+            <!-- /ko -->
+            <li class="page-btn page-prev" data-bind="class: { disabled : (settings.paging().page >= settings.paging().pages) }"><a href="#" data-bind="click: gotoNext" aria-label="Previous"><span aria-hidden="true">&raquo;</span></a></li>
+        </ul>
+        <div data-bind="text: settings.paging().page"></div>
+        <div data-bind="text: settings.paging().pages"></div>
+        <div data-bind="text: settings.paging().count"></div>
+        <div data-bind="text: settings.paging().maxPerPage"></div>
+    </nav>
+</div>
