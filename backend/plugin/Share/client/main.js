@@ -48,7 +48,12 @@ define(['kloudspeaker/app', 'kloudspeaker/plugins', 'kloudspeaker/service', 'klo
         }
 
         if (info.type == "download") {
-            return new that.ShareDownloadView(id, urlProvider, info.name);
+            return {
+                model: ["kloudspeaker/share/views/download", {
+                    id: id,
+                    name: info.name
+                }]
+            };
         } else if (info.type == "prepared_download") {
             return new that.SharePreparedDownloadView(id, urlProvider, info.name);
         } else {
@@ -93,23 +98,6 @@ define(['kloudspeaker/app', 'kloudspeaker/plugins', 'kloudspeaker/service', 'klo
                 //proceed to original view
                 that._getShareView(shareId, info, key).init(vt._$c);
             });
-        };
-    };
-
-    this.ShareDownloadView = function(shareId, u, shareName) {
-        var vt = this;
-
-        this.init = function($c) {
-            var df = $.Deferred();
-            dom.loadContentInto($c, plugins.url("Share", "public_share_download.html"), function() {
-                $("#kloudspeaker-share-title").text(texts.get("shareViewDownloadTitle", shareName));
-
-                setTimeout(function() {
-                    ui.download(u.get());
-                }, 1000);
-                df.resolve();
-            }, ['localize']);
-            return df.promise();
         };
     };
 
@@ -1065,6 +1053,15 @@ define(['kloudspeaker/app', 'kloudspeaker/plugins', 'kloudspeaker/service', 'klo
             }
         },
 
-        openShares: that.onOpenShares
+        openShares: that.onOpenShares,
     });
+
+    return {
+        getShareUrl: function(id, path, param) {
+            var url = service.url("public/" + id, true);
+            if (path) url = url + path;
+            if (param) url = utils.urlWithParam(url, param);
+            return utils.noncachedUrl(url);
+        }
+    }
 });

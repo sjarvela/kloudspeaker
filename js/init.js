@@ -362,6 +362,8 @@ var kloudspeaker_defaults = {
                     vm(v);
                 else
                     cb(v);
+            }).fail(function() {
+                cb(false);
             });
         } else cb(view);
     };
