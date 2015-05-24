@@ -344,14 +344,25 @@ var kloudspeaker_defaults = {
             return;
         }
 
-        if (view.model) {
-            kloudspeaker.ui.viewmodel(view.view, view.model, kloudspeaker.App.getElement().empty()).done(function(m) {
+        var vm = function(v) {
+            kloudspeaker.ui.viewmodel(v.view, v.model, kloudspeaker.App.getElement().empty()).done(function(m) {
                 kloudspeaker.App.activeView = m;
                 kloudspeaker.App.activeViewId = id[0];
                 if (kloudspeaker.App._initDf.state() == "pending") kloudspeaker.App._initDf.resolve();
             });
+        }
+
+        if (view.model) {
+            vm(view);
         } else if (view.done) {
-            view.done(cb);
+            view.done(function(v) {
+                if (!v)
+                    cb(false);
+                else if (v.model)
+                    vm(v);
+                else
+                    cb(v);
+            });
         } else cb(view);
     };
 
