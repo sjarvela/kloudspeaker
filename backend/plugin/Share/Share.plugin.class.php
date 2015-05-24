@@ -36,6 +36,10 @@ class Share extends PluginBase {
 		$this->env->filesystem()->registerActionValidator("plugin-share", $this->handler);
 	}
 
+	public function getClientModuleId() {
+		return "kloudspeaker/share";
+	}
+
 	public function registerHandler($type, $handler) {
 		$this->handler->registerHandler($type, $handler);
 	}

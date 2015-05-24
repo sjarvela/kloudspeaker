@@ -1944,7 +1944,6 @@
             $dlg.remove();
         }).modal({
             backdrop: 'static', //!!spec.backdrop,
-            show: true,
             keyboard: true,
             show: false
         });

@@ -426,6 +426,7 @@ var kloudspeaker_defaults = {
         define('kloudspeaker/ui/dialogs', [], kloudspeaker.ui.dialogs);
         define('kloudspeaker/ui', [], {
             window: kloudspeaker.ui.window,
+            download: kloudspeaker.ui.download,
             process: kloudspeaker.ui.process,
             handlers: kloudspeaker.ui.handlers,
             itemContext: kloudspeaker.ui.itemContext,
@@ -433,7 +434,9 @@ var kloudspeaker_defaults = {
         });
         define('kloudspeaker/ui/dnd', [], kloudspeaker.ui.draganddrop);
         define('kloudspeaker/ui/uploader', [], kloudspeaker.ui.uploader);
-        define('kloudspeaker/ui/clipboard', [], kloudspeaker.ui.clipboard);
+        define('kloudspeaker/ui/clipboard', [], function() {
+            return kloudspeaker.ui.clipboard;
+        });
 
         kloudspeaker.ui._configViews = {};
         kloudspeaker.ui._fileViewHandlers = [];
