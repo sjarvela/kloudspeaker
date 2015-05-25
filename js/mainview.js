@@ -127,13 +127,16 @@
 
         this.onNotification = function(spec) {
             var $trg = (spec && spec.target) ? ((typeof spec.target === 'string') ? $("#" + spec.target) : spec.target) : $("#kloudspeaker-mainview-content");
-            var $ntf = kloudspeaker.dom.template("kloudspeaker-tmpl-main-notification", spec).hide().appendTo($trg).fadeIn(300);
-            setTimeout(function() {
-                $ntf.fadeOut(300);
-                setTimeout($ntf.remove, 300);
-                if (spec["on-finish"]) spec["on-finish"]();
-            }, spec.time | 3000);
-
+            var $ntf = kloudspeaker.dom.template("kloudspeaker-tmpl-main-notification", spec).hide().appendTo($trg);
+            $ntf.fadeIn(300, function() {
+                setTimeout(function() {
+                    $ntf.fadeOut(300, function() {
+                        $ntf.remove();
+                        if (spec["on-finish"]) spec["on-finish"]();
+                    });
+                    if (spec["on-show"]) spec["on-show"]();
+                }, spec.time | 3000);
+            });
             return true;
         };
 

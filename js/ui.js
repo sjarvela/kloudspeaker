@@ -1904,13 +1904,18 @@
     dh.notification = function(spec) {
         if (kloudspeaker.App.activeView && kloudspeaker.App.activeView.onNotification && kloudspeaker.App.activeView.onNotification(spec)) return;
 
-        var $trg = (spec && spec.target) ? ((typeof spec.target === 'string') ? $("#" + spec.target) : spec.target) : $("#kloudspeaker-notification-container");
+        var $trg = (spec && spec.target) ? ((typeof spec.target === 'string') ? $("#" + spec.target) : spec.target) : $("#kloudspeaker-notification-container, .kloudspeaker-notification-container").first();
         if ($trg.length === 0) $trg = $("body");
-        var notification = kloudspeaker.dom.template("kloudspeaker-tmpl-notification", $.extend(spec, dh._dialogDefaults)).hide().appendTo($trg).fadeIn(300);
-        setTimeout(function() {
-            notification.fadeOut(300);
-            if (spec["on-finish"]) spec["on-finish"]();
-        }, spec.time | 3000);
+        var notification = kloudspeaker.dom.template("kloudspeaker-tmpl-notification", $.extend(spec, dh._dialogDefaults)).hide().appendTo($trg);
+        notification.fadeIn(300, function() {
+            setTimeout(function() {
+                notification.fadeOut(300, function() {
+                    notification.remove();
+                    if (spec["on-finish"]) spec["on-finish"]();
+                });
+                if (spec["on-show"]) spec["on-show"]();
+            }, spec.time | 3000);
+        });
     };
 
     dh.custom = function(spec) {

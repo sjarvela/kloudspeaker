@@ -151,6 +151,21 @@ var kloudspeaker_defaults = {
                 };
                 ko.validation.registerExtenders();
 
+                // knockout
+                ko.bindingHandlers.enterkey = {
+                    init: function(element, valueAccessor, allBindings, viewModel) {
+                        var callback = valueAccessor();
+                        $(element).keypress(function(event) {
+                            var keyCode = (event.which ? event.which : event.keyCode);
+                            if (keyCode === 13) {
+                                callback.call(viewModel);
+                                return false;
+                            }
+                            return true;
+                        });
+                    }
+                };
+
                 // i18n
                 var _i18n = function(e, va) {
                     var v = va();
@@ -325,6 +340,36 @@ var kloudspeaker_defaults = {
         } else onView();
     };
 
+    kloudspeaker.App.showFullView = function(view) {
+        kloudspeaker.App._showView(false, view, function(v) {});
+    };
+
+    kloudspeaker.App._showView = function(id, view, cb) {
+        var vm = function(v) {
+            kloudspeaker.ui.viewmodel(v.view, v.model, kloudspeaker.App.getElement().empty()).done(function(m) {
+                kloudspeaker.App.activeView = m;
+                if (id)
+                    kloudspeaker.App.activeViewId = id[0];
+                if (kloudspeaker.App._initDf.state() == "pending") kloudspeaker.App._initDf.resolve();
+            });
+        }
+
+        if (view.model) {
+            vm(view);
+        } else if (view.done) {
+            view.done(function(v) {
+                if (!v)
+                    cb(false);
+                else if (v.model)
+                    vm(v);
+                else
+                    cb(v);
+            }).fail(function() {
+                cb(false);
+            });
+        } else cb(view);
+    }
+
     kloudspeaker.App._getView = function(id, cb) {
         var h = kloudspeaker.App._views[id[0]];
         var view = false;
@@ -344,28 +389,7 @@ var kloudspeaker_defaults = {
             return;
         }
 
-        var vm = function(v) {
-            kloudspeaker.ui.viewmodel(v.view, v.model, kloudspeaker.App.getElement().empty()).done(function(m) {
-                kloudspeaker.App.activeView = m;
-                kloudspeaker.App.activeViewId = id[0];
-                if (kloudspeaker.App._initDf.state() == "pending") kloudspeaker.App._initDf.resolve();
-            });
-        }
-
-        if (view.model) {
-            vm(view);
-        } else if (view.done) {
-            view.done(function(v) {
-                if (!v)
-                    cb(false);
-                else if (v.model)
-                    vm(v);
-                else
-                    cb(v);
-            }).fail(function() {
-                cb(false);
-            });
-        } else cb(view);
+        kloudspeaker.App._showView(id, view, cb);
     };
 
     kloudspeaker.App.onRestoreState = function(url, o) {

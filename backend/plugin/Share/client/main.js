@@ -24,7 +24,13 @@ define(['kloudspeaker/app', 'kloudspeaker/plugins', 'kloudspeaker/service', 'klo
                         return;
                     }
                 } else if (result.restriction == "pw" && !result.auth) {
-                    df.resolve(new that.ShareAccessPasswordView(shareId, result));
+                    //df.resolve(new that.ShareAccessPasswordView(shareId, result));
+                    df.resolve({
+                        model: ["kloudspeaker/share/views/access_password", {
+                            id: shareId,
+                            info: result
+                        }]
+                    });
                     return;
                 }
 
@@ -62,7 +68,7 @@ define(['kloudspeaker/app', 'kloudspeaker/plugins', 'kloudspeaker/service', 'klo
         return new kloudspeaker.ui.FullErrorView(texts.get('shareViewInvalidRequest'));
     };
 
-    this.ShareAccessPasswordView = function(shareId, info) {
+    /*this.ShareAccessPasswordView = function(shareId, info) {
         var vt = this;
 
         this.init = function($c) {
@@ -99,7 +105,7 @@ define(['kloudspeaker/app', 'kloudspeaker/plugins', 'kloudspeaker/service', 'klo
                 that._getShareView(shareId, info, key).init(vt._$c);
             });
         };
-    };
+    };*/
 
     this.SharePreparedDownloadView = function(shareId, u, shareName) {
         var vt = this;
@@ -1062,6 +1068,7 @@ define(['kloudspeaker/app', 'kloudspeaker/plugins', 'kloudspeaker/service', 'klo
             if (path) url = url + path;
             if (param) url = utils.urlWithParam(url, param);
             return utils.noncachedUrl(url);
-        }
+        },
+        getShareView: that._getShareView
     }
 });

@@ -34,8 +34,7 @@ define(['kloudspeaker/app', 'kloudspeaker/plugins', 'kloudspeaker/session', 'klo
         id: "plugin-registration",
         backendPluginId: "Registration",
         resources: {
-            texts: true,
-            css: true
+            texts: true
         },
         openRegistration: function() {
             app.openPage('registration/new');
