@@ -1391,7 +1391,7 @@
         }
 
         this._handleCustomFolderTypeAction = function(ac, item, t) {
-            if (!that._currentFolder || !that._currentFolder.type || !that._customFolderTypes[that._currentFolder.type]) return false;
+            if (!that._currentFolder || !that._currentFolder.type || !that._customFolderTypes[that._currentFolder.type] || !that._customFolderTypes[that._currentFolder.type].handleAction) return false;
             var ctx = that._getCtxObj(item, t)
             return that._customFolderTypes[that._currentFolder.type].handleAction(ac, item, t, ctx);
         }
