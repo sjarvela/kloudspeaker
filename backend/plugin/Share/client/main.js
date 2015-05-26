@@ -24,7 +24,6 @@ define(['kloudspeaker/app', 'kloudspeaker/plugins', 'kloudspeaker/service', 'klo
                         return;
                     }
                 } else if (result.restriction == "pw" && !result.auth) {
-                    //df.resolve(new that.ShareAccessPasswordView(shareId, result));
                     df.resolve({
                         model: ["kloudspeaker/share/views/access_password", {
                             id: shareId,
@@ -61,151 +60,21 @@ define(['kloudspeaker/app', 'kloudspeaker/plugins', 'kloudspeaker/service', 'klo
                 }]
             };
         } else if (info.type == "prepared_download") {
-            return new that.SharePreparedDownloadView(id, urlProvider, info.name);
+            return {
+                model: ["kloudspeaker/share/views/prepared_download", {
+                    id: id,
+                    name: info.name
+                }]
+            };
         } else {
-            return new that.ShareUploadView(id, urlProvider, info.name);
+            return {
+                model: ["kloudspeaker/share/views/upload", {
+                    id: id,
+                    name: info.name
+                }]
+            };
         }
         return new kloudspeaker.ui.FullErrorView(texts.get('shareViewInvalidRequest'));
-    };
-
-    /*this.ShareAccessPasswordView = function(shareId, info) {
-        var vt = this;
-
-        this.init = function($c) {
-            var df = $.Deferred();
-            vt._$c = $c;
-
-            dom.loadContentInto($c, plugins.url("Share", "public_share_access_password.html"), function() {
-                $("#kloudspeaker-share-access-button").click(vt._onAccess);
-                $("#kloudspeaker-share-access-password").focus();
-                $("#kloudspeaker-share-access-password").bind('keypress', function(e) {
-                    if ((e.keyCode || e.which) == 13) vt._onAccess();
-                });
-                df.resolve();
-            }, ['localize']);
-            return df.promise();
-        };
-
-        this._onAccess = function() {
-            var pw = $("#kloudspeaker-share-access-password").val();
-            if (!pw || pw.length === 0) return;
-            var key = window.Base64.encode(pw);
-
-            service.post("public/" + shareId + "/key/", {
-                key: key
-            }).done(function(r) {
-                if (!r.result) {
-                    dialogs.notification({
-                        message: texts.get('shareAccessPasswordFailed')
-                    });
-                    $("#kloudspeaker-share-access-password").focus();
-                    return;
-                }
-                //proceed to original view
-                that._getShareView(shareId, info, key).init(vt._$c);
-            });
-        };
-    };*/
-
-    this.SharePreparedDownloadView = function(shareId, u, shareName) {
-        var vt = this;
-
-        this.init = function($c) {
-            var df = $.Deferred();
-            dom.loadContentInto($c, plugins.url("Share", "public_share_prepared_download.html"), function() {
-                $("#kloudspeaker-share-download-prepare").text(texts.get("shareViewPreparedDownloadPreparingTitle", shareName));
-                $("#kloudspeaker-share-download").text(texts.get("shareViewPreparedDownloadDownloadingTitle", shareName));
-                $("#kloudspeaker-share-download-error").text(texts.get("shareViewPreparedDownloadErrorTitle", shareName));
-
-                service.get(u.get("/prepare")).done(function(r) {
-                    $("#kloudspeaker-share-download-prepare").hide();
-                    $("#kloudspeaker-share-download").show();
-                    ui.download(u.get(false, "key=" + r.key));
-                }).fail(function() {
-                    this.handled = true;
-                    $("#kloudspeaker-share-download-prepare").hide();
-                    $("#kloudspeaker-share-download-error").show();
-                });
-                df.resolve();
-            }, ['localize']);
-            return df.promise();
-        };
-    };
-
-    this.ShareUploadView = function(shareId, u, shareName) {
-        var vt = this;
-
-        this.init = function($c) {
-            var df = $.Deferred();
-            var uploadSpeedFormatter = new formatters.Number(1, texts.get('dataRateKbps'), texts.get('decimalSeparator'));
-
-            dom.loadContentInto($c, plugins.url("Share", "public_share_upload.html"), function() {
-                $("#kloudspeaker-share-title").text(texts.get("shareViewUploadTitle", shareName));
-                vt._uploadProgress = new that.PublicUploaderProgress($("#kloudspeaker-share-public-upload-progress"));
-
-                uploader.initUploadWidget($("#kloudspeaker-share-public-uploader"), {
-                    url: u.get(false, "format=binary"),
-                    dropElement: $("#kloudspeaker-share-public"),
-                    handler: {
-                        start: function(files, ready) {
-                            vt._uploadProgress.start(texts.get(files.length > 1 ? "mainviewUploadProgressManyMessage" : "mainviewUploadProgressOneMessage", files.length));
-                            ready();
-                        },
-                        progress: function(pr, br) {
-                            var speed = "";
-                            if (br) speed = uploadSpeedFormatter.format(br / 1024);
-                            vt._uploadProgress.update(pr, speed);
-                        },
-                        finished: function() {
-                            setTimeout(function() {
-                                vt._uploadProgress.success(texts.get('mainviewFileUploadComplete'));
-                            }, 1000);
-                        },
-                        failed: function(e) {
-                            if (e && e.code == 216) {
-                                vt._uploadProgress.failure(texts.get('mainviewFileUploadNotAllowed'));
-                            } else {
-                                vt._uploadProgress.failure(texts.get('mainviewFileUploadFailed'));
-                            }
-                        }
-                    }
-                });
-                df.resolve();
-            }, ['localize']);
-            return df.promise();
-        };
-    };
-
-    this.PublicUploaderProgress = function($e) {
-        var t = this;
-        t._$title = $e.find(".title");
-        t._$speed = $e.find(".speed");
-        t._$bar = $e.find(".bar");
-
-        return {
-            start: function(title) {
-                $e.removeClass("success failure");
-                t._$title.text(title ? title : "");
-                t._$speed.text("");
-                t._$bar.css("width", "0%");
-            },
-            update: function(progress, speed) {
-                t._$bar.css("width", progress + "%");
-                t._$speed.text(speed ? speed : "");
-            },
-            success: function(text) {
-                $e.addClass("success");
-                t._$bar.css("width", "0%");
-                t._$title.text(text);
-                t._$speed.text("");
-            },
-            failure: function(text) {
-                $e.addClass("failure");
-                t._$title.text(text);
-                t._$speed.text("");
-                t._$bar.css("width", "0%");
-            }
-        }
     };
 
     this.renderItemContextDetails = function(el, item, $content, data) {

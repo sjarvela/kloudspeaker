@@ -36,7 +36,7 @@ define(['kloudspeaker/share', 'kloudspeaker/app', 'kloudspeaker/service', 'kloud
                         return;
                     }
                     //proceed to original view
-                    app.showFullView(share.getShareView(that.shareId, that.shareInfo, key));
+                    app.showFullView(share.getShareView(that.shareId, that.shareInfo));
                 });
             }
         };

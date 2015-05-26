@@ -1,0 +1,20 @@
+<div id="kloudspeaker-share-upload" class="kloudspeaker-fullpage kloudspeaker-share-upload">
+	<div class="kloudspeaker-fullpage-bg"></div>
+
+	<div class="kloudspeaker-fullpage-form container center wide">
+		<h2 data-bind="text: model.title"></h2>
+
+		<div>
+			<h4 data-i18n="shareViewUploadMessage"></h4>
+			<div data-bind="uploader: { url: model.uploadUrl, handler: uploadHandler, dropTargetId: 'kloudspeaker-share-upload' }"></div>
+		</div>
+		
+		<div class="upload-progress" data-bind="attr : { class : 'upload-progress ' + model.uploadState() }">
+			<div class="title" data-bind="text: model.uploadTitle"></div>
+			<div class="speed" data-bind="text: model.uploadSpeed"></div>
+			<div class="progress progress-striped active">
+				<div class="bar" data-bind="style:{ width: model.uploadProgress() + '%'}"></div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -177,10 +177,26 @@ var kloudspeaker_defaults = {
                         $a.attr(target, loc);
                     else
                         $e.text(loc);
-                }
+                };
                 comp.addBindingHandler('i18n', {
                     //init: _i18n,
                     update: _i18n
+                });
+
+                var _uploader = function(e, va) {
+                    var v = va();
+                    var value = ko.unwrap(v);
+                    var $e = $(e);
+                    var spec = {
+                        url: value.url
+                    };
+                    if (value.dropTargetId) spec.dropElement = $("#" + value.dropTargetId);
+                    if (value.handler) spec.handler = value.handler;
+                    kloudspeaker.ui.uploader.initUploadWidget($e, spec);
+                }
+                comp.addBindingHandler('uploader', {
+                    //init: _i18n,
+                    update: _uploader
                 });
 
                 binder.binding = function(obj, view) {
@@ -341,7 +357,14 @@ var kloudspeaker_defaults = {
     };
 
     kloudspeaker.App.showFullView = function(view) {
-        kloudspeaker.App._showView(false, view, function(v) {});
+        kloudspeaker.App._showView(false, view, function(v) {
+            if (!v) return;
+
+            kloudspeaker.App.activeView = v;
+            kloudspeaker.App.activeView.init(kloudspeaker.App.getElement(), null).done(function() {
+                if (kloudspeaker.App._initDf.state() == "pending") kloudspeaker.App._initDf.resolve();
+            });
+        });
     };
 
     kloudspeaker.App._showView = function(id, view, cb) {
