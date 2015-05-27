@@ -5,14 +5,13 @@ define(['kloudspeaker/plugins', 'kloudspeaker/ui/views', 'kloudspeaker/events', 
     that.items = [];
     that.itemsByKey = {};
 
-    this.initialize = function() {
-        that._pathFormatter = new formatters.FilesystemItemPath();
-        that.itemContext = new ui.itemContext();
-        events.addEventHandler(function(e) {
-            if (e.type == 'filesystem/delete') that.onRemoveItems(utils.extractValue(e.payload.items, "id"));
-            //TODO else if (e.type == 'filesystem/rename') that.updateItems(kloudspeaker.helpers.extractValue(e.payload.items));
-        });
-    };
+    events.addEventHandler(function(e) {
+        if (e.type == 'filesystem/delete') that.onRemoveItems(utils.extractValue(e.payload.items, "id"));
+        //TODO else if (e.type == 'filesystem/rename') that.updateItems(kloudspeaker.helpers.extractValue(e.payload.items));
+    });
+
+    that._pathFormatter = new formatters.FilesystemItemPath();
+    that.itemContext = new ui.itemContext();
 
     this.onFileViewActivate = function($container) {
         kloudspeaker.dom.template("kloudspeaker-tmpl-mainview-dropbox").appendTo($container);
@@ -216,7 +215,6 @@ define(['kloudspeaker/plugins', 'kloudspeaker/ui/views', 'kloudspeaker/events', 
 
     plugins.register({
         id: "plugin-dropbox",
-        initialize: that.initialize,
         itemContextHandler: function(item, ctx, data) {
             return {
                 actions: [{

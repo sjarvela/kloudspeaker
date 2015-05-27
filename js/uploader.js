@@ -129,7 +129,6 @@
                             return false;
                         }
 
-                        console.log(data);
                         if (l.start)
                             l.start(data.originalFiles, function() {}, function() {
                                 data.jqXHR.abort();

@@ -35,6 +35,13 @@
             }, ['localize']);
         }
 
+        this.destroy = function() {
+            if (that._currentView && that._currentView.onDeactivate) that._currentView.onDeactivate();
+            $.each(that._views, function(i, v) {
+                if (v.deinit) v.deinit(that);
+            });
+        }
+
         this.onLoad = function(viewId) {
             $(window).resize(that.onResize);
             that.onResize();
@@ -472,7 +479,7 @@
             if (kloudspeaker.settings["file-view"]["default-view-mode"] == "small-icon") that._viewStyle = 1;
             if (kloudspeaker.settings["file-view"]["default-view-mode"] == "large-icon") that._viewStyle = 2;
 
-            kloudspeaker.events.addEventHandler(that.onEvent);
+            kloudspeaker.events.addEventHandler(that.onEvent, false, 'fileview');
 
             that.addCustomFolderType("search", {
                 onSelectFolder: function(f) {
@@ -569,6 +576,10 @@
             });
 
             that.itemContext = new kloudspeaker.ui.itemContext();
+        }
+
+        this.deinit = function() {
+            kloudspeaker.events.removeEventHandler('fileview');
         }
 
         this.addCustomFolderType = function(id, h) {

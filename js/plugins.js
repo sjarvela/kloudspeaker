@@ -1320,10 +1320,13 @@
         this._permissionTypes = false;
 
         this.initialize = function() {
+            if (that._init) return;
+            
             kloudspeaker.events.addEventHandler(function(e) {
                 if (!that._permissionTypes && kloudspeaker.session.user) that._permissionTypes = kloudspeaker.session.data.permission_types
             }, "session/start");
             that._pathFormatter = new kloudspeaker.ui.formatters.FilesystemItemPath();
+            that._init = true;
         };
 
         this._formatPermissionName = function(p) {

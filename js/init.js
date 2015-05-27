@@ -320,6 +320,7 @@ var kloudspeaker_defaults = {
     };
 
     kloudspeaker.App._doStart = function() {
+        if (kloudspeaker.App.activeView && kloudspeaker.App.activeView.destroy) kloudspeaker.App.activeView.destroy();
         kloudspeaker.App.activeView = false;
         kloudspeaker.App.activeViewId = null;
         kloudspeaker.App.openView(kloudspeaker.App.pageParams.v || "/files/");
@@ -329,6 +330,8 @@ var kloudspeaker_defaults = {
         var id = viewId.split("/");
 
         var onView = function(v) {
+            if (kloudspeaker.App.activeView && kloudspeaker.App.activeView.destroy) kloudspeaker.App.activeView.destroy();
+
             if (v) {
                 kloudspeaker.App.activeView = v;
                 kloudspeaker.App.activeViewId = id[0];
@@ -578,10 +581,21 @@ var kloudspeaker_defaults = {
     var et = kloudspeaker.events;
     et._handlers = [];
     et._handlerTypes = {};
+    et._handlersById = {};
 
-    et.addEventHandler = function(h, t) {
+    et.addEventHandler = function(h, t, id) {
+        if (et._handlers.indexOf(h) >= 0) return;
         et._handlers.push(h);
         if (t) et._handlerTypes[h] = t;
+        if (id) et._handlersById[id] = h;
+    };
+
+    et.removeEventHandler = function(id) {
+        var h = et._handlersById[id];
+        if (!h) return;
+        et._handlersById[id] = null;
+        et._handlers.remove(h);
+        et._handlerTypes[h] = false;
     };
 
     et.dispatch = function(type, payload) {
@@ -1780,7 +1794,7 @@ var kloudspeaker_defaults = {
 
     if (!Array.prototype.remove) {
         Array.prototype.remove = function(from, to) {
-            if (typeof(to) == 'undefined' && typeof(from) == 'object')
+            if (typeof(to) == 'undefined' && (typeof(from) == 'object' || typeof(from) == 'function'))
                 from = this.indexOf(from);
             if (from < 0) return;
             var rest = this.slice((to || from) + 1 || this.length);
