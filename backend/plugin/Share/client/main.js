@@ -1,57 +1,52 @@
-define(['kloudspeaker/app', 'kloudspeaker/plugins', 'kloudspeaker/service', 'kloudspeaker/session', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views', 'kloudspeaker/events', 'kloudspeaker/ui', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/texts', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/ui/uploader', 'kloudspeaker/ui/clipboard'], function(app, plugins, service, session, fs, views, events, ui, dnd, formatters, controls, dialogs, texts, utils, dom, uploader, clipboard) {
+define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/service', 'kloudspeaker/session', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views', 'kloudspeaker/events', 'kloudspeaker/ui', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/texts', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/ui/uploader', 'kloudspeaker/ui/clipboard'], function(app, settings, plugins, service, session, fs, views, events, ui, dnd, formatters, controls, dialogs, texts, utils, dom, uploader, clipboard) {
     //TODO
-    // - break into modules (1. config view, 2. edit dialog, 3. share full views (download, upload, prepared download) etc)
+    // - break into modules (1. config view, 2. edit dialog, 3. share list etc)
     var that = this;
 
-    this.initialize = function() {
-        that._timestampFormatter = new formatters.Timestamp(texts.get('shortDateTimeFormat'));
+    that._timestampFormatter = new formatters.Timestamp(texts.get('shortDateTimeFormat'));
 
-        views.registerView("share", function(rqParts, urlParams) {
-            if (rqParts.length != 2) return false;
-            var df = $.Deferred();
+    views.registerView("share", function(rqParts, urlParams) {
+        if (rqParts.length != 2) return false;
+        var df = $.Deferred();
 
-            var shareId = rqParts[1];
-            service.get("public/" + shareId + "/info/").done(function(result) {
-                if (!result || !result.type || (["download", "upload", "prepared_download"].indexOf(result.type) < 0)) {
-                    df.resolve(new kloudspeaker.ui.FullErrorView(texts.get('shareViewInvalidRequest')));
-                    return;
-                }
-
-                if (result.restriction == "private") {
-                    var s = session.get();
-                    if (!s || !s.user) {
-                        df.resolve(false);
-                        return;
-                    }
-                } else if (result.restriction == "pw" && !result.auth) {
-                    df.resolve({
-                        model: ["kloudspeaker/share/views/access_password", {
-                            id: shareId,
-                            info: result
-                        }]
-                    });
-                    return;
-                }
-
-                df.resolve(that._getShareView(shareId, result));
-            }).fail(function() {
+        var shareId = rqParts[1];
+        service.get("public/" + shareId + "/info/").done(function(result) {
+            if (!result || !result.type || (["download", "upload", "prepared_download"].indexOf(result.type) < 0)) {
                 df.resolve(new kloudspeaker.ui.FullErrorView(texts.get('shareViewInvalidRequest')));
-            });
-            return df.promise();
+                return;
+            }
+
+            if (result.restriction == "private") {
+                var s = session.get();
+                if (!s || !s.user) {
+                    df.resolve(false); //forward to login page
+                    return;
+                }
+            } else if (result.restriction == "pw" && !result.auth) {
+                df.resolve({
+                    model: ["kloudspeaker/share/views/access_password", {
+                        id: shareId,
+                        info: result
+                    }]
+                });
+                return;
+            }
+
+            df.resolve(that._getShareView(shareId, result));
+        }).fail(function() {
+            df.resolve(new kloudspeaker.ui.FullErrorView(texts.get('shareViewInvalidRequest')));
         });
-    };
+        return df.promise();
+    });
+
+    if (settings.dev)
+        views.registerConfigView({
+            viewId: 'share',
+            title: 'i18n:pluginShareManageTitle',
+            model: 'kloudspeaker/share/manage'
+        });
 
     this._getShareView = function(id, info) {
-        var serviceUrl = service.url("public/" + id, true);
-        var urlProvider = {
-            get: function(path, param) {
-                var url = serviceUrl;
-                if (path) url = url + path;
-                if (param) url = utils.urlWithParam(url, param);
-                return utils.noncachedUrl(url);
-            }
-        }
-
         if (info.type == "download") {
             return {
                 model: ["kloudspeaker/share/views/download", {
