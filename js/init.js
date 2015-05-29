@@ -166,6 +166,32 @@ var kloudspeaker_defaults = {
                     }
                 };
 
+                // format
+                var _format = function(e, va, ab, vm, bc) {
+                    var $e = $(e);
+                    var v = va();
+                    var value = ko.unwrap(v);
+                    var formatter = ab.get('formatter');
+                    var val = '';
+                    if (formatter) {
+                        if (typeof(formatter) === 'function') val = formatter(value);
+                        else val = formatter.format(value);
+                    } else {
+                        if (value)
+                            val = '' + value;
+                    }
+
+                    var target = $e.attr('data-format-target');
+                    if (!target || target == 'text')
+                        $e.text(val);
+                    else if (target == 'value')
+                        $e.val(val);
+                };
+                comp.addBindingHandler('format', {
+                    //init: _format,
+                    update: _format
+                });
+
                 // i18n
                 var _i18n = function(e, va) {
                     var v = va();
@@ -294,10 +320,6 @@ var kloudspeaker_defaults = {
                     name: pl["client_module_id"],
                     location: pl["client_module_path"]
                 });
-                /*packages.push({
-                    name: "templates/" + pl["client_module_id"],
-                    location: pl["client_module_path"]
-                });*/
             }
         });
         var df = $.Deferred();
@@ -508,7 +530,7 @@ var kloudspeaker_defaults = {
                 kloudspeaker.App.registerView(id, v);
             },
             registerConfigView: function(v) {
-                kloudspeaker.ui._configViews[v.id] = v;
+                kloudspeaker.ui._configViews[v.id || v.viewId] = v;
             },
             registerFileViewHandler: function(h) {
                 kloudspeaker.ui._fileViewHandlers.push(h);

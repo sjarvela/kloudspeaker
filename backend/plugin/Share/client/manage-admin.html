@@ -1,0 +1,28 @@
+<div>
+    <div class="share-list" data-bind="config-list: {tools: tools, cols: cols, remote: remote, optionsModel: model.options }">
+        <h2 data-part="header-title"><i class="icon icon-share"></i>&nbsp;<span data-i18n="pluginShareConfigViewNavTitle"></span></h2>
+
+        <form data-part="options" class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label" for="share-user" data-i18n="pluginPermissionsAdminOptionUser"></label>
+                <div class="controls">
+                    <select id="share-user" data-bind="value: settings.optionsModel.user, options: settings.optionsModel.users, optionsText: settings.optionsModel.userOptionTitle, optionsCaption: settings.optionsModel.userNoneTitle"></select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="share-item-option" data-i18n="pluginShareAdminOptionItem"></label>
+                <div class="controls">
+                    <select id="share-item-option" data-bind="value: settings.optionsModel.itemType, options: settings.optionsModel.itemTypes, optionsText: settings.optionsModel.itemTypeOptionTitle, optionsCaption: settings.optionsModel.itemTypeNoneTitle"></select>
+
+                    <!-- ko if: (settings.optionsModel.itemType() && settings.optionsModel.itemType() != 'none') -->
+                    <div id="share-filesystem-item-selector">
+                        <input type="text" disabled data-bind="format: settings.optionsModel.item, formatter: settings.optionsModel.pathFormatter" data-format-target="value"></input>
+                        <button class="btn" data-bind="click: settings.optionsModel.onSelectItem">...</button>
+                    </div>
+                    <!-- /ko -->
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

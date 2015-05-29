@@ -234,9 +234,15 @@
             if (window.isArray(title)) title = kloudspeaker.ui.texts.get(title[0], title.slice(1));
 
             if (v.model) {
-                kloudspeaker.ui.viewmodel(v.view, [v.model, {
+                var model = v.model;
+                var p = {
                     settings: that._settings
-                }], that._getContentElement().empty()).done(function(m) {
+                };
+                if (window.isArray(model)) {
+                    p = model[1];
+                    model = model[0];
+                }
+                kloudspeaker.ui.viewmodel(v.view, [model, p], that._getContentElement().empty()).done(function(m) {
                     that._activeView = m;
 
                     if (!noStore && v.viewId) kloudspeaker.App.storeView("admin/" + v.viewId);

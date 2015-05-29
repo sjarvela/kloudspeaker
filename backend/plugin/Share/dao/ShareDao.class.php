@@ -89,7 +89,7 @@ class ShareDao {
 				$location = str_replace("'", "\'", $item->location());
 				$criteria .= sprintf(" AND item_id in (select id from " . $db->table("item_id") . " where path like '%s%%')", $location);
 			} else if ($q["item"] == 'none') {
-				$criteria .= " AND item_id like '%_%'";
+				$criteria .= " AND item_id like '%!_%' escape '!'";
 			}
 		}
 

@@ -6,30 +6,60 @@
         <!-- ko if: settings.tools -->
         <div class="btn-toolbar tools" role="toolbar">
             <!-- ko foreach: {data: settings.tools, as: 'tool'} -->
-            <button type="button" class="btn btn-default" data-bind="click: tool.action"><i data-bind="attr: {class: 'fa fa-'+tool.icon }"></i></button>
+            <button type="button" class="btn btn-default" data-bind="click: function() { $parent.onTool(tool) }, attr: { disabled: tool._disabled, title: (typeof(tool.tooltip) === 'function') ? tool.tooltip() : tool.tooltip }"><i data-bind="attr: {class: 'icon-'+tool.icon }"></i></button>
             <!-- /ko -->
         </div>
         <!-- /ko -->
     </div>
+
+    <div data-part="options"></div>
+    
     <div class="table-responsive">
         <table class="table">
             <thead>
                 <tr data-bind="foreach: {data: settings.cols, as: 'hcol'}">
+                    <!-- ko if: hcol.type == 'select' -->
+                    <td>
+                        <input type="checkbox" data-bind="checked: $parent.settings.allSelected"></input>
+                    </td>
+                    <!-- /ko -->
+                    <!-- ko if: hcol.type != 'select' -->
                     <th data-bind="text: $parent.getColTitle(hcol)"></th>
+                    <!-- /ko -->
                 </tr>
             </thead>
             <tbody>
                 <!-- ko foreach: {data: settings.values, as: 'row'} -->
-                <tr>
+                <tr data-bind="attr: { class: $parent.settings.rowClass ? $parent.settings.rowClass(row) : '' }">
                     <!-- ko foreach: {data: $parent.settings.cols, as: 'col'} -->
                     <!-- ko if: !col.type -->
-                    <td data-bind="text: row[col.id]"></td>
+                        <!-- ko if: col.content -->
+                        <td data-bind="text: col.content(row, row[col.id])"></td>
+                        <!-- /ko -->
+                        <!-- ko if: col.html -->
+                        <td data-bind="html: col.html(row, row[col.id])"></td>
+                        <!-- /ko -->
+                        <!-- ko if: (!col.content && !col.html) -->
+                        <td data-bind="text: row[col.id]"></td>
+                        <!-- /ko -->
+                    <!-- /ko -->
+                    <!-- ko if: col.type == 'icon' -->
+                    <td>
+                        <i data-bind="attr: {class: 'icon-'+((typeof(col.name) === 'function') ? col.name(row) : col.name), title: (typeof(col.tooltip) === 'function') ? col.tooltip(row) : col.tooltip }"></i>
+                    </td>
                     <!-- /ko -->
                     <!-- ko if: col.type == 'action' -->
                     <td>
-                        <a href="#" data-bind="click: function() { col.action(row) }">
-                            <i data-bind="attr: {class: 'fa fa-'+col.icon }"></i>
+                        <!-- ko if: (!col.visible || col.visible(row)) -->
+                        <a data-bind="click: function() { col.action(row) }">
+                            <i data-bind="attr: {class: 'icon-'+col.icon }"></i>
                         </a>
+                        <!-- /ko -->
+                    </td>
+                    <!-- /ko -->
+                    <!-- ko if: col.type == 'select' -->
+                    <td>
+                        <input type="checkbox" data-bind="checked: row._selected"></input>
                     </td>
                     <!-- /ko -->
                     <!-- /ko -->
@@ -38,24 +68,21 @@
             </tbody>
         </table>
     </div>
-    <nav class="config-list-pager" data-bind="if: settings.paging() != null">
-        <ul class="pagination">
-            <li class="page-btn page-next" data-bind="class: { disabled : (settings.paging().page < 2) }"><a href="#" data-bind="click: gotoPrev" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+    <nav class="config-list-pager pagination" data-bind="if: (settings.paging() != null && settings.paging().pages > 1)">
+        <ul>
+            <li class="page-btn page-prev" data-bind="attr: { class: 'page-btn page-prev ' + (settings.paging().page < 2) ? 'disabled' : ''}"><a data-bind="click: gotoPrev" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
 
             <!-- ko if: settings.paging().pages < 10 -->
             <!-- ko foreach: new Array(settings.paging().pages) -->
-            <li class="page-btn page-nr"><a href="#" data-bind="text: ($index()+1), click: function(){ $parent.goto($index()+1) }"></a></li>
+            <li class="page-btn page-nr" data-bind="attr: { class: 'page-btn page-nr ' + ($parent.settings.paging().page == ($index()+1)) ? 'active' : ''}"><a data-bind="text: ($index()+1), click: function(){ $parent.goto($index()+1) }"></a></li>
             <!-- /ko -->
             <!-- /ko -->
 
             <!-- ko if: settings.paging().pages >= 10 -->
-
+            <li class="page-btn page-nr" data-bind="attr: { class: 'page-btn page-nr ' + ($parent.settings.paging().page == ($index()+1)) ? 'active' : ''}"><a data-bind="text: ($index()+1), click: function(){ $parent.goto($index()+1) }"></a></li>
             <!-- /ko -->
-            <li class="page-btn page-prev" data-bind="class: { disabled : (settings.paging().page >= settings.paging().pages) }"><a href="#" data-bind="click: gotoNext" aria-label="Previous"><span aria-hidden="true">&raquo;</span></a></li>
+            <li class="page-btn page-next" data-bind="attr: { class: 'page-btn page-prev ' + (settings.paging().page >= settings.paging().pages) ? 'disabled' : ''}"><a data-bind="click: gotoNext" aria-label="Previous"><span aria-hidden="true">&raquo;</span></a></li>
         </ul>
-        <div data-bind="text: settings.paging().page"></div>
-        <div data-bind="text: settings.paging().pages"></div>
-        <div data-bind="text: settings.paging().count"></div>
-        <div data-bind="text: settings.paging().maxPerPage"></div>
+        <!--div data-bind="text: (settings.paging().page + '/' + settings.paging().pages + ' (max=' + settings.paging().maxPerPage + ', total=' + settings.paging().count + ')')"></div-->
     </nav>
 </div>

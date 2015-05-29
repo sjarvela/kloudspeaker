@@ -39,12 +39,18 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
         return df.promise();
     });
 
-    if (settings.dev)
-        views.registerConfigView({
-            viewId: 'share',
-            title: 'i18n:pluginShareManageTitle',
-            model: 'kloudspeaker/share/manage'
-        });
+    views.registerConfigView({
+        viewId: 'shares',
+        title: 'i18n:pluginShareConfigViewNavTitle',
+        model: 'kloudspeaker/share/manage'
+    });
+
+    views.registerConfigView({
+        viewId: 'allshares',
+        title: 'i18n:pluginShareConfigViewNavTitle',
+        model: 'kloudspeaker/share/manage-admin',
+        admin: true
+    });
 
     this._getShareView = function(id, info) {
         if (info.type == "download") {
@@ -432,107 +438,6 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
         });
     };
 
-    this.onActivateConfigView = function($c, cv) {
-        var shares = false;
-        var items = false;
-        var invalid = [];
-        var listView = false;
-
-        var updateShares = function() {
-            cv.showLoading(true);
-
-            that.loadShares().done(function(l) {
-                shares = l.shares[session.get().user.id];
-                invalid = l.invalid;
-
-                items = [];
-                $.each(utils.getKeys(l.items), function(i, k) {
-                    items.push(l.items[k]);
-                });
-                $.each(l.nonfs, function(i, itm) {
-                    items.push({
-                        id: itm.id,
-                        name: itm.name,
-                        customType: itm.type
-                    });
-                });
-
-                listView.table.set(items);
-
-                cv.showLoading(false);
-            });
-        };
-        var isValid = function(i) {
-            if (invalid.length === 0) return true;
-            return (invalid.indexOf(i.id) < 0);
-        };
-
-        listView = new kloudspeaker.view.ConfigListView($c, {
-            table: {
-                key: "id",
-                columns: [{
-                    id: "icon",
-                    title: "",
-                    valueMapper: function(item) {
-                        if (item.customType) return ""; //TODO type icon
-                        return isValid(item) ? '<i class="icon-file"></i>' : '<i class="icon-exclamation"></i>';
-                    }
-                }, {
-                    id: "name",
-                    title: texts.get('fileListColumnTitleName')
-                }, {
-                    id: "path",
-                    title: texts.get('pluginShareConfigViewPathTitle'),
-                    formatter: function(item) {
-                        if (item.customType || !item.path) return "";
-                        var p = (fs.rootsById[item.root_id] ? fs.rootsById[item.root_id].name : item.root_id) + ":";
-                        var path = item.path.substring(0, item.path.length - (item.name.length + (item.is_file ? 0 : 1)));
-                        return p + "/" + path;
-                    }
-                }, {
-                    id: "count",
-                    title: texts.get('pluginShareConfigViewCountTitle'),
-                    formatter: function(item) {
-                        return shares[item.id].length;
-                    }
-                }, {
-                    id: "edit",
-                    title: "",
-                    type: "action",
-                    formatter: function(item) {
-                        return isValid(item) ? '<i class="icon-edit"></i>' : '';
-                    }
-                }, {
-                    id: "remove",
-                    title: "",
-                    type: "action",
-                    content: '<i class="icon-trash"></i>'
-                }],
-                onRow: function($r, item) {
-                    if (!isValid(item)) $r.addClass("error");
-                },
-                onRowAction: function(id, item) {
-                    if (id == "edit") {
-                        var shareTitle = false;
-                        if (item.customType) {
-                            // TODO register type handlers from plugins
-                            if (item.customType == 'ic') shareTitle = texts.get("pluginItemCollectionShareTitle");
-                        }
-                        that.onOpenShares({
-                            id: item.id,
-                            name: item.name,
-                            shareTitle: shareTitle,
-                            is_file: item.is_file
-                        });
-                    } else if (id == "remove") {
-                        that.removeAllItemShares(item).done(updateShares);
-                    }
-                }
-            }
-        });
-        updateShares();
-    };
-
     this.processUserData = function(l) {
         var userData = {
             users: [],
@@ -555,7 +460,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
         return userData;
     };
 
-    this.onActivateConfigAdminView = function($c, cv) {
+    /*this.onActivateConfigAdminView = function($c, cv) {
         var pathFormatter = new formatters.FilesystemItemPath();
 
         kloudspeaker.templates.load("shares-content", utils.noncachedUrl(plugins.url("Share", "content.html"))).done(function() {
@@ -853,7 +758,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
                 refresh();
             });
         });
-    };
+    };*/
 
     plugins.register({
         id: "plugin-share",
@@ -861,18 +766,13 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
         resources: {
             css: true
         },
-        initialize: that.initialize,
 
-        configViewHandler: {
+        /*configViewHandler: {
             views: function() {
-                var views = [{
-                    viewId: "shares",
-                    title: texts.get("pluginShareConfigViewNavTitle"),
-                    onActivate: that.onActivateConfigView
-                }];
+                var views = [];
 
                 if (session.get().user.admin) views.push({
-                    viewId: "allshares",
+                    viewId: "allshares2",
                     admin: true,
                     title: texts.get("pluginShareConfigViewNavTitle"),
                     onActivate: that.onActivateConfigAdminView
@@ -880,7 +780,8 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
 
                 return views;
             }
-        },
+        },*/
+
         fileViewHandler: {
             filelistColumns: function() {
                 return [{
@@ -933,6 +834,54 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
             if (param) url = utils.urlWithParam(url, param);
             return utils.noncachedUrl(url);
         },
-        getShareView: that._getShareView
+        getShareView: that._getShareView,
+        openItemShares: function(item) {
+            var shareTitle = false;
+            if (item.customType) {
+                // TODO register type handlers from plugins
+                if (item.customType == 'ic') shareTitle = texts.get("pluginItemCollectionShareTitle");
+            }
+            that.onOpenShares({
+                id: item.id,
+                name: item.name,
+                shareTitle: shareTitle,
+                is_file: item.is_file
+            });
+        },
+        editShare: function(s) {
+            kloudspeaker.templates.load("shares-content", utils.noncachedUrl(kloudspeaker.plugins.url("Share", "content.html"))).done(function() {
+                var _editor = false;
+
+                dialogs.custom({
+                    resizable: true,
+                    initSize: [600, 400],
+                    title: s.id, //TODO
+                    content: dom.template("share-context-addedit-template", {
+                        editDialog: true
+                    }),
+                    buttons: [{
+                        id: "yes",
+                        "title": texts.get('dialogSave')
+                    }, {
+                        id: "no",
+                        "title": texts.get('dialogCancel')
+                    }],
+                    "on-button": function(btn, d) {
+                        if (btn.id == 'no') {
+                            d.close();
+                            return;
+                        }
+                        var values = _editor.getValues();
+                        that.editShare(s.id, values.name || '', values.expiration, values.active, values.restriction).done(function() {
+                            d.close();
+                            refresh();
+                        }).fail(d.close);
+                    },
+                    "on-show": function(h, $d) {
+                        _editor = that._initShareEditor(s, $d);
+                    }
+                });
+            });
+        }
     }
 });
