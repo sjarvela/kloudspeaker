@@ -113,7 +113,6 @@ define(['kloudspeaker/ui/texts', 'durandal/composition', 'knockout', 'jquery'], 
                 pages: (p.maxPerPage > 0 ? Math.ceil(r.total / p.maxPerPage) : 0),
                 page: (p.maxPerPage > 0 ? (Math.floor(r.start / p.maxPerPage) + 1) : 0)
             });
-            //TODO paging
         });
     }
 
@@ -125,7 +124,7 @@ define(['kloudspeaker/ui/texts', 'durandal/composition', 'knockout', 'jquery'], 
 
     ctor.prototype.goto = function(i) {
         var cur = this.settings.paging().page;
-        if (cur == 1 || i < 1 || i > this.settings.paging().pages) return;
+        if (cur == i || i < 1 || i > this.settings.paging().pages) return;
         this.settings.paging().page = i;
         this.reload();
     }
@@ -138,7 +137,7 @@ define(['kloudspeaker/ui/texts', 'durandal/composition', 'knockout', 'jquery'], 
 
     ctor.prototype.gotoNext = function() {
         var cur = this.settings.paging().page;
-        if (cur >= this.settings.paging().pages - 1) return;
+        if (cur >= this.settings.paging().pages) return;
         this.goto(cur + 1);
     }
 
