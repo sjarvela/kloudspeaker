@@ -2,7 +2,20 @@ define(['kloudspeaker/eventlogging/repository', 'kloudspeaker/core/user/reposito
     return function() {
         var that = this;
         var model = {
-            events: ko.observableArray([])
+            events: ko.observableArray([]),
+            options: {
+                eventType: ko.observable(null),
+                eventTypeNoneTitle: texts.get('pluginEventLoggingAdminAny'),
+                eventTypes: ko.observableArray([]),
+                customEventType: ko.observable(''),
+
+                user: ko.observable(null),
+                userNoneTitle: texts.get('pluginShareAdminAny'),
+                users: ko.observableArray([]),
+                userOptionTitle: function(u) {
+                    return u.name;
+                },
+            }
         };
 
         var timestampFormatter = new formatters.Timestamp(texts.get('shortDateTimeFormat'));
@@ -11,7 +24,11 @@ define(['kloudspeaker/eventlogging/repository', 'kloudspeaker/core/user/reposito
         return {
             customTitle: true,
             model: model,
-            tools: [],
+            tools: [{
+                id: "action-refresh",
+                icon: 'refresh',
+                action: listRefresh.trigger
+            }],
             cols: [{
                 type: 'select',
             }, {
@@ -37,15 +54,12 @@ define(['kloudspeaker/eventlogging/repository', 'kloudspeaker/core/user/reposito
             remote: {
                 handler: repository.getQueryHandler(function() {
                     var params = {};
-                    /*if (model.options.user()) params.user_id = model.options.user().id;
-                    if (model.options.itemType()) {
-                        params.item = model.options.itemType();
-                        params.item_id = null;
+                    if (model.options.eventType()) {
+                        params.type = model.options.eventType();
+                        if (params.type == 'custom') params.type = model.options.customEventType();
+                    }
+                    if (model.options.user()) params.user = model.options.user().name;
 
-                        var item = model.options.item();
-                        if (item && (params.item == 'filesystem_item' || params.item == 'filesystem_child'))
-                            params.item_id = item.id;
-                    }*/
                     return params;
                 }, function(l) {
                     return l;
@@ -53,11 +67,16 @@ define(['kloudspeaker/eventlogging/repository', 'kloudspeaker/core/user/reposito
                 refresh: listRefresh
             },
             activate: function(o) {
-                repository.getTypes().done(function(t) {
-                    //that._types = t;
+                repository.getTypes().done(function(types) {
+                    var list = [];
+                    _.each(utils.getKeys(types), function(t) {
+                        list.push(t);
+                    });
+                    list.push("custom");
+                    model.options.eventTypes(list);
                 });
                 userRepository.getAllUsers().done(function(u) {
-                    //model.options.users(u);
+                    model.options.users(u);
                 });
             }
         };
