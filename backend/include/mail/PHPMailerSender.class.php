@@ -23,6 +23,7 @@
 			
 			$isHtml = (stripos($message, "<html>") !== FALSE);
 			$f = ($from != NULL ? $from : $this->env->settings()->setting("mail_notification_from"));
+			$fName = $this->env->settings()->setting("mail_notification_from_name");
 			
 			$validRecipients = $this->getValidRecipients($to);
 			if (count($validRecipients) === 0) {
@@ -53,6 +54,7 @@
 			}
 			
 			$mailer->From = $f;
+			$mailer->FromName = $fName;
 			foreach ($validRecipients as $recipient) {
 				$mailer->addBCC($recipient["email"], $recipient["name"]);
 			}
