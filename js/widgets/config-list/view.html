@@ -28,46 +28,8 @@
     <div class="table-responsive" data-bind="attr: { class: 'table-responsive' + (settings.loading() ? ' loading' : '') }">
         <table class="table table-condensed table-striped">
             <thead>
-                <tr data-bind="foreach: {data: settings.cols, as: 'hcol'}">
-                    <!-- ko if: hcol.type == 'select' -->
-                    <th>
-                        <input type="checkbox" data-bind="checked: $parent.settings.allSelected"></input>
-                    </th>
-                    <!-- /ko -->
-                    <!-- ko if: hcol.type != 'select' -->
-                    <th data-bind="text: $parent.getColTitle(hcol)"></th>
-                    <!-- /ko -->
-                </tr>
             </thead>
             <tbody>
-                <!-- ko foreach: {data: settings.values, as: 'row'} -->
-                <tr data-bind="attr: { class: $parent.settings.rowClass ? $parent.settings.rowClass(row) : '' }">
-                    <!-- ko foreach: {data: $parent.settings.cols, as: 'col'} -->
-                    <!-- ko if: !col.type -->
-                    <td data-bind="html: $parents[1].getColContent(row, col)"></td>
-                    <!-- /ko -->
-                    <!-- ko if: col.type == 'icon' -->
-                    <td>
-                        <i data-bind="attr: {class: 'icon-'+((typeof(col.name) === 'function') ? col.name(row) : col.name), title: (typeof(col.tooltip) === 'function') ? col.tooltip(row) : col.tooltip }"></i>
-                    </td>
-                    <!-- /ko -->
-                    <!-- ko if: col.type == 'action' -->
-                    <td class="action">
-                        <!-- ko if: (!col.visible || col.visible(row)) -->
-                        <a data-bind="click: function() { col.action(row) }">
-                            <i data-bind="attr: {class: 'icon-'+col.icon }"></i>
-                        </a>
-                        <!-- /ko -->
-                    </td>
-                    <!-- /ko -->
-                    <!-- ko if: col.type == 'select' -->
-                    <td>
-                        <input type="checkbox" data-bind="checked: row._selected"></input>
-                    </td>
-                    <!-- /ko -->
-                    <!-- /ko -->
-                </tr>
-                <!-- /ko -->
             </tbody>
         </table>
     </div>

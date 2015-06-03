@@ -4,6 +4,7 @@ define(['kloudspeaker/eventlogging/repository', 'kloudspeaker/core/user/reposito
         that._eventTypeTexts = {};
         var model = {
             events: ko.observableArray([]),
+
             options: {
                 eventType: ko.observable(null),
                 eventTypeNoneTitle: texts.get('pluginEventLoggingAdminAny'),

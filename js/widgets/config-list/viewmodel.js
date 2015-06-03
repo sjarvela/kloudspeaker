@@ -6,54 +6,7 @@ define(['kloudspeaker/ui/texts', 'kloudspeaker/utils', 'durandal/composition', '
         this.settings = settings;
         this.settings.loading = ko.observable(false);
         this.settings.paging = ko.observable(null);
-        this.settings.allSelected = ko.observable(false);
 
-        var adjustingSelected = false;
-        this.settings.allSelected.subscribe(function(a) {
-            if (adjustingSelected) return;
-            adjustingSelected = true;
-            _.each(that.settings.values(), function(v) {
-                v._selected(a);
-            });
-            adjustingSelected = false;
-            onSelectionChanged();
-        });
-
-        var onSelectionChanged = function() {
-            var selected = that.getSelected();
-            if (that.settings.selected) that.settings.selected(selected);
-
-            var allSelected = (selected.length == that.settings.values().length);
-            adjustingSelected = true;
-            that.settings.allSelected(allSelected);
-            adjustingSelected = false;
-
-            updateTools();
-        };
-        var updateTools = function() {
-            if (!settings.tools) return;
-
-            var selected = that.getSelected();
-            _.each(settings.tools, function(t) {
-                if (!t.depends) return;
-
-                var disabled = false;
-                if (t.depends == 'selection') disabled = (selected.length < 1);
-                if (t.depends == 'selection-many') disabled = (selected.length < 2);
-                if (t.depends == 'selection-none') disabled = (selected.length != 0);
-                t._disabled(disabled);
-            });
-        }
-        var processValues = function(v) {
-            _.each(v, function(vi) {
-                if (typeof(vi._selected) != 'undefined') return;
-                vi._selected = ko.observable(false);
-                vi._selected.subscribe(function() {
-                    if (adjustingSelected) return;
-                    onSelectionChanged();
-                });
-            });
-        };
         if (settings.tools)
             _.each(settings.tools, function(t) {
                 t._disabled = ko.observable(false);
@@ -72,27 +25,272 @@ define(['kloudspeaker/ui/texts', 'kloudspeaker/utils', 'durandal/composition', '
                     that.reload();
                 });
             }
-        } else {
-            processValues(settings.values());
         }
 
-        this.settings.values.subscribe(function(v) {
-            processValues(v);
-        });
-        updateTools();
+        if (this.settings.cols.subscribe)
+            this.settings.cols.subscribe(function(v) {
+                that._updateCols();
+            });
+        if (this.settings.values.subscribe)
+            this.settings.values.subscribe(function(v) {
+                that._updateContent(v);
+                that._onSelectionChanged(true);
+            });
     };
+    ctor.prototype._updateTools = function() {
+        if (!this.settings.tools) return;
+
+        var selected = this.getSelected();
+        _.each(this.settings.tools, function(t) {
+            if (!t.depends) return;
+
+            var disabled = false;
+            if (t.depends == 'selection') disabled = (selected.length < 1);
+            if (t.depends == 'selection-many') disabled = (selected.length < 2);
+            if (t.depends == 'selection-none') disabled = (selected.length != 0);
+            t._disabled(disabled);
+        });
+    }
+    ctor.prototype._updateSort = function() {
+        this.$e.find("th.sortable > .sort-indicator").empty();
+        if (!this.settings.sort) return;
+
+        var $col = $("th.col-" + this.settings.sort.id + " > .sort-indicator");
+        $col.html("<i class='" + (this.settings.sort.asc ? "icon-caret-up" : "icon-caret-down") + "'></i>");
+    }
+    ctor.prototype._updateCols = function() {
+        var that = this;
+        var firstSortable = null;
+        var cols = (typeof(this.settings.cols) === 'function') ? this.settings.cols() : this.settings.cols;
+
+        _.each(cols, function(col) {
+            var $th;
+
+            var title = "";
+            if (col.type != 'select' && col.type != 'action') {
+                title = (col.title ? col.title : (col.titleKey ? texts.get(col.titleKey) : ''));
+            }
+
+            $th = $("<th>" + title + "</th>");
+            if (col.id) $th.addClass("col-" + col.id);
+            $th[0].col = col;
+            if (col.type == 'select') {
+                $th.html('<input type="checkbox"></input>').addClass("select");
+            }
+
+            if (col.sortable) {
+                $th.append("<span class='sort-indicator'></span>").addClass("sortable");
+                if (!firstSortable) firstSortable = col;
+            }
+
+            $th.appendTo(that.$thead);
+        });
+        if (!this.settings.sort && firstSortable) {
+            this.settings.sort = {
+                id: firstSortable.id,
+                asc: true
+            };
+        }
+        this._updateSort();
+    }
+    ctor.prototype._setCellValue = function($cell, row, col) {
+        $cell[0].col = col;        
+        var v = col.id ? row[col.id] : null;
+
+        if (col.cellClass) $cell.addClass(col.cellClass);
+        if (col.tooltip) $cell.attr("title", (typeof(col.tooltip) === 'function' ? col.tooltip(row) : col.tooltip));
+        if (col.type == 'select') {
+            var $sel = $('<input type="checkbox"></input>').appendTo($cell.empty().addClass("select"));
+        } else if (col.type == 'icon') {
+            $cell.empty().html('<i class="icon-' + (typeof(col.name) === 'function' ? col.name(row) : col.name) + '"></i>');
+        } else if (col.type == 'action') {
+            var html = '';
+            if ((typeof(col.enabled) === 'undefined') || col.enabled(row)) {
+                html = col.icon ? '<i class="icon-' + (typeof(col.icon) === 'function' ? col.icon(row) : col.icon) + '"></i>' : (col.content ? col.content : '');
+                if (col.formatter) html = col.formatter(item, v);
+                if (html) $("<a title='" + col.title + "'></a>").html(html).appendTo($cell.empty().addClass("action"));
+            }
+            /*} else if (col.type == "input") {
+                var $s = $cell[0].ctrl;
+                if (!$s) {
+                    $s = $('<input type="text"></input>').appendTo($cell).change(function() {
+                        var v = $s.val();
+                        $cell[0].ctrlVal = v;
+                        if (o.selectOnEdit) setRowSelected(item, true);
+                        if (col.onChange) col.onChange(item, v);
+                    });
+                    $cell[0].ctrl = $s;
+                }
+                var sv = v;
+                if (col.valueMapper) sv = col.valueMapper(item, v);
+                $s.val(sv);
+            } else if (col.type == "select") {
+                var $sl = $cell[0].ctrl;
+                if (!$sl) {
+                    var selOptions = [];
+                    if (typeof(col.options) == "function") selOptions = col.options(item);
+                    else if (window.isArray(col.options)) selOptions = col.options;
+
+                    var noneOption;
+                    if (col.none) {
+                        if (typeof(col.none) == "function") noneOption = col.none(item);
+                        else noneOption = col.none;
+                    }
+
+                    var formatter;
+                    if (col.formatter) {
+                        formatter = function(sv) {
+                            return col.formatter(item, sv);
+                        };
+                    }
+
+                    $sl = kloudspeaker.ui.controls.select($("<select></select>").appendTo($cell), {
+                        values: selOptions,
+                        title: col.title,
+                        none: noneOption,
+                        formatter: formatter,
+                        onChange: function(v) {
+                            $cell[0].ctrlVal = v;
+                            if (o.selectOnEdit) setRowSelected(item, true);
+                            if (col.onChange) col.onChange(item, v);
+                        }
+                    });
+                    $cell[0].ctrl = $sl;
+                } else {}
+                var sv2 = v;
+                if (col.valueMapper) sv2 = col.valueMapper(item, v);
+                $sl.select(sv2);
+            } else if (col.type == 'static') {
+                $cell.html(col.content || '');*/
+        } else {
+            //if (col.renderer) col.renderer(item, v, $cell);
+            if (col.content) $cell.html((typeof(col.content) === 'function') ? col.content(row, v) : col.content);
+            else if (col.formatter) {
+                if (typeof(col.formatter) === 'function') $cell.html(col.formatter(item, v));
+                else $cell.html(col.formatter.format(v));
+            } else $cell.html(v);
+        }
+    }
+    /*var adjustingSelected = false;
+    this.settings.allSelected.subscribe(function(a) {
+        if (adjustingSelected) return;
+        adjustingSelected = true;
+        _.each(that.settings.values(), function(v) {
+            v._selected(a);
+        });
+        adjustingSelected = false;
+        onSelectionChanged();
+    });*/
+
+    ctor.prototype._onSelectionChanged = function(updateUI) {        
+        var selected = this.getSelected();
+        if (this.settings.selected) this.settings.selected(selected);
+
+        var allSelected = (selected.length == this.settings.values().length && selected.length > 0);
+        this.$e.find("th.select input").prop('checked', allSelected);
+
+        if (updateUI) {
+            this.$e.find("td.select").each(function() {
+                var $cell = $(this);
+                var $row = $cell.parent();
+                $cell.find("input").prop('checked', !!$row[0].data._selected);
+            });
+        }
+
+        this._updateTools();
+    };
+    ctor.prototype._updateContent = function(newRows) {
+        var that = this;
+        that.$tbody.empty();
+
+        var rows = newRows || ((typeof(this.settings.rows) === 'function') ? this.settings.rows() : this.settings.rows);
+        var cols = (typeof(this.settings.cols) === 'function') ? this.settings.cols() : this.settings.cols;
+
+        _.each(rows, function(row) {
+            var $row = $("<tr></tr>").appendTo(that.$tbody);
+            $row[0].data = row;
+
+            _.each(cols, function(col) {
+                var $cell = $("<td></td>").appendTo($row);
+                that._setCellValue($cell, row, col);
+            });
+        });
+    }
     ctor.prototype.attached = function(e) {
+        var that = this;
         var $e = $(e);
+        this.$e = $e;
+
         if ($e.find("div[data-part='options']").length > 0) {
             $e.find(".accordion-toggle").hide();
         }
+
+        $e.delegate("th.select input", "change", function(e) {
+            var s = $(this).is(':checked');
+            _.each(that.settings.values(), function(v) {
+                v._selected = s;
+            });
+            that._onSelectionChanged(true);
+            return false;
+        });
+        $e.delegate("td.select input", "change", function(e) {
+            var $cell = $(this).parent();
+            var $row = $cell.parent();
+            var row = $row[0].data;
+            row._selected = $(this).is(':checked');
+            that._onSelectionChanged();
+            return false;
+        });
+        $e.delegate("th.sortable", "click", function(e) {
+            var $t = $(this);
+
+            var col = $t[0].col;
+            if (that.settings.sort && that.settings.sort.id == col.id) {
+                that.settings.sort.asc = !that.settings.sort.asc;
+            } else {
+                that.settings.sort = {
+                    id: col.id,
+                    asc: true
+                };
+            }
+            that._updateSort();
+            that.reload();
+        });
+        $e.delegate("td.action a", "click", function(e) {
+            var $cell = $(this).parent();
+            var $row = $cell.parent();
+            var col = $cell[0].col;
+            var row = $row[0].data;
+
+            e.stopPropagation();
+            if (col.action) col.action(row);
+            return false;
+        });
     }
     ctor.prototype.compositionComplete = function() {
+        this.$thead = this.$e.find("thead");
+        this.$tbody = this.$e.find("tbody");
+
+        if (!this.settings.sort && this.settings.defaultSort) {
+            if (typeof(this.settings.defaultSort) === 'string') {
+                this.settings.sort = {
+                    id: this.settings.defaultSort
+                }
+            } else {
+                this.settings.sort = this.settings.defaultSort;
+            }
+            if (typeof(this.settings.sort.id) === 'undefined') this.settings.sort = null;
+            else if (typeof(this.settings.sort.asc) === 'undefined') this.settings.sort.asc = true;
+        }
+
+        this._updateCols();
+        this._onSelectionChanged(true);
+
         if (this.settings.remote) this.reload();
     };
     ctor.prototype.getSelected = function() {
         return _.filter(this.settings.values(), function(v) {
-            return v._selected();
+            return v._selected;
         });
     };
     ctor.prototype.reload = function() {
@@ -102,8 +300,9 @@ define(['kloudspeaker/ui/texts', 'kloudspeaker/utils', 'durandal/composition', '
         var queryParams = {
             count: p.maxPerPage,
             start: ((p.page - 1) * p.maxPerPage),
-            //sort: null  //TODO
+            sort: this.settings.sort
         };
+        var that = this;
         var s = this.settings;
         s.loading(true);
         s.remote.handler(queryParams).done(function(r) {
@@ -122,18 +321,18 @@ define(['kloudspeaker/ui/texts', 'kloudspeaker/utils', 'durandal/composition', '
         });
     }
 
-    ctor.prototype.getColTitle = function(col) {
+    /*ctor.prototype.getColTitle = function(col) {
         if (!!col.title) return col.title;
         if (col.titleKey) return texts.get(col.titleKey);
         return '';
-    }
+    }*/
 
-    ctor.prototype.getColContent = function(row, col) {
+    /*ctor.prototype.getColContent = function(row, col) {
         if (col.content) return col.content(row, row[col.id]);
         else if (col.formatter) return col.formatter.format(row[col.id]);
         else if (col.id) return row[col.id];
         return '';
-    }
+    }*/
 
     ctor.prototype.goto = function(i) {
         var cur = this.settings.paging().page;

@@ -1534,6 +1534,14 @@ a.kloudspeaker-tableaction {
     overflow: scroll;
 }
 
+.config-list th {
+    border-top: none;
+}
+
+.config-list th.sortable {
+    cursor: pointer;
+}
+
 .config-list .config-list-pager {
     float: left;
 }
