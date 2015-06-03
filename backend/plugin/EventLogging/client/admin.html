@@ -1,12 +1,11 @@
 <div>
-    <div class="share-list" data-bind="config-list: {tools: tools, cols: cols, remote: remote, optionsModel: model.options }">
+    <div class="share-list" data-bind="config-list: {tools: tools, cols: cols, remote: remote, optionsModel: model.options, selected: model.selected }">
         <h2 data-part="header-title"><i class="icon icon-time"></i>&nbsp;<span data-i18n="pluginEventLoggingAdminNavTitle"></span></h2>
-
         <form data-part="options" class="form-horizontal">
             <div class="control-group">
                 <label class="control-label" for="share-user" data-i18n="pluginEventLoggingAdminOptionEventType"></label>
                 <div class="controls">
-                    <select id="event-type" data-bind="value: settings.optionsModel.eventType, options: settings.optionsModel.eventTypes, optionsCaption: settings.optionsModel.eventTypeNoneTitle"></select>
+                    <select id="event-type" data-bind="value: settings.optionsModel.eventType, options: settings.optionsModel.eventTypes,  optionsText: settings.optionsModel.eventTypeOptionTitle, optionsCaption: settings.optionsModel.eventTypeNoneTitle"></select>
                     <!-- ko if: (settings.optionsModel.eventType() == 'custom') -->
                     <input type="text" data-bind="value: settings.optionsModel.customEventType"></input>
                     <!-- /ko -->
@@ -18,6 +17,26 @@
                     <select id="event-user" data-bind="value: settings.optionsModel.user, options: settings.optionsModel.users, optionsText: settings.optionsModel.userOptionTitle, optionsCaption: settings.optionsModel.userNoneTitle"></select>
                 </div>
             </div>
+            <div class="control-group">
+                <label class="control-label" data-i18n="configAdminUserDialogExpirationTitle">:</label>
+                <div class="controls">
+                    <div class="share-option-expiration-field" data-bind="time-picker:{ value: settings.optionsModel.start }" />
+                    <div class="share-option-expiration-field" data-bind="time-picker:{ value: settings.optionsModel.end }" />
+                </div>
+            </div>
         </form>
     </div>
+    <!-- ko if: model.view() != null -->
+    <div class="eventlog-event-details" data-bind="with: model.view()">
+        <legend data-bind="text: type"></legend>
+        <dl class="dl-horizontal">
+            <dt data-i18n="time"></dt>
+            <dd data-bind="text: time"></dd>
+            <dt data-i18n="user"></dt>
+            <dd data-bind="text: user"></dd>
+            <dt data-i18n="ip"></dt>
+            <dd data-bind="text: ip"></dd>
+        </dl>
+    </div>
+    <!-- /ko -->
 </div>

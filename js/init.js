@@ -1761,6 +1761,10 @@ var kloudspeaker_defaults = {
                     }
                 }
             }();
+        },
+
+        invokeLater: function(f) {
+            setTimeout(f, 0);
         }
     };
 

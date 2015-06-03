@@ -242,12 +242,12 @@
                     p = model[1];
                     model = model[0];
                 }
+                $("#kloudspeaker-configview-header").html("").hide();
                 kloudspeaker.ui.viewmodel(v.view, [model, p], that._getContentElement().empty()).done(function(m) {
                     that._activeView = m;
 
                     if (!noStore && v.viewId) kloudspeaker.App.storeView("admin/" + v.viewId);
-                    if (m.customTitle) $("#kloudspeaker-configview-header").html("").hide()
-                    else $("#kloudspeaker-configview-header").html(m.title || title || '').show();
+                    if (!m.customTitle) $("#kloudspeaker-configview-header").html(m.title || title || '').show();
                 });
             } else {
                 that._activeView = v;

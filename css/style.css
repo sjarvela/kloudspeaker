@@ -1474,6 +1474,84 @@ a.kloudspeaker-tableaction {
     margin-right: 8px;
 }
 
+.config-list .header, .config-list .header-title {
+    float: left;
+}
+
+.config-list .header-title {
+    margin-right: 20px;
+}
+
+.config-list .tools {
+    float: left;
+    margin-top: 15px;
+}
+
+.config-list .config-options {
+    float: left;
+    clear: both;
+    width: 100%;
+}
+
+.config-list .config-options .accordion-group {
+    position: relative;
+}
+
+.config-list .config-options .accordion-group .accordion-heading {
+    position: absolute;
+    right: 0;
+    top: -20px;
+}
+
+.config-list .config-options .accordion-group .accordion-toggle {
+    padding: 0;
+}
+
+.config-list .config-options .accordion-group a.accordion-toggle:hover, .config-list .config-options .accordion-group a.accordion-toggle:visited, .config-list .config-options .accordion-group a.accordion-toggle:hover, .config-list .config-options .accordion-group a.accordion-toggle:active {
+    text-decoration: none;
+}
+
+.config-list .config-options .accordion-inner {
+    border: none;
+}
+
+.config-list .config-options .accordion-inner form {
+    margin: 0;
+}
+
+.config-list .config-options .accordion-inner form.form-horizontal .control-group:last-child {
+    margin-bottom: 0;
+}
+
+.config-list .table-responsive {
+    min-height: 200px;
+    float: left;
+    width: 100%;
+}
+
+.config-list.restricted .table-responsive {
+    max-height: 200px;
+    overflow: scroll;
+}
+
+.config-list .config-list-pager {
+    float: left;
+}
+
+.config-list td.action, .config-list .config-list-pager a {
+    cursor: pointer;
+}
+
+.config-list .share-option-expiration-field {
+    float: left;
+    margin-right: 20px;
+}
+
+.eventlog-event-details {
+    float: left;
+    width: 100%;
+}
+
 @media (min-width: 980px) {
     body {
         padding-top: 90px;

@@ -1,13 +1,12 @@
-define(['kloudspeaker/ui/texts', 'durandal/composition', 'knockout', 'jquery'], function(texts, composition, ko, $) {
+define(['kloudspeaker/ui/texts', 'kloudspeaker/utils', 'durandal/composition', 'knockout', 'jquery'], function(texts, utils, composition, ko, $) {
     var ctor = function() {};
 
     ctor.prototype.activate = function(settings) {
         var that = this;
         this.settings = settings;
+        this.settings.loading = ko.observable(false);
         this.settings.paging = ko.observable(null);
         this.settings.allSelected = ko.observable(false);
-
-        //if (this.settings.model) this.model = this.settings.model;
 
         var adjustingSelected = false;
         this.settings.allSelected.subscribe(function(a) {
@@ -69,7 +68,6 @@ define(['kloudspeaker/ui/texts', 'durandal/composition', 'knockout', 'jquery'], 
                     maxPerPage: paging.maxPerPage || 50,
                     page: paging.page || 1
                 });
-                this.reload();
                 if (settings.remote.refresh) settings.remote.refresh.listen(function() {
                     that.reload();
                 });
@@ -83,6 +81,15 @@ define(['kloudspeaker/ui/texts', 'durandal/composition', 'knockout', 'jquery'], 
         });
         updateTools();
     };
+    ctor.prototype.attached = function(e) {
+        var $e = $(e);
+        if ($e.find("div[data-part='options']").length > 0) {
+            $e.find(".accordion-toggle").hide();
+        }
+    }
+    ctor.prototype.compositionComplete = function() {
+        if (this.settings.remote) this.reload();
+    };
     ctor.prototype.getSelected = function() {
         return _.filter(this.settings.values(), function(v) {
             return v._selected();
@@ -90,18 +97,17 @@ define(['kloudspeaker/ui/texts', 'durandal/composition', 'knockout', 'jquery'], 
     };
     ctor.prototype.reload = function() {
         if (!this.settings.remote || !this.settings.remote.handler) return;
-        //var paging = this.settings.remote.paging || {};
-        //var maxPerPage = paging.maxPerPage || 50;
         var p = this.settings.paging();
 
-        //TODO paging
         var queryParams = {
             count: p.maxPerPage,
             start: ((p.page - 1) * p.maxPerPage),
             //sort: null  //TODO
         };
         var s = this.settings;
+        s.loading(true);
         s.remote.handler(queryParams).done(function(r) {
+            s.loading(false);
             s.values(r.data);
             var count = r.data.length;
 
@@ -119,6 +125,13 @@ define(['kloudspeaker/ui/texts', 'durandal/composition', 'knockout', 'jquery'], 
     ctor.prototype.getColTitle = function(col) {
         if (!!col.title) return col.title;
         if (col.titleKey) return texts.get(col.titleKey);
+        return '';
+    }
+
+    ctor.prototype.getColContent = function(row, col) {
+        if (col.content) return col.content(row, row[col.id]);
+        else if (col.formatter) return col.formatter.format(row[col.id]);
+        else if (col.id) return row[col.id];
         return '';
     }
 

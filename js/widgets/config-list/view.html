@@ -6,22 +6,33 @@
         <!-- ko if: settings.tools -->
         <div class="btn-toolbar tools" role="toolbar">
             <!-- ko foreach: {data: settings.tools, as: 'tool'} -->
-            <button type="button" class="btn btn-default" data-bind="click: function() { $parent.onTool(tool) }, attr: { disabled: tool._disabled, title: (typeof(tool.tooltip) === 'function') ? tool.tooltip() : tool.tooltip }"><i data-bind="attr: {class: 'icon-'+tool.icon }"></i></button>
+            <button type="button" class="btn btn-default" data-bind="click: function() { $parent.onTool(tool) }, attr: { disabled: tool._disabled, title: (typeof(tool.tooltip) === 'function') ? tool.tooltip() : tool.tooltip, class: 'btn btn-default '+(tool.cls ? tool.cls : '') }"><i data-bind="attr: {class: 'icon-'+tool.icon }"></i></button>
             <!-- /ko -->
         </div>
         <!-- /ko -->
     </div>
-
-    <div data-part="options"></div>
-
-    <div class="table-responsive">
-        <table class="table">
+    <div class="config-options accordion">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" href="#config-options-content">
+                    <i class="icon-chevron-down"></i>
+                </a>
+            </div>
+            <div id="config-options-content" class="accordion-body collapse">
+                <div class="accordion-inner">
+                    <div data-part="options"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive" data-bind="attr: { class: 'table-responsive' + (settings.loading() ? ' loading' : '') }">
+        <table class="table table-condensed table-striped">
             <thead>
                 <tr data-bind="foreach: {data: settings.cols, as: 'hcol'}">
                     <!-- ko if: hcol.type == 'select' -->
-                    <td>
+                    <th>
                         <input type="checkbox" data-bind="checked: $parent.settings.allSelected"></input>
-                    </td>
+                    </th>
                     <!-- /ko -->
                     <!-- ko if: hcol.type != 'select' -->
                     <th data-bind="text: $parent.getColTitle(hcol)"></th>
@@ -33,15 +44,7 @@
                 <tr data-bind="attr: { class: $parent.settings.rowClass ? $parent.settings.rowClass(row) : '' }">
                     <!-- ko foreach: {data: $parent.settings.cols, as: 'col'} -->
                     <!-- ko if: !col.type -->
-                        <!-- ko if: col.content -->
-                        <td data-bind="text: col.content(row, row[col.id])"></td>
-                        <!-- /ko -->
-                        <!-- ko if: col.html -->
-                        <td data-bind="html: col.html(row, row[col.id])"></td>
-                        <!-- /ko -->
-                        <!-- ko if: (!col.content && !col.html) -->
-                        <td data-bind="text: row[col.id]"></td>
-                        <!-- /ko -->
+                    <td data-bind="html: $parents[1].getColContent(row, col)"></td>
                     <!-- /ko -->
                     <!-- ko if: col.type == 'icon' -->
                     <td>
@@ -49,7 +52,7 @@
                     </td>
                     <!-- /ko -->
                     <!-- ko if: col.type == 'action' -->
-                    <td>
+                    <td class="action">
                         <!-- ko if: (!col.visible || col.visible(row)) -->
                         <a data-bind="click: function() { col.action(row) }">
                             <i data-bind="attr: {class: 'icon-'+col.icon }"></i>
@@ -71,50 +74,61 @@
     <nav class="config-list-pager pagination" data-bind="if: (settings.paging() != null && settings.paging().pages > 1)">
         <ul>
             <li class="page-btn page-prev" data-bind="attr: { class: 'page-btn page-prev ' + ((settings.paging().page < 2) ? 'disabled' : '')}"><a data-bind="click: gotoPrev" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
-
             <!-- ko if: settings.paging().pages < 10 -->
-                <!-- ko foreach: new Array(settings.paging().pages) -->
-                <li class="page-btn page-nr" data-bind="attr: { class: 'page-btn page-nr ' + ($parent.settings.paging().page == ($index()+1)) ? 'active' : ''}"><a data-bind="text: ($index()+1), click: function(){ $parent.goto($index()+1) }"></a></li>
-                <!-- /ko -->
+            <!-- ko foreach: new Array(settings.paging().pages) -->
+            <li class="page-btn page-nr" data-bind="attr: { class: 'page-btn page-nr ' + ($parent.settings.paging().page == ($index()+1)) ? 'active' : ''}">
+                <a data-bind="text: ($index()+1), click: function(){ $parent.goto($index()+1) }"></a>
+            </li>
             <!-- /ko -->
-
+            <!-- /ko -->
             <!-- ko if: settings.paging().pages >= 10 -->
-                <!-- ko if: settings.paging().page != 1 -->
-                <li class="page-btn page-nr"><a data-bind="click: function(){ goto(1) }">1</a></li>
-                <!-- /ko -->
-                <!-- ko if: settings.paging().page > 2 -->
-                <li class="page-btn page-nr"><a data-bind="click: function(){ goto(2) }">2</a></li>
-                <!-- /ko -->
-                <!-- ko if: settings.paging().page > 3 -->
-                <li class='page-break'>...</li>
-                <!-- /ko -->
-                <!-- ko if: settings.paging().page > 4 -->
-                <li class="page-btn page-nr"><a data-bind="text: (settings.paging().page-2), click: function(){ goto(settings.paging().page-2) }"></a></li>
-                <!-- /ko -->
-                <!-- ko if: settings.paging().page > 3 -->
-                <li class="page-btn page-nr"><a data-bind="text: (settings.paging().page-1), click: function(){ goto(settings.paging().page-1) }"></a></li>
-                <!-- /ko -->
-
-                <li class="page-btn page-nr active"><a data-bind="text: (settings.paging().page), click: function(){ }"></a></li>
-
-                <!-- ko if: (settings.paging().page < (settings.paging().pages - 2)) -->
-                <li class="page-btn page-nr"><a data-bind="text: (settings.paging().page+1), click: function(){ goto(settings.paging().page+1) }"></a></li>
-                <!-- /ko -->
-                <!-- ko if: (settings.paging().page < (settings.paging().pages - 1)) -->
-                <li class="page-btn page-nr"><a data-bind="text: (settings.paging().page+2), click: function(){ goto(settings.paging().page+2) }"></a></li>
-                <!-- /ko -->
-                <!-- ko if: (settings.paging().page < (settings.paging().pages - 2)) -->
-                <li class='page-break'>...</li>
-                <!-- /ko -->
-                <!-- ko if: (settings.paging().page < (settings.paging().pages - 1)) -->
-                <li class="page-btn page-nr"><a data-bind="text: (settings.paging().pages-1), click: function(){ goto(settings.paging().pages-1) }"></a></li>
-                <!-- /ko -->
-                <!-- ko if: (settings.paging().page != settings.paging().pages) -->
-                <li class="page-btn page-nr"><a data-bind="text: (settings.paging().pages), click: function(){ goto(settings.paging().pages) }"></a></li>
-                <!-- /ko -->
+            <!-- ko if: settings.paging().page != 1 -->
+            <li class="page-btn page-nr"><a data-bind="click: function(){ goto(1) }">1</a></li>
+            <!-- /ko -->
+            <!-- ko if: settings.paging().page > 2 -->
+            <li class="page-btn page-nr"><a data-bind="click: function(){ goto(2) }">2</a></li>
+            <!-- /ko -->
+            <!-- ko if: settings.paging().page > 3 -->
+            <li class='page-break'>...</li>
+            <!-- /ko -->
+            <!-- ko if: settings.paging().page > 4 -->
+            <li class="page-btn page-nr">
+                <a data-bind="text: (settings.paging().page-2), click: function(){ goto(settings.paging().page-2) }"></a>
+            </li>
+            <!-- /ko -->
+            <!-- ko if: settings.paging().page > 3 -->
+            <li class="page-btn page-nr">
+                <a data-bind="text: (settings.paging().page-1), click: function(){ goto(settings.paging().page-1) }"></a>
+            </li>
+            <!-- /ko -->
+            <li class="page-btn page-nr active">
+                <a data-bind="text: (settings.paging().page), click: function(){ }"></a>
+            </li>
+            <!-- ko if: (settings.paging().page < (settings.paging().pages - 2)) -->
+            <li class="page-btn page-nr">
+                <a data-bind="text: (settings.paging().page+1), click: function(){ goto(settings.paging().page+1) }"></a>
+            </li>
+            <!-- /ko -->
+            <!-- ko if: (settings.paging().page < (settings.paging().pages - 1)) -->
+            <li class="page-btn page-nr">
+                <a data-bind="text: (settings.paging().page+2), click: function(){ goto(settings.paging().page+2) }"></a>
+            </li>
+            <!-- /ko -->
+            <!-- ko if: (settings.paging().page < (settings.paging().pages - 2)) -->
+            <li class='page-break'>...</li>
+            <!-- /ko -->
+            <!-- ko if: (settings.paging().page < (settings.paging().pages - 1)) -->
+            <li class="page-btn page-nr">
+                <a data-bind="text: (settings.paging().pages-1), click: function(){ goto(settings.paging().pages-1) }"></a>
+            </li>
+            <!-- /ko -->
+            <!-- ko if: (settings.paging().page != settings.paging().pages) -->
+            <li class="page-btn page-nr">
+                <a data-bind="text: (settings.paging().pages), click: function(){ goto(settings.paging().pages) }"></a>
+            </li>
+            <!-- /ko -->
             <!-- /ko -->
             <li class="page-btn page-next" data-bind="attr: { class: 'page-btn page-prev ' + ((settings.paging().page >= settings.paging().pages) ? 'disabled' : '')}"><a data-bind="click: gotoNext" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
         </ul>
-        <div data-bind="text: (settings.paging().page + '/' + settings.paging().pages + ' (max=' + settings.paging().maxPerPage + ', total=' + settings.paging().count + ')')"></div>
     </nav>
 </div>
