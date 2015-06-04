@@ -18,10 +18,16 @@
                 </div>
             </div>
             <div class="control-group">
-                <label class="control-label" data-i18n="configAdminUserDialogExpirationTitle">:</label>
+                <label class="control-label"><span data-i18n="configAdminUserDialogExpirationTitle"></span>:</label>
                 <div class="controls">
                     <div class="share-option-expiration-field" data-bind="time-picker:{ value: settings.optionsModel.start }" />
                     <div class="share-option-expiration-field" data-bind="time-picker:{ value: settings.optionsModel.end }" />
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="share-user" data-i18n="pluginEventLoggingAdminOptionItemPath"></label>
+                <div class="controls">
+                    <input type="text" data-bind="value: settings.optionsModel.itemPath"></input>
                 </div>
             </div>
         </form>
@@ -31,12 +37,20 @@
         <button type="button" class="close" data-bind="click: function() { $root.model.view(null) }">×</button>
         <legend data-bind="text: type"></legend>
         <dl class="dl-horizontal">
-            <dt data-i18n="time"></dt>
+            <dt data-i18n="pluginEventLoggingAdminDetailsTime"></dt>
             <dd data-bind="text: time"></dd>
-            <dt data-i18n="user"></dt>
+            <dt data-i18n="pluginEventLoggingAdminDetailsUser"></dt>
             <dd data-bind="text: user"></dd>
-            <dt data-i18n="ip"></dt>
+            <dt data-i18n="pluginEventLoggingAdminDetailsIP"></dt>
             <dd data-bind="text: ip"></dd>
+            <!-- ko if: item -->
+            <dt data-i18n="pluginEventLoggingAdminDetailsItem"></dt>
+            <dd data-bind="html: item.replace(/,/g, '<br/>')"></dd>
+            <!-- /ko -->
+            <!-- ko foreach: details -->
+            <dt data-bind="text: title"></dt>
+            <dd data-bind="text: value"></dd>
+            <!-- /ko -->
         </dl>
     </div>
     <!-- /ko -->

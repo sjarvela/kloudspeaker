@@ -10,6 +10,7 @@
 		"pluginEventLoggingAdminOptionEventType" : "Event type:",
 		"pluginEventLoggingAdminOptionUser" : "User:",
 		"pluginEventLoggingAdminOptionTime" : "Time:",
+		"pluginEventLoggingAdminOptionItemPath": "Item path:",
 		"pluginEventLoggingAdminAny" : "Any",
 		"pluginEventLoggingAdminEventTypeCustom" : "Custom",
 		"pluginEventLoggingAdminDetailsTime" : "Time",

@@ -24,6 +24,8 @@ define(['kloudspeaker/eventlogging/repository', 'kloudspeaker/core/user/reposito
 
                 start: ko.observable(null),
                 end: ko.observable(null),
+
+                itemPath: ko.observable(''),
             },
 
             view: ko.observable(null)
@@ -33,6 +35,23 @@ define(['kloudspeaker/eventlogging/repository', 'kloudspeaker/core/user/reposito
         var listRefresh = utils.createNotifier();
 
         var viewEvent = function(e) {
+            if (e) {
+                if (!e.details) e.details = [];
+                else if (typeof(e.details) === "string") {
+                    var details = e.details;
+                    var d = [];
+
+                    _.each(details.split(';'), function(dr) {
+                        var p = dr.split('=');
+                        d.push({
+                            title: p[0],
+                            value: p[1]
+                        });
+                    });
+                    e._details = details;
+                    e.details = d;
+                }
+            }
             model.view(e);
         };
 
@@ -80,6 +99,7 @@ define(['kloudspeaker/eventlogging/repository', 'kloudspeaker/core/user/reposito
                     if (model.options.user()) params.user = model.options.user().name;
                     if (model.options.start()) params.start_time = model.options.start();
                     if (model.options.end()) params.end_time = model.options.end();
+                    if (model.options.itemPath()) params.item_path = model.options.itemPath();
 
                     return params;
                 }, function(l) {

@@ -56,6 +56,9 @@
 			if (isset($data['type'])) {
 				$query .= " and type like '".str_replace("*", "%", $db->string($data['type']))."'";
 			}
+			if (isset($data['item_path'])) {
+				$query .= " and item like '".str_replace("*", "%", $db->string($data['item_path']))."'";
+			}
 
 			$query .= ' order by ';
 			if (isset($data["sort"]) and isset($data["sort"]["id"])) {
