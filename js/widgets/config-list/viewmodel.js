@@ -36,7 +36,22 @@ define(['kloudspeaker/ui/texts', 'kloudspeaker/utils', 'durandal/composition', '
                 that._updateContent(v);
                 that._onSelectionChanged(true);
             });
+        if (this.settings.hilight && this.settings.hilight.subscribe)
+            this.settings.hilight.subscribe(function(h) {
+                that._updateHilight();
+            });
     };
+    ctor.prototype._updateHilight = function() {
+        this.$e.find("tr.hilight").removeClass("hilight");
+
+        var h = (typeof(this.settings.hilight) === 'function') ? this.settings.hilight() : this.settings.hilight;
+        if (!h) return;
+
+        var $row = this._getRowElement(h);
+        if (!$row) return;
+
+        $row.addClass("hilight");
+    }
     ctor.prototype._updateTools = function() {
         if (!this.settings.tools) return;
 
@@ -94,95 +109,95 @@ define(['kloudspeaker/ui/texts', 'kloudspeaker/utils', 'durandal/composition', '
         this._updateSort();
     }
     ctor.prototype._setCellValue = function($cell, row, col) {
-        $cell[0].col = col;        
-        var v = col.id ? row[col.id] : null;
+            $cell[0].col = col;
+            var v = col.id ? row[col.id] : null;
 
-        if (col.cellClass) $cell.addClass(col.cellClass);
-        if (col.tooltip) $cell.attr("title", (typeof(col.tooltip) === 'function' ? col.tooltip(row) : col.tooltip));
-        if (col.type == 'select') {
-            var $sel = $('<input type="checkbox"></input>').appendTo($cell.empty().addClass("select"));
-        } else if (col.type == 'icon') {
-            $cell.empty().html('<i class="icon-' + (typeof(col.name) === 'function' ? col.name(row) : col.name) + '"></i>');
-        } else if (col.type == 'action') {
-            var html = '';
-            if ((typeof(col.enabled) === 'undefined') || col.enabled(row)) {
-                html = col.icon ? '<i class="icon-' + (typeof(col.icon) === 'function' ? col.icon(row) : col.icon) + '"></i>' : (col.content ? col.content : '');
-                if (col.formatter) html = col.formatter(item, v);
-                if (html) $("<a title='" + col.title + "'></a>").html(html).appendTo($cell.empty().addClass("action"));
-            }
-            /*} else if (col.type == "input") {
-                var $s = $cell[0].ctrl;
-                if (!$s) {
-                    $s = $('<input type="text"></input>').appendTo($cell).change(function() {
-                        var v = $s.val();
-                        $cell[0].ctrlVal = v;
-                        if (o.selectOnEdit) setRowSelected(item, true);
-                        if (col.onChange) col.onChange(item, v);
-                    });
-                    $cell[0].ctrl = $s;
+            if (col.cellClass) $cell.addClass(col.cellClass);
+            if (col.tooltip) $cell.attr("title", (typeof(col.tooltip) === 'function' ? col.tooltip(row) : col.tooltip));
+            if (col.type == 'select') {
+                var $sel = $('<input type="checkbox"></input>').appendTo($cell.empty().addClass("select"));
+            } else if (col.type == 'icon') {
+                $cell.empty().html('<i class="icon-' + (typeof(col.name) === 'function' ? col.name(row) : col.name) + '"></i>');
+            } else if (col.type == 'action') {
+                var html = '';
+                if ((typeof(col.enabled) === 'undefined') || col.enabled(row)) {
+                    html = col.icon ? '<i class="icon-' + (typeof(col.icon) === 'function' ? col.icon(row) : col.icon) + '"></i>' : (col.content ? col.content : '');
+                    if (col.formatter) html = col.formatter(item, v);
+                    if (html) $("<a title='" + col.title + "'></a>").html(html).appendTo($cell.empty().addClass("action"));
                 }
-                var sv = v;
-                if (col.valueMapper) sv = col.valueMapper(item, v);
-                $s.val(sv);
-            } else if (col.type == "select") {
-                var $sl = $cell[0].ctrl;
-                if (!$sl) {
-                    var selOptions = [];
-                    if (typeof(col.options) == "function") selOptions = col.options(item);
-                    else if (window.isArray(col.options)) selOptions = col.options;
-
-                    var noneOption;
-                    if (col.none) {
-                        if (typeof(col.none) == "function") noneOption = col.none(item);
-                        else noneOption = col.none;
-                    }
-
-                    var formatter;
-                    if (col.formatter) {
-                        formatter = function(sv) {
-                            return col.formatter(item, sv);
-                        };
-                    }
-
-                    $sl = kloudspeaker.ui.controls.select($("<select></select>").appendTo($cell), {
-                        values: selOptions,
-                        title: col.title,
-                        none: noneOption,
-                        formatter: formatter,
-                        onChange: function(v) {
+                /*} else if (col.type == "input") {
+                    var $s = $cell[0].ctrl;
+                    if (!$s) {
+                        $s = $('<input type="text"></input>').appendTo($cell).change(function() {
+                            var v = $s.val();
                             $cell[0].ctrlVal = v;
                             if (o.selectOnEdit) setRowSelected(item, true);
                             if (col.onChange) col.onChange(item, v);
-                        }
-                    });
-                    $cell[0].ctrl = $sl;
-                } else {}
-                var sv2 = v;
-                if (col.valueMapper) sv2 = col.valueMapper(item, v);
-                $sl.select(sv2);
-            } else if (col.type == 'static') {
-                $cell.html(col.content || '');*/
-        } else {
-            //if (col.renderer) col.renderer(item, v, $cell);
-            if (col.content) $cell.html((typeof(col.content) === 'function') ? col.content(row, v) : col.content);
-            else if (col.formatter) {
-                if (typeof(col.formatter) === 'function') $cell.html(col.formatter(item, v));
-                else $cell.html(col.formatter.format(v));
-            } else $cell.html(v);
-        }
-    }
-    /*var adjustingSelected = false;
-    this.settings.allSelected.subscribe(function(a) {
-        if (adjustingSelected) return;
-        adjustingSelected = true;
-        _.each(that.settings.values(), function(v) {
-            v._selected(a);
-        });
-        adjustingSelected = false;
-        onSelectionChanged();
-    });*/
+                        });
+                        $cell[0].ctrl = $s;
+                    }
+                    var sv = v;
+                    if (col.valueMapper) sv = col.valueMapper(item, v);
+                    $s.val(sv);
+                } else if (col.type == "select") {
+                    var $sl = $cell[0].ctrl;
+                    if (!$sl) {
+                        var selOptions = [];
+                        if (typeof(col.options) == "function") selOptions = col.options(item);
+                        else if (window.isArray(col.options)) selOptions = col.options;
 
-    ctor.prototype._onSelectionChanged = function(updateUI) {        
+                        var noneOption;
+                        if (col.none) {
+                            if (typeof(col.none) == "function") noneOption = col.none(item);
+                            else noneOption = col.none;
+                        }
+
+                        var formatter;
+                        if (col.formatter) {
+                            formatter = function(sv) {
+                                return col.formatter(item, sv);
+                            };
+                        }
+
+                        $sl = kloudspeaker.ui.controls.select($("<select></select>").appendTo($cell), {
+                            values: selOptions,
+                            title: col.title,
+                            none: noneOption,
+                            formatter: formatter,
+                            onChange: function(v) {
+                                $cell[0].ctrlVal = v;
+                                if (o.selectOnEdit) setRowSelected(item, true);
+                                if (col.onChange) col.onChange(item, v);
+                            }
+                        });
+                        $cell[0].ctrl = $sl;
+                    } else {}
+                    var sv2 = v;
+                    if (col.valueMapper) sv2 = col.valueMapper(item, v);
+                    $sl.select(sv2);
+                } else if (col.type == 'static') {
+                    $cell.html(col.content || '');*/
+            } else {
+                //if (col.renderer) col.renderer(item, v, $cell);
+                if (col.content) $cell.html((typeof(col.content) === 'function') ? col.content(row, v) : col.content);
+                else if (col.formatter) {
+                    if (typeof(col.formatter) === 'function') $cell.html(col.formatter(item, v));
+                    else $cell.html(col.formatter.format(v));
+                } else $cell.html(v);
+            }
+        }
+        /*var adjustingSelected = false;
+        this.settings.allSelected.subscribe(function(a) {
+            if (adjustingSelected) return;
+            adjustingSelected = true;
+            _.each(that.settings.values(), function(v) {
+                v._selected(a);
+            });
+            adjustingSelected = false;
+            onSelectionChanged();
+        });*/
+
+    ctor.prototype._onSelectionChanged = function(updateUI) {
         var selected = this.getSelected();
         if (this.settings.selected) this.settings.selected(selected);
 
@@ -215,6 +230,17 @@ define(['kloudspeaker/ui/texts', 'kloudspeaker/utils', 'durandal/composition', '
                 that._setCellValue($cell, row, col);
             });
         });
+    }
+    ctor.prototype._getRowElement = function(row) {
+        var result = null;
+        this.$e.find("tr").each(function(){
+            var $row = $(this);
+            if ($row[0].data === row) {
+                result = $row;
+                return false;
+            }
+        });
+        return result;
     }
     ctor.prototype.attached = function(e) {
         var that = this;
@@ -285,8 +311,16 @@ define(['kloudspeaker/ui/texts', 'kloudspeaker/utils', 'durandal/composition', '
 
         this._updateCols();
         this._onSelectionChanged(true);
+        var that = this;
 
         if (this.settings.remote) this.reload();
+        else if (that.settings.hilight) {
+            if (this.settings.hilight.subscribe)
+                this.settings.hilight.subscribe(function(h) {
+                    that._updateHilight();
+                });
+            that._updateHilight();
+        }
     };
     ctor.prototype.getSelected = function() {
         return _.filter(this.settings.values(), function(v) {
@@ -294,7 +328,9 @@ define(['kloudspeaker/ui/texts', 'kloudspeaker/utils', 'durandal/composition', '
         });
     };
     ctor.prototype.reload = function() {
-        if (!this.settings.remote || !this.settings.remote.handler) return;
+        var df = $.Deferred();
+        if (!this.settings.remote || !this.settings.remote.handler) return df.reject();
+
         var p = this.settings.paging();
 
         var queryParams = {
@@ -318,7 +354,9 @@ define(['kloudspeaker/ui/texts', 'kloudspeaker/utils', 'durandal/composition', '
                 pages: (p.maxPerPage > 0 ? Math.ceil(r.total / p.maxPerPage) : 0),
                 page: (p.maxPerPage > 0 ? (Math.floor(r.start / p.maxPerPage) + 1) : 0)
             });
+            df.resolve();
         });
+        return df;
     }
 
     /*ctor.prototype.getColTitle = function(col) {

@@ -1546,6 +1546,10 @@ a.kloudspeaker-tableaction {
     float: left;
 }
 
+.config-list tr.hilight td {
+    background-color: #d9edf7!important;
+}
+
 .config-list td.action, .config-list .config-list-pager a {
     cursor: pointer;
 }
