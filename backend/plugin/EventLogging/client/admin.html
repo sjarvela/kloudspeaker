@@ -28,6 +28,7 @@
     </div>
     <!-- ko if: model.view() != null -->
     <div class="eventlog-event-details" data-bind="with: model.view()">
+        <button type="button" class="close" data-bind="click: function() { $root.model.view(null) }">×</button>
         <legend data-bind="text: type"></legend>
         <dl class="dl-horizontal">
             <dt data-i18n="time"></dt>
