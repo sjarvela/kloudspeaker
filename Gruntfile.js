@@ -190,7 +190,7 @@ module.exports = function(grunt) {
                         'durandal/system', 'durandal/viewlocator', 'durandal/plugins/widget', 'durandal/composition',   //durandal
                         'widgets/time-picker/viewmodel', 'text!widgets/time-picker/view.html', 'widgets/config-list/viewmodel', 'text!widgets/config-list/view.html',   //widgets
                         'kloudspeaker/config/system', 'kloudspeaker/config/user/addedit',
-                        'kloudspeaker/ui/dropbox', 'kloudspeaker/share', //kloudspeaker plugins
+                        'kloudspeaker/ui/dropbox', //kloudspeaker plugins
                     ],
                     out: "out/modules.js",
                     paths: {
