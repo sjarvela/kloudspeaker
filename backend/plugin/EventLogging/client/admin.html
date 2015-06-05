@@ -38,7 +38,7 @@
         <legend data-bind="text: type"></legend>
         <dl class="dl-horizontal">
             <dt data-i18n="pluginEventLoggingAdminDetailsTime"></dt>
-            <dd data-bind="text: time"></dd>
+            <dd data-bind="format: time, formatter: $root.timeFormatter"></dd>
             <dt data-i18n="pluginEventLoggingAdminDetailsUser"></dt>
             <dd data-bind="text: user"></dd>
             <dt data-i18n="pluginEventLoggingAdminDetailsIP"></dt>

@@ -59,6 +59,7 @@ define(['kloudspeaker/eventlogging/repository', 'kloudspeaker/core/user/reposito
         return {
             customTitle: true,
             model: model,
+            timeFormatter: timestampFormatter,
             tools: [{
                 id: "action-refresh",
                 icon: 'refresh',
