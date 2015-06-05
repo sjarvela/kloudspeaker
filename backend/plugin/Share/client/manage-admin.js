@@ -59,6 +59,7 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/cor
 
         var timestampFormatter = new formatters.Timestamp(texts.get('shortDateTimeFormat'));
         var listRefresh = utils.createNotifier();
+        var currentTime;
 
         return {
             customTitle: true,
@@ -170,7 +171,7 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/cor
                     return !s.invalid;
                 },
                 action: function(s) {
-                    share.editShare(s);
+                    share.editShare(s).done(listRefresh.trigger);
                 }
             }, {
                 id: 'trash',
@@ -178,9 +179,14 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/cor
                 icon: 'trash',
                 title: '',
                 action: function(s) {
-                    repository.removeShare(s).done(refresh);
+                    repository.removeShare(s).done(listRefresh.trigger);
                 }
             }],
+            rowCls: function(s) {
+                if (s.invalid) return "error";
+                if (s.expiration && s.expiration <= currentTime) return "warning";
+                if (s.active != "1") return "inactive";
+            },
             remote: {
                 handler: repository.getQueryHandler(function() {
                     var params = {};
@@ -195,6 +201,8 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/cor
                     }
                     return params;
                 }, function(l) {
+                    currentTime = new Date();
+
                     model.shares = l.data;
                     model.invalid = l.invalid;
                     model.nonfs = l.nonfs;

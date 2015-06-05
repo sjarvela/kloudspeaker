@@ -239,6 +239,11 @@ define(['kloudspeaker/ui/texts', 'kloudspeaker/utils', 'durandal/composition', '
                 var $cell = $("<td></td>").appendTo($row);
                 that._setCellValue($cell, row, col);
             });
+
+            if (that.settings.rowCls) {
+                var cls = (typeof(that.settings.rowCls) === 'function') ? that.settings.rowCls(row) : that.settings.rowCls;
+                if (cls) $row.addClass(cls);
+            }
         });
     }
     ctor.prototype._getRowElement = function(row) {

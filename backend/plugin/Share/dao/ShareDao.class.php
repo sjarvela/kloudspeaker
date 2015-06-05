@@ -182,7 +182,7 @@ class ShareDao {
 			if ($restriction["type"] == "private") {
 				$restrictionType = "private";
 			} else if ($restriction["type"] == "pw") {
-				if ($oldRestrictionType != "pw" and !isset($restriction["value"]) or strlen($restriction["value"]) == 0) {
+				if ($oldRestrictionType != "pw" and (!isset($restriction["value"]) or strlen($restriction["value"]) == 0)) {
 					throw new ServiceException("INVALID_REQUEST", "pw missing");
 				}
 

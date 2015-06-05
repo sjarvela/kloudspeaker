@@ -279,7 +279,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
             $("#share-access-norestriction").attr('checked', true);
 
         if (share && share.expiration)
-            $("#share-validity-expirationdate-value").data("kloudspeaker-datepicker").set(utils.parseInternalTime(share.expiration));
+            $("#share-validity-expirationdate-value").data("kloudspeaker-datepicker").set((typeof(share.expiration) === 'string') ? utils.parseInternalTime(share.expiration) : share.expiration);
 
         if (oldRestrictionPw) $("#share-access-public-password-value").attr("placeholder", texts.get("shareDialogShareAccessChangePwTitle"));
         else $("#share-access-public-password-value").attr("placeholder", texts.get("shareDialogShareAccessEnterPwTitle"));
@@ -460,327 +460,12 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
         return userData;
     };
 
-    /*this.onActivateConfigAdminView = function($c, cv) {
-        var pathFormatter = new formatters.FilesystemItemPath();
-
-        kloudspeaker.templates.load("shares-content", utils.noncachedUrl(plugins.url("Share", "content.html"))).done(function() {
-            service.get("configuration/users").done(function(l) {
-                var users = that.processUserData(l);
-
-                var shares = false;
-                var items = false;
-                var invalid = [];
-                var nonfs = [];
-                var listView = false;
-
-                var getQueryParams = function(i) {
-                    var user = $optionUser.get();
-                    var item = $optionItem.get();
-
-                    var params = {};
-                    if (user) params.user_id = user.id;
-                    if (item) {
-                        params.item = item;
-
-                        if (item == 'filesystem_item' || item == 'filesystem_child') {
-                            if (selectedItem)
-                                params.item_id = selectedItem.id;
-                            else
-                                params.item_id = null;
-                        }
-                    }
-
-                    return params;
-                };
-
-                var refresh = function() {
-                    cv.showLoading(true);
-                    listView.table.refresh().done(function() {
-                        cv.showLoading(false);
-                    });
-                };
-
-                var currentTime = utils.formatInternalTime(new Date());
-
-                listView = new kloudspeaker.view.ConfigListView($c, {
-                    actions: [{
-                        id: "action-remove",
-                        content: '<i class="icon-trash"></i>',
-                        cls: "btn-danger",
-                        depends: "table-selection",
-                        callback: function(sel) {
-                            dialogs.confirmation({
-                                title: texts.get("pluginShareConfigRemoveShareTitle"),
-                                message: texts.get("pluginShareConfigRemoveShareMessage", [sel.length]),
-                                callback: function() {
-                                    service.del("share/list/", {
-                                        list: utils.extractValue(sel, "id")
-                                    }).done(refresh);
-                                }
-                            });
-                        }
-                    }, {
-                        id: "action-activate",
-                        content: '<i class="icon-check"></i>',
-                        depends: "table-selection",
-                        tooltip: texts.get('pluginShareConfigViewShareActivate'),
-                        callback: function(sel) {
-                            service.put("share/list/", {
-                                ids: utils.extractValue(sel, "id"),
-                                active: true
-                            }).done(refresh);
-                        }
-                    }, {
-                        id: "action-deactivate",
-                        content: '<i class="icon-check-empty"></i>',
-                        depends: "table-selection",
-                        tooltip: texts.get('pluginShareConfigViewShareDeactivate'),
-                        callback: function(sel) {
-                            service.put("share/list/", {
-                                ids: utils.extractValue(sel, "id"),
-                                active: false
-                            }).done(refresh);
-                        }
-                    }, {
-                        id: "action-refresh",
-                        content: '<i class="icon-refresh"></i>',
-                        callback: refresh
-                    }],
-                    table: {
-                        key: "id",
-                        narrow: true,
-                        remote: {
-                            path: "share/query",
-                            paging: {
-                                max: 50
-                            },
-                            queryParams: getQueryParams,
-                            onData: function(l) {
-                                shares = l.data;
-                                invalid = l.invalid;
-                                nonfs = l.nonfs;
-                                items = l.items;
-
-                                $.each(l.nonfs, function(i, itm) {
-                                    items[itm.id] = {
-                                        id: itm.id,
-                                        name: itm.name,
-                                        customType: itm.type
-                                    };
-                                });
-                            },
-                            onLoad: function(pr) {
-                                $c.addClass("loading");
-                                pr.done(function(r) {
-                                    $c.removeClass("loading");
-                                });
-                            }
-                        },
-                        onRow: function($r, s) {
-                            if (s.invalid) $r.addClass("error");
-                            if (s.expiration && s.expiration <= currentTime) $r.addClass("warning");
-                            if (s.active != "1") $r.addClass("inactive");
-                        },
-                        columns: [{
-                            type: "selectrow"
-                        }, {
-                            id: "icon",
-                            title: "",
-                            valueMapper: function(s) {
-                                if (items[s.item_id].customType) return ""; //TODO type icon
-                                return s.invalid ? '<i class="icon-exclamation"></i>' : '<i class="icon-file"></i>';
-                            }
-                        }, {
-                            id: "restriction",
-                            title: "",
-                            formatter: function(s) {
-                                if (s.restriction == 'private') return '<i class="icon-user" title="' + texts.get('shareDialogShareAccessLoggedInTitle') + '" />';
-                                else if (s.restriction == 'pw') return '<i class="icon-lock" title="' + texts.get('shareDialogShareAccessPasswordTitle').replace(':', '') + '" />';
-                                else return '<i class="icon-globe" title="' + texts.get('shareDialogShareAccessNoRestrictionTitle') + '" />';
-                            }
-                        }, {
-                            id: "user_id",
-                            title: texts.get('pluginShareConfigViewUserTitle'),
-                            formatter: function(s) {
-                                return users.usersById[s.user_id].name;
-                            }
-                        }, {
-                            id: "name",
-                            title: texts.get('pluginShareConfigViewShareNameTitle')
-                        }, {
-                            id: "item_name",
-                            title: texts.get('pluginShareConfigViewItemNameTitle'),
-                            valueMapper: function(s) {
-                                if (s.invalid) return ""; //TODO
-                                return items[s.item_id].name;
-                            }
-                        }, {
-                            id: "path",
-                            title: texts.get('pluginShareConfigViewPathTitle'),
-                            formatter: function(s) {
-                                if (s.invalid) return ""; //TODO
-
-                                var item = items[s.item_id];
-                                if (item.customType || !item.path) return "";
-
-                                var p = (fs.rootsById[item.root_id] ? fs.rootsById[item.root_id].name : item.root_id) + ":";
-                                var path = item.path.substring(0, item.path.length - (item.name.length + (item.is_file ? 0 : 1)));
-                                return p + "/" + path;
-                            }
-                        }, {
-                            id: "expiration",
-                            title: texts.get('pluginShareConfigViewExpirationTitle'),
-                            formatter: function(s) {
-                                if (!s.expiration) return "";
-                                return that._timestampFormatter.format(s.expiration);
-                            }
-                        }, {
-                            id: "active",
-                            title: texts.get('pluginShareConfigViewActiveTitle'),
-                            formatter: function(s) {
-                                if (s.active == "1") return '<i class="icon-check"/>';
-                                else return '<i class="icon-check-empty"/>';
-                            }
-                        }, {
-                            id: "edit",
-                            title: "",
-                            type: "action",
-                            formatter: function(s) {
-                                return s.invalid ? '' : '<i class="icon-edit"></i>';
-                            }
-                        }, {
-                            id: "remove",
-                            title: "",
-                            type: "action",
-                            content: '<i class="icon-trash"></i>'
-                        }],
-                        onRowAction: function(id, s) {
-                            if (id == "edit") {
-                                var _editor = false;
-
-                                dialogs.custom({
-                                    resizable: true,
-                                    initSize: [600, 400],
-                                    title: s.id, //TODO
-                                    content: dom.template("share-context-addedit-template", {
-                                        editDialog: true
-                                    }),
-                                    buttons: [{
-                                        id: "yes",
-                                        "title": texts.get('dialogSave')
-                                    }, {
-                                        id: "no",
-                                        "title": texts.get('dialogCancel')
-                                    }],
-                                    "on-button": function(btn, d) {
-                                        if (btn.id == 'no') {
-                                            d.close();
-                                            return;
-                                        }
-                                        var values = _editor.getValues();
-                                        that.editShare(s.id, values.name || '', values.expiration, values.active, values.restriction).done(function() {
-                                            d.close();
-                                            refresh();
-                                        }).fail(d.close);
-                                    },
-                                    "on-show": function(h, $d) {
-                                        _editor = that._initShareEditor(s, $d);
-                                    }
-                                });
-                            } else if (id == "remove") {
-                                service.del("share/" + s.id).done(refresh);
-                            }
-                        }
-                    }
-                });
-                var $options = $c.find(".kloudspeaker-configlistview-options");
-                dom.template("kloudspeaker-tmpl-share-admin-options").appendTo($options);
-                ui.process($options, ["localize"]);
-
-                var $optionUser = controls.select("share-user", {
-                    values: users.users,
-                    title: "name",
-                    none: texts.get('pluginShareAdminAny')
-                });
-
-                var $itemSelector = $("#share-filesystem-item-selector");
-                var $itemSelectorValue = $("#share-filesystem-item-value");
-                var selectedItem = false;
-                var onSelectItem = function(i) {
-                    selectedItem = i;
-                    $itemSelectorValue.val(pathFormatter.format(i));
-                };
-                $("#share-filesystem-item-select").click(function(e) {
-                    if ($optionItem.get() == 'filesystem_item') {
-                        dialogs.itemSelector({
-                            title: texts.get('pluginShareSelectItemTitle'),
-                            message: texts.get('pluginShareSelectItemMsg'),
-                            actionTitle: texts.get('ok'),
-                            handler: {
-                                onSelect: onSelectItem,
-                                canSelect: function(f) {
-                                    return true;
-                                }
-                            }
-                        });
-                    } else {
-                        dialogs.folderSelector({
-                            title: texts.get('pluginShareSelectFolderTitle'),
-                            message: texts.get('pluginShareSelectFolderMsg'),
-                            actionTitle: texts.get('ok'),
-                            handler: {
-                                onSelect: onSelectItem,
-                                canSelect: function(f) {
-                                    return true;
-                                }
-                            }
-                        });
-                    }
-                    return false;
-                });
-                var $optionItem = controls.select("share-item", {
-                    values: ['none', 'filesystem_item', 'filesystem_child'],
-                    formatter: function(s) {
-                        return texts.get('pluginShareAdminOptionItem_' + s);
-                    },
-                    none: texts.get('pluginShareAdminAny'),
-                    onChange: function(s) {
-                        if (s == 'filesystem_item' || s == 'filesystem_child') {
-                            selectedItem = false;
-                            $itemSelectorValue.val("");
-                            $itemSelector.show();
-                        } else {
-                            $itemSelector.hide();
-                        }
-                    }
-                });
-
-                refresh();
-            });
-        });
-    };*/
-
     plugins.register({
         id: "plugin-share",
         backendPluginId: "Share",
         resources: {
             css: true
         },
-
-        /*configViewHandler: {
-            views: function() {
-                var views = [];
-
-                if (session.get().user.admin) views.push({
-                    viewId: "allshares2",
-                    admin: true,
-                    title: texts.get("pluginShareConfigViewNavTitle"),
-                    onActivate: that.onActivateConfigAdminView
-                });
-
-                return views;
-            }
-        },*/
 
         fileViewHandler: {
             filelistColumns: function() {
@@ -849,6 +534,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
             });
         },
         editShare: function(s) {
+            var df = $.Deferred();
             kloudspeaker.templates.load("shares-content", utils.noncachedUrl(kloudspeaker.plugins.url("Share", "content.html"))).done(function() {
                 var _editor = false;
 
@@ -874,7 +560,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
                         var values = _editor.getValues();
                         that.editShare(s.id, values.name || '', values.expiration, values.active, values.restriction).done(function() {
                             d.close();
-                            refresh();
+                            df.resolve();
                         }).fail(d.close);
                     },
                     "on-show": function(h, $d) {
@@ -882,6 +568,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
                     }
                 });
             });
+            return df;
         }
     }
 });
