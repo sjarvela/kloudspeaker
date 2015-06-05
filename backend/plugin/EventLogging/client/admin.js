@@ -28,7 +28,8 @@ define(['kloudspeaker/eventlogging/repository', 'kloudspeaker/core/user/reposito
                 itemPath: ko.observable(''),
             },
 
-            view: ko.observable(null)
+            view: ko.observable(null),
+            restrictConfigList: ko.observable(false)
         };
 
         var timestampFormatter = new formatters.Timestamp(texts.get('shortDateTimeFormat'));
@@ -124,11 +125,7 @@ define(['kloudspeaker/eventlogging/repository', 'kloudspeaker/core/user/reposito
             attached: function(e) {
                 var $e = $(e);
                 model.view.subscribe(function(v) {
-                    if (v) {
-                        $e.find(".config-list").addClass("restricted");
-                    } else {
-                        $e.find(".config-list").removeClass("restricted");
-                    }
+                    model.restrictConfigList(!!v);
                 });
             }
         };

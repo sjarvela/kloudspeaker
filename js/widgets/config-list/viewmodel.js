@@ -40,6 +40,13 @@ define(['kloudspeaker/ui/texts', 'kloudspeaker/utils', 'durandal/composition', '
             this.settings.hilight.subscribe(function(h) {
                 that._updateHilight();
             });
+        if (this.settings.restrict && this.settings.restrict.subscribe)
+            this.settings.restrict.subscribe(function(r) {
+                if (r) {
+                    that.$e.addClass("restricted");
+                } else
+                    that.$e.removeClass("restricted");
+            });
     };
     ctor.prototype._updateHilight = function() {
         this.$e.find("tr.hilight").removeClass("hilight");
@@ -51,6 +58,9 @@ define(['kloudspeaker/ui/texts', 'kloudspeaker/utils', 'durandal/composition', '
         if (!$row) return;
 
         $row.addClass("hilight");
+
+        if (this.$e.hasClass("restricted"))
+            $row[0].scrollIntoView();
     }
     ctor.prototype._updateTools = function() {
         if (!this.settings.tools) return;
@@ -233,7 +243,7 @@ define(['kloudspeaker/ui/texts', 'kloudspeaker/utils', 'durandal/composition', '
     }
     ctor.prototype._getRowElement = function(row) {
         var result = null;
-        this.$e.find("tr").each(function(){
+        this.$e.find("tr").each(function() {
             var $row = $(this);
             if ($row[0].data === row) {
                 result = $row;

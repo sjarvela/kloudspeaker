@@ -522,6 +522,16 @@ var kloudspeaker_defaults = {
         define('kloudspeaker/ui/clipboard', [], function() {
             return kloudspeaker.ui.clipboard;
         });
+        define('kloudspeaker/localization', [], function() {
+            return {
+                registerPluginResource: function(pluginId) {
+                    //TODO refactor localization into separate module
+                    //use require.js to load resources, can be optimized
+                    //into package
+                    kloudspeaker.ui.texts.loadPlugin(pluginId);
+                }
+            }
+        });
 
         kloudspeaker.ui._configViews = {};
         kloudspeaker.ui._fileViewHandlers = [];
@@ -1763,8 +1773,8 @@ var kloudspeaker_defaults = {
             }();
         },
 
-        invokeLater: function(f) {
-            setTimeout(f, 0);
+        invokeLater: function(f, to) {
+            setTimeout(f, to || 0);
         }
     };
 
