@@ -82,7 +82,7 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/ses
                     repository.removeAllItemShares(item).done(refresh);
                 }
             }],
-            rowClass: function(item) {
+            rowCls: function(item) {
                 if (isValidItem(item)) return "";
                 return "error";
             },
