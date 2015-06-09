@@ -1,0 +1,43 @@
+<form class="form-horizontal">
+    <legend data-i18n="shareDialogShareGeneralTitle"></legend>
+    <div class="control-group">
+        <label class="control-label" for="share-general-name" data-i18n="shareDialogShareNameTitle"></label>
+        <div class="controls">
+            <input id="share-general-name" type="text" data-bind="value: model.name" autofocus></input>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="share-general-active" data-i18n="shareDialogShareActiveTitle"></label>
+        <div class="controls">
+            <input id="share-general-active" type="checkbox" data-bind="checked: model.active"></input>
+        </div>
+    </div>
+    <legend data-i18n="shareDialogShareValidityTitle"></legend>
+    <div class="control-group">
+        <label class="control-label" for="share-validity-expirationdate-value" data-i18n="shareDialogShareExpirationTitle"></label>
+        <div class="controls">
+            <div class="input-append">
+                <div id="share-validity-expirationdate-value" data-bind="time-picker:{ value: model.expiration }"/>
+            </div>
+        </div>
+    </div>
+    <legend data-i18n="shareDialogShareAccessTitle"></legend>
+    <div class="control-group">
+        <label class="control-label" for="shareAccess" data-i18n="shareDialogShareAccessRestrictionTitle"></label>
+        <div class="controls">
+            <label class="radio">
+                <input type="radio" name="shareAccess" value="no" data-bind="checked: model.accessRestriction">
+                <span data-i18n="shareDialogShareAccessNoRestrictionTitle"></span>
+            </label>
+            <label class="radio">
+                <input type="radio" name="shareAccess" value="pw" data-bind="checked: model.accessRestriction" >
+                <span data-i18n="shareDialogShareAccessPasswordTitle"></span>
+            </label>
+            <input type="text" data-bind="value: model.accessPw, i18n: model.edit ? 'shareDialogShareAccessChangePwTitle' : 'shareDialogShareAccessEnterPwTitle'" data-i18n-bind-target="placeholder"></input>
+            <label class="radio">
+                <input type="radio" name="shareAccess" value="private" data-bind="checked: model.accessRestriction">
+                <span data-i18n="shareDialogShareAccessLoggedInTitle"></span>
+            </label>
+        </div>
+    </div>
+</form>

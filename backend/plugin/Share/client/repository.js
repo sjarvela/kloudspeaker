@@ -23,6 +23,26 @@ define(['kloudspeaker/service', 'kloudspeaker/utils'], function(service, utils) 
             });
         },
 
+        addItemShare: function(item, share) {
+            return service.post("share/", {
+                item: item.id,
+                name: share.name,
+                expiration: utils.formatInternalTime(share.expiration),
+                active: share.active,
+                restriction: share.restriction
+            });
+        },
+
+        editShare: function(id, share) {
+            return service.put("share/" + id, {
+                id: id,
+                name: share.name,
+                expiration: utils.formatInternalTime(share.expiration),
+                active: share.active,
+                restriction: share.restriction
+            });
+        },
+
         removeShare: function(share) {
             return service.del("share/" + share.id);
         },

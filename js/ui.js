@@ -973,8 +973,16 @@
                     $tip.find(".popover-title").append($('<button type="button" class="close">×</button>').click(function() {
                         api.close();
                     }));
-                kloudspeaker.ui.handlers.localize($tip);
+                if (!o.model)
+                    kloudspeaker.ui.handlers.localize($tip);
                 if (o.handler && o.handler.onRenderBubble) o.handler.onRenderBubble(api);
+
+                if (o.model)
+                    kloudspeaker.ui.viewmodel(o.view, o.model, $tip.find('.popover-content')).done(function(m) {
+                        pos();
+                        //_model = m;
+                        if (m.onShow) m.onShow(api);
+                    });
             }).bind("hidden", function() {
                 $e.unbind("shown").unbind("hidden");
                 kloudspeaker.ui.removeActivePopup(api.id);
@@ -1961,6 +1969,10 @@
             center: function() {
                 center($dlg);
             },
+            setTitle: function(t) {
+                $dlg.find(".modal-header > h3").text(t);
+                onResize();
+            },
             setInfo: function(n) {
                 var $n = $dlg.find(".modal-footer > .info").empty();
                 if (n) $n.html(n);
@@ -1979,34 +1991,34 @@
             fail: df.fail
         };
         var $body = $dlg.find(".modal-body");
+        var $header = $dlg.find(".modal-header");
+        var $footer = $dlg.find(".modal-footer");
         var _model = false;
+        var magicNr = 30; //$body.css("padding-top") + $body.css("padding-bottom"); //TODO??
         $dlg.find(".modal-footer .btn").click(function(e) {
             e.preventDefault();
             var ind = $dlg.find(".modal-footer .btn").index($(this));
-            var btn = spec.buttons[ind];
-            if (spec["on-button"]) spec["on-button"](btn, h, $dlg);
+            var btn = spec.buttons[ind];            
             if (_model && _model.onDialogButton) _model.onDialogButton.apply(h, [btn.id]);
+            else if (spec["on-button"]) spec["on-button"](btn, h, $dlg);
+            else {
+                h.close();
+            }
         });
+        var onResize = function() {
+            center($dlg);
+            var h = $dlg.innerHeight() - $header.outerHeight() - $footer.outerHeight() - magicNr;
+            $body.css("height", h);
+        }
 
         var _onDialogReady = function() {
                 if (spec.html || spec.content) kloudspeaker.ui.handlers.localize($dlg);
                 $dlg.modal('show');
                 if (spec.resizable) {
-                    var $header = $dlg.find(".modal-header");
-                    var $footer = $dlg.find(".modal-footer");
-                    var magicNr = 30; //$body.css("padding-top") + $body.css("padding-bottom"); //TODO??
-
                     $body.css({
                         "max-height": "none",
                         "max-width": "none"
                     });
-
-                    var onResize = function() {
-                        center($dlg);
-                        var h = $dlg.innerHeight() - $header.outerHeight() - $footer.outerHeight() - magicNr;
-                        $body.css("height", h);
-                    }
-
                     $dlg.css({
                         "max-height": "none",
                         "max-width": "none",

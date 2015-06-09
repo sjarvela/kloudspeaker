@@ -200,7 +200,7 @@ var kloudspeaker_defaults = {
                     var $e = $(e);
                     var target = $e.attr('data-i18n-bind-target');
                     if (target && target != 'text')
-                        $a.attr(target, loc);
+                        $e.attr(target, loc);
                     else
                         $e.text(loc);
                 };
@@ -223,6 +223,44 @@ var kloudspeaker_defaults = {
                 comp.addBindingHandler('uploader', {
                     //init: _i18n,
                     update: _uploader
+                });
+
+                comp.addBindingHandler('dom-effect', {
+                    init: function(e, va) {
+                        var v = va();
+                        var value = ko.unwrap(v);
+                        var $e = $(e);
+                        if (value == 'hover') {
+                            $e.hover(function() {
+                                $e.addClass("hover");
+                            }, function() {
+                                $e.removeClass("hover");
+                            });
+                        }
+                    }
+                });
+
+                comp.addBindingHandler('clipboard', {
+                    update: function(e, va) {
+                        var v = va();
+                        var value = ko.unwrap(v);
+                        var $e = $(e);                        
+
+                        if (!kloudspeaker.ui.clipboard) {
+                            $e.addClass("no-clipboard");
+                            return;
+                        } else {
+                            kloudspeaker.ui.clipboard.enableCopy($e, (typeof(value.data) === 'function' ? value.data() : value.data), {
+                                onMouseOver: function($e, clip) {
+                                    if (value.hand) clip.setHandCursor(true);
+                                    if (value.hover) $e.addClass("hover");
+                                },
+                                onMouseOut: function($e) {
+                                    if (value.hover) $e.removeClass("hover");
+                                }
+                            });
+                        }
+                    }
                 });
 
                 binder.binding = function(obj, view) {
@@ -509,6 +547,7 @@ var kloudspeaker_defaults = {
         define('kloudspeaker/ui/formatters', [], kloudspeaker.ui.formatters);
         define('kloudspeaker/ui/controls', [], kloudspeaker.ui.controls);
         define('kloudspeaker/ui/dialogs', [], kloudspeaker.ui.dialogs);
+
         define('kloudspeaker/ui', [], {
             window: kloudspeaker.ui.window,
             download: kloudspeaker.ui.download,

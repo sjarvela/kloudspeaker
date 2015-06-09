@@ -1426,7 +1426,7 @@
                 canDrop: that.canDragAndDrop,
                 dropType: that.dropType,
                 onDrop: that.onDragAndDrop,
-                onClick: function(item, t, e) {
+                onClick: function(item, t, e, $col) {
                     if (that._handleCustomFolderTypeAction("onClick", item, t)) return;
                     if (that._handleCustomAction("onClick", item, t)) return;
 
@@ -1434,7 +1434,17 @@
                     if (that.isListView() && t != 'icon') {
                         var col = that._filelist.columns[t];
                         if (col["on-click"]) {
-                            col["on-click"](item, that._currentFolderData.data, ctx);
+                            col["on-click"].apply({
+                                showBubble: function(spec) {
+                                    kloudspeaker.ui.controls.dynamicBubble({
+                                        element: $col,
+                                        title: spec.title,
+                                        model: spec.model,
+                                        view: spec.view,
+                                        container: $("#kloudspeaker-filelist-main")
+                                    });
+                                }
+                            }, [item, that._currentFolderData.data, ctx]);
                             return;
                         }
                     }
@@ -1643,7 +1653,7 @@
                 var col = "";
                 if ($trg.parent().hasClass("kloudspeaker-iconview-item-info")) col = "info";
 
-                t.p.onClick(itm, col, $t);
+                t.p.onClick(itm, col, $t, $t);
             }, function() {
                 t.p.onDblClick($(this).tmplItem().data);
             }).attr('unselectable', 'on').css({
@@ -2002,7 +2012,8 @@
         };
 
         this.onItemClick = function($item, $el, left) {
-            var i = $item.find(".kloudspeaker-filelist-col").index($el.closest(".kloudspeaker-filelist-col"));
+            var $col = $el.closest(".kloudspeaker-filelist-col");
+            var i = $item.find(".kloudspeaker-filelist-col").index($col);
             if (i < 0) return;
             var itm = $item.tmplItem().data;
             if (i === 0) {
@@ -2011,9 +2022,9 @@
             }
             var colId = (i === 1 ? "icon" : t.cols[i - 2].id);
             if (left)
-                t.p.onClick(itm, colId, $item);
+                t.p.onClick(itm, colId, $item, $col);
             else
-                t.p.onRightClick(itm, colId, $item);
+                t.p.onRightClick(itm, colId, $item, $col);
         };
 
         this.getItemContextElement = function(item) {
