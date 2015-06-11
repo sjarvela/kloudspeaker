@@ -1,4 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/texts', 'kloudspeaker/utils', 'kloudspeaker/dom'], function(app, settings, plugins, fs, views, formatters, dialogs, texts, utils, dom) {
+define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/share/repository', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/texts', 'kloudspeaker/utils', 'kloudspeaker/dom'], function(app, settings, plugins, repository, fs, views, formatters, dialogs, texts, utils, dom) {
     var that = this;
 
     that._timestampFormatter = new formatters.Timestamp(texts.get('shortDateTimeFormat'));
@@ -90,6 +90,12 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
         });
     };
 
+    var getDataObj = function(d, item) {
+        if (!item || !item.id || item.id.length === 0) return false;
+        if (!d || !d["plugin-share/item-info"]) return false;
+        return d["plugin-share/item-info"][item.id];
+    };
+
     this.onAddShare = function(item) {
         return dialogs.custom({
             resizable: true,
@@ -100,12 +106,11 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
         }).done(function() {
             var fv = views.getActiveFileView();
             if (fv) fv.updateData(function(d) {
-                if (!d || !d["plugin-share/item-info"]) return false;
-                var itemData = d["plugin-share/item-info"][item.id];
-                if (!itemData) return false;
+                var itemData = getDataObj(d, item);
+                if (!itemData) return;
 
                 if (typeof(itemData.own) === 'string') itemData.own = (parseInt(itemData.own, 10));
-                itemData.own += 1;
+                itemData.own += 1;  // add one
 
                 // refresh this item
                 return [item];
@@ -120,6 +125,22 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
             model: ['kloudspeaker/share/views/addedit', {
                 share: share
             }]
+        });
+    };
+
+    this.onRemoveShare = function(item, share) {
+        return repository.removeShare(share).done(function() {
+            var fv = views.getActiveFileView();
+            if (fv) fv.updateData(function(d) {
+                var itemData = getDataObj(d, item);
+                if (!itemData) return;
+
+                if (typeof(itemData.own) === 'string') itemData.own = (parseInt(itemData.own, 10));
+                itemData.own -= 1;  // reduce one
+
+                // refresh this item
+                return [item];
+            });
         });
     }
 
@@ -146,9 +167,13 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
                 "id": "share-info",
                 "title-key": "",
                 "content": function(item, data) {
-                    if (!item.id || item.id.length === 0 || !data || !data["plugin-share/item-info"]) return "";
-                    var itemData = data["plugin-share/item-info"][item.id];
+                    var itemData = getDataObj(data, item);
+
+                    // no data or invalid item
+                    if (itemData === false) return "";
+                    // no item data found
                     if (!itemData) return "<div class='filelist-item-share-info empty'></div>";
+
                     if (itemData.own > 0)
                         return "<div class='filelist-item-share-info'><i class='icon-external-link'></i>&nbsp;" + itemData.own + "</div>";
                     return "<div class='filelist-item-share-info others' title='" + texts.get("pluginShareFilelistColOtherShared") + "'><i class='icon-external-link'></i></div>";
@@ -157,9 +182,8 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
                 dataRequest: 'plugin-share/item-info',
 
                 "on-click": function(item, data) {
-                    if (!item.id || item.id.length === 0 || !data || !data["plugin-share/item-info"]) return;
-                    var itemData = data["plugin-share/item-info"][item.id];
-                    if (!itemData) return;
+                    var itemData = getDataObj(data, item);
+                    if (itemData === false) return;
 
                     this.showBubble({
                         model: ['kloudspeaker/share/views/list', {
@@ -213,6 +237,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
         getShareView: that._getShareView,
         openItemShares: that.onOpenItemShares,
         addShare: that.onAddShare,
-        editShare: that.onEditShare
+        editShare: that.onEditShare,
+        removeShare: that.onRemoveShare
     }
 });

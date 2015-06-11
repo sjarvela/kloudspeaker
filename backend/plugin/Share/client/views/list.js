@@ -54,7 +54,7 @@ define(['kloudspeaker/app', 'kloudspeaker/share', 'kloudspeaker/share/repository
                 share.editShare(s);
             },
             onRemoveShare: function(s) {
-                repository.removeShare(s).done(refresh);
+                share.removeShare(model.item, s).done(refresh);
             },
             onCopyShareUrl: function() {}
         };
