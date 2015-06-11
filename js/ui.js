@@ -1936,6 +1936,11 @@
         var s = spec;
         if (s['title-key']) s.title = kloudspeaker.ui.texts.get(s['title-key']);
 
+        var getButtonTitle = function(b) {
+            if (b.title) return b.title;
+            if (b["title-key"]) return kloudspeaker.ui.texts.get(b["title-key"]);
+            return "";
+        };
         var $dlg = $("#kloudspeaker-tmpl-dialog-custom").tmpl($.extend(dh._dialogDefaults, s), {
             getContent: function() {
                 if (spec.html) return spec.html;
@@ -1946,11 +1951,7 @@
                 }
                 return "";
             },
-            getButtonTitle: function(b) {
-                if (b.title) return b.title;
-                if (b["title-key"]) return kloudspeaker.ui.texts.get(b["title-key"]);
-                return "";
-            }
+            getButtonTitle: getButtonTitle
         });
         $dlg.on('hidden', function(e) {
             if (e.target != $dlg[0]) return;
@@ -1995,10 +1996,10 @@
         var $footer = $dlg.find(".modal-footer");
         var _model = false;
         var magicNr = 30; //$body.css("padding-top") + $body.css("padding-bottom"); //TODO??
-        $dlg.find(".modal-footer .btn").click(function(e) {
+        $footer.on("click", ".btn", function(e) {
             e.preventDefault();
-            var ind = $dlg.find(".modal-footer .btn").index($(this));
-            var btn = spec.buttons[ind];            
+            var ind = $footer.find(".btn").index($(this));
+            var btn = spec.buttons[ind];
             if (_model && _model.onDialogButton) _model.onDialogButton.apply(h, [btn.id]);
             else if (spec["on-button"]) spec["on-button"](btn, h, $dlg);
             else {
@@ -2013,6 +2014,12 @@
 
         var _onDialogReady = function() {
                 if (spec.html || spec.content) kloudspeaker.ui.handlers.localize($dlg);
+                if (!spec.buttons && _model && _model.getDialogButtons) {
+                    spec.buttons = _model.getDialogButtons();
+                    $("#kloudspeaker-tmpl-dialog-button").tmpl(spec.buttons, {
+                        getButtonTitle: getButtonTitle
+                    }).appendTo($footer.find(".buttons").empty());
+                }
                 $dlg.modal('show');
                 if (spec.resizable) {
                     $body.css({

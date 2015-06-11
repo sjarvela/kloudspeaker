@@ -830,6 +830,15 @@
             return $.extend(rq, that.itemWidget.getDataRequest ? that.itemWidget.getDataRequest() : {});
         };
 
+        this.updateData = function(hcb) {
+            var res = hcb(that._currentFolderData.data);
+            if (!res) return;
+            if (res === true) that._updateUI();
+            else if (window.isArray(res)) {
+                that.itemWidget.updateItems(res, that._currentFolderData.data);
+            }
+        };
+
         this.getCurrentFolder = function() {
             return that._currentFolder;
         };
@@ -846,6 +855,9 @@
                     if (that._currentFolderData.data['item-metadata'] && that._currentFolderData.data['item-metadata'][item.id]) {
                         that._currentFolderData.data['item-metadata'][item.id].description = e.payload.value;
                     }
+                } else {
+                    if (that._currentFolderData.data[e.payload.property] && that._currentFolderData.data[e.payload.property][item.id])
+                        that._currentFolderData.data[e.payload.property][item.id] = e.payload.value;
                 }
                 that.itemWidget.updateItems([item], that._currentFolderData.data);
                 return;
@@ -1878,6 +1890,9 @@
             for (var i = 0, j = t.cols.length; i < j; i++) {
                 var c = t.cols[i];
                 if (c['request-id']) rq[c['request-id']] = {};
+                else if (c.dataRequest) {
+                    if (typeof(c.dataRequest) === 'string') rq[c.dataRequest] = {};
+                }
             }
             return rq;
         };

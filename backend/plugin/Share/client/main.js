@@ -1,7 +1,7 @@
 define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/texts', 'kloudspeaker/utils', 'kloudspeaker/dom'], function(app, settings, plugins, fs, views, formatters, dialogs, texts, utils, dom) {
     var that = this;
 
-    that._timestampFormatter = new formatters.Timestamp(texts.get('shortDateTimeFormat'));    
+    that._timestampFormatter = new formatters.Timestamp(texts.get('shortDateTimeFormat'));
 
     views.registerView("share", function(rqParts, urlParams) {
         if (rqParts.length != 2) return false;
@@ -96,14 +96,20 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
             initSize: [600, 400],
             model: ['kloudspeaker/share/views/addedit', {
                 item: item
-            }],
-            buttons: [{
-                id: "yes",
-                "title": texts.get('dialogSave')
-            }, {
-                id: "no",
-                "title": texts.get('dialogCancel')
-            }],
+            }]
+        }).done(function() {
+            var fv = views.getActiveFileView();
+            if (fv) fv.updateData(function(d) {
+                if (!d || !d["plugin-share/item-info"]) return false;
+                var itemData = d["plugin-share/item-info"][item.id];
+                if (!itemData) return false;
+
+                if (typeof(itemData.own) === 'string') itemData.own = (parseInt(itemData.own, 10));
+                itemData.own += 1;
+
+                // refresh this item
+                return [item];
+            });
         });
     };
 
@@ -113,14 +119,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
             initSize: [600, 400],
             model: ['kloudspeaker/share/views/addedit', {
                 share: share
-            }],
-            buttons: [{
-                id: "yes",
-                "title": texts.get('dialogSave')
-            }, {
-                id: "no",
-                "title": texts.get('dialogCancel')
-            }],
+            }]
         });
     }
 
@@ -145,31 +144,29 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
         filelistColumns: function() {
             return [{
                 "id": "share-info",
-                "request-id": "plugin-share-info",
                 "title-key": "",
                 "content": function(item, data) {
-                    if (!item.id || item.id.length === 0 || !data || !data["plugin-share-info"]) return "";
-                    var itemData = data["plugin-share-info"][item.id];
+                    if (!item.id || item.id.length === 0 || !data || !data["plugin-share/item-info"]) return "";
+                    var itemData = data["plugin-share/item-info"][item.id];
                     if (!itemData) return "<div class='filelist-item-share-info empty'></div>";
                     if (itemData.own > 0)
                         return "<div class='filelist-item-share-info'><i class='icon-external-link'></i>&nbsp;" + itemData.own + "</div>";
                     return "<div class='filelist-item-share-info others' title='" + texts.get("pluginShareFilelistColOtherShared") + "'><i class='icon-external-link'></i></div>";
                 },
-                "request": function(parent) {
-                    return {};
-                },
+
+                dataRequest: 'plugin-share/item-info',
+
                 "on-click": function(item, data) {
-                    if (!item.id || item.id.length === 0 || !data || !data["plugin-share-info"]) return;
-                    var itemData = data["plugin-share-info"][item.id];
+                    if (!item.id || item.id.length === 0 || !data || !data["plugin-share/item-info"]) return;
+                    var itemData = data["plugin-share/item-info"][item.id];
                     if (!itemData) return;
 
-                    if (itemData.own > 0)
-                        this.showBubble({
-                            model: ['kloudspeaker/share/views/list', {
-                                item: item
-                            }],
-                            title: item.name
-                        });
+                    this.showBubble({
+                        model: ['kloudspeaker/share/views/list', {
+                            item: item
+                        }],
+                        title: item.name
+                    });
                 }
             }];
         }

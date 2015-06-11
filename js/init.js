@@ -575,6 +575,18 @@ var kloudspeaker_defaults = {
         kloudspeaker.ui._configViews = {};
         kloudspeaker.ui._fileViewHandlers = [];
         define('kloudspeaker/ui/views', [], {
+            getActiveView: function() {
+                return kloudspeaker.App.activeView;
+            },
+            getActiveMainView: function() {
+                if (kloudspeaker.App.activeViewId != "main") return false;
+                return kloudspeaker.App.activeView.getActiveView();
+            },
+            getActiveFileView: function() {
+                var mv = this.getActiveMainView();
+                if (!mv || !mv.viewId == 'viewId') return false;
+                return mv;
+            },
             registerView: function(id, v) {
                 kloudspeaker.App.registerView(id, v);
             },

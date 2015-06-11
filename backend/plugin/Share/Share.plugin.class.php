@@ -31,7 +31,7 @@ class Share extends PluginBase {
 
 		$this->env->permissions()->registerFilesystemPermission("share_item");
 
-		$this->env->filesystem()->registerDataRequestPlugin(array("plugin-share-info"), $this->handler);
+		$this->env->filesystem()->registerDataRequestPlugin(array("plugin-share/item-info"), $this->handler);
 		$this->env->filesystem()->registerItemContextPlugin("plugin-share", $this->handler);
 		$this->env->filesystem()->registerActionValidator("plugin-share", $this->handler);
 	}

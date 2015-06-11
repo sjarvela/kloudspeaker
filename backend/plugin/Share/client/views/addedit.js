@@ -1,5 +1,6 @@
 define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/ui/texts', 'kloudspeaker/utils', 'knockout'], function(share, repository, texts, utils, ko) {
     return function() {
+        var that = this;
         var model = {
             share: null,
             item: null,
@@ -19,12 +20,23 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/ui/
         return {
             model: model,
             onShow: function(container) {
+                that._container = container;
+
                 //TODO title (share file download etc)
                 if (model.share) {
                     container.setTitle(texts.get('shareDialogShareEditTitle'));
                 } else {
                     container.setTitle(texts.get('shareDialogShareCreateNewTitle'));
                 }
+            },
+            getDialogButtons: function() {
+                return [{
+                    id: "yes",
+                    "title": texts.get('dialogSave')
+                }, {
+                    id: "no",
+                    "title": texts.get('dialogCancel')
+                }];
             },
             onDialogButton: function(id) {
                 if (id == 'no') {
@@ -46,9 +58,13 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/ui/
                 }
 
                 if (model.share) {
-                    repository.editShare(model.share.id, share);
+                    repository.editShare(model.share.id, share).done(function() {
+                        that._container.complete(share);
+                    });
                 } else {
-                    repository.addItemShare(model.item, share);
+                    repository.addItemShare(model.item, share).done(function() {
+                        that._container.complete(share);
+                    })
                 }
             },
             activate: function(params) {

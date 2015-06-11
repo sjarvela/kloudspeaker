@@ -56,11 +56,17 @@
 		<div class="modal-body">{{html $item.getContent()}}</div>
 		<div class="modal-footer">
 			<div class="info"></div>
+			<div class="buttons">
 			{{each buttons}}
-			<a id="kloudspeaker-custom-dialog-button-${id}" class="kloudspeaker-custom-dialog-button btn ${cls}">${$item.getButtonTitle($value)}</a>
+				<a id="kloudspeaker-custom-dialog-button-${id}" class="kloudspeaker-custom-dialog-button btn ${cls}">${$item.getButtonTitle($value)}</a>
 			{{/each}}
+			</div>
 		</div>
 	</div>
+</script>
+
+<script id="kloudspeaker-tmpl-dialog-button" type="text/x-jquery-tmpl">
+	<a id="kloudspeaker-custom-dialog-button-${id}" class="kloudspeaker-custom-dialog-button btn ${cls}">${$item.getButtonTitle($item.data)}</a>
 </script>
 
 <script id="kloudspeaker-tmpl-dialog-error-debug" type="text/x-jquery-tmpl">
