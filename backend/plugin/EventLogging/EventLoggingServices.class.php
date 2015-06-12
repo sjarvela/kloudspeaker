@@ -51,13 +51,19 @@
 				$query .= " and user like '".str_replace("*", "%", $db->string($data['user']))."'";
 			}
 			if (isset($data['item'])) {
-				$query .= " and item like '".str_replace("*", "%", $db->string($data['item']))."'";
+				$pathQuery = "CONCAT((select path from ".$db->table("folder")." where id=(select SUBSTRING(path, 1, INSTR(path, ':')-1) from ".$db->table("item_id")." where id = '".$data['item_id']."')), (select SUBSTRING(path, INSTR(path, ':')+1) from ".$db->table("item_id")." where id = '".$data['item_id']."'))";
+				if ($data['item'] == "filesystem_item") {					
+					$query .= " and item = (" . $pathQuery . ")";
+				} else if ($data['item'] == "filesystem_child") {
+					$query .= " and item like CONCAT(" . $pathQuery . ", '%')";
+				} else if ($data['item'] == "path") {
+					$query .= " and item like '".str_replace("*", "%", $db->string($data['item_path']))."'";
+				}
+				//'select path from '.$db->table("event_log").' where id = '.$data['item_id']
+				//$query .= " and item like '".str_replace("*", "%", $db->string($data['item']))."'";
 			}
 			if (isset($data['type'])) {
 				$query .= " and type like '".str_replace("*", "%", $db->string($data['type']))."'";
-			}
-			if (isset($data['item_path'])) {
-				$query .= " and item like '".str_replace("*", "%", $db->string($data['item_path']))."'";
 			}
 
 			$query .= ' order by ';

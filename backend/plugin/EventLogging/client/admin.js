@@ -1,7 +1,38 @@
-define(['kloudspeaker/eventlogging/repository', 'kloudspeaker/core/user/repository', 'kloudspeaker/session', 'kloudspeaker/utils', 'kloudspeaker/ui/texts', 'kloudspeaker/ui/formatters'], function(repository, userRepository, session, utils, texts, formatters) {
+define(['kloudspeaker/eventlogging/repository', 'kloudspeaker/core/user/repository', 'kloudspeaker/session', 'kloudspeaker/utils', 'kloudspeaker/ui/texts', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/dialogs', 'knockout'], function(repository, userRepository, session, utils, texts, formatters, dialogs, ko) {
     return function() {
         var that = this;
         that._eventTypeTexts = {};
+
+        var onSelectItem = function() {
+            var type = model.options.itemType();
+            if (!type || type == 'path') return;
+            if (type == 'filesystem_item') {
+                dialogs.itemSelector({
+                    title: texts.get('pluginEventLoggingSelectItemTitle'),
+                    message: texts.get('pluginEventLoggingSelectItemMsg'),
+                    actionTitle: texts.get('ok'),
+                    handler: {
+                        onSelect: model.options.item,
+                        canSelect: function(f) {
+                            return true;
+                        }
+                    }
+                });
+            } else {
+                dialogs.folderSelector({
+                    title: texts.get('pluginEventLoggingSelectFolderTitle'),
+                    message: texts.get('pluginEventLoggingSelectFolderMsg'),
+                    actionTitle: texts.get('ok'),
+                    handler: {
+                        onSelect: model.options.item,
+                        canSelect: function(f) {
+                            return true;
+                        }
+                    }
+                });
+            }
+        };
+
         var model = {
             events: ko.observableArray([]),
 
@@ -16,7 +47,7 @@ define(['kloudspeaker/eventlogging/repository', 'kloudspeaker/core/user/reposito
                 customEventType: ko.observable(''),
 
                 user: ko.observable(null),
-                userNoneTitle: texts.get('pluginShareAdminAny'),
+                userNoneTitle: texts.get('pluginEventLoggingAdminAny'),
                 users: ko.observableArray([]),
                 userOptionTitle: function(u) {
                     return u.name;
@@ -25,6 +56,16 @@ define(['kloudspeaker/eventlogging/repository', 'kloudspeaker/core/user/reposito
                 start: ko.observable(null),
                 end: ko.observable(null),
 
+                item: ko.observable(null),
+                itemType: ko.observable(null),
+                itemTypes: ['filesystem_item', 'filesystem_child', 'path'],
+                itemTypeNoneTitle: texts.get('pluginEventLoggingAdminAny'),
+                itemTypeOptionTitle: function(t) {
+                    return texts.get('pluginEventLoggingAdminOptionItem_' + t);
+                },
+
+                pathFormatter: new formatters.FilesystemItemPath(),
+                onSelectItem: onSelectItem,
                 itemPath: ko.observable(''),
             },
 
@@ -63,7 +104,10 @@ define(['kloudspeaker/eventlogging/repository', 'kloudspeaker/core/user/reposito
             tools: [{
                 id: "action-refresh",
                 icon: 'refresh',
-                action: listRefresh.trigger
+                action: function() {
+                    model.view(null);
+                    listRefresh.trigger();
+                }
             }],
             cols: [{
                 id: "id",
@@ -101,7 +145,16 @@ define(['kloudspeaker/eventlogging/repository', 'kloudspeaker/core/user/reposito
                     if (model.options.user()) params.user = model.options.user().name;
                     if (model.options.start()) params.start_time = model.options.start();
                     if (model.options.end()) params.end_time = model.options.end();
-                    if (model.options.itemPath()) params.item_path = model.options.itemPath();
+                    if (model.options.itemType()) {
+                        params.item = model.options.itemType();
+                        params.item_id = null;
+
+                        var item = model.options.item();
+                        if (item && (params.item == 'filesystem_item' || params.item == 'filesystem_child'))
+                            params.item_id = item.id;
+                        else if (params.item == 'path')
+                            params.item_path = model.options.itemPath();
+                    }
 
                     return params;
                 }, function(l) {
