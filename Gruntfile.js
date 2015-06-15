@@ -214,6 +214,7 @@ module.exports = function(grunt) {
                         'kloudspeaker/ui/controls': 'empty:',
                         'kloudspeaker/ui/dialogs': 'empty:',
                         'kloudspeaker/ui': 'empty:',
+                        'kloudspeaker/ui/dropbox' : 'kloudspeaker/ui/dropbox',   //override "empty" ui
                         'kloudspeaker/ui/dnd': 'empty:',
                         'kloudspeaker/ui/uploader': 'empty:',
                         'kloudspeaker/ui/clipboard': 'empty:'

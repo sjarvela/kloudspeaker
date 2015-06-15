@@ -1,4 +1,5 @@
 require.config({
+    //enforceDefine: true,
     shim: {
         'bootstrap': {
             deps: ['jquery'],
