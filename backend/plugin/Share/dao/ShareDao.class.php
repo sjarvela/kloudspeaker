@@ -23,7 +23,7 @@ class ShareDao {
 
 	public function getShare($id, $mustBeValidAfter = NULL) {
 		$db = $this->env->db();
-		$query = "select id, name, item_id, active, restriction from " . $db->table("share") . " where active=1 and id = " . $db->string($id, TRUE);
+		$query = "select id, user_id, name, item_id, active, restriction, expiration from " . $db->table("share") . " where active=1 and id = " . $db->string($id, TRUE);
 		if ($mustBeValidAfter) {
 			$query .= ' and (expiration is null or expiration >= ' . $db->string($mustBeValidAfter) . ')';
 		}

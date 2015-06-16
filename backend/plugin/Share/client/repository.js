@@ -5,6 +5,13 @@ define(['kloudspeaker/service', 'kloudspeaker/utils'], function(service, utils) 
     };
 
     return {
+        getShare: function(id) {
+            return service.get("share/" + id).pipe(function(s) {
+                processShare(s);
+                return s;
+            });
+        },
+
         getUserShares: function() {
             return service.get("share/all/").pipe(function(result) {
                 var users = utils.getKeys(result.shares);

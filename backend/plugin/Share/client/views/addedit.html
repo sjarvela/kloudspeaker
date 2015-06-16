@@ -34,7 +34,7 @@
                 <span data-i18n="shareDialogShareAccessPasswordTitle"></span>
             </label>
             <div class="control-group" data-bind="attr: {class: 'control-group inner ' + (model.passwordMissing() ? 'error' : '')}">
-                <input type="text" data-bind="value: model.accessPw, i18n: model.edit ? 'shareDialogShareAccessChangePwTitle' : 'shareDialogShareAccessEnterPwTitle'" data-i18n-bind-target="placeholder"></input>
+                <input type="text" data-bind="value: model.accessPw, i18n: (model.edit && model.originalAccessRestriction == 'pw') ? 'shareDialogShareAccessChangePwTitle' : 'shareDialogShareAccessEnterPwTitle'" data-i18n-bind-target="placeholder"></input>
             </div>
             <label class="radio">
                 <input type="radio" name="shareAccess" value="private" data-bind="checked: model.accessRestriction">

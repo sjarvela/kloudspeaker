@@ -910,6 +910,7 @@
                 if (typeof(c) === 'string') return c;
                 return $("<div/>").append(c).html();
             };
+            var _model = false;
             var html = o.content ? bubbleHtml(o.content) : '<div class="loading"></div>';
             var $tip = false;
             var $cnt = o.container || $e.parent();
@@ -935,7 +936,11 @@
                 },
                 hide: function(dontDestroy) {
                     if (dontDestroy) $tip.hide();
-                    else $e.popover('destroy');
+                    else {
+                        if (_model)
+                            ko.utils.domNodeDisposal.removeNode($tip[0]);
+                        $e.popover('destroy');
+                    }
                 },
                 element: function() {
                     return $tip;
@@ -980,7 +985,7 @@
                 if (o.model)
                     kloudspeaker.ui.viewmodel(o.view, o.model, $tip.find('.popover-content')).done(function(m) {
                         pos();
-                        //_model = m;
+                        _model = m;
                         if (m.onShow) m.onShow(api);
                     });
             }).bind("hidden", function() {
@@ -1967,7 +1972,8 @@
         var df = $.Deferred();
         var h = {
             close: function() {
-                ko.utils.domNodeDisposal.removeNode($body[0]);
+                if (_model)
+                    ko.utils.domNodeDisposal.removeNode($body[0]);
                 $dlg.modal('hide');
                 dh._activeDialog = false;
             },

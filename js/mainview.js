@@ -837,7 +837,7 @@
             else if (window.isArray(res)) {
                 that.itemWidget.updateItems(res, that._currentFolderData.data);
             } else {
-                if (res.id == that._currentFolder.id) that._updateUI();
+                if (res.id && res.id == that._currentFolder.id) that._updateUI();
                 else that.itemWidget.updateItems([res], that._currentFolderData.data);
             }
         };

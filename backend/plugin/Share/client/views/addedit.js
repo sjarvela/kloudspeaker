@@ -47,8 +47,10 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/ui/
                 model.passwordMissing(false);
                 var pwRestriction = (model.accessRestriction() == 'pw');
 
-                if (!model.share && pwRestriction && (!model.accessPw() || model.accessPw().length === 0)) {
-                    model.passwordMissing(true);    //TODO dynamic validation
+                if (pwRestriction && (!model.edit || model.originalAccessRestriction != 'pw')) {
+                    if (!model.accessPw() || model.accessPw().length === 0) {
+                        model.passwordMissing(true); //TODO dynamic validation
+                    }
                 }
                 if (model.errors().length > 0 || model.passwordMissing()) {
                     return;
@@ -56,6 +58,7 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/ui/
                 var share = {
                     name: model.name(),
                     active: model.active(),
+                    expiration: model.expiration(),
                     restriction: {
                         type: model.accessRestriction()
                     }
@@ -77,11 +80,15 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/ui/
             activate: function(params) {
                 if (params.share) {
                     model.edit = true;
-                    model.share = params.share;
+                    repository.getShare(params.share.id).done(function(s) {
+                        model.share = s;
 
-                    model.name(model.share.name);
-                    model.active(model.share.active);
-                    model.accessRestriction(model.share.restriction);
+                        model.name(s.name);
+                        model.active(s.active);
+                        model.expiration(s.expiration);
+                        model.accessRestriction(s.restriction || 'no');
+                        model.originalAccessRestriction = model.accessRestriction();
+                    });
                 } else
                     model.item = params.item;
             }

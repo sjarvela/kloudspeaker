@@ -20,6 +20,12 @@ class ShareServices extends ServicesBase {
 	}
 
 	public function processGet() {
+		if (count($this->path) == 1) {
+			// share/xxx : get single share by id
+			$this->response()->success($this->handler()->getShare($this->path[0]));
+			return;
+		}
+
 		if (count($this->path) > 2 or (strcmp($this->path[0], 'items') != 0 and strcmp($this->path[0], 'all') != 0)) {
 			throw $this->invalidRequestException();
 		}

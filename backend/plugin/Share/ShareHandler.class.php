@@ -91,6 +91,13 @@ class ShareHandler {
 		return $list;
 	}
 
+	public function getShare($id) {
+		$share = $this->dao()->getShare($id);
+		if (!$share) return NULL;
+		if ($share["user_id"] != $this->env->session()->userId()) return NULL;
+		return $share;
+	}
+
 	public function getUserShares() {
 		return $this->dao()->getUserShares($this->env->session()->userId());
 	}
