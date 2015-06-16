@@ -8,23 +8,27 @@
     margin: 0 0 8px 0;
 }
 
-#share-list {
+/*#share-list {
     position: relative;
     height: 254px;
     margin: 0;
     overflow: hidden;
     min-width: 500px;
-}
+}*/
 
-#share-items-container {
-    overflow-x: hidden;
-    overflow-y: auto;
+.share-items-container {
+    overflow: hidden;
     height: 100%;
 }
 
-#share-items {
+.item-share-list {
+    margin-bottom: 0;
+}
+
+.share-items {
     width: 100%;
-    min-height: 212px;
+    height: 240px;
+    overflow: scroll;
 }
 
 .no-share-items {
@@ -84,6 +88,10 @@
     float: left;
     padding: 0 8px 8px 8px;
     width: 100%;
+}
+
+.item-share-list .btn.add-share {
+    margin-top: 18px;
 }
 
 /*.share-link input {
@@ -171,6 +179,10 @@ ul.share-actions a.share-link-copy.no-clipboard {
     font-size: 19px;
     font-weight: bold;
 }*/
+
+.share-addedit .control-group.inner {
+    margin-bottom: 0;
+}
 
 #share-access-public-password-value {
     margin-left: 20px;

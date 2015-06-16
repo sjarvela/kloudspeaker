@@ -79,7 +79,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
     this.onOpenItemShares = function(item) {
         return dialogs.custom({
             resizable: true,
-            initSize: [600, 400],
+            initSize: [600, 470],
             model: ['kloudspeaker/share/views/list', {
                 item: item
             }],

@@ -8,17 +8,20 @@ define(['durandal/composition', 'knockout', 'jquery', 'kloudspeaker/ui/texts'], 
         var $e = $(e);
         var $input = $e.find("input");
 
-        var api = kloudspeaker.ui.controls.datepicker($e, {
+        that.api = kloudspeaker.ui.controls.datepicker($e, {
             format: texts.get('shortDateTimeFormat'),
             time: true,
             value: that.settings.value()
         });
         $e.on("changeDate", function(ev) {
-            that.settings.value(api.get());
+            that.settings.value(that.api.get());
         });
         that.settings.value.subscribe(function(newValue) {
-            api.set(newValue);
+            that.api.set(newValue);
         });
+    }
+    ctor.prototype.detached = function(v, p) {
+        this.api._remove();
     }
     return ctor;
 });

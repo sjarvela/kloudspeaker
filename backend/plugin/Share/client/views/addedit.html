@@ -1,4 +1,4 @@
-<form class="form-horizontal">
+<form class="share-addedit form-horizontal">
     <legend data-i18n="shareDialogShareGeneralTitle"></legend>
     <div class="control-group">
         <label class="control-label" for="share-general-name" data-i18n="shareDialogShareNameTitle"></label>
@@ -33,7 +33,9 @@
                 <input type="radio" name="shareAccess" value="pw" data-bind="checked: model.accessRestriction" >
                 <span data-i18n="shareDialogShareAccessPasswordTitle"></span>
             </label>
-            <input type="text" data-bind="value: model.accessPw, i18n: model.edit ? 'shareDialogShareAccessChangePwTitle' : 'shareDialogShareAccessEnterPwTitle'" data-i18n-bind-target="placeholder"></input>
+            <div class="control-group" data-bind="attr: {class: 'control-group inner ' + (model.passwordMissing() ? 'error' : '')}">
+                <input type="text" data-bind="value: model.accessPw, i18n: model.edit ? 'shareDialogShareAccessChangePwTitle' : 'shareDialogShareAccessEnterPwTitle'" data-i18n-bind-target="placeholder"></input>
+            </div>
             <label class="radio">
                 <input type="radio" name="shareAccess" value="private" data-bind="checked: model.accessRestriction">
                 <span data-i18n="shareDialogShareAccessLoggedInTitle"></span>

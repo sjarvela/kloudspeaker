@@ -1552,6 +1552,9 @@
                 set: function(d) {
                     val = (d != null ? new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds())) : null);
                     picker.setDate(val);
+                },
+                _remove: function() {
+                    picker.deinit();
                 }
             };
             $dp.data("kloudspeaker-datepicker", api);
@@ -1964,6 +1967,7 @@
         var df = $.Deferred();
         var h = {
             close: function() {
+                ko.utils.domNodeDisposal.removeNode($body[0]);
                 $dlg.modal('hide');
                 dh._activeDialog = false;
             },

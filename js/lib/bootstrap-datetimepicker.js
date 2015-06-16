@@ -121,6 +121,10 @@
       this._attachDatePickerEvents();
     },
 
+    deinit: function() {
+      this.widget.remove();
+    },
+
     show: function(e) {
       this.widget.show();
       this.height = this.component ? this.component.outerHeight() : this.$element.outerHeight();

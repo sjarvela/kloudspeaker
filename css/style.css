@@ -97,6 +97,10 @@ input[type="color"],
     margin: 0;
 }
 
+.time-picker .add-on {
+    cursor: pointer;
+}
+
 .popover-title button.close {
     line-height: 15px;
 }

@@ -1,11 +1,11 @@
-<div id="share-list" class="well">
-    <div id="share-items-container" data-bind="attr: {class: 'share-items-container' + (model.items() == null ? ' loading' : '')}">
+<div class="well item-share-list">
+    <div class="share-items-container" data-bind="attr: {class: 'share-items-container' + (model.items() == null ? ' loading' : '')}">
         <!-- ko if: (model.items() != null && model.items().length == 0) -->
         <div class="no-share-items" data-i18n="shareDialogNoShares"></div>
         <!-- /ko -->
 
         <!-- ko if: (model.items() != null && model.items().length > 0) -->
-        <div id="share-items" data-bind="foreach: model.items">
+        <div class="share-items" data-bind="foreach: model.items">
             <div data-bind="attr:{ class: 'item-share' + (active ? ' active' : ' inactive') + (name ? '' : ' unnamed') }, dom-effect: 'hover'">
                 <div class="share-info">
                     <div class="share-icon">
@@ -64,6 +64,6 @@
             </div>
         </div>
         <!-- /ko -->
-        <a class="btn btn-primary" data-bind="click: onAddShare"><i class="icon-plus"></i>&nbsp;<span data-i18n="shareDialogShareAddTitle"></span></a>
+        <a class="add-share btn btn-primary" data-bind="click: onAddShare"><i class="icon-plus"></i>&nbsp;<span data-i18n="shareDialogShareAddTitle"></span></a>
     </div>
 </div>
