@@ -36,6 +36,7 @@ class Settings {
 		"forbidden_file_upload_types" => array(),
 		"firebug_logging" => FALSE,
 		"mail_notification_from" => "Admin",
+		"mail_notification_from_name" => "Administrator",
 		"new_folder_permission_mask" => 0755,
 		"convert_filenames" => FALSE,
 		"support_output_buffer" => FALSE,
