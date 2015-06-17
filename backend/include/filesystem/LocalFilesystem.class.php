@@ -60,11 +60,11 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 		$fullPath = self::joinPath($this->rootPath, $path);
 		$isFile = (strcasecmp(substr($fullPath, -1), DIRECTORY_SEPARATOR) != 0);
 
-		if ($isFile) {
-			return new File($id, $this->rootId(), $path, self::basename($fullPath), $this);
-		}
+		$name = $this->itemName(dirname($path), self::basename($fullPath), $fullPath);
 
-		return new Folder($id, $this->rootId(), $path, self::basename($fullPath), $this);
+		if ($isFile)
+			return new File($id, $this->rootId(), $path, $name, $this);
+		return new Folder($id, $this->rootId(), $path, $name, $this);
 	}
 
 	private function publicPath($path) {

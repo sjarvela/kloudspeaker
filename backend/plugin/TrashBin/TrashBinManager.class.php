@@ -15,7 +15,6 @@ class TrashBinManager {
 	private $env;
 	private $settings;
 	private $folder;
-	private $allowFS = FALSE;
 
 	function __construct($env, $settings) {
 		$this->env = $env;
@@ -32,10 +31,6 @@ class TrashBinManager {
 	}
 
 	public function createFilesystem($id, $folderDef, $ctrl) {
-		if (!$this->allowFS) {
-			throw new ServiceException("INVALID_REQUEST", "Trash access not allowed");
-		}
-
 		$fs = new TrashBinFS($this->env, $this->folder, $this->getUserTrashItems());
 		return $fs;
 	}
@@ -102,7 +97,6 @@ class TrashBinManager {
 		//TODO path
 
 		$result = array();
-		$this->allowFS = TRUE;
 		$fs = $this->env->filesystem()->filesystemFromId("trash");
 		foreach ($fs->root()->items() as $item) {
 			$result[] = $item->data();
@@ -130,7 +124,6 @@ class TrashBinManager {
 
 		//trash item
 		Logging::logDebug("Deleting trash item " . $i["id"] . "/" . $i["item_id"]);
-		$this->allowFS = TRUE;
 		$item = $this->env->filesystem()->item($i["item_id"]);
 
 		// original item
@@ -199,7 +192,6 @@ class TrashBinManager {
 	}
 
 	private function doRestoreItem($i, $originalItem) {
-		$this->allowFS = TRUE;
 		$item = $this->env->filesystem()->item($i["item_id"]);
 
 		//restore file/folder

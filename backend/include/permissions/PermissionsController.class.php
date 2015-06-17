@@ -149,6 +149,14 @@ class Kloudspeaker_PermissionsController {
 				continue;
 			}
 
+			if (method_exists($item->filesystem(), "getOverriddenItemPermission")) {
+				$permission = $item->filesystem()->getOverriddenItemPermission($item, $nk);
+				if ($permission !== FALSE) {
+					$result[$nk] = $permission;
+					continue;
+				}
+			}
+
 			$permission = $this->getFromCache($nk, $id);
 			if ($permission !== FALSE) {
 				$result[$nk] = $permission;

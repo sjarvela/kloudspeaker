@@ -42,6 +42,11 @@ class TrashBinFS extends LocalFilesystem {
 		return $this->env;
 	}
 
+	public function getOverriddenItemPermission($item, $permissionName) {
+		Logging::logDebug("TRASH PERMISSION ".$permissionName);
+		return FALSE;
+	}
+
 	public function itemIdProvider() {
 		return $this;
 	}
@@ -56,6 +61,7 @@ class TrashBinFS extends LocalFilesystem {
 	}
 
 	protected function itemName($parentPath, $name, $nativePath) {
+		//Logging::logDebug("TRASH NAME ".$parentPath."/".$name."/".$nativePath);
 		$p = substr($parentPath, strlen($this->folder));
 		if (strlen($p) == 0) {
 			$item = array_key_exists($name, $this->rootItemsById) ? $this->rootItemsById[$name] : FALSE;

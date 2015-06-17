@@ -142,7 +142,7 @@ class FilesystemServices extends ServicesBase {
 				}
 
 				if (!in_array(strtolower($item->extension()), array("gif", "png", "jpg", "jpeg"))) {
-					throw $this->invalidRequestException();
+					throw $this->invalidRequestException("Thumbnail not allowed for ".$item->name());
 				}
 
 				if ($this->env->settings()->setting("enable_thumbnails")) {
