@@ -139,7 +139,8 @@ input[type="color"],
     display: none;
 }
 
-.kloudspeaker-fullpage-form-bg, .kloudspeaker-fullpage-bg {
+.kloudspeaker-fullpage-form-bg,
+.kloudspeaker-fullpage-bg {
     position: absolute;
     top: 0;
     left: 0;
@@ -191,14 +192,16 @@ input[type="color"],
 @media (max-width: 979px) {
     .kloudspeaker-fullpage {
         margin-top: 20px;
-    }   
+    }
 }
 
-.kloudspeaker-fullpage-form-bg .container.wide, .kloudspeaker-fullpage-form.wide {
+.kloudspeaker-fullpage-form-bg .container.wide,
+.kloudspeaker-fullpage-form.wide {
     max-width: 600px;
 }
 
-#kloudspeaker-login-main > #kloudspeaker-notification-container, .kloudspeaker-notification-container {
+#kloudspeaker-login-main > #kloudspeaker-notification-container,
+.kloudspeaker-notification-container {
     margin-top: 30px;
     position: relative;
 }
@@ -673,12 +676,54 @@ li#kloudspeaker-folder-hierarchy-item-root a.dropdown-toggle {
     display: none;
 }
 
+/* list view icons */
+
 .kloudspeaker-filelist-item-icon {
     background: url(images/mimetypes/empty.png) no-repeat;
 }
 
 .kloudspeaker-filelist-item.item-type-pdf .kloudspeaker-filelist-item-icon {
     background: url(images/mimetypes/pdf.png) no-repeat;
+}
+
+.kloudspeaker-filelist-item.item-type-zip .kloudspeaker-filelist-item-icon {
+    background: url(images/mimetypes/zip.png) no-repeat;
+}
+
+.kloudspeaker-filelist-item.item-type-mp4 .kloudspeaker-filelist-item-icon {
+    background: url(images/mimetypes/video_mp4.png) no-repeat;
+}
+
+.kloudspeaker-filelist-item.item-type-mov .kloudspeaker-filelist-item-icon {
+    background: url(images/mimetypes/video_mp4.png) no-repeat;
+}
+
+.kloudspeaker-filelist-item.item-type-ppt .kloudspeaker-filelist-item-icon {
+    background: url(images/mimetypes/application_vnd.ms_powerpoint.png) no-repeat;
+}
+
+.kloudspeaker-filelist-item.item-type-pptx .kloudspeaker-filelist-item-icon {
+    background: url(images/mimetypes/application_vnd.ms_powerpoint.png) no-repeat;
+}
+
+.kloudspeaker-filelist-item.item-type-doc .kloudspeaker-filelist-item-icon {
+    background: url(images/mimetypes/application_vnd.ms_word.png) no-repeat;
+}
+
+.kloudspeaker-filelist-item.item-type-docx .kloudspeaker-filelist-item-icon {
+    background: url(images/mimetypes/application_vnd.ms_word.png) no-repeat;
+}
+
+.kloudspeaker-filelist-item.item-type-xls .kloudspeaker-filelist-item-icon {
+    background: url(images/mimetypes/x_office_spreadsheet.png) no-repeat;
+}
+
+.kloudspeaker-filelist-item.item-type-xlsx .kloudspeaker-filelist-item-icon {
+    background: url(images/mimetypes/x_office_spreadsheet.png) no-repeat;
+}
+
+.kloudspeaker-filelist-item.item-type-psd .kloudspeaker-filelist-item-icon {
+    background: url(images/mimetypes/image_x_psd.png) no-repeat;
 }
 
 .kloudspeaker-filelist-col-header {
@@ -886,6 +931,8 @@ html.touch .kloudspeaker-filelist-col-go-into-folder {
     height: auto;
 }
 
+/* large icons */
+
 .kloudspeaker-iconview-item-icon {
     background: url(images/mimetypes128/empty.png) no-repeat 24px 7px;
     pointer-events: none;
@@ -899,8 +946,94 @@ html.touch .kloudspeaker-filelist-col-go-into-folder {
     background-image: url(images/mimetypes128/pdf.png);
 }
 
+.kloudspeaker-iconview-item.item-type-zip .kloudspeaker-iconview-item-icon {
+    background-image: url(images/mimetypes128/zip.png);
+}
+
+.kloudspeaker-iconview-item.item-type-mp4 .kloudspeaker-iconview-item-icon {
+    background-image: url(images/mimetypes128/video_mp4.png);
+}
+
+.kloudspeaker-iconview-item.item-type-mov .kloudspeaker-iconview-item-icon {
+    background-image: url(images/mimetypes128/video_mp4.png);
+}
+
+.kloudspeaker-iconview-item.item-type-ppt .kloudspeaker-iconview-item-icon {
+    background-image: url(images/mimetypes128/application_vnd.ms_powerpoint.png);
+}
+
+.kloudspeaker-iconview-item.item-type-pptx .kloudspeaker-iconview-item-icon {
+    background-image: url(images/mimetypes128/application_vnd.ms_powerpoint.png);
+}
+
+.kloudspeaker-iconview-item.item-type-doc .kloudspeaker-iconview-item-icon {
+    background-image: url(images/mimetypes128/application_vnd.ms_word.png);
+}
+
+.kloudspeaker-iconview-item.item-type-docx .kloudspeaker-iconview-item-icon {
+    background-image: url(images/mimetypes128/application_vnd.ms_word.png);
+}
+
+.kloudspeaker-iconview-item.item-type-xls .kloudspeaker-iconview-item-icon {
+    background-image: url(images/mimetypes128/application_vnd.ms_excel.png);
+}
+
+.kloudspeaker-iconview-item.item-type-xlsx .kloudspeaker-iconview-item-icon {
+    background-image: url(images/mimetypes128/application_vnd.ms_excel.png);
+}
+
+.kloudspeaker-iconview-item.item-type-psd .kloudspeaker-iconview-item-icon {
+    background-image: url(images/mimetypes128/image_x_psd.png);
+}
+
+/* small icons */
+
 .kloudspeaker-iconview.iconview-small .kloudspeaker-iconview-item.item-type-pdf .kloudspeaker-iconview-item-icon {
     background-image: url(images/mimetypes64/pdf.png);
+}
+
+.kloudspeaker-iconview.iconview-small .kloudspeaker-iconview-item.item-type-pdf .kloudspeaker-iconview-item-icon {
+background-image: url(images/mimetypes64/pdf.png);
+}
+
+.kloudspeaker-iconview.iconview-small .kloudspeaker-iconview-item.item-type-zip .kloudspeaker-iconview-item-icon {
+background-image: url(images/mimetypes64/zip.png);
+}
+
+.kloudspeaker-iconview.iconview-small .kloudspeaker-iconview-item.item-type-mp4 .kloudspeaker-iconview-item-icon {
+background-image: url(images/mimetypes64/video_mp4.png);
+}
+
+.kloudspeaker-iconview.iconview-small .kloudspeaker-iconview-item.item-type-mov .kloudspeaker-iconview-item-icon {
+background-image: url(images/mimetypes64/video_mp4.png);
+}
+
+.kloudspeaker-iconview.iconview-small .kloudspeaker-iconview-item.item-type-ppt .kloudspeaker-iconview-item-icon {
+background-image: url(images/mimetypes64/application_vnd.ms_powerpoint.png);
+}
+
+.kloudspeaker-iconview.iconview-small .kloudspeaker-iconview-item.item-type-pptx .kloudspeaker-iconview-item-icon {
+background-image: url(images/mimetypes64/application_vnd.ms_powerpoint.png);
+}
+
+.kloudspeaker-iconview.iconview-small .kloudspeaker-iconview-item.item-type-doc .kloudspeaker-iconview-item-icon {
+background-image: url(images/mimetypes64/application_vnd.ms_word.png);
+}
+
+.kloudspeaker-iconview.iconview-small .kloudspeaker-iconview-item.item-type-docx .kloudspeaker-iconview-item-icon {
+background-image: url(images/mimetypes64/application_vnd.ms_word.png);
+}
+
+.kloudspeaker-iconview.iconview-small .kloudspeaker-iconview-item.item-type-xls .kloudspeaker-iconview-item-icon {
+background-image: url(images/mimetypes64/application_vnd.ms_excel.png);
+}
+
+.kloudspeaker-iconview.iconview-small .kloudspeaker-iconview-item.item-type-xlsx .kloudspeaker-iconview-item-icon {
+background-image: url(images/mimetypes64/application_vnd.ms_excel.png);
+}
+
+.kloudspeaker-iconview.iconview-small .kloudspeaker-iconview-item.item-type-psd .kloudspeaker-iconview-item-icon {
+background-image: url(images/mimetypes64/image_x_psd.png);
 }
 
 .kloudspeaker-iconview-item-label {
@@ -1478,7 +1611,8 @@ a.kloudspeaker-tableaction {
     margin-right: 8px;
 }
 
-.config-list .header, .config-list .header-title {
+.config-list .header,
+.config-list .header-title {
     float: left;
 }
 
@@ -1511,7 +1645,10 @@ a.kloudspeaker-tableaction {
     padding: 0;
 }
 
-.config-list .config-options .accordion-group a.accordion-toggle:hover, .config-list .config-options .accordion-group a.accordion-toggle:visited, .config-list .config-options .accordion-group a.accordion-toggle:hover, .config-list .config-options .accordion-group a.accordion-toggle:active {
+.config-list .config-options .accordion-group a.accordion-toggle:hover,
+.config-list .config-options .accordion-group a.accordion-toggle:visited,
+.config-list .config-options .accordion-group a.accordion-toggle:hover,
+.config-list .config-options .accordion-group a.accordion-toggle:active {
     text-decoration: none;
 }
 
@@ -1554,7 +1691,8 @@ a.kloudspeaker-tableaction {
     background-color: #d9edf7!important;
 }
 
-.config-list td.action, .config-list .config-list-pager a {
+.config-list td.action,
+.config-list .config-list-pager a {
     cursor: pointer;
 }
 
