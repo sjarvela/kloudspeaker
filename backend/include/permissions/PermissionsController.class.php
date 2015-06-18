@@ -292,7 +292,14 @@ class Kloudspeaker_PermissionsController {
 			return;
 		}
 
-		$permissions = $this->dao->getFilesystemPermissionsForChildren($name, $parent, $this->env->session()->userId(), $this->getGroupIds());
+		$permissions = FALSE;
+		if (method_exists($parent->filesystem(), "getOverriddenChildrenPermissions")) {
+			$permissions = $parent->filesystem()->getOverriddenChildrenPermissions($name, $parent);
+			if ($permissions == NULL) return;	//skip prefetch
+		}
+
+		if ($permissions === FALSE)
+			$permissions = $this->dao->getFilesystemPermissionsForChildren($name, $parent, $this->env->session()->userId(), $this->getGroupIds());
 		//Logging::logDebug("PERMISSIONS QUERY ".Util::array2str($permissions));
 
 		if (!array_key_exists($name, $this->filesystemPermissionPrefetchedParents)) {
@@ -426,9 +433,9 @@ class Kloudspeaker_PermissionsController {
 
 			"keys" => array(
 				"generic" => array_keys($types["generic"]),
-				"filesystem" => array_keys($types["filesystem"])
+				"filesystem" => array_keys($types["filesystem"]),
 			),
-			"values" => array_merge($types["generic"], $types["filesystem"])
+			"values" => array_merge($types["generic"], $types["filesystem"]),
 		);
 		$t["keys"]["all"] = array_merge($t["keys"]["generic"], $t["keys"]["filesystem"]);
 

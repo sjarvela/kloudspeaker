@@ -146,6 +146,8 @@ class FilesystemServices extends ServicesBase {
 				}
 
 				if ($this->env->settings()->setting("enable_thumbnails")) {
+					$this->env->filesystem()->assertRights($item, FilesystemController::PERMISSION_LEVEL_READ, "read");
+
 					require_once "include/Thumbnail.class.php";
 					$maxWidth = 400;
 					$maxHeight = 400;

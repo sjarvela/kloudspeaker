@@ -43,8 +43,12 @@ class TrashBinFS extends LocalFilesystem {
 	}
 
 	public function getOverriddenItemPermission($item, $permissionName) {
-		Logging::logDebug("TRASH PERMISSION ".$permissionName);
-		return FALSE;
+		if ($permissionName != 'filesystem_item_access') return FALSE;
+		return FilesystemController::PERMISSION_LEVEL_READ;
+	}
+
+	public function getOverriddenChildrenPermissions($name, $parent) {
+		return NULL;	//skip prefetch
 	}
 
 	public function itemIdProvider() {
