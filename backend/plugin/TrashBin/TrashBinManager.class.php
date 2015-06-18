@@ -40,6 +40,8 @@ class TrashBinManager {
 			return;
 		}
 
+		$this->checkExpired();
+
 		$items = is_array($i) ? $i : array($i);
 		$trashed = array();
 
@@ -63,6 +65,23 @@ class TrashBinManager {
 		$this->env->events()->onEvent(TrashBinEvent::trashed($trashed));
 
 		return TRUE;
+	}
+
+	public function checkExpired() {
+		$expirationDays = $this->getSetting("expiration_days");
+		if ($expirationDays == NULL) {
+			return;
+		}
+
+		$expirationTime = time() - ($expirationDays * 24 * 60 * 60);
+
+		$expired = $this->dao()->getUserItems($this->env->session()->userId(), $expirationTime);
+		if (!$expired or count($expired) == 0) {
+			return;
+		}
+
+		Logging::logDebug("Trash items expired: " . count($expired));
+		$this->deleteItems($expired);
 	}
 
 	private function moveToTrash($item) {
@@ -118,7 +137,7 @@ class TrashBinManager {
 
 	public function deleteItem($it) {
 		$i = is_array($it) ? $it : $this->dao()->getItem($it);
-		if (!$this->env->authentication()->isAdmin() and strcasecmp($this->env->authentication() - userId(), $i["user_id"]) != 0) {
+		if (!$this->env->authentication()->isAdmin() and strcasecmp($this->env->session()->userId(), $i["user_id"]) != 0) {
 			throw new ServiceException("UNAUTHORIZED");
 		}
 
@@ -133,6 +152,8 @@ class TrashBinManager {
 	}
 
 	public function restoreItems($itemIds) {
+		$this->checkExpired();
+
 		$items = array();
 		$originalItems = array();
 		$rejected = array();

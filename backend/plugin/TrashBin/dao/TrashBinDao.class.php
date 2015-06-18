@@ -23,9 +23,11 @@ class TrashBinDao {
 		$db->commit();
 	}
 
-	public function getUserItems($userId) {
+	public function getUserItems($userId, $createdBefore = NULL) {
+		$createdCriteria = $createdBefore ? " AND (created < " . $this->env->configuration()->formatTimestampInternal($createdBefore) . ")" : "";
+
 		$db = $this->env->db();
-		return $db->query("select id, item_id, folder_id, path, user_id, created from " . $db->table("trashbin") . " where user_id = " . $db->string($userId, TRUE) . " order by created asc")->rows();
+		return $db->query("select id, item_id, folder_id, path, user_id, created from " . $db->table("trashbin") . " where user_id = " . $db->string($userId, TRUE) . $createdCriteria. " order by created asc")->rows();
 	}
 
 	public function getItem($id) {

@@ -22,7 +22,9 @@ class TrashBinServices extends ServicesBase {
 		if (count($this->path) != 1 or !in_array($this->path[0], array("users"))) {
 			throw $this->invalidRequestException();
 		}
-		if (!$this->env->authentication()->isAdmin()) throw $this->invalidRequestException();
+		if (!$this->env->authentication()->isAdmin()) {
+			throw $this->invalidRequestException();
+		}
 
 		$this->response()->success(array());
 	}
@@ -35,6 +37,8 @@ class TrashBinServices extends ServicesBase {
 		// DATA
 		if ($this->path[0] == "data") {
 			//TODO path
+			$this->trashBinManager()->checkExpired();
+
 			$result = $this->trashBinManager()->getTrashItems();
 			$this->response()->success($result);
 			return;
@@ -64,10 +68,15 @@ class TrashBinServices extends ServicesBase {
 			return;
 		} else if ($this->path[0] == "restore") {
 			$result = $this->trashBinManager()->restoreItems($items);
-			if (array_key_exists("restored", $result))
+
+			if (array_key_exists("restored", $result)) {
+				$this->trashBinManager()->checkExpired();
+
 				$this->response()->success($result["restored"]);
-			else
+			} else {
 				$this->response()->error(array(201, "Restore failed"), $result);
+			}
+
 			return;
 		}
 		throw $this->invalidRequestException();
