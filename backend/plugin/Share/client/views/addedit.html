@@ -1,9 +1,21 @@
 <form class="share-addedit form-horizontal">
+    <div class="control-group">
+        <label class="control-label" data-i18n="shareDialogShareItemNameTitle"></label>
+        <div class="controls">
+            <input type="text" data-bind="value: model.itemName" readonly="true"></input>
+        </div>
+    </div>
     <legend data-i18n="shareDialogShareGeneralTitle"></legend>
     <div class="control-group">
         <label class="control-label" for="share-general-name" data-i18n="shareDialogShareNameTitle"></label>
         <div class="controls">
             <input id="share-general-name" type="text" data-bind="value: model.name" autofocus></input>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" data-i18n="shareDialogShareTypeTitle"></label>
+        <div class="controls">
+            <input type="text" data-bind="value: model.shareType" readonly="true"></input>
         </div>
     </div>
     <div class="control-group">

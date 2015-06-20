@@ -2006,6 +2006,7 @@
         var $footer = $dlg.find(".modal-footer");
         var _model = false;
         var magicNr = 30; //$body.css("padding-top") + $body.css("padding-bottom"); //TODO??
+        var heightAdjust, maxHeight;
         $footer.on("click", ".btn", function(e) {
             e.preventDefault();
             var ind = $footer.find(".btn").index($(this));
@@ -2018,7 +2019,7 @@
         });
         var onResize = function() {
             center($dlg);
-            var h = $dlg.innerHeight() - $header.outerHeight() - $footer.outerHeight() - magicNr;
+            var h = Math.min($dlg.innerHeight() - heightAdjust, maxHeight);
             $body.css("height", h);
         }
 
@@ -2031,6 +2032,9 @@
                     }).appendTo($footer.find(".buttons").empty());
                 }
                 $dlg.modal('show');
+                heightAdjust = $header.outerHeight() + $footer.outerHeight() + magicNr;
+                maxHeight = $(window).height() - 50;
+
                 if (spec.resizable) {
                     $body.css({
                         "max-height": "none",
@@ -2039,16 +2043,22 @@
                     $dlg.css({
                         "max-height": "none",
                         "max-width": "none",
-                        "min-height": $dlg.outerHeight() + "px",
+                        "min-height": Math.min($dlg.outerHeight(), maxHeight) + "px",
                         "min-width": $dlg.outerWidth() + "px"
                     }).on("resize", onResize).resizable();
                     if (spec.initSize) {
                         $dlg.css({
                             "width": spec.initSize[0] + "px",
-                            "height": spec.initSize[1] + "px"
+                            "height": Math.min(maxHeight, spec.initSize[1]) + "px"
                         });
+                    } else {
+                        if ($dlg.outerHeight() > maxHeight) $dlg.height(maxHeight);
                     }
                     onResize();
+                } else {
+                    $dlg.css({
+                        "max-height": maxHeight + "px"
+                    });
                 }
 
                 var $f = $dlg.find("input[autofocus]");

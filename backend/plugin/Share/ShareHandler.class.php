@@ -98,6 +98,50 @@ class ShareHandler {
 		return $share;
 	}
 
+	public function getShareInfo($id) {
+		$share = $this->dao()->getShare($id);
+		if (!$share) return NULL;
+		if ($share["user_id"] != $this->env->session()->userId()) return NULL;
+
+		$itemId = $share["item_id"];
+		$type = NULL;
+		$name = NULL;
+
+		if (strpos($itemId, "_") > 0) {
+			$parts = explode("_", $itemId);
+			$info = $this->getCustomShareInfo($parts[0], $parts[1], $share);
+			if ($info == NULL) {
+				return NULL;
+			}
+			$item = array("id" => $itemId, "name" => $info["name"], "custom" => TRUE);
+			$type = $info["type"];
+		} else {
+			$item = $this->env->filesystem()->item($itemId);
+			$type = $item->isFile() ? "download" : "upload";
+			$item = $item->data();
+		}
+
+		return array("share" => $share, "item" => $item, "share_type" => $type);
+	}
+
+	public function getShareOptions($itemId) {
+		if (strpos($itemId, "_") > 0) {
+			$parts = explode("_", $itemId);
+			$info = $this->getCustomShareOptions($parts[0], $parts[1]);
+			if ($info == NULL) {
+				return NULL;
+			}
+			$item = array("id" => $itemId, "name" => $info["name"], "custom" => TRUE);
+			$type = $info["type"];
+		} else {
+			$item = $this->env->filesystem()->item($itemId);
+			$type = $item->isFile() ? "download" : "upload";
+			$item = $item->data();
+		}
+		//TODO type option list
+		return array("item" => $item, "share_type" => $type);
+	}
+
 	public function getUserShares() {
 		return $this->dao()->getUserShares($this->env->session()->userId());
 	}
@@ -293,6 +337,15 @@ class ShareHandler {
 		}
 		$handler = $this->customShareHandlers[$type];
 		return $handler->getShareInfo($id, $share);
+	}
+
+	public function getCustomShareOptions($type, $id) {
+		if (!array_key_exists($type, $this->customShareHandlers)) {
+			Logging::logError("No custom share handler found: " . $type);
+			return NULL;
+		}
+		$handler = $this->customShareHandlers[$type];
+		return $handler->getShareOptions($id);
 	}
 
 	public function processShareGet($id, $params) {

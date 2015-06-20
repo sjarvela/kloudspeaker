@@ -22,15 +22,25 @@ class ShareServices extends ServicesBase {
 	public function processGet() {
 		if (count($this->path) == 1) {
 			// share/xxx : get single share by id
-			$this->response()->success($this->handler()->getShare($this->path[0]));
+			$id = $this->path[0];
+
+			if ($this->env->request()->hasParam("info")) {
+				$this->response()->success($this->handler()->getShareInfo($id));
+				return;
+			}
+			$this->response()->success($this->handler()->getShare($id));
 			return;
 		}
 
-		if (count($this->path) > 2 or (strcmp($this->path[0], 'items') != 0 and strcmp($this->path[0], 'all') != 0)) {
+		if (strcmp($this->path[0], 'items') != 0 and strcmp($this->path[0], 'all') != 0) {
 			throw $this->invalidRequestException();
 		}
 
 		if (strcmp($this->path[0], 'all') == 0) {
+			if (count($this->path) > 2) {
+				throw $this->invalidRequestException();
+			}
+
 			$shares = $this->handler()->getUserShares();
 			$items = array();
 			$invalid = array();
@@ -79,12 +89,26 @@ class ShareServices extends ServicesBase {
 			return;
 		}
 
-		$itemId = $this->path[1];
-		if (strpos($itemId, "_") === FALSE) {
-			$this->item($itemId);
+		//share/items/xxx : item shares
+
+		if (count($this->path) == 2) {
+			$itemId = $this->path[1];
+			if (strpos($itemId, "_") === FALSE) {
+				$this->item($itemId);
+			}
+
+			$this->response()->success($this->handler()->getShares($itemId));
+			return;
 		}
 
-		$this->response()->success($this->handler()->getShares($itemId));
+		//share/items/xxx/options : item share options
+
+		if (count($this->path) == 3 and strcmp($this->path[2], 'options') == 0) {
+			$itemId = $this->path[1];
+			$this->response()->success($this->handler()->getShareOptions($itemId));
+			return;
+		}
+		throw $this->invalidRequestException();
 	}
 
 	public function processDelete() {

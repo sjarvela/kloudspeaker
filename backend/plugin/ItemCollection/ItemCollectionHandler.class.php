@@ -90,6 +90,10 @@ class ItemCollectionHandler {
 		return array("name" => $ic["name"], "type" => "prepared_download");
 	}
 
+	public function getShareOptions($id) {
+		return $this->getShareInfo($id, NULL);	//no share specific info, use NULL
+	}
+
 	/* -> share handler */
 
 	public function getUserItemCollection($id) {

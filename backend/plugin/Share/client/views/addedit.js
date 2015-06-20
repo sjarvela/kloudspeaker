@@ -4,6 +4,8 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/ui/
         var model = {
             share: null,
             item: null,
+            itemName: ko.observable(''),
+            shareType: ko.observable(''),
 
             name: ko.observable(''),
             active: ko.observable(true),
@@ -18,12 +20,19 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/ui/
             deep: false
         });
 
+        var getShareTypeText = function(item, shareType) {
+            //TODO get custom text from plugin?
+            if (item.custom)
+                return texts.get('shareDialogShareType_' + shareType);
+            else
+                return texts.get('shareDialogShareType_' + (item.is_file ? 'file' : 'folder') + '_' + shareType);
+        };
+
         return {
             model: model,
             onShow: function(container) {
                 that._container = container;
 
-                //TODO title (share file download etc)
                 if (model.share) {
                     container.setTitle(texts.get('shareDialogShareEditTitle'));
                 } else {
@@ -80,17 +89,26 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/ui/
             activate: function(params) {
                 if (params.share) {
                     model.edit = true;
-                    repository.getShare(params.share.id).done(function(s) {
-                        model.share = s;
+                    repository.getShare(params.share.id, true).done(function(r) {
+                        model.share = r.share;
 
-                        model.name(s.name);
-                        model.active(s.active);
-                        model.expiration(s.expiration);
-                        model.accessRestriction(s.restriction || 'no');
+                        model.itemName(r.item.name);
+                        model.shareType(getShareTypeText(r.item, r.share_type));
+
+                        model.name(model.share.name);
+                        model.active(model.share.active);
+                        model.expiration(model.share.expiration);
+                        model.accessRestriction(model.share.restriction || 'no');
                         model.originalAccessRestriction = model.accessRestriction();
                     });
-                } else
+                } else {
                     model.item = params.item;
+
+                    model.itemName(params.item.name);
+                    repository.getShareOptions(params.item.id).done(function(r) {
+                        model.shareType(getShareTypeText(r.item, r.share_type));
+                    });
+                }
             }
         };
     };
