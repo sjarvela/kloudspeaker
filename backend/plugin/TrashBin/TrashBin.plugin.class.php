@@ -31,14 +31,12 @@ class TrashBin extends PluginBase {
 		TrashBinEvent::register($this->env->events());
 		$this->trashBinManager = new TrashBinManager($this->env, $this->getSettings());
 
+		$this->env->events()->register("session/login", $this->trashBinManager);
+
 		$this->addService("trash", "TrashBinServices");
 		$this->env->filesystem()->registerActionInterceptor("plugin-trashbin", $this->trashBinManager);
 		$this->env->filesystem()->registerFilesystemId("trash", $this->trashBinManager);
 	}
-
-	//public function getClientPlugin() {
-	//	return "client/plugin.js";
-	//}
 
 	public function getClientModuleId() {
 		return "kloudspeaker/trashbin";

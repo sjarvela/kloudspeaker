@@ -985,7 +985,7 @@ class FilesystemController {
 	}
 
 	public function doDeleteItem($item, $sendEvent = TRUE, $removeId = TRUE, $removeFile = TRUE) {
-		if ($removeFile) {
+		if ($removeFile && $item->exists()) {
 			$item->delete();
 		}
 

@@ -26,6 +26,17 @@ class TrashBinManager {
 		}
 	}
 
+	public function onEvent($e) {
+		if (strcmp(Session::EVENT_TYPE_SESSION, $e->type()) != 0) {
+			return;
+		}
+
+		$type = $e->subType();
+		if ($type === SessionEvent::LOGIN) {
+			$this->checkExpired();
+		}
+	}
+
 	public function getFolderDef($id) {
 		return array("id" => "trash");
 	}
@@ -74,6 +85,8 @@ class TrashBinManager {
 		}
 
 		$expirationTime = time() - ($expirationDays * 24 * 60 * 60);
+
+		Logging::logDebug("Trash: checking expired");
 
 		$expired = $this->dao()->getUserItems($this->env->session()->userId(), $expirationTime);
 		if (!$expired or count($expired) == 0) {
@@ -208,6 +221,7 @@ class TrashBinManager {
 		if ($this->env->filesystem()->triggerActionInterceptor(TrashBinEvent::RESTORE, $item)) {
 			return;
 		}
+		$this->doRestoreItem($item, $originalItem);
 
 		$this->env->events()->onEvent(TrashBinEvent::restored($originalItem));
 	}

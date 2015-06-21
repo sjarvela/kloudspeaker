@@ -37,8 +37,6 @@ class TrashBinServices extends ServicesBase {
 		// DATA
 		if ($this->path[0] == "data") {
 			//TODO path
-			$this->trashBinManager()->checkExpired();
-
 			$result = $this->trashBinManager()->getTrashItems();
 			$this->response()->success($result);
 			return;
