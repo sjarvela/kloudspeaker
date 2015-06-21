@@ -497,7 +497,7 @@ var kloudspeaker_defaults = {
         var obj = {
             user_id: kloudspeaker.session.user ? kloudspeaker.session.user.id : null
         };
-        if (window.history) window.history.pushState(obj, "", "?v=" + viewId);
+        if (window.history && window.history.pushState) window.history.pushState(obj, "", "?v=" + viewId);
     };
 
     kloudspeaker.App.registerView = function(id, h) {
