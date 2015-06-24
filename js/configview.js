@@ -1001,7 +1001,7 @@
             var onAddGroupUsers = function() {
                 var currentIds = kloudspeaker.helpers.extractValue(users, "id");
                 var selectable = kloudspeaker.helpers.filter(allUsers, function(u) {
-                    return u.is_group == 0 && currentIds.indexOf(u.id) < 0;
+                    return u.is_group === 0 && currentIds.indexOf(u.id) < 0;
                 });
                 //if (selectable.length === 0) return;
 

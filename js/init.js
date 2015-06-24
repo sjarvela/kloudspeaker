@@ -139,7 +139,7 @@ var kloudspeaker_defaults = {
                     parseInputAttributes: true,
                     //decorateElementOnModified: false,
                 });
-                ko.validation.rules['areSame'] = {
+                ko.validation.rules.areSame = {
                     getValue: function(o) {
                         return (typeof o === 'function' ? o() : o);
                     },
@@ -347,16 +347,16 @@ var kloudspeaker_defaults = {
             new kloudspeaker.ui.FullErrorView('Failed to initialize Kloudspeaker').show();
         };
 
-        kloudspeaker.service.init(s.features['limited_http_methods']);
+        kloudspeaker.service.init(s.features.limited_http_methods);
 
         var modules = [];
         var packages = [];
         _.each(s.plugins, function(pl) {
-            if (pl["client_module_path"]) {
-                modules.push(pl["client_module_id"]);
+            if (pl.client_module_path) {
+                modules.push(pl.client_module_id);
                 packages.push({
-                    name: pl["client_module_id"],
-                    location: pl["client_module_path"]
+                    name: pl.client_module_id,
+                    location: pl.client_module_path
                 });
             }
         });
@@ -584,7 +584,7 @@ var kloudspeaker_defaults = {
             },
             getActiveFileView: function() {
                 var mv = this.getActiveMainView();
-                if (!mv || !mv.viewId == 'viewId') return false;
+                if (!mv || mv.viewId != 'viewId') return false;
                 return mv;
             },
             registerView: function(id, v) {
@@ -1046,7 +1046,7 @@ var kloudspeaker_defaults = {
 
     mfs._copyMany = function(i, to, acceptKeys, overwrite) {
         var df = $.Deferred();
-        return kloudspeaker.service.post("filesystem/items/", {
+        kloudspeaker.service.post("filesystem/items/", {
             action: 'copy',
             items: i,
             to: to,
@@ -1125,7 +1125,7 @@ var kloudspeaker_defaults = {
 
     mfs._move = function(i, to, acceptKeys, overwrite) {
         var df = $.Deferred();
-        return kloudspeaker.service.post("filesystem/" + i.id + "/move/", {
+        kloudspeaker.service.post("filesystem/" + i.id + "/move/", {
             id: to.id,
             overwrite: !!overwrite,
             acceptKeys: acceptKeys
@@ -1154,7 +1154,7 @@ var kloudspeaker_defaults = {
 
     mfs._moveMany = function(i, to, acceptKeys, overwrite) {
         var df = $.Deferred();
-        return kloudspeaker.service.post("filesystem/items/", {
+        kloudspeaker.service.post("filesystem/items/", {
             action: 'move',
             items: i,
             to: to,

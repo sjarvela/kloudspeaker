@@ -21,7 +21,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/ui/texts'
                     url: settings["version-check-url"]
                 }).done(function(v) {
                     if (session.get().version != v.version) {
-                        model.msg(texts.get("configSystemVersionCheckUpgradeAvailable", [v["version"], v["date"], v["url"]]));
+                        model.msg(texts.get("configSystemVersionCheckUpgradeAvailable", [v.version, v.date, v.url]));
                         model.alertType('info');
                     } else {
                         model.msg(texts.get("configSystemVersionCheckLatest"));

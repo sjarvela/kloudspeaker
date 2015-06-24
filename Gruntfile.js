@@ -39,7 +39,7 @@ module.exports = function(grunt) {
                 src: [] //TODO clean up 'Gruntfile.js']
             },
             src: {
-                src: 'js/*.js'
+                src: ['js/*.js', 'js/kloudspeaker/**/*.js', 'js/kloudspeaker/**/*.js', 'js/widgets/**/*.js']
             },
             test: {
                 src: [] //'js/tests/unit/*.js'
@@ -57,7 +57,7 @@ module.exports = function(grunt) {
                 src: [] //'Gruntfile.js']
             },
             src: {
-                src: [] //TODO clean 'js/*.js'
+                src: 'js/**.js' //TODO clean 'js/*.js'
             },
             test: {
                 src: [] //'js/tests/unit/*.js'
@@ -334,7 +334,7 @@ module.exports = function(grunt) {
     grunt.registerTask('test', ['jshint', 'jscs', 'qunit', 'phpunit']);
 
     // JS distribution task.
-    grunt.registerTask('dist-js', ['concat', 'uglify', 'copy:js']);
+    grunt.registerTask('dist-js', ['jshint', 'concat', 'uglify', 'copy:js']);
 
     // CSS distribution task.
     grunt.registerTask('dist-css', ['concat:css', 'cssmin', 'usebanner', 'copy:css']);

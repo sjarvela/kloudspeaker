@@ -72,7 +72,7 @@ define(['kloudspeaker/ui/texts', 'kloudspeaker/utils', 'durandal/composition', '
             var disabled = false;
             if (t.depends == 'selection') disabled = (selected.length < 1);
             if (t.depends == 'selection-many') disabled = (selected.length < 2);
-            if (t.depends == 'selection-none') disabled = (selected.length != 0);
+            if (t.depends == 'selection-none') disabled = (selected.length !== 0);
             t._disabled(disabled);
         });
     }
