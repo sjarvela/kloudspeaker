@@ -470,6 +470,10 @@
 		"configAdminFoldersRemoveFolderConfirmationTitle": "Remove Folder",
 		"configAdminFoldersRemoveFolderConfirmationMessage": "Are you sure you want to remove folder \"{0}\"?",
 		"configAdminFoldersRemoveFolderContentConfirmation": "Delete folder content",
+		"configAdminFoldersBtnRemove": "Remove",
+		"configAdminFoldersBtnRemoveAndDelete": "Remove and Delete",
+		"configAdminFoldersDeleteFolderError": "The folder \"{0}\" cannot be deleted from the filesystem because the path is in use by other folder(s). Do you want to remove the folder without deleting it from the filesystem?",
+		"configAdminFoldersDeleteFoldersError": "The following folders cannot be deleted from the filesystem because the path is in use by other folder(s).<br/>{0}<br/>Do you want to remove the folders without deleting them from the filesystem?",
 
 		"configAdminGroupsDialogAddTitle": "Add Group",
 		"configAdminGroupsDialogEditTitle": "Edit Group",

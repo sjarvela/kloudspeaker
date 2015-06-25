@@ -1285,10 +1285,56 @@
                         kloudspeaker.ui.dialogs.confirmation({
                             title: kloudspeaker.ui.texts.get("configAdminFoldersRemoveFoldersConfirmationTitle"),
                             message: kloudspeaker.ui.texts.get("configAdminFoldersRemoveFoldersConfirmationMessage", [sel.length]),
+                  /* LJUmod - replaced by LJUmod.FilesystemFolderDelete.1
                             callback: function() {
                                 that._removeFolders(sel).done(updateFolders);
                             }
                         });
+                  */
+// LJUmod.FilesystemFolderDelete.1 Begin - Customize confirmation for multiple folder removal
+//  Added the following texts to texts_en.json:  "configAdminFoldersDeleteFolderError", "configAdminFoldersBtnRemove", "configAdminFoldersBtnRemoveAndDelete"
+                    kloudspeaker.ui.dialogs.custom({
+                        title: kloudspeaker.ui.texts.get('configAdminFoldersRemoveFoldersConfirmationTitle'),
+                        content: kloudspeaker.ui.texts.get("configAdminFoldersRemoveFoldersConfirmationMessage", [sel.length]), 
+                        buttons: [
+                            { id: "delete", "title-key": "configAdminFoldersBtnRemoveAndDelete" },
+                            { id: "remove", "title-key": "configAdminFoldersBtnRemove", cls:"btn-primary" },
+                            { id: "cancel", "title-key": "dialogCancelButton" }
+                        ],
+                        "on-button": function(btn, d) {
+                            d.close();
+                            if (btn.id === 'delete') {
+                                var onFail = function(e){
+                                    if (e.code == 101) {
+                                        this.handled = true;
+                                        var pfolders = e.data;
+                                        var problemFolderStr = "<br/>";
+                                        for (var fid in pfolders) {
+                                            problemFolderStr += pfolders[fid]["name"] + " -> "+pfolders[fid]["path"]+"<br/>";
+                                        }
+
+                                        kloudspeaker.ui.dialogs.custom({
+                                            title:kloudspeaker.ui.texts.get('configAdminFoldersRemoveFoldersConfirmationTitle'), 
+                                            content: kloudspeaker.ui.texts.get("configAdminFoldersDeleteFoldersError", problemFolderStr),
+                                            buttons: [
+                                                { id: "yes", "title-key": "yes" },
+                                                { id: "no", "title-key": "no" }
+                                            ],
+                                            "on-button": function(btn, d) {
+                                                d.close();
+                                                if (btn.id === 'yes') kloudspeaker.service.del("configuration/folders", {ids: kloudspeaker.helpers.getKeys(pfolders)}).done(updateFolders);
+                                                else updateFolders();
+                                            }
+                                        });
+                                    }
+                                };
+                                kloudspeaker.service.del("configuration/folders"+"?delete=true", {ids: kloudspeaker.helpers.extractValue(sel, "id")}).done(updateFolders).fail(onFail); //.done(updateFolders);
+                            } else if (btn.id === 'remove') {
+                                that._removeFolders(sel).done(updateFolders);
+                            }
+                        }
+                    });
+// LJUmod.FilesystemFolderDelete.1 End
                     }
                 }, {
                     id: "action-refresh",
@@ -1331,6 +1377,7 @@
                         if (id == "edit") {
                             that.onAddEditFolder(f, updateFolders);
                         } else if (id == "remove") {
+                          /* LJUmod - replaced by LJUmod.FilesystemFolderDelete.2
                             kloudspeaker.ui.dialogs.confirmation({
                                 title: kloudspeaker.ui.texts.get("configAdminFoldersRemoveFolderConfirmationTitle"),
                                 message: kloudspeaker.ui.texts.get("configAdminFoldersRemoveFolderConfirmationMessage", [f.name]),
@@ -1346,6 +1393,49 @@
                                     });
                                 }
                             });
+                          */
+// LJUmod.FilesystemFolderDelete.2 Begin - Customize confirmation for folder removal
+//    Added the following texts to texts_en.json:  "configAdminFoldersDeleteFolderError", "configAdminFoldersBtnRemove", "configAdminFoldersBtnRemoveAndDelete"
+                            kloudspeaker.ui.dialogs.custom({
+                                title: kloudspeaker.ui.texts.get('configAdminFoldersRemoveFolderConfirmationTitle'),
+                                content: kloudspeaker.ui.texts.get("configAdminFoldersRemoveFolderConfirmationMessage", [f.name]), 
+                                //content: kloudspeaker.dom.template("kloudspeaker-tmpl-config-admin-userdialog"),
+                                buttons: [
+                                    { id: "delete", "title-key": "configAdminFoldersBtnRemoveAndDelete" },
+                                    { id: "remove", "title-key": "configAdminFoldersBtnRemove", cls:"btn-primary" },
+                                    { id: "cancel", "title-key": "dialogCancelButton" }
+                                ],
+                                "on-button": function(btn, d) {
+                                    d.close();
+                                    if (btn.id === 'delete') {
+                                        var onFail = function(e){
+                                            if (e.code == 105) {
+                                                this.handled = true;
+                                                kloudspeaker.ui.dialogs.confirmation({
+                                                    title:kloudspeaker.ui.texts.get('configAdminFoldersRemoveFolderConfirmationTitle'), 
+                                                    message: kloudspeaker.ui.texts.get("configAdminFoldersDeleteFolderError", [f.name]), 
+                                                    callback: function() {
+                                                        kloudspeaker.service.del("configuration/folders/"+f.id).done(function(f) {
+                                                            kloudspeaker.filesystem.updateRoots(f.folders, f.roots);
+                                                            updateFolders();
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                        };
+                                        kloudspeaker.service.del("configuration/folders/"+f.id+"?delete=true").done(function(f) {
+                                            kloudspeaker.filesystem.updateRoots(f.folders, f.roots);
+                                            updateFolders();
+                                        }).fail(onFail);
+                                    } else if (btn.id === 'remove') {
+                                        kloudspeaker.service.del("configuration/folders/"+f.id).done(function(f) {
+                                            kloudspeaker.filesystem.updateRoots(f.folders, f.roots);
+                                            updateFolders();
+                                        });
+                                    }
+                                }
+                            });
+// LJUmod.FilesystemFolderDelete.2 End
                         }
                     },
                     onHilight: function(f) {
