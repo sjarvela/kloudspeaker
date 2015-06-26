@@ -20,7 +20,9 @@ class ShareServices extends ServicesBase {
 	}
 
 	public function processGet() {
-		if (count($this->path) == 1) {
+		$itemsOrAll = (strcmp($this->path[0], 'items') == 0 or strcmp($this->path[0], 'all') == 0);
+
+		if (count($this->path) == 1 and !$itemsOrAll) {
 			// share/xxx : get single share by id
 			$id = $this->path[0];
 
@@ -32,7 +34,7 @@ class ShareServices extends ServicesBase {
 			return;
 		}
 
-		if (strcmp($this->path[0], 'items') != 0 and strcmp($this->path[0], 'all') != 0) {
+		if (!$itemsOrAll) {
 			throw $this->invalidRequestException();
 		}
 

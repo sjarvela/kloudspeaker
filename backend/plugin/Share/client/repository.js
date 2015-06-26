@@ -18,6 +18,8 @@ define(['kloudspeaker/service', 'kloudspeaker/utils'], function(service, utils) 
 
         getUserShares: function() {
             return service.get("share/all/").pipe(function(result) {
+                if (!result) return result;
+                
                 var users = utils.getKeys(result.shares);
                 _.each(users, function(u) {
                     var list = result.shares[u];
