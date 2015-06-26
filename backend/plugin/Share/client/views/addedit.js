@@ -22,10 +22,13 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/ui/
 
         var getShareTypeText = function(item, shareType) {
             //TODO get custom text from plugin?
+            var t = shareType;
+            if (t == 'prepared_download') t = 'download';
+
             if (item.custom)
-                return texts.get('shareDialogShareType_' + shareType);
+                return texts.get('shareDialogShareType_' + t);
             else
-                return texts.get('shareDialogShareType_' + (item.is_file ? 'file' : 'folder') + '_' + shareType);
+                return texts.get('shareDialogShareType_' + (item.is_file ? 'file' : 'folder') + '_' + t);
         };
 
         return {

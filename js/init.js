@@ -584,7 +584,7 @@ var kloudspeaker_defaults = {
             },
             getActiveFileView: function() {
                 var mv = this.getActiveMainView();
-                if (!mv || mv.viewId != 'viewId') return false;
+                if (!mv || mv.viewId != 'files') return false;
                 return mv;
             },
             registerView: function(id, v) {
