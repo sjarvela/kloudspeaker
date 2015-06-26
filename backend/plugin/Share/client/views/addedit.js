@@ -36,7 +36,7 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/ui/
             onShow: function(container) {
                 that._container = container;
 
-                if (model.share) {
+                if (model.edit) {
                     container.setTitle(texts.get('shareDialogShareEditTitle'));
                 } else {
                     container.setTitle(texts.get('shareDialogShareCreateNewTitle'));
