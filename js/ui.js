@@ -155,10 +155,10 @@
                 return sv;
             };
         },
-        FilesystemItemPath: function() {
+        FilesystemItemPath: function(noHtml) {
             this.format = function(item) {
                 if (!item) return "";
-                return (kloudspeaker.filesystem.rootsById[item.root_id] ? kloudspeaker.filesystem.rootsById[item.root_id].name : item.root_id) + (item.path.length > 0 ? ":&nbsp;" + item.path : "");
+                return (kloudspeaker.filesystem.rootsById[item.root_id] ? kloudspeaker.filesystem.rootsById[item.root_id].name : item.root_id) + (item.path.length > 0 ? (":" + (noHtml ? ' ' : '&nbsp;') + item.path) : "");
             }
         }
     };

@@ -64,7 +64,7 @@ define(['kloudspeaker/eventlogging/repository', 'kloudspeaker/core/user/reposito
                     return texts.get('pluginEventLoggingAdminOptionItem_' + t);
                 },
 
-                pathFormatter: new formatters.FilesystemItemPath(),
+                pathFormatter: new formatters.FilesystemItemPath(true),
                 onSelectItem: onSelectItem,
                 itemPath: ko.observable(''),
             },

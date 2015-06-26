@@ -48,7 +48,7 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/cor
                 },
 
                 item: ko.observable(null),
-                pathFormatter: new formatters.FilesystemItemPath(),
+                pathFormatter: new formatters.FilesystemItemPath(true),
                 onSelectItem: onSelectItem
             }
         };
