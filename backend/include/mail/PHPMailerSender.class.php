@@ -24,9 +24,10 @@
 			$isHtml = (stripos($message, "<html>") !== FALSE);
 			$f = ($from != NULL ? $from : $this->env->settings()->setting("mail_notification_from"));
 
-			$nameIndex = strpos($f, " ");
-			$fromName = ($nameIndex !== FALSE) ? substr($f, 0, $nameIndex) : NULL;
-			if ($nameIndex !== FALSE) $f = substr($f, $nameIndex);
+			$emailStartIndex = strpos($f, "<");
+			$emailEndIndex = strpos($f, ">");
+			$fromName = ($emailStartIndex !== FALSE) ? substr($f, 0, $emailStartIndex) : NULL;
+			if ($emailStartIndex !== FALSE and $emailEndIndex !== FALSE) $f = substr($f, $emailStartIndex+1, ($emailEndIndex - $emailStartIndex));
 			
 			$validRecipients = $this->getValidRecipients($to);
 			if (count($validRecipients) === 0) {
@@ -35,7 +36,7 @@
 			}
 			
 			if (Logging::isDebug())
-				Logging::logDebug("Sending mail from [".$f."] to [".Util::array2str($validRecipients)."]: [".$message."]");
+				Logging::logDebug("Sending mail from [".$f."] ".($fromName != NULL ? ('(' . $fromName . ')') : '' )." to [".Util::array2str($validRecipients)."]: [".$message."]");
 			
 			set_include_path("vendor/PHPMailer".DIRECTORY_SEPARATOR.PATH_SEPARATOR.get_include_path());
 			require 'class.phpmailer.php';
