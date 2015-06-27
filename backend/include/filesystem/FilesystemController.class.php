@@ -25,6 +25,7 @@ class FilesystemController {
 	private $allowedUploadTypes;
 	private $permissionCache = array();
 	private $folderCache = array();
+	private $filesystemIdCache = NULL;
 	private $contextPlugins = array();
 	private $actionValidators = array();
 	private $actionInterceptors = array();
@@ -344,6 +345,7 @@ class FilesystemController {
 		}
 
 		$list = array();
+		$this->filesystemIdCache = array();
 
 		foreach ($folderDefs as $folderDef) {
 			if (array_key_exists($folderDef['id'], $list)) {
@@ -364,15 +366,16 @@ class FilesystemController {
 			}
 
 			$list[$folderDef['id']] = $folderDef;
+			$this->filesystemIdCache[] = $folderDef['id'];
 		}
 
 		return $list;
 	}
 
-	public function hasRights($item, $required) {
-		if (is_array($item)) {
-			foreach ($item as $i) {
-				if (!$this->env->permissions()->hasFilesystemPermission("filesystem_item_access", $i, $required)) {
+	public function hasRights($i, $required) {
+		if (is_array($i)) {
+			foreach ($i as $item) {
+				if (!$this->hasItemRights($item, $required)) {
 					return FALSE;
 				}
 			}
@@ -380,6 +383,27 @@ class FilesystemController {
 			return TRUE;
 		}
 
+		return $this->hasItemRights($i, $required);
+	}
+
+	private function getUserFilesystemIds() {
+		if ($this->filesystemIdCache != NULL) return $this->filesystemIdCache;
+
+		$folderDefs = $this->env->configuration()->getUserFolders($this->env->session()->userId(), TRUE);
+
+		$list = array();
+		foreach ($folderDefs as $folderDef) {
+			$list[] = $folderDef['id'];
+		}
+		$this->filesystemIdCache = $list;
+		return $list;
+	}
+
+	private function hasItemRights($item, $required) {
+		if (!$this->env->authentication()->isAdmin()) {
+			// if not admin, folder must be assigned
+			if (!in_array($item->filesystem()->id(), $this->getUserFilesystemIds())) return FALSE;
+		}
 		return $this->env->permissions()->hasFilesystemPermission("filesystem_item_access", $item, $required);
 	}
 
@@ -523,12 +547,12 @@ class FilesystemController {
 				Logging::logDebug("Root folder does not exist: " . $location);
 				throw new ServiceException("REQUEST_FAILED");
 			}
-			if (!$this->isFolderValid($folderDef)) {
-				Logging::logDebug("No permissions for root folder: " . $location);
-				throw new ServiceException("INSUFFICIENT_PERMISSIONS");
-			}
 
 			$this->folderCache[$filesystemId] = $folderDef;
+		}
+		if (!$this->isFolderValid($folderDef)) {
+			Logging::logDebug("No permissions for root folder: " . $location);
+			throw new ServiceException("INSUFFICIENT_PERMISSIONS");
 		}
 		if (strlen($path) == 0) {
 			return $this->filesystem($folderDef)->root();
