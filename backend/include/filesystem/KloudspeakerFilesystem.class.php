@@ -19,6 +19,10 @@
 			$this->name = $name;
 			$this->filesystemInfo = $filesystemInfo;
 		}
+
+		public function allowUnassigned() {
+			return FALSE;
+		}
 		
 		abstract function type();
 		

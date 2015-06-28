@@ -29,6 +29,10 @@ class TrashBinFS extends LocalFilesystem {
 		}
 	}
 
+	public function allowUnassigned() {
+		return TRUE;	//access control overridden
+	}
+
 	/*public function getItem($id) {
 		//TODO path?
 		$item = array_key_exists($id, $this->rootItemsById) ? $this->rootItemsById[$id] : FALSE;
