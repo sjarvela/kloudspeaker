@@ -1,5 +1,5 @@
 define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/share/repository', 'kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/texts', 'kloudspeaker/utils', 'kloudspeaker/dom'], function(app, settings, plugins, repository, service, fs, views, formatters, dialogs, texts, utils, dom) {
-    var that = this;
+    var that = {};
 
     that._timestampFormatter = new formatters.Timestamp(texts.get('shortDateTimeFormat'));
 
@@ -50,7 +50,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
         admin: true
     });
 
-    this._getShareView = function(id, info) {
+    that._getShareView = function(id, info) {
         if (info.type == "download") {
             return {
                 model: ["kloudspeaker/share/views/public/download", {
@@ -76,7 +76,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
         return new kloudspeaker.ui.FullErrorView(texts.get('shareViewInvalidRequest'));
     };
 
-    this.onOpenItemShares = function(item) {
+    that.onOpenItemShares = function(item) {
         return dialogs.custom({
             resizable: true,
             initSize: [600, 470],
@@ -96,7 +96,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
         return d["plugin-share/item-info"][item.id];
     };
 
-    this.onAddShare = function(item) {
+    that.onAddShare = function(item) {
         return dialogs.custom({
             resizable: true,
             initSize: [600, 400],
@@ -118,7 +118,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
         });
     };
 
-    this.onEditShare = function(share) {
+    that.onEditShare = function(share) {
         return dialogs.custom({
             resizable: true,
             initSize: [600, 400],
@@ -128,7 +128,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
         });
     };
 
-    this.onRemoveShare = function(item, share) {
+    that.onRemoveShare = function(item, share) {
         return repository.removeShare(share).done(function() {
             var fv = views.getActiveFileView();
             if (fv) fv.updateData(function(d) {
@@ -138,13 +138,13 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
                 if (typeof(itemData.own) === 'string') itemData.own = (parseInt(itemData.own, 10));
                 itemData.own -= 1;  // reduce one
 
-                // refresh this item
+                // refresh that item
                 return [item];
             });
         });
     }
 
-    this.getActionValidationMessages = function(action, items, validationData) {
+    that.getActionValidationMessages = function(action, items, validationData) {
         var messages = [];
         $.each(items, function(i, itm) {
             var msg;
