@@ -46,6 +46,10 @@ class FileViewerEditor extends PluginBase {
 		$this->controller->registerHandler($type, $handler);
 	}
 
+	public function getClientModuleId() {
+		return "kloudspeaker/fileviewereditor";
+	}
+
 	public function __toString() {
 		return "FileViewerEditorPlugin";
 	}
