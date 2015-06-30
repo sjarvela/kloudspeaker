@@ -121,6 +121,10 @@ class ItemDetails extends PluginBase {
 		return Util::convertArrayCharset($exif);
 	}
 
+	public function getClientModuleId() {
+		return "kloudspeaker/itemdetails";
+	}
+
 	public function __toString() {
 		return "ItemDetailsPlugin";
 	}

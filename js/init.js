@@ -85,13 +85,6 @@ var kloudspeaker_defaults = {
 
         kloudspeaker.service.init(false, kloudspeaker.settings["service-param"]);
 
-        kloudspeaker.plugins.register(new kloudspeaker.plugin.Core());
-        kloudspeaker.plugins.register(new kloudspeaker.plugin.PermissionsPlugin());
-        if (p) {
-            for (var i = 0, j = p.length; i < j; i++)
-                kloudspeaker.plugins.register(p[i]);
-        }
-
         kloudspeaker.events.addEventHandler(function(e) {
             if (e.type == 'session/start') {
                 kloudspeaker.App._onSessionStart(e.payload);
@@ -117,7 +110,7 @@ var kloudspeaker_defaults = {
 
         kloudspeaker.ui.initialize().done(function() {
             kloudspeaker.App.initModules();
-            var deps = ['knockout', 'text', 'durandal/system', 'durandal/viewlocator', 'durandal/composition', 'durandal/binder', 'durandal/plugins/widget', 'kloudspeaker/app'];
+            var deps = ['knockout', 'text', 'durandal/system', 'durandal/viewlocator', 'durandal/composition', 'durandal/binder', 'durandal/plugins/widget', 'kloudspeaker/app', 'kloudspeaker/plugins/core', 'kloudspeaker/plugins/permissions'];
             if (kloudspeaker.settings.modules.load) deps = deps.concat(kloudspeaker.settings.modules.load);
 
             // wait for modules initialization
@@ -299,6 +292,12 @@ var kloudspeaker_defaults = {
                     console.log("Resolve view:" + moduleId + " -> " + path);
                     return path;
                 };
+
+                //TODO show plugin registration deprecation warning?
+                if (p) {
+                    for (var i = 0, j = p.length; i < j; i++)
+                        kloudspeaker.plugins.register(p[i]);
+                }
 
                 kloudspeaker.plugins.initialize().done(function() {
                     kloudspeaker.App._initialized = true;
