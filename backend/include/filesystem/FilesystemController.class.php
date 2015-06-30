@@ -619,7 +619,9 @@ class FilesystemController {
 		$this->assertRights($item, self::PERMISSION_LEVEL_READ, "details");
 
 		$details = $item->details();
-		$details["metadata"] = $this->metadata->get($item);
+		$metadata = $this->metadata->get($item);
+		if ($metadata == NULL) $metadata = array();
+		$details["metadata"] = $metadata;
 		$details["permissions"] = $this->env->permissions()->getAllFilesystemPermissions($item);
 		$details["parent_permissions"] = $item->isRoot() ? NULL : $this->env->permissions()->getAllFilesystemPermissions($item->parent());
 		$details["plugins"] = $this->getItemContextData($item, $details, $data);
