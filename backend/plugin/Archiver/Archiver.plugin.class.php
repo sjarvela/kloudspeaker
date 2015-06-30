@@ -34,6 +34,10 @@ class Archiver extends PluginBase {
 		return $result;
 	}
 
+	public function getClientModuleId() {
+		return "kloudspeaker/archiver";
+	}
+
 	public function __toString() {
 		return "ArchiverPlugin";
 	}

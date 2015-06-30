@@ -39,6 +39,10 @@
 		public function getHandler() {
 			return $this->handler;
 		}
+
+		public function getClientModuleId() {
+			return "kloudspeaker/itemcollection";
+		}
 				
 		public function __toString() {
 			return "ItemCollectionPlugin";
