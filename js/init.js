@@ -110,7 +110,7 @@ var kloudspeaker_defaults = {
 
         kloudspeaker.ui.initialize().done(function() {
             kloudspeaker.App.initModules();
-            var deps = ['knockout', 'text', 'durandal/system', 'durandal/viewlocator', 'durandal/composition', 'durandal/binder', 'durandal/plugins/widget', 'kloudspeaker/app', 'kloudspeaker/plugins/core', 'kloudspeaker/plugins/permissions'];
+            var deps = ['knockout', 'text', 'durandal/system', 'durandal/viewlocator', 'durandal/composition', 'durandal/binder', 'durandal/plugins/widget', 'kloudspeaker/app', 'kloudspeaker/ui/mainview', 'kloudspeaker/ui/main/files', 'kloudspeaker/plugins/core', 'kloudspeaker/plugins/permissions'];
             if (kloudspeaker.settings.modules.load) deps = deps.concat(kloudspeaker.settings.modules.load);
 
             // wait for modules initialization
@@ -399,7 +399,7 @@ var kloudspeaker_defaults = {
                     kloudspeaker.App.activeView = new kloudspeaker.view.LoginView();
                     kloudspeaker.App.activeViewId = "login";
                 } else {
-                    kloudspeaker.App.activeView = new kloudspeaker.view.MainView();
+                    kloudspeaker.App.activeView = require('kloudspeaker/ui/mainview');
                     kloudspeaker.App.activeViewId = "main";
                 }
             }
