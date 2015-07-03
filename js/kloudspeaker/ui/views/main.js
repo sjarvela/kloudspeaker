@@ -1,4 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/views/main/files'], function(app, settings, FilesView) {
+define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/views/main/files', 'kloudspeaker/ui/views/main/config'], function(app, settings, FilesView, ConfigView) {
     //TODO remove reference to global "kloudspeaker"
     return function() {
         var that = this;
@@ -9,7 +9,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/views/main
 
         that.init = function($c, viewId) {
             that._mainFileView = new FilesView();
-            that._mainConfigView = new kloudspeaker.view.MainViewConfigView();
+            that._mainConfigView = new ConfigView();
             that._views = [that._mainFileView, that._mainConfigView];
 
             $.each(kloudspeaker.plugins.getMainViewPlugins(), function(i, p) {
