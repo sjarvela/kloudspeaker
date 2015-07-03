@@ -1,4 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/views/main/files/filelist', 'kloudspeaker/ui/views/main/files/iconview'], function(app, settings, FileList, IconView) {
+define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/views/main/files/filelist', 'kloudspeaker/ui/views/main/files/iconview', 'kloudspeaker/ui/uploader'], function(app, settings, FileList, IconView, uploader) {
     return function() {
         //TODO remove reference to global "kloudspeaker"
         var that = this;
@@ -299,8 +299,8 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/views/main
             that.uploadProgress = new UploadProgress($("#kloudspeaker-mainview-progress"));
             that._dndUploader = false;
 
-            if (kloudspeaker.ui.uploader && kloudspeaker.ui.uploader.initDragAndDropUploader) {
-                that._dndUploader = kloudspeaker.ui.uploader.initDragAndDropUploader({
+            if (uploader && uploader.initDragAndDropUploader) {
+                that._dndUploader = uploader.initDragAndDropUploader({
                     container: kloudspeaker.App.getElement(),
                     dropElement: $("#kloudspeaker-folderview"),
                     handler: that._getUploadHandler()
@@ -771,7 +771,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/views/main
                             });
                             return false;
                         });
-                        if (kloudspeaker.ui.uploader) kloudspeaker.dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
+                        if (uploader) kloudspeaker.dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
                             icon: 'icon-upload-alt'
                         }, opt).appendTo($tb).click(function() {
                             kloudspeaker.ui.controls.dynamicBubble({
@@ -779,7 +779,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/views/main
                                 content: kloudspeaker.dom.template("kloudspeaker-tmpl-main-addfile-bubble"),
                                 handler: {
                                     onRenderBubble: function(b) {
-                                        kloudspeaker.ui.uploader.initUploadWidget($("#kloudspeaker-mainview-addfile-upload"), {
+                                        uploader.initUploadWidget($("#kloudspeaker-mainview-addfile-upload"), {
                                             url: kloudspeaker.filesystem.getUploadUrl(that._currentFolder),
                                             handler: that._getUploadHandler(b)
                                         });

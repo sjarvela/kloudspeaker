@@ -187,7 +187,7 @@
     };
 
     /* UI */
-    kloudspeaker.ui.uploader = false;
+    //kloudspeaker.ui.uploader = false;
     kloudspeaker.ui.draganddrop = false;
     kloudspeaker.ui._activePopup = false;
 
@@ -211,7 +211,10 @@
         list.push(kloudspeaker.templates.load("dialogs.html"));
 
         if (!kloudspeaker.ui.draganddrop) kloudspeaker.ui.draganddrop = (window.Modernizr.draganddrop) ? new kloudspeaker.HTML5DragAndDrop() : new kloudspeaker.JQueryDragAndDrop();
-        if (!kloudspeaker.ui.uploader) kloudspeaker.ui.uploader = new kloudspeaker.HTML5Uploader();
+        /*if (!kloudspeaker.ui.uploader) {
+            var Uploader = require("kloudspeaker/ui/uploader");
+            kloudspeaker.ui.uploader = new Uploader();
+        }*/
         if (!kloudspeaker.ui.clipboard) new kloudspeaker.ZeroClipboard(function(cb) {
             kloudspeaker.ui.clipboard = cb;
         });

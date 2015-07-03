@@ -108,13 +108,14 @@ var kloudspeaker_defaults = {
             if (kloudspeaker.App._initDf.state() == "pending") kloudspeaker.App._initDf.reject();
         };
 
+
         kloudspeaker.ui.initialize().done(function() {
             kloudspeaker.App.initModules();
-            var deps = ['knockout', 'text', 'durandal/system', 'durandal/viewlocator', 'durandal/composition', 'durandal/binder', 'durandal/plugins/widget', 'kloudspeaker/app', 'kloudspeaker/ui/views/main', 'kloudspeaker/ui/views/login', 'kloudspeaker/plugins/core', 'kloudspeaker/plugins/permissions'];
+            var deps = ['knockout', 'text', 'durandal/system', 'durandal/viewlocator', 'durandal/composition', 'durandal/binder', 'durandal/plugins/widget', 'kloudspeaker/app', 'kloudspeaker/ui/uploader', 'kloudspeaker/ui/views/main', 'kloudspeaker/ui/views/login', 'kloudspeaker/plugins/core', 'kloudspeaker/plugins/permissions'];
             if (kloudspeaker.settings.modules.load) deps = deps.concat(kloudspeaker.settings.modules.load);
 
             // wait for modules initialization
-            require(deps, function(ko, txt, ds, vl, comp, binder, dw, app) {
+            require(deps, function(ko, txt, ds, vl, comp, binder, dw, app, uploader) {
                 ds.debug(!!kloudspeaker.settings.debug); //TODO remove
                 kloudspeaker.ui._composition = comp;
 
@@ -211,7 +212,7 @@ var kloudspeaker_defaults = {
                     };
                     if (value.dropTargetId) spec.dropElement = $("#" + value.dropTargetId);
                     if (value.handler) spec.handler = value.handler;
-                    kloudspeaker.ui.uploader.initUploadWidget($e, spec);
+                    uploader.initUploadWidget($e, spec);
                 }
                 comp.addBindingHandler('uploader', {
                     //init: _i18n,
@@ -237,7 +238,7 @@ var kloudspeaker_defaults = {
                     update: function(e, va) {
                         var v = va();
                         var value = ko.unwrap(v);
-                        var $e = $(e);                        
+                        var $e = $(e);
 
                         if (!kloudspeaker.ui.clipboard) {
                             $e.addClass("no-clipboard");
@@ -558,7 +559,7 @@ var kloudspeaker_defaults = {
             viewmodel: kloudspeaker.ui.viewmodel,
         });
         define('kloudspeaker/ui/dnd', [], kloudspeaker.ui.draganddrop);
-        define('kloudspeaker/ui/uploader', [], kloudspeaker.ui.uploader);
+        //define('kloudspeaker/ui/uploader', [], kloudspeaker.ui.uploader);
         define('kloudspeaker/ui/clipboard', [], function() {
             return kloudspeaker.ui.clipboard;
         });
