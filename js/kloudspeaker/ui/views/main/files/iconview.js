@@ -1,4 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings'], function(app, settings) {
+define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd'], function(app, settings, dnd) {
     //TODO remove reference to global "kloudspeaker"
     return function(container, $headerContainer, id, cls, thumbs) {
         var t = this;
@@ -78,10 +78,10 @@ define(['kloudspeaker/app', 'kloudspeaker/settings'], function(app, settings) {
                 accept: function(i) { return t.p.canDrop ? t.p.canDrop($(this).tmplItem().data, $(i).tmplItem().data) : false; }
             })*/
 
-            if (kloudspeaker.ui.draganddrop) {
+            if (dnd) {
                 var dragType = t.p.dragType();
                 if (dragType) {
-                    kloudspeaker.ui.draganddrop.enableDrag($items, {
+                    dnd.enableDrag($items, {
                         onDragStart: function($e, e) {
                             var item = $e.tmplItem().data;
                             var sel = t.p.getSelectedItems();
@@ -94,7 +94,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings'], function(app, settings) {
                         }
                     });
                 }
-                kloudspeaker.ui.draganddrop.enableDrop(t.$l.find(".kloudspeaker-iconview-item.item-folder"), {
+                dnd.enableDrop(t.$l.find(".kloudspeaker-iconview-item.item-folder"), {
                     canDrop: function($e, e, obj) {
                         if (!t.p.canDrop || !obj || obj.type != 'filesystemitem') return false;
                         var i = obj.payload;

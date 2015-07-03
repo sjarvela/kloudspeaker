@@ -210,14 +210,14 @@
         });
         list.push(kloudspeaker.templates.load("dialogs.html"));
 
-        if (!kloudspeaker.ui.draganddrop) kloudspeaker.ui.draganddrop = (window.Modernizr.draganddrop) ? new kloudspeaker.HTML5DragAndDrop() : new kloudspeaker.JQueryDragAndDrop();
+        //if (!kloudspeaker.ui.draganddrop) kloudspeaker.ui.draganddrop = (window.Modernizr.draganddrop) ? new kloudspeaker.HTML5DragAndDrop() : new kloudspeaker.JQueryDragAndDrop();
         /*if (!kloudspeaker.ui.uploader) {
             var Uploader = require("kloudspeaker/ui/uploader");
             kloudspeaker.ui.uploader = new Uploader();
         }*/
-        if (!kloudspeaker.ui.clipboard) new kloudspeaker.ZeroClipboard(function(cb) {
-            kloudspeaker.ui.clipboard = cb;
-        });
+        //if (!kloudspeaker.ui.clipboard) new kloudspeaker.ZeroClipboard(function(cb) {
+        //    kloudspeaker.ui.clipboard = cb;
+        //});
 
         var df = $.Deferred();
         $.when.apply($, list).done(df.resolve).fail(df.reject);
@@ -2217,200 +2217,6 @@
 
                 o.onRender(h, $content, table);
             }
-        });
-    };
-
-    /* DRAG&DROP */
-
-    kloudspeaker.HTML5DragAndDrop = function() {
-        var t = this;
-        t.dragObj = false;
-        t.dragEl = false;
-        t.dragListener = false;
-
-        var endDrag = function(e) {
-            if (t.dragEl) {
-                t.dragEl.removeClass("dragged");
-                if (t.dragListener && t.dragListener.onDragEnd) t.dragListener.onDragEnd(t.dragEl, e);
-                t.dragEl = false;
-            }
-            t.dragObj = false;
-            t.dragListener = false;
-        };
-
-        $("body").bind('dragover', function(e) {
-            if (e.preventDefault) e.preventDefault();
-            e.originalEvent.dataTransfer.dropEffect = "none";
-            return false;
-        });
-
-        // preload drag images      
-        setTimeout(function() {
-            var dragImages = [];
-            for (var key in kloudspeaker.settings.dnd.dragimages) {
-                if (!kloudspeaker.settings.dnd.dragimages.hasOwnProperty(key)) continue;
-                var img = kloudspeaker.settings.dnd.dragimages[key];
-                if (!img) continue;
-                if (dragImages.indexOf(img) >= 0) continue;
-                dragImages.push(img);
-            }
-            if (dragImages) kloudspeaker.ui.preloadImages(dragImages);
-        }, 0);
-
-        var api = {
-            enableDragToDesktop: function(item, e) {
-                if (!item) return;
-                var info = kloudspeaker.getItemDownloadInfo(item);
-                if (info) e.originalEvent.dataTransfer.setData('DownloadURL', ['application/octet-stream', info.name, info.url].join(':'));
-            },
-
-            enableDrag: function($e, l) {
-                $e.attr("draggable", "true").bind('dragstart', function(e) {
-                    t.dragObj = false;
-                    e.originalEvent.dataTransfer.effectAllowed = "none";
-                    if (!l.onDragStart) return false;
-
-                    t.dragObj = l.onDragStart($(this), e);
-                    if (!t.dragObj) return false;
-
-                    var dragImageType = t.dragObj.type;
-
-                    if (t.dragObj.type == 'filesystemitem') {
-                        var pl = t.dragObj.payload;
-                        if (!window.isArray(pl) || pl.length == 1) {
-                            var item = window.isArray(pl) ? pl[0] : pl;
-
-                            if (!item.is_file) dragImageType = "filesystemitem-folder";
-                            else dragImageType = "filesystemitem-file";
-                        } else {
-                            dragImageType = "filesystemitem-many";
-                        }
-                        api.enableDragToDesktop(pl, e);
-                    }
-                    t.dragEl = $(this);
-                    t.dragListener = l;
-                    t.dragEl.addClass("dragged");
-                    e.originalEvent.dataTransfer.effectAllowed = "copyMove";
-
-                    if (kloudspeaker.settings.dnd.dragimages[dragImageType]) {
-                        var img = document.createElement("img");
-                        img.src = kloudspeaker.settings.dnd.dragimages[dragImageType];
-                        e.originalEvent.dataTransfer.setDragImage(img, 0, 0);
-                    }
-                    return;
-                }).bind('dragend', function(e) {
-                    endDrag(e);
-                });
-            },
-            enableDrop: function($e, l) {
-                $e.addClass("droppable").bind('drop', function(e) {
-                    if (e.stopPropagation) e.stopPropagation();
-                    if (!l.canDrop || !l.onDrop || !t.dragObj) return;
-                    var $t = $(this);
-                    if (l.canDrop($t, e, t.dragObj)) {
-                        l.onDrop($t, e, t.dragObj);
-                        $t.removeClass("dragover");
-                    }
-                    endDrag(e);
-                }).bind('dragenter', function(e) {
-                    if (!l.canDrop || !t.dragObj) return false;
-                    var $t = $(this);
-                    if (l.canDrop($t, e, t.dragObj)) {
-                        $t.addClass("dragover");
-                    }
-                }).bind('dragover', function(e) {
-                    if (e.preventDefault) e.preventDefault();
-
-                    var fx = "none";
-                    if (l.canDrop && l.dropType && t.dragObj) {
-                        var $t = $(this);
-                        if (l.canDrop($t, e, t.dragObj)) {
-                            var tp = l.dropType($t, e, t.dragObj);
-                            if (tp) fx = tp;
-                        }
-                    }
-
-                    e.originalEvent.dataTransfer.dropEffect = fx;
-                    return false;
-                }).bind('dragleave', function(e) {
-                    var $t = $(this);
-                    $t.removeClass("dragover");
-                    t.dragTarget = false;
-                });
-            }
-        };
-        return api;
-    };
-
-    kloudspeaker.JQueryDragAndDrop = function() {
-        return {
-            enableDragToDesktop: function(item, e) {
-                //not supported
-            },
-
-            enableDrag: function($e, l) {
-                $e.draggable({
-                    revert: "invalid",
-                    distance: 10,
-                    addClasses: false,
-                    zIndex: 2700,
-                    start: function(e) {
-                        if (l.onDragStart) l.onDragStart($(this), e);
-                    }
-                });
-            }
-        };
-    };
-
-    kloudspeaker.ZeroClipboard = function(cb) {
-        if (!cb || !window.ZeroClipboard) return false;
-        window.ZeroClipboard.setDefaults({
-            moviePath: 'js/lib/ZeroClipboard.swf',
-            hoverClass: 'hover',
-            activeClass: 'active',
-            forceHandCursor: true
-        });
-
-        var $testclip = $('<div id="zeroclipboard-test" style="width=0px; height=0px;"></div>').appendTo($("body"));
-        var clip = new window.ZeroClipboard($testclip[0]);
-        clip.on('load', function(client) {
-            var api = {
-                enableCopy: function($e, text, l) {
-                    var clip = $e.data("kloudspeaker-zeroclipboard");
-                    if (!clip) {
-                        clip = new window.ZeroClipboard($e);
-                        $e.data("kloudspeaker-zeroclipboard", clip);
-                        if (l) $e.data("kloudspeaker-zeroclipboard-listener", l);
-                    }
-                    if (text) $e.data("kloudspeaker-zeroclipboard-text", text);
-                }
-            };
-            cb(api);
-        });
-        clip.on('dataRequested', function() {
-            var $t = $(this);
-            var l = $t.data("kloudspeaker-zeroclipboard-listener");
-            var copied = false;
-            if (l && l.onGetText)
-                copied = l.onGetText($t);
-            if (!copied)
-                copied = $t.data("kloudspeaker-zeroclipboard-text");
-            if (copied) clip.setText(copied);
-        });
-        clip.on('mouseover', function() {
-            var $t = $(this);
-            var l = $t.data("kloudspeaker-zeroclipboard-listener");
-            if (l && l.onMouseOver) l.onMouseOver($t, clip);
-        });
-        clip.on('mouseout', function() {
-            var $t = $(this);
-            var l = $t.data("kloudspeaker-zeroclipboard-listener");
-            if (l && l.onMouseOut) l.onMouseOut($t);
-        });
-        clip.on('complete', function(client, args) {
-            var $t = $(this);
-            var l = $t.data("kloudspeaker-zeroclipboard-listener");
-            if (l && l.onCopy) l.onCopy($t, args.text);
         });
     };
 }(window.jQuery, window.kloudspeaker);

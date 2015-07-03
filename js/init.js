@@ -111,11 +111,11 @@ var kloudspeaker_defaults = {
 
         kloudspeaker.ui.initialize().done(function() {
             kloudspeaker.App.initModules();
-            var deps = ['knockout', 'text', 'durandal/system', 'durandal/viewlocator', 'durandal/composition', 'durandal/binder', 'durandal/plugins/widget', 'kloudspeaker/app', 'kloudspeaker/ui/uploader', 'kloudspeaker/ui/views/main', 'kloudspeaker/ui/views/login', 'kloudspeaker/plugins/core', 'kloudspeaker/plugins/permissions'];
+            var deps = ['knockout', 'text', 'durandal/system', 'durandal/viewlocator', 'durandal/composition', 'durandal/binder', 'durandal/plugins/widget', 'kloudspeaker/app', 'kloudspeaker/ui/uploader', 'kloudspeaker/ui/clipboard', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/views/main', 'kloudspeaker/ui/views/login', 'kloudspeaker/plugins/core', 'kloudspeaker/plugins/permissions'];
             if (kloudspeaker.settings.modules.load) deps = deps.concat(kloudspeaker.settings.modules.load);
 
             // wait for modules initialization
-            require(deps, function(ko, txt, ds, vl, comp, binder, dw, app, uploader) {
+            require(deps, function(ko, txt, ds, vl, comp, binder, dw, app, uploader, clipboard) {
                 ds.debug(!!kloudspeaker.settings.debug); //TODO remove
                 kloudspeaker.ui._composition = comp;
 
@@ -240,11 +240,11 @@ var kloudspeaker_defaults = {
                         var value = ko.unwrap(v);
                         var $e = $(e);
 
-                        if (!kloudspeaker.ui.clipboard) {
+                        if (!clipboard.isInitialized()) {
                             $e.addClass("no-clipboard");
                             return;
                         } else {
-                            kloudspeaker.ui.clipboard.enableCopy($e, (typeof(value.data) === 'function' ? value.data() : value.data), {
+                            clipboard.enableCopy($e, (typeof(value.data) === 'function' ? value.data() : value.data), {
                                 onMouseOver: function($e, clip) {
                                     if (value.hand) clip.setHandCursor(true);
                                     if (value.hover) $e.addClass("hover");
@@ -529,6 +529,8 @@ var kloudspeaker_defaults = {
             packages: packages
         });
 
+        //TODO extract&rewrite into real modules
+
         define('kloudspeaker/app', [], kloudspeaker.App);
         define('kloudspeaker/settings', [], kloudspeaker.settings);
         define('kloudspeaker/session', [], {
@@ -558,11 +560,11 @@ var kloudspeaker_defaults = {
             itemContext: kloudspeaker.ui.itemContext,
             viewmodel: kloudspeaker.ui.viewmodel,
         });
-        define('kloudspeaker/ui/dnd', [], kloudspeaker.ui.draganddrop);
+        //define('kloudspeaker/ui/dnd', [], kloudspeaker.ui.draganddrop);
         //define('kloudspeaker/ui/uploader', [], kloudspeaker.ui.uploader);
-        define('kloudspeaker/ui/clipboard', [], function() {
+        /*define('kloudspeaker/ui/clipboard', [], function() {
             return kloudspeaker.ui.clipboard;
-        });
+        });*/
         define('kloudspeaker/localization', [], function() {
             return {
                 registerPluginResource: function(pluginId) {

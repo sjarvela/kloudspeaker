@@ -1,4 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/views/main/files/filelist', 'kloudspeaker/ui/views/main/files/iconview', 'kloudspeaker/ui/uploader'], function(app, settings, FileList, IconView, uploader) {
+define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/views/main/files/filelist', 'kloudspeaker/ui/views/main/files/iconview', 'kloudspeaker/ui/uploader', 'kloudspeaker/ui/dnd'], function(app, settings, FileList, IconView, uploader, dnd) {
     return function() {
         //TODO remove reference to global "kloudspeaker"
         var that = this;
@@ -269,8 +269,8 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/views/main
             that.rootNav = h.addNavBar({
                 title: kloudspeaker.ui.texts.get("mainViewRootsTitle"),
                 items: navBarItems,
-                onRender: kloudspeaker.ui.draganddrop ? function($nb, $items, objs) {
-                    kloudspeaker.ui.draganddrop.enableDrop($items, {
+                onRender: dnd ? function($nb, $items, objs) {
+                    dnd.enableDrop($items, {
                         canDrop: function($e, e, obj) {
                             if (!obj || obj.type != 'filesystemitem') return false;
                             var item = obj.payload;
@@ -1020,8 +1020,8 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/views/main
                 that.changeToFolder(folder);
             });
 
-            if (kloudspeaker.ui.draganddrop) {
-                kloudspeaker.ui.draganddrop.enableDrop($hi.find("a"), {
+            if (dnd) {
+                dnd.enableDrop($hi.find("a"), {
                     canDrop: function($e, e, obj) {
                         if (!obj || obj.type != 'filesystemitem') return false;
                         var itm = obj.payload;
