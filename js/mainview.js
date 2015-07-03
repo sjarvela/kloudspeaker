@@ -1,5 +1,5 @@
 /**
- * loginview.js
+ * mainview.js
  *
  * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
@@ -8,10 +8,4 @@
  */
 
 ! function($, kloudspeaker) {
-
-    //"use strict";
-
-    //kloudspeaker.view.LoginView = function() {
-        
-    //};
 }(window.jQuery, window.kloudspeaker);
