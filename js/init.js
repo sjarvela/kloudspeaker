@@ -109,9 +109,9 @@ var kloudspeaker_defaults = {
         };
 
         //TODO tear down manual dependency load
-        require(['knockout', 'text', 'durandal/system', 'durandal/viewlocator', 'durandal/composition', 'durandal/binder', 'durandal/plugins/widget', 'kloudspeaker/localization', 'kloudspeaker/plugins'], function(ko, txt, ds, vl, comp, binder, dw, loc, plugins) {
+        require(['knockout', 'text', 'durandal/system', 'durandal/viewlocator', 'durandal/composition', 'durandal/binder', 'durandal/plugins/widget', 'kloudspeaker/localization', 'kloudspeaker/plugins', 'kloudspeaker/ui/controls'], function(ko, txt, ds, vl, comp, binder, dw, loc, plugins, controls) {
             kloudspeaker.plugins = plugins;     //remove when global "kloudspeaker" not needed
-            
+
             kloudspeaker.ui.initialize().done(function() {
                 kloudspeaker.App.initModules();
                 var deps = ['kloudspeaker/app', 'kloudspeaker/ui/uploader', 'kloudspeaker/ui/clipboard', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/views/main', 'kloudspeaker/ui/views/login', 'kloudspeaker/plugins/core', 'kloudspeaker/plugins/permissions'];
