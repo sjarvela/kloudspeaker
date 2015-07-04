@@ -93,13 +93,16 @@ var kloudspeaker_defaults = {
         };
 
         //TODO tear down manual dependency load
-        require(['knockout', 'text', 'durandal/system', 'durandal/viewlocator', 'durandal/composition', 'durandal/binder', 'durandal/plugins/widget', 'kloudspeaker/localization', 'kloudspeaker/plugins', 'kloudspeaker/request', 'kloudspeaker/events', 'kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/utils', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/parsers'], function(ko, txt, ds, vl, comp, binder, dw, loc, plugins, request, events, service, filesystem, utils, controls) {
+        require(['knockout', 'text', 'durandal/system', 'durandal/viewlocator', 'durandal/composition', 'durandal/binder', 'durandal/plugins/widget', 'kloudspeaker/localization', 'kloudspeaker/plugins', 'kloudspeaker/request', 'kloudspeaker/events', 'kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/utils', 'kloudspeaker/templates', 'kloudspeaker/features', 'kloudspeaker/dom', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/parsers'], function(ko, txt, ds, vl, comp, binder, dw, loc, plugins, request, events, service, filesystem, utils, templates, features, dom, controls) {
             kloudspeaker.helpers = utils; //remove when global "kloudspeaker" not needed
             kloudspeaker.plugins = plugins; //remove when global "kloudspeaker" not needed
             kloudspeaker.request = request; //remove when global "kloudspeaker" not needed
             kloudspeaker.events = events; //remove when global "kloudspeaker" not needed
             kloudspeaker.service = service; //remove when global "kloudspeaker" not needed
             kloudspeaker.filesystem = filesystem; //remove when global "kloudspeaker" not needed
+            kloudspeaker.templates = templates; //remove when global "kloudspeaker" not needed
+            kloudspeaker.features = features; //remove when global "kloudspeaker" not needed
+            kloudspeaker.dom = dom; //remove when global "kloudspeaker" not needed
 
             kloudspeaker.App.baseUrl = request.getBaseUrl(window.location.href);
             kloudspeaker.App.pageUrl = request.getPageUrl(window.location.href);
@@ -553,8 +556,8 @@ var kloudspeaker_defaults = {
         //define('kloudspeaker/request', [], kloudspeaker.request);
         //define('kloudspeaker/service', [], kloudspeaker.service);
         //define('kloudspeaker/plugins', [], kloudspeaker.plugins);
-        define('kloudspeaker/features', [], kloudspeaker.features);
-        define('kloudspeaker/dom', [], kloudspeaker.dom);
+        //define('kloudspeaker/features', [], kloudspeaker.features);
+        //define('kloudspeaker/dom', [], kloudspeaker.dom);
         //define('kloudspeaker/utils', [], kloudspeaker.helpers);
         kloudspeaker.helpers.Base64 = window.Base64;
         define('kloudspeaker/ui/texts', [], require("kloudspeaker/localization"));
@@ -647,113 +650,6 @@ var kloudspeaker_defaults = {
         if (mapped === false) return false;
 
         return mapped + urlParts.paramsString;
-    };
-
-    /* FEATURES */
-
-    var ft = kloudspeaker.features;
-    ft.hasFeature = function(id) {
-        return kloudspeaker.session.features && kloudspeaker.session.features[id];
-    };
-
-    /* TEMPLATES */
-    var mt = kloudspeaker.templates;
-    mt._loaded = [];
-
-    mt.url = function(name) {
-        var base = kloudspeaker.settings["template-url"] || 'templates/';
-        return kloudspeaker.helpers.noncachedUrl(kloudspeaker.resourceUrl(base + name));
-    };
-
-    mt.load = function(name, url) {
-        var df = $.Deferred();
-        if (mt._loaded.indexOf(name) >= 0) {
-            return df.resolve();
-        }
-
-        $.get(url ? kloudspeaker.resourceUrl(url) : mt.url(name)).done(function(h) {
-            mt._loaded.push(name);
-            $("body").append(h);
-            df.resolve();
-        }).fail(function(f) {
-            df.reject();
-        });
-        return df;
-    };
-
-    /* DOM */
-    var md = kloudspeaker.dom;
-    md._hiddenLoaded = [];
-
-    md.importScript = function(url) {
-        var u = kloudspeaker.resourceUrl(url);
-        if (!u)
-            return $.Deferred().resolve().promise();
-        var df = $.Deferred();
-        $.getScript(u, df.resolve).fail(function(e) {
-            new kloudspeaker.ui.FullErrorView("Failed to load script ", "<code>" + u + "</code>").show();
-        });
-        return df.promise();
-    };
-
-    md.importCss = function(url) {
-        var u = kloudspeaker.resourceUrl(url);
-        if (!u) return;
-
-        var link = $("<link>");
-        link.attr({
-            type: 'text/css',
-            rel: 'stylesheet',
-            href: kloudspeaker.helpers.noncachedUrl(u)
-        });
-        $("head").append(link);
-    };
-
-    md.loadContent = function(contentId, url, cb) {
-        if (md._hiddenLoaded.indexOf(contentId) >= 0) {
-            if (cb) cb();
-            return;
-        }
-        var u = kloudspeaker.resourceUrl(url);
-        if (!u) {
-            if (cb) cb();
-            return;
-        }
-        var id = 'kloudspeaker-tmp-' + (kloudspeaker._hiddenInd++);
-        $('<div id="' + id + '" style="display:none"/>').appendTo($("body")).load(kloudspeaker.helpers.noncachedUrl(u), function() {
-            md._hiddenLoaded.push(contentId);
-            if (cb) cb();
-        });
-    };
-
-    md.loadContentInto = function($target, url, handler, process) {
-        var u = kloudspeaker.resourceUrl(url);
-        if (!u) return $.Deferred().resolve().promise();
-
-        var df = $.Deferred();
-        $target.load(kloudspeaker.helpers.noncachedUrl(u), function() {
-            if (process) kloudspeaker.ui.process($target, process, handler);
-            if (typeof handler === 'function') handler();
-            else if (handler.onLoad) handler.onLoad($target);
-            df.resolve();
-        });
-        return df;
-    };
-
-    md.template = function(id, data, opt) {
-        var templateId = id;
-        if (templateId.startsWith("#")) templateId = templateId.substring(1);
-        if (kloudspeaker.settings["resource-map"] && kloudspeaker.settings["resource-map"]["template:" + id])
-            templateId = kloudspeaker.settings["resource-map"]["template:" + id];
-        return $("#" + templateId).tmpl(data, opt);
-    };
-
-    md.bind = function(model, activationData, $e) {
-        if (!$e || $e.length === 0) return;
-        if (model.activate) model.activate(activationData);
-        ko.applyBindings(model, $e[0]);
-        kloudspeaker.ui.process($e, ['localize']);
-        if (model.attached) model.attached($e);
     };
 
     window.kloudspeaker = kloudspeaker;
