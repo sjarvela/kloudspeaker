@@ -1,64 +1,41 @@
-/**
- * init.js
- *
- * Copyright 2015- Samuli Järvelä
- * Released under GPL License.
- *
- * License: http://www.kloudspeaker.com/license.php
- */
+define([], function() {
+    //TODO remove global references
 
-var kloudspeaker_defaults = {
-    "version-check-url": "http://www.kloudspeaker.com/version.php",
-    "modules": false,
-    "language": {
-        "default": "en",
-        "options": ["en"]
-    },
-    "view-url": true,
-    "app-element-id": "kloudspeaker",
-    "service-path": "backend/",
-    "service-param": false,
-    "file-view": {
-        "create-empty-file-action": false,
-        "default-view-mode": false,
-        "list-view-columns": {
-            "name": {
-                width: 250
-            },
-            "size": {},
-            "file-modified": {
-                width: 150
-            }
+    var kloudspeaker_defaults = {
+        "version-check-url": "http://www.kloudspeaker.com/version.php",
+        "modules": false,
+        "language": {
+            "default": "en",
+            "options": ["en"]
         },
-        "actions": false
-    },
-    "html5-uploader": {
-        maxChunkSize: 0
-    },
-    dnd: {
-        dragimages: {
-            "filesystemitem-file": "css/images/mimetypes64/empty.png",
-            "filesystemitem-folder": "css/images/mimetypes64/folder.png",
-            "filesystemitem-many": "css/images/mimetypes64/application_x_cpio.png"
+        "view-url": true,
+        "app-element-id": "kloudspeaker",
+        "service-path": "backend/",
+        "service-param": false,
+        "file-view": {
+            "create-empty-file-action": false,
+            "default-view-mode": false,
+            "list-view-columns": {
+                "name": {
+                    width: 250
+                },
+                "size": {},
+                "file-modified": {
+                    width: 150
+                }
+            },
+            "actions": false
+        },
+        "html5-uploader": {
+            maxChunkSize: 0
+        },
+        dnd: {
+            dragimages: {
+                "filesystemitem-file": "css/images/mimetypes64/empty.png",
+                "filesystemitem-folder": "css/images/mimetypes64/folder.png",
+                "filesystemitem-many": "css/images/mimetypes64/application_x_cpio.png"
+            }
         }
-    }
-};
-
-! function($) {
-
-    "use strict";
-
-    var kloudspeaker = {
-        App: {},
-        view: {},
-        ui: {},
-        events: {},
-        service: {},
-        filesystem: {},
-        plugins: {},
-        features: {},
-        dom: {},
-        templates: {}
     };
 
     kloudspeaker._time = new Date().getTime();
@@ -66,14 +43,13 @@ var kloudspeaker_defaults = {
     kloudspeaker.settings = false;
     kloudspeaker.session = false;
 
-    /* APP */
-
-    kloudspeaker.App.init = function(s, p) {
-        kloudspeaker.App._initDf = $.Deferred();
+    var app = {};
+    app.init = function(s, p) {
+        app._initDf = $.Deferred();
         window.Modernizr.testProp("touch");
 
-        kloudspeaker.App._initialized = false;
-        kloudspeaker.App._views = {};
+        app._initialized = false;
+        app._views = {};
 
         kloudspeaker.settings = $.extend(true, {}, kloudspeaker_defaults, s);
         // don't merge file list columns
@@ -89,31 +65,21 @@ var kloudspeaker_defaults = {
 
         var onError = function() {
             new kloudspeaker.ui.FullErrorView('Failed to initialize Kloudspeaker').show();
-            if (kloudspeaker.App._initDf.state() == "pending") kloudspeaker.App._initDf.reject();
+            if (app._initDf.state() == "pending") app._initDf.reject();
         };
 
         //TODO tear down manual dependency load
-        require(['knockout', 'text', 'durandal/system', 'durandal/viewlocator', 'durandal/composition', 'durandal/binder', 'durandal/plugins/widget', 'kloudspeaker/localization', 'kloudspeaker/plugins', 'kloudspeaker/request', 'kloudspeaker/events', 'kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/utils', 'kloudspeaker/templates', 'kloudspeaker/features', 'kloudspeaker/dom', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/parsers'], function(ko, txt, ds, vl, comp, binder, dw, loc, plugins, request, events, service, filesystem, utils, templates, features, dom, controls) {
-            kloudspeaker.helpers = utils; //remove when global "kloudspeaker" not needed
-            kloudspeaker.plugins = plugins; //remove when global "kloudspeaker" not needed
-            kloudspeaker.request = request; //remove when global "kloudspeaker" not needed
-            kloudspeaker.events = events; //remove when global "kloudspeaker" not needed
-            kloudspeaker.service = service; //remove when global "kloudspeaker" not needed
-            kloudspeaker.filesystem = filesystem; //remove when global "kloudspeaker" not needed
-            kloudspeaker.templates = templates; //remove when global "kloudspeaker" not needed
-            kloudspeaker.features = features; //remove when global "kloudspeaker" not needed
-            kloudspeaker.dom = dom; //remove when global "kloudspeaker" not needed
-
-            kloudspeaker.App.baseUrl = request.getBaseUrl(window.location.href);
-            kloudspeaker.App.pageUrl = request.getPageUrl(window.location.href);
-            kloudspeaker.App.pageParams = request.getParams(window.location.href);
-            kloudspeaker.App.mobile = (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+        require(['knockout', 'text', 'durandal/system', 'durandal/viewlocator', 'durandal/composition', 'durandal/binder', 'durandal/plugins/widget', 'kloudspeaker/localization', 'kloudspeaker/ui', 'kloudspeaker/plugins', 'kloudspeaker/request', 'kloudspeaker/events', 'kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/utils', 'kloudspeaker/templates', 'kloudspeaker/features', 'kloudspeaker/dom', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/parsers'], function(ko, txt, ds, vl, comp, binder, dw, loc, ui, plugins, request, events, service, filesystem, utils, templates, features, dom, controls) {
+            app.baseUrl = request.getBaseUrl(window.location.href);
+            app.pageUrl = request.getPageUrl(window.location.href);
+            app.pageParams = request.getParams(window.location.href);
+            app.mobile = (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
 
             service.init(false, kloudspeaker.settings["service-param"]);
 
             events.addEventHandler(function(e) {
                 if (e.type == 'session/start') {
-                    kloudspeaker.App._onSessionStart(e.payload);
+                    app._onSessionStart(e.payload);
                 } else if (e.type == 'session/end') {
                     kloudspeaker.session = {};
                     kloudspeaker.filesystem.init([]);
@@ -121,8 +87,8 @@ var kloudspeaker_defaults = {
                 }
             });
 
-            kloudspeaker.ui.initialize().done(function() {
-                kloudspeaker.App.initModules();
+            ui.initialize().done(function() {
+                app.initModules();
                 var deps = ['kloudspeaker/app', 'kloudspeaker/ui/uploader', 'kloudspeaker/ui/clipboard', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/views/main', 'kloudspeaker/ui/views/login', 'kloudspeaker/plugins/core', 'kloudspeaker/plugins/permissions'];
                 if (kloudspeaker.settings.modules.load) deps = deps.concat(kloudspeaker.settings.modules.load);
 
@@ -309,11 +275,11 @@ var kloudspeaker_defaults = {
                     //TODO show plugin registration deprecation warning?
                     if (p) {
                         for (var i = 0, j = p.length; i < j; i++)
-                            kloudspeaker.plugins.register(p[i]);
+                            plugins.register(p[i]);
                     }
 
-                    kloudspeaker.plugins.initialize().done(function() {
-                        kloudspeaker.App._initialized = true;
+                    plugins.initialize().done(function() {
+                        app._initialized = true;
                         start();
                     }).fail(onError);
                 });
@@ -322,17 +288,17 @@ var kloudspeaker_defaults = {
 
         if (kloudspeaker.settings["view-url"])
             window.onpopstate = function(event) {
-                kloudspeaker.App.onRestoreState(document.location.href, event.state);
+                app.onRestoreState(document.location.href, event.state);
             };
 
-        return kloudspeaker.App._initDf;
+        return app._initDf;
     };
 
-    kloudspeaker.App.getElement = function() {
+    app.getElement = function() {
         return $("#" + kloudspeaker.settings["app-element-id"]);
     };
 
-    kloudspeaker.App._onSessionStart = function(s) {
+    app._onSessionStart = function(s) {
         var user = s.authenticated ? {
             id: s.user_id,
             name: s.username,
@@ -387,71 +353,71 @@ var kloudspeaker_defaults = {
         df.done(function() {
             kloudspeaker.plugins.load(s.plugins).done(function() {
                 kloudspeaker.filesystem.init(kloudspeaker.session.data.folders, ((kloudspeaker.session.user && kloudspeaker.session.user.admin) ? kloudspeaker.session.data.roots : false));
-                kloudspeaker.ui.initializeLang().done(kloudspeaker.App._doStart).fail(onError);
+                kloudspeaker.ui.initializeLang().done(app._doStart).fail(onError);
             }).fail(onError);
         });
     };
 
-    kloudspeaker.App._doStart = function() {
-        if (kloudspeaker.App.activeView && kloudspeaker.App.activeView.destroy) kloudspeaker.App.activeView.destroy();
-        kloudspeaker.App.activeView = false;
-        kloudspeaker.App.activeViewId = null;
-        kloudspeaker.App.openView(kloudspeaker.App.pageParams.v || "/files/");
+    app._doStart = function() {
+        if (app.activeView && app.activeView.destroy) app.activeView.destroy();
+        app.activeView = false;
+        app.activeViewId = null;
+        app.openView(app.pageParams.v || "/files/");
     };
 
-    kloudspeaker.App.openView = function(viewId) {
+    app.openView = function(viewId) {
         var id = viewId.split("/");
 
         var onView = function(v) {
-            if (kloudspeaker.App.activeView && kloudspeaker.App.activeView.destroy) kloudspeaker.App.activeView.destroy();
+            if (app.activeView && app.activeView.destroy) app.activeView.destroy();
 
             if (v) {
-                kloudspeaker.App.activeView = v;
-                kloudspeaker.App.activeViewId = id[0];
+                app.activeView = v;
+                app.activeViewId = id[0];
             } else {
                 if (!kloudspeaker.session.user) {
                     var LoginView = require('kloudspeaker/ui/views/login');
-                    kloudspeaker.App.activeView = new LoginView();
-                    kloudspeaker.App.activeViewId = "login";
+                    app.activeView = new LoginView();
+                    app.activeViewId = "login";
                 } else {
                     var MainView = require('kloudspeaker/ui/views/main');
-                    kloudspeaker.App.activeView = new MainView();
-                    kloudspeaker.App.activeViewId = "main";
+                    app.activeView = new MainView();
+                    app.activeViewId = "main";
                 }
             }
 
-            kloudspeaker.App.activeView.init(kloudspeaker.App.getElement(), id).done(function() {
-                if (kloudspeaker.App._initDf.state() == "pending") kloudspeaker.App._initDf.resolve();
+            app.activeView.init(app.getElement(), id).done(function() {
+                if (app._initDf.state() == "pending") app._initDf.resolve();
             });
         };
 
         if (id) {
-            var custom = !!kloudspeaker.App._views[id[0]];
-            var isActiveView = (custom && kloudspeaker.App.activeViewId == id[0]) || (!custom && kloudspeaker.App.activeViewId == "main");
+            var custom = !!app._views[id[0]];
+            var isActiveView = (custom && app.activeViewId == id[0]) || (!custom && app.activeViewId == "main");
 
-            if (isActiveView) kloudspeaker.App.activeView.onRestoreView(id);
-            else kloudspeaker.App._getView(id, onView);
+            if (isActiveView) app.activeView.onRestoreView(id);
+            else app._getView(id, onView);
         } else onView();
     };
 
-    kloudspeaker.App.showFullView = function(view) {
-        kloudspeaker.App._showView(false, view, function(v) {
+    app.showFullView = function(view) {
+        app._showView(false, view, function(v) {
             if (!v) return;
 
-            kloudspeaker.App.activeView = v;
-            kloudspeaker.App.activeView.init(kloudspeaker.App.getElement(), null).done(function() {
-                if (kloudspeaker.App._initDf.state() == "pending") kloudspeaker.App._initDf.resolve();
+            app.activeView = v;
+            app.activeView.init(app.getElement(), null).done(function() {
+                if (app._initDf.state() == "pending") app._initDf.resolve();
             });
         });
     };
 
-    kloudspeaker.App._showView = function(id, view, cb) {
+    app._showView = function(id, view, cb) {
         var vm = function(v) {
-            kloudspeaker.ui.viewmodel(v.view, v.model, kloudspeaker.App.getElement().empty()).done(function(m) {
-                kloudspeaker.App.activeView = m;
+            kloudspeaker.ui.viewmodel(v.view, v.model, app.getElement().empty()).done(function(m) {
+                app.activeView = m;
                 if (id)
-                    kloudspeaker.App.activeViewId = id[0];
-                if (kloudspeaker.App._initDf.state() == "pending") kloudspeaker.App._initDf.resolve();
+                    app.activeViewId = id[0];
+                if (app._initDf.state() == "pending") app._initDf.resolve();
             });
         }
 
@@ -471,43 +437,43 @@ var kloudspeaker_defaults = {
         } else cb(view);
     }
 
-    kloudspeaker.App._getView = function(id, cb) {
-        var h = kloudspeaker.App._views[id[0]];
+    app._getView = function(id, cb) {
+        var h = app._views[id[0]];
         var view = false;
         if (!h) {
             cb(false);
             return;
         }
         if (typeof(h) == 'function') {
-            view = h(id, kloudspeaker.App.pageParams);
+            view = h(id, app.pageParams);
         } else if (h.model) {
             view = h;
         } else if (h.getView) {
-            view = h.getView(id, kloudspeaker.App.pageParams);
+            view = h.getView(id, app.pageParams);
         }
         if (!view) {
             cb(false);
             return;
         }
 
-        kloudspeaker.App._showView(id, view, cb);
+        app._showView(id, view, cb);
     };
 
-    kloudspeaker.App.onRestoreState = function(url, o) {
+    app.onRestoreState = function(url, o) {
         if (!kloudspeaker.settings["view-url"]) return;
 
         // if no view active, app is not loaded -> don't restore
-        if (!kloudspeaker.App.activeView) return;
+        if (!app.activeView) return;
 
         if (!o || !o.user_id || !kloudspeaker.session.user || kloudspeaker.session.user.id != o.user_id) return;
 
         //baseUrl = kloudspeaker.request.getBaseUrl(url);
         var params = kloudspeaker.request.getParams(url);
         if (!params.v || params.v.length < 1) return;
-        kloudspeaker.App.openView(params.v);
+        app.openView(params.v);
     };
 
-    kloudspeaker.App.storeView = function(viewId) {
+    app.storeView = function(viewId) {
         if (!kloudspeaker.settings["view-url"]) return;
         var obj = {
             user_id: kloudspeaker.session.user ? kloudspeaker.session.user.id : null
@@ -515,19 +481,19 @@ var kloudspeaker_defaults = {
         if (window.history && window.history.pushState) window.history.pushState(obj, "", "?v=" + viewId);
     };
 
-    kloudspeaker.App.registerView = function(id, h) {
-        kloudspeaker.App._views[id] = h;
+    app.registerView = function(id, h) {
+        app._views[id] = h;
     };
 
-    kloudspeaker.App.openPage = function(pageUrl) {
-        window.location = kloudspeaker.App.getPageUrl(pageUrl);
+    app.openPage = function(pageUrl) {
+        window.location = app.getPageUrl(pageUrl);
     };
 
-    kloudspeaker.App.getPageUrl = function(pageUrl) {
-        return kloudspeaker.App.pageUrl + "?v=" + pageUrl;
+    app.getPageUrl = function(pageUrl) {
+        return app.pageUrl + "?v=" + pageUrl;
     };
 
-    kloudspeaker.App.initModules = function() {
+    app.initModules = function() {
         var packages = [];
         if (kloudspeaker.settings.modules && kloudspeaker.settings.modules.paths) {
             _.each(kloudspeaker.helpers.getKeys(kloudspeaker.settings.modules.paths), function(k) {
@@ -544,7 +510,7 @@ var kloudspeaker_defaults = {
 
         //TODO extract&rewrite into real modules
 
-        define('kloudspeaker/app', [], kloudspeaker.App);
+        define('kloudspeaker/app', [], app);
         define('kloudspeaker/settings', [], kloudspeaker.settings);
         define('kloudspeaker/session', [], {
             get: function() {
@@ -592,11 +558,11 @@ var kloudspeaker_defaults = {
         kloudspeaker.ui._fileViewHandlers = [];
         define('kloudspeaker/ui/views', [], {
             getActiveView: function() {
-                return kloudspeaker.App.activeView;
+                return app.activeView;
             },
             getActiveMainView: function() {
-                if (kloudspeaker.App.activeViewId != "main") return false;
-                return kloudspeaker.App.activeView.getActiveView();
+                if (app.activeViewId != "main") return false;
+                return app.activeView.getActiveView();
             },
             getActiveFileView: function() {
                 var mv = this.getActiveMainView();
@@ -604,7 +570,7 @@ var kloudspeaker_defaults = {
                 return mv;
             },
             registerView: function(id, v) {
-                kloudspeaker.App.registerView(id, v);
+                app.registerView(id, v);
             },
             registerConfigView: function(v) {
                 kloudspeaker.ui._configViews[v.id || v.viewId] = v;
@@ -652,251 +618,5 @@ var kloudspeaker_defaults = {
         return mapped + urlParts.paramsString;
     };
 
-    window.kloudspeaker = kloudspeaker;
-
-    /* Common */
-
-    window.isArray = function(o) {
-        return Object.prototype.toString.call(o) === '[object Array]';
-    }
-
-    if (typeof String.prototype.trim !== 'function') {
-        String.prototype.trim = function() {
-            return this.replace(/^\s+|\s+$/g, '');
-        }
-    }
-
-    if (typeof String.prototype.startsWith !== 'function') {
-        String.prototype.startsWith = function(s) {
-            if (!s || s.length === 0) return false;
-            return this.substring(0, s.length) == s;
-        }
-    }
-
-    if (typeof String.prototype.endsWith !== 'function') {
-        String.prototype.endsWith = function(s) {
-            if (!s || s.length === 0) return false;
-            return this.substring(s.length - 1, 1) == s;
-        }
-    }
-
-    if (typeof String.prototype.count !== 'function') {
-        String.prototype.count = function(search) {
-            var m = this.match(new RegExp(search.toString().replace(/(?=[.\\+*?\[\^\]$(){}\|])/g, "\\"), "g"));
-            return m ? m.length : 0;
-        }
-    }
-
-    window.def = function(o) {
-        return (typeof(o) != 'undefined');
-    }
-
-    if (!Array.prototype.indexOf) {
-        Array.prototype.indexOf = function(obj, start) {
-            for (var i = (start || 0), j = this.length; i < j; i++) {
-                if (this[i] === obj) {
-                    return i;
-                }
-            }
-            return -1;
-        }
-    }
-
-    if (!Array.prototype.remove) {
-        Array.prototype.remove = function(from, to) {
-            if (typeof(to) == 'undefined' && (typeof(from) == 'object' || typeof(from) == 'function'))
-                from = this.indexOf(from);
-            if (from < 0) return;
-            var rest = this.slice((to || from) + 1 || this.length);
-            this.length = from < 0 ? this.length + from : from;
-            return this.push.apply(this, rest);
-        };
-    }
-
-    window.strpos = function(haystack, needle, offset) {
-        // Finds position of first occurrence of a string within another  
-        // 
-        // version: 1109.2015
-        // discuss at: http://phpjs.org/functions/strpos
-        // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-        // +   improved by: Onno Marsman    
-        // +   bugfixed by: Daniel Esteban
-        // +   improved by: Brett Zamir (http://brett-zamir.me)
-        var i = (haystack + '').indexOf(needle, (offset || 0));
-        return i === -1 ? false : i;
-    }
-
-    var STR_PAD_LEFT = 1;
-    var STR_PAD_RIGHT = 2;
-    var STR_PAD_BOTH = 3;
-
-    function pad(str, len, padstr, dir) {
-        if (typeof(len) == "undefined") {
-            len = 0;
-        }
-        if (typeof(padstr) == "undefined") {
-            padstr = ' ';
-        }
-        if (typeof(dir) == "undefined") {
-            dir = STR_PAD_RIGHT;
-        }
-
-        if (len + 1 >= str.length) {
-            switch (dir) {
-                case STR_PAD_LEFT:
-                    str = new Array(len + 1 - str.length).join(padstr) + str;
-                    break;
-                case STR_PAD_BOTH:
-                    var padlen = len - str.length;
-                    var right = Math.ceil(padlen / 2);
-                    var left = padlen - right;
-                    str = new Array(left + 1).join(padstr) + str + new Array(right + 1).join(padstr);
-                    break;
-                default:
-                    str = str + new Array(len + 1 - str.length).join(padstr);
-                    break;
-            }
-        }
-        return str;
-    }
-
-    /**
-     *
-     *  Base64 encode / decode
-     *  http://www.webtoolkit.info/
-     *
-     **/
-
-    window.Base64 = {
-
-        // private property
-        _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
-
-        // public method for encoding
-        encode: function(input) {
-            var output = "";
-            var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
-            var i = 0;
-
-            input = window.Base64._utf8_encode(input);
-
-            while (i < input.length) {
-
-                chr1 = input.charCodeAt(i++);
-                chr2 = input.charCodeAt(i++);
-                chr3 = input.charCodeAt(i++);
-
-                enc1 = chr1 >> 2;
-                enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-                enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-                enc4 = chr3 & 63;
-
-                if (isNaN(chr2)) {
-                    enc3 = enc4 = 64;
-                } else if (isNaN(chr3)) {
-                    enc4 = 64;
-                }
-
-                output = output +
-                    this._keyStr.charAt(enc1) + this._keyStr.charAt(enc2) +
-                    this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4);
-
-            }
-
-            return output;
-        },
-
-        // public method for decoding
-        decode: function(input) {
-            var output = "";
-            var chr1, chr2, chr3;
-            var enc1, enc2, enc3, enc4;
-            var i = 0;
-
-            input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
-
-            while (i < input.length) {
-
-                enc1 = this._keyStr.indexOf(input.charAt(i++));
-                enc2 = this._keyStr.indexOf(input.charAt(i++));
-                enc3 = this._keyStr.indexOf(input.charAt(i++));
-                enc4 = this._keyStr.indexOf(input.charAt(i++));
-
-                chr1 = (enc1 << 2) | (enc2 >> 4);
-                chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
-                chr3 = ((enc3 & 3) << 6) | enc4;
-
-                output = output + String.fromCharCode(chr1);
-
-                if (enc3 != 64) {
-                    output = output + String.fromCharCode(chr2);
-                }
-                if (enc4 != 64) {
-                    output = output + String.fromCharCode(chr3);
-                }
-
-            }
-
-            output = window.Base64._utf8_decode(output);
-
-            return output;
-
-        },
-
-        // private method for UTF-8 encoding
-        _utf8_encode: function(string) {
-            string = string.replace(/\r\n/g, "\n");
-            var utftext = "";
-
-            for (var n = 0; n < string.length; n++) {
-
-                var c = string.charCodeAt(n);
-
-                if (c < 128) {
-                    utftext += String.fromCharCode(c);
-                } else if ((c > 127) && (c < 2048)) {
-                    utftext += String.fromCharCode((c >> 6) | 192);
-                    utftext += String.fromCharCode((c & 63) | 128);
-                } else {
-                    utftext += String.fromCharCode((c >> 12) | 224);
-                    utftext += String.fromCharCode(((c >> 6) & 63) | 128);
-                    utftext += String.fromCharCode((c & 63) | 128);
-                }
-
-            }
-
-            return utftext;
-        },
-
-        // private method for UTF-8 decoding
-        _utf8_decode: function(utftext) {
-            var string = "";
-            var i = 0;
-            var c = 0,
-                c1 = 0,
-                c2 = 0;
-
-            while (i < utftext.length) {
-
-                c = utftext.charCodeAt(i);
-
-                if (c < 128) {
-                    string += String.fromCharCode(c);
-                    i++;
-                } else if ((c > 191) && (c < 224)) {
-                    c2 = utftext.charCodeAt(i + 1);
-                    string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
-                    i += 2;
-                } else {
-                    c2 = utftext.charCodeAt(i + 1);
-                    var c3 = utftext.charCodeAt(i + 2);
-                    string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
-                    i += 3;
-                }
-
-            }
-
-            return string;
-        }
-    }
-}(window.jQuery);
+    return app;
+});

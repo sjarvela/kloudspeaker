@@ -1,52 +1,42 @@
-/**
- * ui.js
- *
- * Copyright 2015- Samuli Järvelä
- * Released under GPL License.
- *
- * License: http://www.kloudspeaker.com/license.php
- */
+define(['kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/parsers', 'kloudspeaker/utils'], function(controls, dialogs, formatters, parsers, utils) {
+    //TODO remove global references
 
-! function($, kloudspeaker) {
+    var ui = {
+        controls: controls, //TODO remove
+        dialogs: dialogs, //TODO remove
+        formatters: formatters, //TODO remove
+        parsers: parsers //TODO remove
+    };
 
-    "use strict";
+    ui._activePopup = false;
 
-    /* UI */
-    //kloudspeaker.ui.uploader = false;
-    //kloudspeaker.ui.draganddrop = false;
-    kloudspeaker.ui._activePopup = false;
-
-    kloudspeaker.ui.initialize = function() {
-        kloudspeaker.ui.controls = require('kloudspeaker/ui/controls'); //TODO remove
-        kloudspeaker.ui.dialogs = require('kloudspeaker/ui/dialogs'); //TODO remove
-        kloudspeaker.ui.formatters = require('kloudspeaker/ui/formatters'); //TODO remove
-        kloudspeaker.ui.parsers = require('kloudspeaker/ui/parsers'); //TODO remove
+    ui.initialize = function() {
 
         var list = [];
-        list.push(kloudspeaker.ui.initializeLang());
+        list.push(ui.initializeLang());
 
         // add invisible download frame
         $("body").append('<div style="width: 0px; height: 0px; overflow: hidden;"><iframe id="kloudspeaker-download-frame" src=""></iframe></div>');
 
         $(window).click(function(e) {
             // hide popups when clicked outside
-            if (kloudspeaker.ui._activePopup) {
-                if (e && e.toElement && kloudspeaker.ui._activePopup.element) {
-                    var popupElement = kloudspeaker.ui._activePopup.element();
+            if (ui._activePopup) {
+                if (e && e.toElement && ui._activePopup.element) {
+                    var popupElement = ui._activePopup.element();
                     if (popupElement.has($(e.toElement)).length > 0) return;
                 }
-                kloudspeaker.ui.hideActivePopup();
+                ui.hideActivePopup();
             }
         });
         list.push(kloudspeaker.templates.load("dialogs.html"));
 
-        //if (!kloudspeaker.ui.draganddrop) kloudspeaker.ui.draganddrop = (window.Modernizr.draganddrop) ? new kloudspeaker.HTML5DragAndDrop() : new kloudspeaker.JQueryDragAndDrop();
-        /*if (!kloudspeaker.ui.uploader) {
+        //if (!ui.draganddrop) ui.draganddrop = (window.Modernizr.draganddrop) ? new kloudspeaker.HTML5DragAndDrop() : new kloudspeaker.JQueryDragAndDrop();
+        /*if (!ui.uploader) {
             var Uploader = require("kloudspeaker/ui/uploader");
-            kloudspeaker.ui.uploader = new Uploader();
+            ui.uploader = new Uploader();
         }*/
-        //if (!kloudspeaker.ui.clipboard) new kloudspeaker.ZeroClipboard(function(cb) {
-        //    kloudspeaker.ui.clipboard = cb;
+        //if (!ui.clipboard) new kloudspeaker.ZeroClipboard(function(cb) {
+        //    ui.clipboard = cb;
         //});
 
         var df = $.Deferred();
@@ -54,69 +44,69 @@
         return df;
     };
 
-    kloudspeaker.ui.initializeLang = function() {
+    ui.initializeLang = function() {
         var df = $.Deferred();
         var lang = (kloudspeaker.session.user && kloudspeaker.session.user.lang) ? kloudspeaker.session.user.lang : (kloudspeaker.settings.language["default"] || 'en');
 
         //TODO remove global
-        if (!kloudspeaker.ui.texts) kloudspeaker.ui.texts = require('kloudspeaker/localization');
+        if (!ui.texts) ui.texts = require('kloudspeaker/localization');
 
-        if (kloudspeaker.ui.texts.locale && kloudspeaker.ui.texts.locale == lang) return df.resolve();
+        if (ui.texts.locale && ui.texts.locale == lang) return df.resolve();
 
-        var pluginTextsLoaded = kloudspeaker.ui.texts._pluginTextsLoaded;
-        if (kloudspeaker.ui.texts.locale) {
-            kloudspeaker.App.getElement().removeClass("lang-" + kloudspeaker.ui.texts.locale);
-            kloudspeaker.ui.texts.clear();
+        var pluginTextsLoaded = ui.texts._pluginTextsLoaded;
+        if (ui.texts.locale) {
+            kloudspeaker.App.getElement().removeClass("lang-" + ui.texts.locale);
+            ui.texts.clear();
         }
 
         var list = [];
-        list.push(kloudspeaker.ui.texts.load(lang).done(function(locale) {
+        list.push(ui.texts.load(lang).done(function(locale) {
             $("html").attr("lang", locale);
             kloudspeaker.App.getElement().addClass("lang-" + locale);
         }));
 
         if (pluginTextsLoaded) {
             $.each(pluginTextsLoaded, function(i, id) {
-                list.push(kloudspeaker.ui.texts.loadPlugin(id));
+                list.push(ui.texts.loadPlugin(id));
             });
         }
         $.when.apply($, list).done(df.resolve).fail(df.reject);
         return df;
     };
 
-    kloudspeaker.ui.hideActivePopup = function() {
-        if (kloudspeaker.ui._activePopup) kloudspeaker.ui._activePopup.hide();
-        kloudspeaker.ui._activePopup = false;
+    ui.hideActivePopup = function() {
+        if (ui._activePopup) ui._activePopup.hide();
+        ui._activePopup = false;
     };
 
-    kloudspeaker.ui.activePopup = function(p) {
-        if (p === undefined) return kloudspeaker.ui._activePopup;
-        if (kloudspeaker.ui._activePopup) {
-            if (p.parentPopupId && kloudspeaker.ui._activePopup.id == p.parentPopupId) return;
-            kloudspeaker.ui._activePopup.hide();
+    ui.activePopup = function(p) {
+        if (p === undefined) return ui._activePopup;
+        if (ui._activePopup) {
+            if (p.parentPopupId && ui._activePopup.id == p.parentPopupId) return;
+            ui._activePopup.hide();
         }
-        kloudspeaker.ui._activePopup = p;
-        if (!kloudspeaker.ui._activePopup.id) kloudspeaker.ui._activePopup.id = new Date().getTime();
-        return kloudspeaker.ui._activePopup.id;
+        ui._activePopup = p;
+        if (!ui._activePopup.id) ui._activePopup.id = new Date().getTime();
+        return ui._activePopup.id;
     };
 
-    kloudspeaker.ui.isActivePopup = function(id) {
-        return (kloudspeaker.ui._activePopup && kloudspeaker.ui._activePopup.id == id);
+    ui.isActivePopup = function(id) {
+        return (ui._activePopup && ui._activePopup.id == id);
     };
 
-    kloudspeaker.ui.removeActivePopup = function(id) {
-        if (!id || !kloudspeaker.ui.isActivePopup(id)) return;
-        kloudspeaker.ui._activePopup = false;
+    ui.removeActivePopup = function(id) {
+        if (!id || !ui.isActivePopup(id)) return;
+        ui._activePopup = false;
     };
 
-    kloudspeaker.ui.download = function(url) {
+    ui.download = function(url) {
         if (kloudspeaker.App.mobile)
             window.open(url);
         else
             $("#kloudspeaker-download-frame").attr("src", url);
     };
 
-    kloudspeaker.ui.viewmodel = function(view, model, $target) {
+    ui.viewmodel = function(view, model, $target) {
         if (!model) return null;
 
         var df = $.Deferred();
@@ -149,13 +139,13 @@
                     activationData: ctx,
                     compositionComplete: function() {
                         var $e = $(this.parent);
-                        kloudspeaker.ui.process($e, ['localize']);
+                        ui.process($e, ['localize']);
 
                         df.resolve(this.model, $e);
                     }
                 };
                 if (_view) c.view = _view;
-                kloudspeaker.ui._composition.compose($target[0], c, {});
+                ui._composition.compose($target[0], c, {});
             } else {
                 require([_model], function(m) {
                     if (typeof(m) == 'function') m = m();
@@ -172,37 +162,37 @@
 
     /**/
 
-    kloudspeaker.ui.assign = function(h, id, c) {
+    ui.assign = function(h, id, c) {
         if (!h || !id || !c) return;
         if (!h.controls) h.controls = {};
         h.controls[id] = c;
     };
 
-    kloudspeaker.ui.process = function($e, ids, handler) {
+    ui.process = function($e, ids, handler) {
         $.each(ids, function(i, k) {
-            if (kloudspeaker.ui.handlers[k]) kloudspeaker.ui.handlers[k]($e, handler);
+            if (ui.handlers[k]) ui.handlers[k]($e, handler);
         });
     };
 
-    kloudspeaker.ui.handlers = {
+    ui.handlers = {
         localize: function(p, h) {
             p.find(".localized").each(function() {
                 var $t = $(this);
                 var key = $t.attr('title-key');
                 if (key) {
-                    $t.attr("title", kloudspeaker.ui.texts.get(key));
+                    $t.attr("title", ui.texts.get(key));
                     $t.removeAttr('title-key');
                 }
 
                 key = $t.attr('text-key');
                 if (key) {
-                    $t.prepend(kloudspeaker.ui.texts.get(key));
+                    $t.prepend(ui.texts.get(key));
                     $t.removeAttr('text-key');
                 }
             });
             p.find("input.hintbox").each(function() {
                 var $this = $(this);
-                var hint = kloudspeaker.ui.texts.get($this.attr('hint-key'));
+                var hint = ui.texts.get($this.attr('hint-key'));
                 $this.attr("placeholder", hint).removeAttr("hint-key");
             }); //.placeholder();
         },
@@ -229,30 +219,30 @@
         bubble: function(p, h) {
             p.find(".bubble-trigger").each(function() {
                 var $t = $(this);
-                var b = kloudspeaker.ui.controls.bubble({
+                var b = ui.controls.bubble({
                     element: $t,
                     handler: h
                 });
-                kloudspeaker.ui.assign(h, $t.attr('id'), b);
+                ui.assign(h, $t.attr('id'), b);
             });
         },
 
         radio: function(p, h) {
             p.find(".kloudspeaker-radio").each(function() {
                 var $t = $(this);
-                var r = kloudspeaker.ui.controls.radio($t, h);
-                kloudspeaker.ui.assign(h, $t.attr('id'), r);
+                var r = ui.controls.radio($t, h);
+                ui.assign(h, $t.attr('id'), r);
             });
         }
     };
 
-    kloudspeaker.ui.window = {
+    ui.window = {
         open: function(url) {
             window.open(url);
         }
     };
 
-    kloudspeaker.ui.actions = {
+    ui.actions = {
         handleDenied: function(action, data, msgTitleDenied, msgTitleAccept) {
             var df = $.Deferred();
             var handlers = [];
@@ -293,24 +283,24 @@
             }
             if (nonAcceptable.length === 0) {
                 // retry with accept keys
-                kloudspeaker.ui.dialogs.confirmActionAccept(msgTitleAccept, validationMessages, function() {
+                ui.dialogs.confirmActionAccept(msgTitleAccept, validationMessages, function() {
                     df.resolve(acceptKeys);
                 }, df.reject);
             } else {
-                kloudspeaker.ui.dialogs.showActionDeniedMessage(msgTitleDenied, nonAcceptable);
+                ui.dialogs.showActionDeniedMessage(msgTitleDenied, nonAcceptable);
                 df.reject();
             }
             return df;
         }
     };
 
-    kloudspeaker.ui.preloadImages = function(a) {
+    ui.preloadImages = function(a) {
         $.each(a, function() {
             $('<img/>')[0].src = this;
         });
     };
 
-    kloudspeaker.ui.FullErrorView = function(title, msg) {
+    ui.FullErrorView = function(title, msg) {
         this.show = function() {
             this.init(kloudspeaker.App.getElement());
         };
@@ -327,4 +317,6 @@
             }
         };
     };
-}(window.jQuery, window.kloudspeaker);
+
+    return ui;
+});
