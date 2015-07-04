@@ -108,204 +108,208 @@ var kloudspeaker_defaults = {
             if (kloudspeaker.App._initDf.state() == "pending") kloudspeaker.App._initDf.reject();
         };
 
+        //TODO tear down manual dependency load
+        require(['knockout', 'text', 'durandal/system', 'durandal/viewlocator', 'durandal/composition', 'durandal/binder', 'durandal/plugins/widget', 'kloudspeaker/localization', 'kloudspeaker/plugins'], function(ko, txt, ds, vl, comp, binder, dw, loc, plugins) {
+            kloudspeaker.plugins = plugins;     //remove when global "kloudspeaker" not needed
+            
+            kloudspeaker.ui.initialize().done(function() {
+                kloudspeaker.App.initModules();
+                var deps = ['kloudspeaker/app', 'kloudspeaker/ui/uploader', 'kloudspeaker/ui/clipboard', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/views/main', 'kloudspeaker/ui/views/login', 'kloudspeaker/plugins/core', 'kloudspeaker/plugins/permissions'];
+                if (kloudspeaker.settings.modules.load) deps = deps.concat(kloudspeaker.settings.modules.load);
 
-        kloudspeaker.ui.initialize().done(function() {
-            kloudspeaker.App.initModules();
-            var deps = ['knockout', 'text', 'durandal/system', 'durandal/viewlocator', 'durandal/composition', 'durandal/binder', 'durandal/plugins/widget', 'kloudspeaker/app', 'kloudspeaker/ui/uploader', 'kloudspeaker/ui/clipboard', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/views/main', 'kloudspeaker/ui/views/login', 'kloudspeaker/plugins/core', 'kloudspeaker/plugins/permissions'];
-            if (kloudspeaker.settings.modules.load) deps = deps.concat(kloudspeaker.settings.modules.load);
+                // wait for modules initialization
+                require(deps, function(uploader, clipboard) {
+                    ds.debug(!!kloudspeaker.settings.debug); //TODO remove
+                    kloudspeaker.ui._composition = comp;
 
-            // wait for modules initialization
-            require(deps, function(ko, txt, ds, vl, comp, binder, dw, app, uploader, clipboard) {
-                ds.debug(!!kloudspeaker.settings.debug); //TODO remove
-                kloudspeaker.ui._composition = comp;
+                    //install durandal widget plugin
+                    dw.install({});
+                    dw.registerKind('time-picker');
+                    dw.registerKind('config-list');
 
-                //install durandal widget plugin
-                dw.install({});
-                dw.registerKind('time-picker');
-                dw.registerKind('config-list');
-
-                //configure knockout validation
-                ko.validation.init({
-                    insertMessages: false,
-                    decorateInputElement: true,
-                    errorElementClass: 'error',
-                    errorMessageClass: 'help-inline',
-                    parseInputAttributes: true,
-                    //decorateElementOnModified: false,
-                });
-                ko.validation.rules.areSame = {
-                    getValue: function(o) {
-                        return (typeof o === 'function' ? o() : o);
-                    },
-                    validator: function(val, otherField) {
-                        var ov = this.getValue(otherField);
-                        return val === ov;
-                    },
-                    message: 'The fields must have the same value'
-                };
-                ko.validation.registerExtenders();
-
-                // knockout
-                ko.bindingHandlers.enterkey = {
-                    init: function(element, valueAccessor, allBindings, viewModel) {
-                        var callback = valueAccessor();
-                        $(element).keypress(function(event) {
-                            var keyCode = (event.which ? event.which : event.keyCode);
-                            if (keyCode === 13) {
-                                callback.call(viewModel);
-                                return false;
-                            }
-                            return true;
-                        });
-                    }
-                };
-
-                // format
-                var _format = function(e, va, ab, vm, bc) {
-                    var $e = $(e);
-                    var v = va();
-                    var value = ko.unwrap(v);
-                    var formatter = ab.get('formatter');
-                    var val = '';
-                    if (formatter) {
-                        if (typeof(formatter) === 'function') val = formatter(value);
-                        else val = formatter.format(value);
-                    } else {
-                        if (value)
-                            val = '' + value;
-                    }
-
-                    var target = $e.attr('data-format-target');
-                    if (!target || target == 'text')
-                        $e.text(val);
-                    else if (target == 'value')
-                        $e.val(val);
-                };
-                comp.addBindingHandler('format', {
-                    //init: _format,
-                    update: _format
-                });
-
-                // i18n
-                var _i18n = function(e, va) {
-                    var v = va();
-                    var value = ko.unwrap(v);
-                    var loc = kloudspeaker.ui.texts.get(value) || '';
-                    var $e = $(e);
-                    var target = $e.attr('data-i18n-bind-target');
-                    if (target && target != 'text')
-                        $e.attr(target, loc);
-                    else
-                        $e.text(loc);
-                };
-                comp.addBindingHandler('i18n', {
-                    //init: _i18n,
-                    update: _i18n
-                });
-
-                var _uploader = function(e, va) {
-                    var v = va();
-                    var value = ko.unwrap(v);
-                    var $e = $(e);
-                    var spec = {
-                        url: value.url
+                    //configure knockout validation
+                    ko.validation.init({
+                        insertMessages: false,
+                        decorateInputElement: true,
+                        errorElementClass: 'error',
+                        errorMessageClass: 'help-inline',
+                        parseInputAttributes: true,
+                        //decorateElementOnModified: false,
+                    });
+                    ko.validation.rules.areSame = {
+                        getValue: function(o) {
+                            return (typeof o === 'function' ? o() : o);
+                        },
+                        validator: function(val, otherField) {
+                            var ov = this.getValue(otherField);
+                            return val === ov;
+                        },
+                        message: 'The fields must have the same value'
                     };
-                    if (value.dropTargetId) spec.dropElement = $("#" + value.dropTargetId);
-                    if (value.handler) spec.handler = value.handler;
-                    uploader.initUploadWidget($e, spec);
-                }
-                comp.addBindingHandler('uploader', {
-                    //init: _i18n,
-                    update: _uploader
-                });
+                    ko.validation.registerExtenders();
 
-                comp.addBindingHandler('dom-effect', {
-                    init: function(e, va) {
-                        var v = va();
-                        var value = ko.unwrap(v);
-                        var $e = $(e);
-                        if (value == 'hover') {
-                            $e.hover(function() {
-                                $e.addClass("hover");
-                            }, function() {
-                                $e.removeClass("hover");
+                    // knockout
+                    ko.bindingHandlers.enterkey = {
+                        init: function(element, valueAccessor, allBindings, viewModel) {
+                            var callback = valueAccessor();
+                            $(element).keypress(function(event) {
+                                var keyCode = (event.which ? event.which : event.keyCode);
+                                if (keyCode === 13) {
+                                    callback.call(viewModel);
+                                    return false;
+                                }
+                                return true;
                             });
                         }
-                    }
-                });
+                    };
 
-                comp.addBindingHandler('clipboard', {
-                    update: function(e, va) {
+                    // format
+                    var _format = function(e, va, ab, vm, bc) {
+                        var $e = $(e);
+                        var v = va();
+                        var value = ko.unwrap(v);
+                        var formatter = ab.get('formatter');
+                        var val = '';
+                        if (formatter) {
+                            if (typeof(formatter) === 'function') val = formatter(value);
+                            else val = formatter.format(value);
+                        } else {
+                            if (value)
+                                val = '' + value;
+                        }
+
+                        var target = $e.attr('data-format-target');
+                        if (!target || target == 'text')
+                            $e.text(val);
+                        else if (target == 'value')
+                            $e.val(val);
+                    };
+                    comp.addBindingHandler('format', {
+                        //init: _format,
+                        update: _format
+                    });
+
+                    // i18n
+                    var _i18n = function(e, va) {
+                        var v = va();
+                        var value = ko.unwrap(v);
+                        var loc = kloudspeaker.ui.texts.get(value) || '';
+                        var $e = $(e);
+                        var target = $e.attr('data-i18n-bind-target');
+                        if (target && target != 'text')
+                            $e.attr(target, loc);
+                        else
+                            $e.text(loc);
+                    };
+                    comp.addBindingHandler('i18n', {
+                        //init: _i18n,
+                        update: _i18n
+                    });
+
+                    var _uploader = function(e, va) {
                         var v = va();
                         var value = ko.unwrap(v);
                         var $e = $(e);
+                        var spec = {
+                            url: value.url
+                        };
+                        if (value.dropTargetId) spec.dropElement = $("#" + value.dropTargetId);
+                        if (value.handler) spec.handler = value.handler;
+                        uploader.initUploadWidget($e, spec);
+                    }
+                    comp.addBindingHandler('uploader', {
+                        //init: _i18n,
+                        update: _uploader
+                    });
 
-                        if (!clipboard.isInitialized()) {
-                            $e.addClass("no-clipboard");
-                            return;
-                        } else {
-                            clipboard.enableCopy($e, (typeof(value.data) === 'function' ? value.data() : value.data), {
-                                onMouseOver: function($e, clip) {
-                                    if (value.hand) clip.setHandCursor(true);
-                                    if (value.hover) $e.addClass("hover");
-                                },
-                                onMouseOut: function($e) {
-                                    if (value.hover) $e.removeClass("hover");
+                    comp.addBindingHandler('dom-effect', {
+                        init: function(e, va) {
+                            var v = va();
+                            var value = ko.unwrap(v);
+                            var $e = $(e);
+                            if (value == 'hover') {
+                                $e.hover(function() {
+                                    $e.addClass("hover");
+                                }, function() {
+                                    $e.removeClass("hover");
+                                });
+                            }
+                        }
+                    });
+
+                    comp.addBindingHandler('clipboard', {
+                        update: function(e, va) {
+                            var v = va();
+                            var value = ko.unwrap(v);
+                            var $e = $(e);
+
+                            if (!clipboard.isInitialized()) {
+                                $e.addClass("no-clipboard");
+                                return;
+                            } else {
+                                clipboard.enableCopy($e, (typeof(value.data) === 'function' ? value.data() : value.data), {
+                                    onMouseOver: function($e, clip) {
+                                        if (value.hand) clip.setHandCursor(true);
+                                        if (value.hover) $e.addClass("hover");
+                                    },
+                                    onMouseOut: function($e) {
+                                        if (value.hover) $e.removeClass("hover");
+                                    }
+                                });
+                            }
+                        }
+                    });
+
+                    binder.binding = function(obj, view) {
+                        $(view).find("[data-i18n]").each(function() {
+                            var $t = $(this);
+                            var key = $t.attr("data-i18n");
+                            var attr = false;
+                            if (key.indexOf('[') === 0) {
+                                var parts = key.split(']');
+                                key = parts[1];
+                                attr = parts[0].substr(1, parts[0].length - 1);
+                            }
+                            if (!attr) $t.text(kloudspeaker.ui.texts.get(key));
+                            else $t.attr(attr, kloudspeaker.ui.texts.get(key));
+                        });
+                    };
+
+                    var modulesPath = 'viewmodels';
+                    vl.useConvention(modulesPath, kloudspeaker.settings['templates-path']);
+                    var reg = new RegExp(escape(modulesPath), 'gi');
+                    vl.convertModuleIdToViewId = function(moduleId) {
+                        //var path = moduleId.replace(reg, viewsPath);
+                        var path = moduleId;
+                        if (moduleId.startsWith('viewmodels/'))
+                            path = viewsPath + moduleId.substring(11);
+                        else {
+                            _.each(packages, function(p) {
+                                var pn = p.name + '/';
+                                if (moduleId.startsWith(pn)) {
+                                    path = p.location + "/views/" + moduleId.substring(pn.length);
+                                    return false;
                                 }
                             });
                         }
+                        //TODO map
+                        console.log("Resolve view:" + moduleId + " -> " + path);
+                        return path;
+                    };
+
+                    //TODO show plugin registration deprecation warning?
+                    if (p) {
+                        for (var i = 0, j = p.length; i < j; i++)
+                            kloudspeaker.plugins.register(p[i]);
                     }
+
+                    kloudspeaker.plugins.initialize().done(function() {
+                        kloudspeaker.App._initialized = true;
+                        start();
+                    }).fail(onError);
                 });
-
-                binder.binding = function(obj, view) {
-                    $(view).find("[data-i18n]").each(function() {
-                        var $t = $(this);
-                        var key = $t.attr("data-i18n");
-                        var attr = false;
-                        if (key.indexOf('[') === 0) {
-                            var parts = key.split(']');
-                            key = parts[1];
-                            attr = parts[0].substr(1, parts[0].length - 1);
-                        }
-                        if (!attr) $t.text(kloudspeaker.ui.texts.get(key));
-                        else $t.attr(attr, kloudspeaker.ui.texts.get(key));
-                    });
-                };
-
-                var modulesPath = 'viewmodels';
-                vl.useConvention(modulesPath, kloudspeaker.settings['templates-path']);
-                var reg = new RegExp(escape(modulesPath), 'gi');
-                vl.convertModuleIdToViewId = function(moduleId) {
-                    //var path = moduleId.replace(reg, viewsPath);
-                    var path = moduleId;
-                    if (moduleId.startsWith('viewmodels/'))
-                        path = viewsPath + moduleId.substring(11);
-                    else {
-                        _.each(packages, function(p) {
-                            var pn = p.name + '/';
-                            if (moduleId.startsWith(pn)) {
-                                path = p.location + "/views/" + moduleId.substring(pn.length);
-                                return false;
-                            }
-                        });
-                    }
-                    //TODO map
-                    console.log("Resolve view:" + moduleId + " -> " + path);
-                    return path;
-                };
-
-                //TODO show plugin registration deprecation warning?
-                if (p) {
-                    for (var i = 0, j = p.length; i < j; i++)
-                        kloudspeaker.plugins.register(p[i]);
-                }
-
-                kloudspeaker.plugins.initialize().done(function() {
-                    kloudspeaker.App._initialized = true;
-                    start();
-                }).fail(onError);
-            });
-        }).fail(onError);
+            }).fail(onError);
+        });
 
         if (kloudspeaker.settings["view-url"])
             window.onpopstate = function(event) {
@@ -542,7 +546,7 @@ var kloudspeaker_defaults = {
         define('kloudspeaker/events', [], kloudspeaker.events);
         define('kloudspeaker/request', [], kloudspeaker.request);
         define('kloudspeaker/service', [], kloudspeaker.service);
-        define('kloudspeaker/plugins', [], kloudspeaker.plugins);
+        //define('kloudspeaker/plugins', [], kloudspeaker.plugins);
         define('kloudspeaker/features', [], kloudspeaker.features);
         define('kloudspeaker/dom', [], kloudspeaker.dom);
         define('kloudspeaker/utils', [], kloudspeaker.helpers);
@@ -565,7 +569,7 @@ var kloudspeaker_defaults = {
         /*define('kloudspeaker/ui/clipboard', [], function() {
             return kloudspeaker.ui.clipboard;
         });*/
-        define('kloudspeaker/localization', [], function() {
+        /*define('kloudspeaker/localization', [], function() {
             return {
                 registerPluginResource: function(pluginId) {
                     //TODO refactor localization into separate module
@@ -574,7 +578,7 @@ var kloudspeaker_defaults = {
                     kloudspeaker.ui.texts.loadPlugin(pluginId);
                 }
             }
-        });
+        });*/
 
         kloudspeaker.ui._configViews = {};
         kloudspeaker.ui._fileViewHandlers = [];
@@ -1292,164 +1296,8 @@ var kloudspeaker_defaults = {
 
     /* PLUGINS */
 
-    var pl = kloudspeaker.plugins;
-    pl._list = {};
-
-    pl.register = function(p) {
-        var id = p.id;
-        if (!id) return;
-        if (pl._list[id]) return;
-
-        pl._list[id] = p;
-    };
-
-    pl.initialize = function(cb) {
-        var df = $.Deferred();
-        var l = [];
-        for (var id in pl._list) {
-            var p = pl._list[id];
-            if (p.initialized) continue;
-
-            if (p.initialize) {
-                var settings = ((kloudspeaker.settings.plugins && kloudspeaker.settings.plugins[id]) ? kloudspeaker.settings.plugins[id] : false) || {};
-                p.initialize(settings);
-            }
-            if (p.resources) {
-                var pid = p.backendPluginId || id;
-                if (p.resources.texts) {
-                    if (kloudspeaker.settings.texts_js)
-                        l.push(kloudspeaker.dom.importScript(kloudspeaker.plugins.getJsLocalizationUrl(pid)));
-                    else
-                        l.push(kloudspeaker.ui.texts.loadPlugin(pid));
-                }
-                if (p.resources.css) kloudspeaker.dom.importCss(kloudspeaker.plugins.getStyleUrl(pid));
-            }
-            p.initialized = true;
-        }
-        if (l.length === 0) {
-            return df.resolve().promise();
-        }
-        $.when.apply($, l).done(df.resolve).fail(df.reject);
-        return df.promise();
-    };
-
-    pl.load = function(list) {
-        var df = $.Deferred();
-        if (!list) return df.resolve();
-
-        var l = [];
-        $.each(kloudspeaker.helpers.getKeys(list), function(i, k) {
-            var p = list[k];
-            if (p.client_plugin) l.push(kloudspeaker.dom.importScript(p.client_plugin));
-        });
-        if (l.length === 0) return df.resolve();
-
-        $.when.apply($, l).done(function() {
-            pl.initialize().done(df.resolve);
-        });
-        return df;
-    };
-
-    pl.get = function(id) {
-        if (!window.def(id)) return pl._list;
-        return pl._list[id];
-    };
-
-    pl.exists = function(id) {
-        return !!pl._list[id];
-    };
-
-    pl.url = function(id, p, admin) {
-        var ps = kloudspeaker.session && kloudspeaker.session.data.plugins[id];
-        var custom = (ps && ps.custom);
-
-        var url = custom ? kloudspeaker.session.data.resources.custom_url : kloudspeaker.settings["service-path"];
-        url = url + "plugin/" + id;
-
-        if (!p) return url;
-        return url + (admin ? "/admin/" : "/client/") + p;
-    };
-
-    pl.adminUrl = function(id, p) {
-        return pl.url(id) + "/admin/" + p;
-    };
-
-    pl.getLocalizationUrl = function(id) {
-        return pl.url(id) + "/localization/texts_" + kloudspeaker.ui.texts.locale + ".json";
-    };
-
-    pl.getStyleUrl = function(id, admin) {
-        return pl.url(id, "style.css", admin);
-    };
-
-    pl.getItemContextRequestData = function(item) {
-        var requestData = {};
-        for (var id in pl._list) {
-            var plugin = pl._list[id];
-            if (!plugin.itemContextRequestData) continue;
-            var data = plugin.itemContextRequestData(item);
-            if (!data) continue;
-            requestData[id] = data;
-        }
-        return requestData;
-    };
-
-    pl.getItemContextPlugins = function(item, ctx) {
-        var data = {};
-        if (!ctx) return data;
-        var d = ctx.details;
-        if (!d || !d.plugins) return data;
-        for (var id in pl._list) {
-            var plugin = pl._list[id];
-            if (!plugin.itemContextHandler) continue;
-            var pluginData = plugin.itemContextHandler(item, ctx, d.plugins[id]);
-            if (pluginData) data[id] = pluginData;
-        }
-        return data;
-    };
-
-    pl.getItemCollectionPlugins = function(items, ctx) {
-        var data = {};
-        if (!items || !window.isArray(items) || items.length < 1) return data;
-
-        for (var id in pl._list) {
-            var plugin = pl._list[id];
-            if (!plugin.itemCollectionHandler) continue;
-            var pluginData = plugin.itemCollectionHandler(items, ctx);
-            if (pluginData) data[id] = pluginData;
-        }
-        return data;
-    };
-
-    pl.getMainViewPlugins = function() {
-        var plugins = [];
-        for (var id in pl._list) {
-            var plugin = pl._list[id];
-            if (!plugin.mainViewHandler) continue;
-            plugins.push(plugin);
-        }
-        return plugins;
-    };
-
-    pl.getFileViewPlugins = function() {
-        var plugins = [];
-        for (var id in pl._list) {
-            var plugin = pl._list[id];
-            if (!plugin.fileViewHandler) continue;
-            plugins.push(plugin);
-        }
-        return plugins;
-    };
-
-    pl.getConfigViewPlugins = function() {
-        var plugins = [];
-        for (var id in pl._list) {
-            var plugin = pl._list[id];
-            if (!plugin.configViewHandler) continue;
-            plugins.push(plugin);
-        }
-        return plugins;
-    };
+    //var pl = kloudspeaker.plugins;
+    
 
     /* FEATURES */
 
