@@ -109,7 +109,7 @@ var kloudspeaker_defaults = {
         };
 
         //TODO tear down manual dependency load
-        require(['knockout', 'text', 'durandal/system', 'durandal/viewlocator', 'durandal/composition', 'durandal/binder', 'durandal/plugins/widget', 'kloudspeaker/localization', 'kloudspeaker/plugins', 'kloudspeaker/ui/controls'], function(ko, txt, ds, vl, comp, binder, dw, loc, plugins, controls) {
+        require(['knockout', 'text', 'durandal/system', 'durandal/viewlocator', 'durandal/composition', 'durandal/binder', 'durandal/plugins/widget', 'kloudspeaker/localization', 'kloudspeaker/plugins', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/parsers'], function(ko, txt, ds, vl, comp, binder, dw, loc, plugins, controls) {
             kloudspeaker.plugins = plugins;     //remove when global "kloudspeaker" not needed
 
             kloudspeaker.ui.initialize().done(function() {
@@ -561,7 +561,6 @@ var kloudspeaker_defaults = {
             download: kloudspeaker.ui.download,
             process: kloudspeaker.ui.process,
             handlers: kloudspeaker.ui.handlers,
-            itemContext: kloudspeaker.ui.itemContext,
             viewmodel: kloudspeaker.ui.viewmodel,
         });
         //define('kloudspeaker/ui/dnd', [], kloudspeaker.ui.draganddrop);

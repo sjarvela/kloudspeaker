@@ -1,4 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/views/main/files/filelist', 'kloudspeaker/ui/views/main/files/iconview', 'kloudspeaker/ui/uploader', 'kloudspeaker/ui/dnd'], function(app, settings, FileList, IconView, uploader, dnd) {
+define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/views/main/files/filelist', 'kloudspeaker/ui/views/main/files/iconview', 'kloudspeaker/ui/uploader', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/files/itemcontext'], function(app, settings, FileList, IconView, uploader, dnd, ItemContext) {
     return function() {
         //TODO remove reference to global "kloudspeaker"
         var that = this;
@@ -238,7 +238,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/views/main
                     that._filelist.addColumn(cols[j]);
             });
 
-            that.itemContext = new kloudspeaker.ui.itemContext();
+            that.itemContext = new ItemContext();
         }
 
         that.deinit = function() {

@@ -18,7 +18,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/views/main
                 that._views.push(view);
             });
 
-            that.itemContext = new kloudspeaker.ui.itemContext();
+            //that.itemContext = new ItemContext();
             return kloudspeaker.dom.loadContentInto($c, kloudspeaker.templates.url("mainview.html"), function() {
                 that.onLoad(viewId);
             }, ['localize']);
