@@ -1,20 +1,26 @@
-define([], function() {
+define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', 'kloudspeaker/service'], function(plugins, events, session, service) {
     //TODO remove global references
 
     var mfs = {};
 
-    mfs.init = function(f, allRoots) {
-        mfs.permissionCache = {};
-        mfs.roots = [];
-        mfs.allRoots = false;
-        mfs.rootsById = {};
-        mfs.rootsByFolderId = {};
-
-        mfs.updateRoots(f, allRoots);
-    };
+    events.addEventHandler(function(e) {
+        if (e.type == 'session/start' || e.type == 'session/end') {
+            mfs.permissionCache = {};
+            mfs.roots = [];
+            mfs.allRoots = false;
+            mfs.rootsById = {};
+            mfs.rootsByFolderId = {};
+        }
+        if (e.type == 'session/start') {
+            var s = session.get();
+            var allRoots = (s.user && s.user.admin) ? s.data.roots : false;
+            mfs.updateRoots(s.data.folders, allRoots);
+        }
+    });
 
     mfs.updateRoots = function(f, allRoots) {
-        if (f && kloudspeaker.session.user) {
+        var s = session.get();
+        if (f && s.user) {
             mfs.roots = f.sort(function(a, b) {
                 return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
             });
@@ -36,7 +42,7 @@ define([], function() {
 
     mfs.getDownloadUrl = function(item) {
         if (!item.is_file) return false;
-        var url = kloudspeaker.service.url("filesystem/" + item.id, true);
+        var url = service.url("filesystem/" + item.id, true);
         if (kloudspeaker.App.mobile)
             url = url + ((url.indexOf('?') >= 0) ? "&" : "?") + "m=1";
         return url;
@@ -44,11 +50,11 @@ define([], function() {
 
     mfs.getUploadUrl = function(folder) {
         if (!folder || folder.is_file) return null;
-        return kloudspeaker.service.url("filesystem/" + folder.id + '/files/') + "?format=binary";
+        return service.url("filesystem/" + folder.id + '/files/') + "?format=binary";
     };
 
     mfs.itemDetails = function(item, data) {
-        return kloudspeaker.service.post((item.detailsId ? (item.detailsId + "/details/") : ("filesystem/" + item.id + "/details/")), {
+        return service.post((item.detailsId ? (item.detailsId + "/details/") : ("filesystem/" + item.id + "/details/")), {
             data: data
         }).done(function(r) {
             if (r.permissions)
@@ -58,7 +64,7 @@ define([], function() {
     };
 
     mfs.folderInfo = function(id, hierarchy, data) {
-        return kloudspeaker.service.post("filesystem/" + (id ? id : "roots") + "/info/" + (hierarchy ? "?h=1" : ""), {
+        return service.post("filesystem/" + (id ? id : "roots") + "/info/" + (hierarchy ? "?h=1" : ""), {
             data: data
         }).done(function(r) {
             mfs.permissionCache[id] = r.permissions;
@@ -66,35 +72,37 @@ define([], function() {
     };
 
     mfs.findFolder = function(d, data) {
-        return kloudspeaker.service.post("filesystem/find/", {
+        return service.post("filesystem/find/", {
             folder: d,
             data: data
         });
     };
 
     mfs.hasPermission = function(item, name, required) {
-        if (!kloudspeaker.session.user) return false;
-        if (kloudspeaker.session.user.admin) return true;
+        var s = session.get();
+        if (!s.user) return false;
+        if (s.user.admin) return true;
         return kloudspeaker.helpers.hasPermission(mfs.permissionCache[((typeof(item) === "string") ? item : item.id)], name, required);
     };
 
     mfs.items = function(parent, files, allRoots) {
         if (parent == null) {
             var df = $.Deferred();
+            var s = session.get();
             df.resolve({
-                folders: (allRoots && kloudspeaker.session.user.admin) ? mfs.allRoots : mfs.roots,
+                folders: (allRoots && s.user.admin) ? mfs.allRoots : mfs.roots,
                 files: []
             });
             return df.promise();
         }
-        return kloudspeaker.service.get("filesystem/" + parent.id + "/items/?files=" + (files ? '1' : '0'));
+        return service.get("filesystem/" + parent.id + "/items/?files=" + (files ? '1' : '0'));
     };
 
     mfs.createEmptyFile = function(parent, name) {
-        return kloudspeaker.service.post("filesystem/" + parent.id + "/empty_file", {
+        return service.post("filesystem/" + parent.id + "/empty_file", {
             name: name
         }).done(function() {
-            kloudspeaker.events.dispatch('filesystem/create_item', {
+            events.dispatch('filesystem/create_item', {
                 parent: parent,
                 name: name
             });
@@ -215,7 +223,7 @@ define([], function() {
     };
 
     mfs._copyHere = function(i, name, acceptKeys) {
-        return kloudspeaker.service.post("filesystem/" + i.id + "/copy/", {
+        return service.post("filesystem/" + i.id + "/copy/", {
             name: name,
             acceptKeys: acceptKeys
         }).done(function(r) {
@@ -228,12 +236,12 @@ define([], function() {
 
     mfs._copy = function(i, to, acceptKeys, overwrite) {
         var df = $.Deferred();
-        kloudspeaker.service.post("filesystem/" + i.id + "/copy/", {
+        service.post("filesystem/" + i.id + "/copy/", {
             folder: to.id,
             overwrite: !!overwrite,
             acceptKeys: acceptKeys
         }).done(function(r) {
-            kloudspeaker.events.dispatch('filesystem/copy', {
+            events.dispatch('filesystem/copy', {
                 items: [i],
                 to: to
             });
@@ -257,14 +265,14 @@ define([], function() {
 
     mfs._copyMany = function(i, to, acceptKeys, overwrite) {
         var df = $.Deferred();
-        kloudspeaker.service.post("filesystem/items/", {
+        service.post("filesystem/items/", {
             action: 'copy',
             items: i,
             to: to,
             overwrite: !!overwrite,
             acceptKeys: acceptKeys
         }).done(function(r) {
-            kloudspeaker.events.dispatch('filesystem/copy', {
+            events.dispatch('filesystem/copy', {
                 items: i,
                 to: to
             });
@@ -336,7 +344,7 @@ define([], function() {
 
     mfs._move = function(i, to, acceptKeys, overwrite) {
         var df = $.Deferred();
-        kloudspeaker.service.post("filesystem/" + i.id + "/move/", {
+        service.post("filesystem/" + i.id + "/move/", {
             id: to.id,
             overwrite: !!overwrite,
             acceptKeys: acceptKeys
@@ -365,7 +373,7 @@ define([], function() {
 
     mfs._moveMany = function(i, to, acceptKeys, overwrite) {
         var df = $.Deferred();
-        kloudspeaker.service.post("filesystem/items/", {
+        service.post("filesystem/items/", {
             action: 'move',
             items: i,
             to: to,
@@ -421,7 +429,7 @@ define([], function() {
     };
 
     mfs._rename = function(item, name) {
-        return kloudspeaker.service.put("filesystem/" + item.id + "/name/", {
+        return service.put("filesystem/" + item.id + "/name/", {
             name: name
         }).done(function(r) {
             kloudspeaker.events.dispatch('filesystem/rename', {
@@ -465,7 +473,7 @@ define([], function() {
     };
 
     mfs._del = function(item, acceptKeys) {
-        return kloudspeaker.service.del("filesystem/" + item.id, acceptKeys ? {
+        return service.del("filesystem/" + item.id, acceptKeys ? {
             acceptKeys: acceptKeys
         } : null).done(function(r) {
             kloudspeaker.events.dispatch('filesystem/delete', {
@@ -475,7 +483,7 @@ define([], function() {
     };
 
     mfs._delMany = function(i, acceptKeys) {
-        return kloudspeaker.service.post("filesystem/items/", {
+        return service.post("filesystem/items/", {
             action: 'delete',
             items: i,
             acceptKeys: (acceptKeys ? acceptKeys : null)
@@ -487,7 +495,7 @@ define([], function() {
     };
 
     mfs.createFolder = function(folder, name) {
-        return kloudspeaker.service.post("filesystem/" + folder.id + "/folders/", {
+        return service.post("filesystem/" + folder.id + "/folders/", {
             name: name
         }).done(function(r) {
             kloudspeaker.events.dispatch('filesystem/createfolder', {
@@ -495,6 +503,30 @@ define([], function() {
                 name: name
             });
         });
+    };
+
+    mfs.getItemDownloadInfo = function(i) {
+        if (!i) return false;
+        var single = false;
+
+        if (!window.isArray(i)) single = i;
+        else if (i.length === 0) single = i[0];
+
+        if (single && single.is_file) {
+            return {
+                name: single.name,
+                url: mfs.getDownloadUrl(single)
+            };
+        } else {
+            if (!single) return false;
+
+            if (plugins.exists("plugin-archiver")) return {
+                name: single.name + ".zip", //TODO get extension from plugin
+                url: plugins.get("plugin-archiver").getDownloadCompressedUrl(i)
+            };
+        }
+
+        return false;
     };
 
     return mfs;

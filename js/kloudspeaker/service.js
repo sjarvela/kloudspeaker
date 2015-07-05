@@ -1,19 +1,31 @@
-define([], function() {
+define(['kloudspeaker/settings', 'kloudspeaker/events'], function(settings, events) {
     //TODO remove global references
+
+    var session = null;
+    var _baseUrl = "";
+    var _limitedHttpMethods = false;
+    var _serviceParam = !!settings["service-param"];
 
     var st = {};
 
-    st.init = function(limitedHttpMethods, serviceParam) {
-        st._limitedHttpMethods = !!limitedHttpMethods;
-        st._serviceParam = !!serviceParam;
+    events.addEventHandler(function(e) {
+        if (e.type == 'session/start') {
+            var s = session.get();
+            _limitedHttpMethods = !!s.features.limited_http_methods;
+        }
+    });
+
+    st.initialize = function(s, baseUrl) {
+        _baseUrl = baseUrl;
+        session = s;
     };
 
     st.url = function(u, full) {
         if (u.startsWith('http')) return u;
-        var url = kloudspeaker.settings["service-path"] + "r.php";
-        url = url + (st._serviceParam ? ("?sp=" + u) : ("/" + u));
+        var url = settings["service-path"] + "r.php";
+        url = url + (_serviceParam ? ("?sp=" + u) : ("/" + u));
         if (!full) return url;
-        return kloudspeaker.App.baseUrl + url;
+        return _baseUrl + url;
     };
 
     st.get = function(url) {
@@ -34,9 +46,10 @@ define([], function() {
 
     st._do = function(type, url, data) {
         var t = type;
-        var diffMethod = (st._limitedHttpMethods && (t == 'PUT' || t == 'DELETE'));
+        var diffMethod = (_limitedHttpMethods && (t == 'PUT' || t == 'DELETE'));
         if (diffMethod) t = 'POST';
 
+        var s = session.get();
         return (function(sid) {
             return $.ajax({
                 type: t,
@@ -46,8 +59,8 @@ define([], function() {
                 contentType: 'application/json',
                 dataType: 'json',
                 beforeSend: function(xhr) {
-                    if (kloudspeaker.session && kloudspeaker.session.id)
-                        xhr.setRequestHeader("kloudspeaker-session-id", kloudspeaker.session.id);
+                    if (sid)
+                        xhr.setRequestHeader("kloudspeaker-session-id", sid);
                     if (st._limitedHttpMethods || diffMethod)
                         xhr.setRequestHeader("kloudspeaker-http-method", type);
                 }
@@ -60,9 +73,10 @@ define([], function() {
                 return r.result;
             }, function(xhr) {
                 var df = $.Deferred();
+                var s = session.get();
 
                 // if session has expired since starting request, ignore it
-                if (kloudspeaker.session.id != sid) return df;
+                if (s.id != sid) return df;
 
                 var error = false;
                 var data = false;
@@ -75,8 +89,9 @@ define([], function() {
                 var failContext = {
                     handled: false
                 }
-                if (error.code == 100 && kloudspeaker.session.user) {
-                    kloudspeaker.events.dispatch('session/end');
+                
+                if (error.code == 100 && s.user) {
+                    events.dispatch('session/end');
                     failContext.handled = true;
                 }
                 // push default handler to end of callback list
@@ -93,7 +108,7 @@ define([], function() {
                 }, 0);
                 return df.rejectWith(failContext, [error]);
             }).promise()
-        }(kloudspeaker.session.id));
+        }((s && s.id) ? s.id : null));
     };
 
     return st;

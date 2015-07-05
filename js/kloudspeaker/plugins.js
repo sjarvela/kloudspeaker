@@ -1,4 +1,4 @@
-define([], function() {
+define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/dom', 'kloudspeaker/localization', 'kloudspeaker/utils'], function(settings, session, dom, loc, utils) {
     //TODO remove global references
 
     var pl = {};
@@ -21,18 +21,18 @@ define([], function() {
             if (p.initialized) continue;
 
             if (p.initialize) {
-                var settings = ((kloudspeaker.settings.plugins && kloudspeaker.settings.plugins[id]) ? kloudspeaker.settings.plugins[id] : false) || {};
-                p.initialize(settings);
+                var ps = ((settings.plugins && settings.plugins[id]) ? settings.plugins[id] : false) || {};
+                p.initialize(ps);
             }
             if (p.resources) {
                 var pid = p.backendPluginId || id;
                 if (p.resources.texts) {
-                    if (kloudspeaker.settings.texts_js)
-                        l.push(kloudspeaker.dom.importScript(kloudspeaker.plugins.getJsLocalizationUrl(pid)));
+                    if (settings.texts_js)
+                        l.push(dom.importScript(pl.getJsLocalizationUrl(pid)));
                     else
-                        l.push(kloudspeaker.ui.texts.loadPlugin(pid));
+                        l.push(loc.loadPlugin(pid));
                 }
-                if (p.resources.css) kloudspeaker.dom.importCss(kloudspeaker.plugins.getStyleUrl(pid));
+                if (p.resources.css) dom.importCss(pl.getStyleUrl(pid));
             }
             p.initialized = true;
         }
@@ -48,9 +48,9 @@ define([], function() {
         if (!list) return df.resolve();
 
         var l = [];
-        $.each(kloudspeaker.helpers.getKeys(list), function(i, k) {
+        $.each(utils.getKeys(list), function(i, k) {
             var p = list[k];
-            if (p.client_plugin) l.push(kloudspeaker.dom.importScript(p.client_plugin));
+            if (p.client_plugin) l.push(dom.importScript(p.client_plugin));
         });
         if (l.length === 0) return df.resolve();
 
@@ -70,10 +70,11 @@ define([], function() {
     };
 
     pl.url = function(id, p, admin) {
-        var ps = kloudspeaker.session && kloudspeaker.session.data.plugins[id];
+        var s = session.get();
+        var ps = s && s.data.plugins[id];
         var custom = (ps && ps.custom);
 
-        var url = custom ? kloudspeaker.session.data.resources.custom_url : kloudspeaker.settings["service-path"];
+        var url = custom ? s.data.resources.custom_url : settings["service-path"];
         url = url + "plugin/" + id;
 
         if (!p) return url;
@@ -85,7 +86,7 @@ define([], function() {
     };
 
     pl.getLocalizationUrl = function(id) {
-        return pl.url(id) + "/localization/texts_" + kloudspeaker.ui.texts.locale + ".json";
+        return pl.url(id) + "/localization/texts_" + loc.locale + ".json";
     };
 
     pl.getStyleUrl = function(id, admin) {

@@ -1,4 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings'], function(app, settings) {
+define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/service'], function(settings, session, service) {
     //TODO remove reference to global "kloudspeaker"
     return function() {
         var that = this;
@@ -70,13 +70,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings'], function(app, settings) {
             that.wait = kloudspeaker.ui.dialogs.wait({
                 target: "kloudspeaker-login-main"
             });
-            kloudspeaker.service.post("session/authenticate/", {
-                username: username,
-                password: window.Base64.encode(password),
-                remember: remember
-            }).done(function(s) {
-                kloudspeaker.events.dispatch('session/start', s);
-            }).fail(function(e) {
+            session.authenticate(username, password, remember).fail(function(e) {
                 if (e.code == 107) this.handled = true;
                 that.showLoginError();
             });
@@ -88,7 +82,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings'], function(app, settings) {
             };
             if (hint) data.hint = true;
 
-            kloudspeaker.service.post("lostpassword", data).done(function(r) {
+            service.post("lostpassword", data).done(function(r) {
                 that.wait.close();
 
                 kloudspeaker.ui.dialogs.notification({

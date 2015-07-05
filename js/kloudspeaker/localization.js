@@ -1,4 +1,4 @@
-define(['kloudspeaker/plugins'], function(plugins) {
+define([], function() {
     //TODO rewrite error views
 
     var tt = {};
@@ -6,6 +6,10 @@ define(['kloudspeaker/plugins'], function(plugins) {
     tt.locale = null;
     tt._dict = {};
     tt._pluginTextsLoaded = [];
+
+    tt.init = function(plugins) {
+        tt._plugins = plugins;
+    }
 
     tt.load = function(id) {
         var df = $.Deferred();
@@ -25,7 +29,7 @@ define(['kloudspeaker/plugins'], function(plugins) {
     tt.loadPlugin = function(pluginId) {
         if (tt._pluginTextsLoaded.indexOf(pluginId) >= 0) return $.Deferred().resolve();
 
-        return tt._load(plugins.getLocalizationUrl(pluginId), $.Deferred()).done(function() {
+        return tt._load(tt._plugins.getLocalizationUrl(pluginId), $.Deferred()).done(function() {
             tt._pluginTextsLoaded.push(pluginId);
         });
     };
@@ -47,6 +51,7 @@ define(['kloudspeaker/plugins'], function(plugins) {
             try {
                 t = JSON.parse(r);
             } catch (e) {
+                //TODO rewrite
                 new kloudspeaker.ui.FullErrorView('<b>Localization file syntax error</b> (<code>' + url + '</code>)', '<code>' + e.message + '</code>').show();
                 return;
             }
@@ -61,6 +66,7 @@ define(['kloudspeaker/plugins'], function(plugins) {
             df.resolve(t.locale);
         }).fail(function(e) {
             if (e.status == 404) {
+                //TODO rewrite
                 new kloudspeaker.ui.FullErrorView('Localization file missing: <code>' + url + '</code>', 'Either create the file or use <a href="https://code.google.com/p/kloudspeaker/wiki/ClientResourceMap">client resource map</a> to load it from different location, or to ignore it').show();
                 return;
             }

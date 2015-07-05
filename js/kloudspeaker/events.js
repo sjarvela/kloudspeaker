@@ -27,8 +27,10 @@ define([], function() {
             payload: payload
         };
         $.each(et._handlers, function(i, h) {
-            if (!et._handlerTypes[h] || type == et._handlerTypes[h])
+            if (!h) return;
+            if (!et._handlerTypes[h] || type == et._handlerTypes[h]) {
                 h(e);
+            }
         });
     };
 

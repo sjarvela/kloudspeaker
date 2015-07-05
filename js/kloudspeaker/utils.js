@@ -1,6 +1,7 @@
 define([], function() {
     //TODO remove global references
 
+    var _time = new Date().getTime();
     var utils = {
         generatePassword: function(l) {
             var length = l || 8;
@@ -144,7 +145,7 @@ define([], function() {
         },
 
         noncachedUrl: function(url) {
-            return utils.urlWithParam(url, "_=" + kloudspeaker._time);
+            return utils.urlWithParam(url, "_=" + _time);
         },
 
         hasPermission: function(list, name, required) {
@@ -271,7 +272,9 @@ define([], function() {
 
         invokeLater: function(f, to) {
             setTimeout(f, to || 0);
-        }
+        },
+
+        base64 : window.Base64
     };
     return utils;
 });

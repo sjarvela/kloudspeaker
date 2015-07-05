@@ -1,4 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings'], function(app, settings) {
+define(['kloudspeaker/settings', 'kloudspeaker/filesystem', 'kloudspeaker/ui'], function(settings, fs, ui) {
     var t = {};
     t.dragObj = false;
     t.dragEl = false;
@@ -30,13 +30,13 @@ define(['kloudspeaker/app', 'kloudspeaker/settings'], function(app, settings) {
             if (dragImages.indexOf(img) >= 0) continue;
             dragImages.push(img);
         }
-        if (dragImages) kloudspeaker.ui.preloadImages(dragImages);
+        if (dragImages) ui.preloadImages(dragImages);
     }, 0);
 
     var api = {
         enableDragToDesktop: function(item, e) {
             if (!item) return;
-            var info = kloudspeaker.getItemDownloadInfo(item);
+            var info = fs.getItemDownloadInfo(item);
             if (info) e.originalEvent.dataTransfer.setData('DownloadURL', ['application/octet-stream', info.name, info.url].join(':'));
         },
 

@@ -1,4 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/views/main/files', 'kloudspeaker/ui/views/main/config'], function(app, settings, FilesView, ConfigView) {
+define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/ui/views/main/files', 'kloudspeaker/ui/views/main/config'], function(app, settings, session, FilesView, ConfigView) {
     //TODO remove reference to global "kloudspeaker"
     return function() {
         var that = this;
@@ -217,15 +217,9 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/views/main
             }
             actions.push({
                 "title-key": "mainViewLogoutTitle",
-                callback: that.onLogout
+                callback: session.end
             });
             return actions;
-        }
-
-        that.onLogout = function() {
-            kloudspeaker.service.post("session/logout").done(function(s) {
-                kloudspeaker.events.dispatch('session/end');
-            });
         }
 
         that.changePassword = function() {

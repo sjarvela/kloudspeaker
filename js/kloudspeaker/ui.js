@@ -1,4 +1,4 @@
-define(['kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/parsers', 'kloudspeaker/utils'], function(controls, dialogs, formatters, parsers, utils) {
+define(['kloudspeaker/platform', 'kloudspeaker/session', 'kloudspeaker/settings', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/parsers', 'kloudspeaker/templates', 'kloudspeaker/utils'], function(platform, session, settings, controls, dialogs, formatters, parsers, templates, utils) {
     //TODO remove global references
 
     var ui = {
@@ -10,7 +10,8 @@ define(['kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/
 
     ui._activePopup = false;
 
-    ui.initialize = function() {
+    ui.initialize = function(app) {
+        ui._app = app;
 
         var list = [];
         list.push(ui.initializeLang());
@@ -28,7 +29,7 @@ define(['kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/
                 ui.hideActivePopup();
             }
         });
-        list.push(kloudspeaker.templates.load("dialogs.html"));
+        list.push(templates.load("dialogs.html"));
 
         //if (!ui.draganddrop) ui.draganddrop = (window.Modernizr.draganddrop) ? new kloudspeaker.HTML5DragAndDrop() : new kloudspeaker.JQueryDragAndDrop();
         /*if (!ui.uploader) {
@@ -46,7 +47,8 @@ define(['kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/
 
     ui.initializeLang = function() {
         var df = $.Deferred();
-        var lang = (kloudspeaker.session.user && kloudspeaker.session.user.lang) ? kloudspeaker.session.user.lang : (kloudspeaker.settings.language["default"] || 'en');
+        var s = session.get();
+        var lang = (s.user && s.user.lang) ? s.user.lang : (settings.language["default"] || 'en');
 
         //TODO remove global
         if (!ui.texts) ui.texts = require('kloudspeaker/localization');
@@ -55,14 +57,14 @@ define(['kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/
 
         var pluginTextsLoaded = ui.texts._pluginTextsLoaded;
         if (ui.texts.locale) {
-            kloudspeaker.App.getElement().removeClass("lang-" + ui.texts.locale);
+            ui._app.getElement().removeClass("lang-" + ui.texts.locale);
             ui.texts.clear();
         }
 
         var list = [];
         list.push(ui.texts.load(lang).done(function(locale) {
             $("html").attr("lang", locale);
-            kloudspeaker.App.getElement().addClass("lang-" + locale);
+            ui._app.getElement().addClass("lang-" + locale);
         }));
 
         if (pluginTextsLoaded) {
@@ -100,7 +102,7 @@ define(['kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/
     };
 
     ui.download = function(url) {
-        if (kloudspeaker.App.mobile)
+        if (ui._app.mobile)
             window.open(url);
         else
             $("#kloudspeaker-download-frame").attr("src", url);
@@ -145,7 +147,7 @@ define(['kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/
                     }
                 };
                 if (_view) c.view = _view;
-                ui._composition.compose($target[0], c, {});
+                platform.composition.compose($target[0], c, {});    //TODO
             } else {
                 require([_model], function(m) {
                     if (typeof(m) == 'function') m = m();
@@ -300,13 +302,14 @@ define(['kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/
         });
     };
 
+    //TODO move & rewrite
     ui.FullErrorView = function(title, msg) {
         this.show = function() {
-            this.init(kloudspeaker.App.getElement());
+            this.init(ui._app.getElement());
         };
 
         this.init = function($c) {
-            if (kloudspeaker.App._initialized)
+            if (ui._app._initialized)
                 kloudspeaker.dom.template("kloudspeaker-tmpl-fullpage-error", {
                     title: title,
                     message: msg

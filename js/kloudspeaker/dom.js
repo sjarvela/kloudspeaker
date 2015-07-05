@@ -1,6 +1,7 @@
 define(['kloudspeaker/utils'], function(utils) {
     //TODO remove global references
 
+    var _hiddenInd = 0;
     var md = {};
     md._hiddenLoaded = [];
 
@@ -38,7 +39,7 @@ define(['kloudspeaker/utils'], function(utils) {
             if (cb) cb();
             return;
         }
-        var id = 'kloudspeaker-tmp-' + (kloudspeaker._hiddenInd++);
+        var id = 'kloudspeaker-tmp-' + (_hiddenInd++);
         $('<div id="' + id + '" style="display:none"/>').appendTo($("body")).load(utils.noncachedUrl(u), function() {
             md._hiddenLoaded.push(contentId);
             if (cb) cb();
