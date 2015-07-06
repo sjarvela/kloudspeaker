@@ -1,6 +1,4 @@
 define([], function() {
-    //TODO remove global references
-
     var et = {};
     et._handlers = [];
     et._handlerTypes = {};

@@ -1,12 +1,12 @@
-define([], function() {
+define(['kloudspeaker/utils', 'kloudspeaker/settings'], function(utils, settings) {
     //TODO remove global references
 
     var mt = {};
     mt._loaded = [];
 
     mt.url = function(name) {
-        var base = kloudspeaker.settings["template-url"] || 'templates/';
-        return kloudspeaker.helpers.noncachedUrl(kloudspeaker.resourceUrl(base + name));
+        var base = settings["template-url"] || 'templates/';
+        return utils.noncachedUrl(kloudspeaker.resourceUrl(base + name));
     };
 
     mt.load = function(name, url) {

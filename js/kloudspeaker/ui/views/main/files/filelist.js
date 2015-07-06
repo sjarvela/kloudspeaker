@@ -1,5 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd'], function(app, settings, dnd) {
-	//TODO remove reference to global "kloudspeaker"
+define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'kloudspeaker/dom', 'kloudspeaker/localization', 'jquery'], function(app, settings, dnd, dom, loc, $) {
     return function(container, $headerContainer, id, filelistSpec, columns) {
         var t = this;
         t.minColWidth = 25;
@@ -28,22 +27,22 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd'], fun
 
         this.init = function(p) {
             t.p = p;
-            kloudspeaker.dom.template("kloudspeaker-tmpl-filelist-header", {
+            dom.template("kloudspeaker-tmpl-filelist-header", {
                 listId: t.listId
             }).appendTo(t.$hc.empty());
-            kloudspeaker.dom.template("kloudspeaker-tmpl-filelist", {
+            dom.template("kloudspeaker-tmpl-filelist", {
                 listId: t.listId
             }).appendTo(t.$c.empty());
             t.$l = $("#" + t.listId);
             t.$h = $("#" + t.listId + "-header-cols");
             t.$i = $("#" + t.listId + "-items");
 
-            kloudspeaker.dom.template("kloudspeaker-tmpl-filelist-headercol", t.cols, {
+            dom.template("kloudspeaker-tmpl-filelist-headercol", t.cols, {
                 title: function(c) {
                     var k = c['title-key'];
                     if (!k) return "";
 
-                    return kloudspeaker.ui.texts.get(k);
+                    return loc.get(k);
                 }
             }).appendTo(t.$h);
 
@@ -140,7 +139,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd'], fun
             t.data = data;
             t.sortItems();
 
-            kloudspeaker.dom.template("kloudspeaker-tmpl-filelist-item", items, {
+            dom.template("kloudspeaker-tmpl-filelist-item", items, {
                 cols: t.cols,
                 typeClass: function(item) {
                     var c = item.is_file ? 'item-file' : 'item-folder';

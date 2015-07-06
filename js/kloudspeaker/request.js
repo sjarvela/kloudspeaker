@@ -1,6 +1,4 @@
 define(['kloudspeaker/utils'], function(utils) {
-    //TODO remove global references
-
     var request = {
         getParam: function(name) {
             if (name = (new RegExp('[?&]' + encodeURIComponent(name) + '=([^&]*)')).exec(location.search))

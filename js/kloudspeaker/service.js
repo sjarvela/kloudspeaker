@@ -1,6 +1,4 @@
-define(['kloudspeaker/settings', 'kloudspeaker/events'], function(settings, events) {
-    //TODO remove global references
-
+define(['kloudspeaker/settings', 'kloudspeaker/events', 'kloudspeaker/ui/dialogs', 'kloudspeaker/localization', 'kloudspeaker/ui'], function(settings, events, dialogs, loc, ui) {
     var session = null;
     var _baseUrl = "";
     var _limitedHttpMethods = false;
@@ -9,11 +7,9 @@ define(['kloudspeaker/settings', 'kloudspeaker/events'], function(settings, even
     var st = {};
 
     events.addEventHandler(function(e) {
-        if (e.type == 'session/start') {
-            var s = session.get();
-            _limitedHttpMethods = !!s.features.limited_http_methods;
-        }
-    });
+        var s = session.get();
+        _limitedHttpMethods = !!s.features.limited_http_methods;
+    }, 'session/start');
 
     st.initialize = function(s, baseUrl) {
         _baseUrl = baseUrl;
@@ -100,9 +96,9 @@ define(['kloudspeaker/settings', 'kloudspeaker/events'], function(settings, even
                         if (failContext.handled) return;
                         // request denied
                         if (err.code == 109 && err.data && err.data.items) {
-                            kloudspeaker.ui.actions.handleDenied(null, err.data, kloudspeaker.ui.texts.get('genericActionDeniedMsg'));
+                            ui.actions.handleDenied(null, err.data, loc.get('genericActionDeniedMsg'));
                         } else {
-                            kloudspeaker.ui.dialogs.showError(err);
+                            dialogs.showError(err);
                         }
                     });
                 }, 0);

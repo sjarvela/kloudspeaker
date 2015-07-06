@@ -1,4 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], function(app, settings, plugins) {
+define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/permissions'], function(app, settings, plugins, permissions) {
     //TODO remove reference to global "kloudspeaker"
     var that = {};
 
@@ -237,7 +237,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                     }
                 });
             }
-            if (editorAvailable && kloudspeaker.filesystem.hasPermission(item, "filesystem_item_access", "rw")) {
+            if (editorAvailable && permissions.hasFilesystemPermission(item, "filesystem_item_access", "rw")) {
                 result.actions.push({
                     id: 'pluginFileViewerEditorView',
                     "title-key": 'pluginFileViewerEditorEdit',

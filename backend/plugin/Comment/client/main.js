@@ -1,4 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], function(app, settings, plugins) {
+define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/permissions'], function(app, settings, plugins, permissions) {
     //TODO remove reference to global "kloudspeaker"
     var that = {};
 
@@ -38,7 +38,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
     };
 
     that.renderItemContextComments = function(el, item, ctx, comments, o) {
-        var canAdd = (kloudspeaker.session.user.admin || kloudspeaker.filesystem.hasPermission(item, "comment_item"));
+        var canAdd = (kloudspeaker.session.user.admin || permissions.hasFilesystemPermission(item, "comment_item"));
         var $c = kloudspeaker.dom.template(o.contentTemplate, {
             item: item,
             canAdd: canAdd

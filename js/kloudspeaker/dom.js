@@ -1,4 +1,4 @@
-define(['kloudspeaker/utils'], function(utils) {
+define(['kloudspeaker/settings', 'kloudspeaker/utils', 'kloudspeaker/ui'], function(settings, utils, ui) {
     //TODO remove global references
 
     var _hiddenInd = 0;
@@ -11,7 +11,8 @@ define(['kloudspeaker/utils'], function(utils) {
             return $.Deferred().resolve().promise();
         var df = $.Deferred();
         $.getScript(u, df.resolve).fail(function(e) {
-            new kloudspeaker.ui.FullErrorView("Failed to load script ", "<code>" + u + "</code>").show();
+            //TODO rewrite
+            new ui.FullErrorView("Failed to load script ", "<code>" + u + "</code>").show();
         });
         return df.promise();
     };
@@ -52,7 +53,7 @@ define(['kloudspeaker/utils'], function(utils) {
 
         var df = $.Deferred();
         $target.load(utils.noncachedUrl(u), function() {
-            if (process) kloudspeaker.ui.process($target, process, handler);
+            if (process) ui.process($target, process, handler);
             if (typeof handler === 'function') handler();
             else if (handler.onLoad) handler.onLoad($target);
             df.resolve();
@@ -63,8 +64,8 @@ define(['kloudspeaker/utils'], function(utils) {
     md.template = function(id, data, opt) {
         var templateId = id;
         if (templateId.startsWith("#")) templateId = templateId.substring(1);
-        if (kloudspeaker.settings["resource-map"] && kloudspeaker.settings["resource-map"]["template:" + id])
-            templateId = kloudspeaker.settings["resource-map"]["template:" + id];
+        if (settings["resource-map"] && settings["resource-map"]["template:" + id])
+            templateId = settings["resource-map"]["template:" + id];
         return $("#" + templateId).tmpl(data, opt);
     };
 
@@ -72,7 +73,7 @@ define(['kloudspeaker/utils'], function(utils) {
         if (!$e || $e.length === 0) return;
         if (model.activate) model.activate(activationData);
         ko.applyBindings(model, $e[0]);
-        kloudspeaker.ui.process($e, ['localize']);
+        ui.process($e, ['localize']);
         if (model.attached) model.attached($e);
     };
 

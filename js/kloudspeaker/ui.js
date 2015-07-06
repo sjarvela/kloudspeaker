@@ -1,6 +1,8 @@
-define(['kloudspeaker/platform', 'kloudspeaker/session', 'kloudspeaker/settings', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/parsers', 'kloudspeaker/templates', 'kloudspeaker/utils'], function(platform, session, settings, controls, dialogs, formatters, parsers, templates, utils) {
+define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/parsers', 'kloudspeaker/templates', 'kloudspeaker/utils'], function(platform, settings, controls, dialogs, formatters, parsers, templates, utils) {
     //TODO remove global references
 
+    var app = null;
+    var session = null; //TODO remove session (move data to params)
     var ui = {
         controls: controls, //TODO remove
         dialogs: dialogs, //TODO remove
@@ -10,8 +12,9 @@ define(['kloudspeaker/platform', 'kloudspeaker/session', 'kloudspeaker/settings'
 
     ui._activePopup = false;
 
-    ui.initialize = function(app) {
-        ui._app = app;
+    ui.initialize = function(a, s) {
+        app = a;
+        session = s;
 
         var list = [];
         list.push(ui.initializeLang());
@@ -47,7 +50,7 @@ define(['kloudspeaker/platform', 'kloudspeaker/session', 'kloudspeaker/settings'
 
     ui.initializeLang = function() {
         var df = $.Deferred();
-        var s = session.get();
+        var s = session.get();  //remove session reference, add lang param
         var lang = (s.user && s.user.lang) ? s.user.lang : (settings.language["default"] || 'en');
 
         //TODO remove global
@@ -57,14 +60,14 @@ define(['kloudspeaker/platform', 'kloudspeaker/session', 'kloudspeaker/settings'
 
         var pluginTextsLoaded = ui.texts._pluginTextsLoaded;
         if (ui.texts.locale) {
-            ui._app.getElement().removeClass("lang-" + ui.texts.locale);
+            app.getElement().removeClass("lang-" + ui.texts.locale);
             ui.texts.clear();
         }
 
         var list = [];
         list.push(ui.texts.load(lang).done(function(locale) {
             $("html").attr("lang", locale);
-            ui._app.getElement().addClass("lang-" + locale);
+            app.getElement().addClass("lang-" + locale);
         }));
 
         if (pluginTextsLoaded) {
@@ -102,7 +105,7 @@ define(['kloudspeaker/platform', 'kloudspeaker/session', 'kloudspeaker/settings'
     };
 
     ui.download = function(url) {
-        if (ui._app.mobile)
+        if (app.mobile)
             window.open(url);
         else
             $("#kloudspeaker-download-frame").attr("src", url);
@@ -305,11 +308,11 @@ define(['kloudspeaker/platform', 'kloudspeaker/session', 'kloudspeaker/settings'
     //TODO move & rewrite
     ui.FullErrorView = function(title, msg) {
         this.show = function() {
-            this.init(ui._app.getElement());
+            this.init(app.getElement());
         };
 
         this.init = function($c) {
-            if (ui._app._initialized)
+            if (app._initialized)
                 kloudspeaker.dom.template("kloudspeaker-tmpl-fullpage-error", {
                     title: title,
                     message: msg

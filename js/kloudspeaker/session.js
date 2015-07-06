@@ -20,9 +20,9 @@ define(['kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/utils'], fu
             admin: s.user_type == 'a',
             permissions: s.permissions,
             auth: s.user_auth,
-            hasPermission: function(name, required) {
+            /*hasPermission: function(name, required) {
                 return utils.hasPermission(s.permissions, name, required);
-            }
+            }*/
         } : null;
 
         session = {
@@ -37,7 +37,7 @@ define(['kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/utils'], fu
 
         kloudspeaker.session = session; //TODO remove
 
-        events.dispatch('session/start', s);
+        events.dispatch('session/start', session);
     };
 
     return {

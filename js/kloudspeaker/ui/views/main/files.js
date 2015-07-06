@@ -1,4 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/views/main/files/filelist', 'kloudspeaker/ui/views/main/files/iconview', 'kloudspeaker/ui/uploader', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/files/itemcontext'], function(app, settings, FileList, IconView, uploader, dnd, ItemContext) {
+define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions', 'kloudspeaker/ui/views/main/files/filelist', 'kloudspeaker/ui/views/main/files/iconview', 'kloudspeaker/ui/uploader', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/files/itemcontext'], function(app, settings, permissions, FileList, IconView, uploader, dnd, ItemContext) {
     return function() {
         //TODO remove reference to global "kloudspeaker"
         var that = this;
@@ -638,7 +638,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/views/main
         };
 
         that._canWrite = function() {
-            return kloudspeaker.filesystem.hasPermission(that._currentFolder, "filesystem_item_access", "rw");
+            return permissions.hasFilesystemPermission(that._currentFolder, "filesystem_item_access", "rw");
         }
 
         that.onRetrieveUrl = function(url) {
@@ -852,7 +852,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/views/main
                 $("#kloudspeaker-folder-description").text(that._currentFolderData.data['parent-metadata'].description);
 
             var $dsc = $("#kloudspeaker-folder-description");
-            var descriptionEditable = that._currentFolder && !that._currentFolder.type && $dsc.length > 0 && kloudspeaker.session.features.descriptions && kloudspeaker.filesystem.hasPermission(that._currentFolder, "edit_description");
+            var descriptionEditable = that._currentFolder && !that._currentFolder.type && $dsc.length > 0 && kloudspeaker.session.features.descriptions && permissions.hasFilesystemPermission(that._currentFolder, "edit_description");
             if (descriptionEditable) {
                 kloudspeaker.ui.controls.editableLabel({
                     element: $dsc,
@@ -1075,7 +1075,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/views/main
                 viewport: that.itemWidget.getContainerElement(),
                 container: $("#kloudspeaker-folderview-items"),
                 folder: that._currentFolder,
-                folder_writable: that._currentFolder ? kloudspeaker.filesystem.hasPermission(that._currentFolder, "filesystem_item_access", "rw") : false
+                folder_writable: that._currentFolder ? permissions.hasFilesystemPermission(that._currentFolder, "filesystem_item_access", "rw") : false
             };
         }
 
@@ -1226,7 +1226,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/views/main
                     fileview: that,
                     details: d,
                     folder: that._currentFolder,
-                    folder_writable: that._currentFolder ? kloudspeaker.filesystem.hasPermission(that._currentFolder, "filesystem_item_access", "rw") : false
+                    folder_writable: that._currentFolder ? permissions.hasFilesystemPermission(that._currentFolder, "filesystem_item_access", "rw") : false
                 };
                 cb(kloudspeaker.helpers.cleanupActions(kloudspeaker.helpers.getPluginActions(kloudspeaker.plugins.getItemContextPlugins(item, ctx))));
             });

@@ -1,4 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/share/repository', 'kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/texts', 'kloudspeaker/utils', 'kloudspeaker/dom'], function(app, settings, plugins, repository, service, fs, views, formatters, dialogs, texts, utils, dom) {
+define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/share/repository', 'kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/texts', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/permissions'], function(app, settings, plugins, repository, service, fs, views, formatters, dialogs, texts, utils, dom, permissions) {
     var that = {};
 
     that._timestampFormatter = new formatters.Timestamp(texts.get('shortDateTimeFormat'));
@@ -204,7 +204,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
         backendPluginId: "Share",
 
         itemContextHandler: function(item, ctx, data) {
-            if (!fs.hasPermission(item, "share_item")) return false;
+            if (!permissions.hasFilesystemPermission(item, "share_item")) return false;
 
             return {
                 actions: [{

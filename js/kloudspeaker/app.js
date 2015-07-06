@@ -68,7 +68,7 @@ define([], function() {
                 }
             });
 
-            ui.initialize(app).done(function() {
+            ui.initialize(app, session).done(function() {
                 app.initModules();
                 var deps = ['kloudspeaker/ui/views/main', 'kloudspeaker/ui/views/login', 'kloudspeaker/plugins/core', 'kloudspeaker/plugins/permissions'];
                 if (settings.modules.load) deps = deps.concat(settings.modules.load);
@@ -401,6 +401,7 @@ define([], function() {
                 //define('kloudspeaker/app', [], app);
                 define('kloudspeaker/instance', [], app);
                 kloudspeaker.App = app; //TODO remove
+                fs.mobile = app.mobile; //TODO move somewhere?
 
                 // legacy, remove
                 require(['kloudspeaker/templates', 'kloudspeaker/features', 'kloudspeaker/dom'], function(templates, features, dom) {

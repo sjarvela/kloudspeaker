@@ -1,4 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/ui/views/main/files', 'kloudspeaker/ui/views/main/config'], function(app, settings, session, FilesView, ConfigView) {
+define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/permissions', 'kloudspeaker/ui/views/main/files', 'kloudspeaker/ui/views/main/config'], function(app, settings, session, permissions, FilesView, ConfigView) {
     //TODO remove reference to global "kloudspeaker"
     return function() {
         var that = this;
@@ -206,7 +206,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/session', 'kl
 
         that.getSessionActions = function() {
             var actions = [];
-            if (kloudspeaker.features.hasFeature('change_password') && kloudspeaker.session.user.auth == 'pw' && kloudspeaker.session.user.hasPermission("change_password")) {
+            if (kloudspeaker.features.hasFeature('change_password') && kloudspeaker.session.user.auth == 'pw' && permissions.hasPermission("change_password")) {
                 actions.push({
                     "title-key": "mainViewChangePasswordTitle",
                     callback: that.changePassword

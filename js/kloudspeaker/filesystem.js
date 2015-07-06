@@ -1,11 +1,11 @@
-define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', 'kloudspeaker/service'], function(plugins, events, session, service) {
-    //TODO remove global references
-
-    var mfs = {};
+define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/permissions', 'kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'kloudspeaker/ui/dialogs', 'kloudspeaker/localization', 'kloudspeaker/ui'], function(plugins, events, permissions, session, service, utils, dialogs, loc, ui) {
+    var mfs = {
+        mobile: false   //TODO move somewhere?
+    };
 
     events.addEventHandler(function(e) {
         if (e.type == 'session/start' || e.type == 'session/end') {
-            mfs.permissionCache = {};
+            //mfs.permissionCache = {};
             mfs.roots = [];
             mfs.allRoots = false;
             mfs.rootsById = {};
@@ -43,7 +43,7 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', '
     mfs.getDownloadUrl = function(item) {
         if (!item.is_file) return false;
         var url = service.url("filesystem/" + item.id, true);
-        if (kloudspeaker.App.mobile)
+        if (mobile)
             url = url + ((url.indexOf('?') >= 0) ? "&" : "?") + "m=1";
         return url;
     };
@@ -57,9 +57,12 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', '
         return service.post((item.detailsId ? (item.detailsId + "/details/") : ("filesystem/" + item.id + "/details/")), {
             data: data
         }).done(function(r) {
-            if (r.permissions)
-                mfs.permissionCache[item.id] = r.permissions;
-            if (item.parent_id && r.parent_permissions) mfs.permissionCache[item.parent_id] = r.parent_permissions;
+            if (item.id && r.permissions)
+                permissions.putFilesystemPermissions(item.id, r.permissions);
+            //mfs.permissionCache[item.id] = r.permissions;
+            if (item.parent_id && r.parent_permissions)
+                permissions.putFilesystemPermissions(item.parent_id, r.parent_permissions);
+            //mfs.permissionCache[item.parent_id] = r.parent_permissions;
         });
     };
 
@@ -67,7 +70,9 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', '
         return service.post("filesystem/" + (id ? id : "roots") + "/info/" + (hierarchy ? "?h=1" : ""), {
             data: data
         }).done(function(r) {
-            mfs.permissionCache[id] = r.permissions;
+            if (id)
+                permissions.putFilesystemPermissions(id, r.permissions);
+            //mfs.permissionCache[id] = r.permissions;
         });
     };
 
@@ -78,12 +83,12 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', '
         });
     };
 
-    mfs.hasPermission = function(item, name, required) {
+    /*mfs.hasPermission = function(item, name, required) {
         var s = session.get();
         if (!s.user) return false;
         if (s.user.admin) return true;
-        return kloudspeaker.helpers.hasPermission(mfs.permissionCache[((typeof(item) === "string") ? item : item.id)], name, required);
-    };
+        return utils.hasPermission(mfs.permissionCache[((typeof(item) === "string") ? item : item.id)], name, required);
+    };*/
 
     mfs.items = function(parent, files, allRoots) {
         if (parent == null) {
@@ -115,13 +120,13 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', '
         if (window.isArray(i) && i.length > 1) {
             if (!to) {
                 var df = $.Deferred();
-                kloudspeaker.ui.dialogs.folderSelector({
-                    title: kloudspeaker.ui.texts.get('copyMultipleFileDialogTitle'),
-                    message: kloudspeaker.ui.texts.get('copyMultipleFileMessage', [i.length]),
-                    actionTitle: kloudspeaker.ui.texts.get('copyFileDialogAction'),
+                dialogs.folderSelector({
+                    title: loc.get('copyMultipleFileDialogTitle'),
+                    message: loc.get('copyMultipleFileMessage', [i.length]),
+                    actionTitle: loc.get('copyFileDialogAction'),
                     handler: {
                         onSelect: function(f) {
-                            mfs._validated(mfs._copyMany, [i, f], "copy", kloudspeaker.ui.texts.get("actionDeniedCopyMany", i.length), kloudspeaker.ui.texts.get("actionAcceptCopyMany", i.length)).done(df.resolve).fail(df.reject);
+                            mfs._validated(mfs._copyMany, [i, f], "copy", loc.get("actionDeniedCopyMany", i.length), loc.get("actionAcceptCopyMany", i.length)).done(df.resolve).fail(df.reject);
                         },
                         canSelect: function(f) {
                             return mfs.canCopyTo(i, f);
@@ -139,13 +144,13 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', '
 
         if (!to) {
             var df2 = $.Deferred();
-            kloudspeaker.ui.dialogs.folderSelector({
-                title: kloudspeaker.ui.texts.get('copyFileDialogTitle'),
-                message: kloudspeaker.ui.texts.get('copyFileMessage', [i.name]),
-                actionTitle: kloudspeaker.ui.texts.get('copyFileDialogAction'),
+            dialogs.folderSelector({
+                title: loc.get('copyFileDialogTitle'),
+                message: loc.get('copyFileMessage', [i.name]),
+                actionTitle: loc.get('copyFileDialogAction'),
                 handler: {
                     onSelect: function(f) {
-                        mfs._validated(mfs._copy, [i, f], "copy", kloudspeaker.ui.texts.get("actionDeniedCopy", i.name), kloudspeaker.ui.texts.get("actionAcceptCopy", i.name)).done(df2.resolve).fail(df2.reject);
+                        mfs._validated(mfs._copy, [i, f], "copy", loc.get("actionDeniedCopy", i.name), loc.get("actionAcceptCopy", i.name)).done(df2.resolve).fail(df2.reject);
                     },
                     canSelect: function(f) {
                         return mfs.canCopyTo(i, f);
@@ -162,18 +167,18 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', '
 
         if (!name) {
             var df = $.Deferred();
-            kloudspeaker.ui.dialogs.input({
-                title: kloudspeaker.ui.texts.get('copyHereDialogTitle'),
-                message: kloudspeaker.ui.texts.get('copyHereDialogMessage'),
+            dialogs.input({
+                title: loc.get('copyHereDialogTitle'),
+                message: loc.get('copyHereDialogMessage'),
                 defaultValue: item.name,
-                yesTitle: kloudspeaker.ui.texts.get('copyFileDialogAction'),
-                noTitle: kloudspeaker.ui.texts.get('dialogCancel'),
+                yesTitle: loc.get('copyFileDialogAction'),
+                noTitle: loc.get('dialogCancel'),
                 handler: {
                     isAcceptable: function(n) {
                         return !!n && n.length > 0 && n != item.name;
                     },
                     onInput: function(n) {
-                        mfs._validated(mfs._copyHere, [item, n], "copy", kloudspeaker.ui.texts.get("actionDeniedCopy", item.name), kloudspeaker.ui.texts.get("actionAcceptCopy", item.name)).done(df.resolve).fail(df.reject);
+                        mfs._validated(mfs._copyHere, [item, n], "copy", loc.get("actionDeniedCopy", item.name), loc.get("actionAcceptCopy", item.name)).done(df.resolve).fail(df.reject);
                     }
                 }
             });
@@ -227,7 +232,7 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', '
             name: name,
             acceptKeys: acceptKeys
         }).done(function(r) {
-            kloudspeaker.events.dispatch('filesystem/copy', {
+            events.dispatch('filesystem/copy', {
                 items: [i],
                 name: name
             });
@@ -249,9 +254,9 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', '
         }).fail(function(e) {
             if (e.code == 204) {
                 this.handled = true;
-                kloudspeaker.ui.dialogs.confirmation({
-                    title: kloudspeaker.ui.texts.get('copyOverwriteConfirmationTitle'),
-                    message: kloudspeaker.ui.texts.get('copyOverwriteConfirmationMsg', [i.name]),
+                dialogs.confirmation({
+                    title: loc.get('copyOverwriteConfirmationTitle'),
+                    message: loc.get('copyOverwriteConfirmationMsg', [i.name]),
                     callback: function() {
                         mfs._copy(i, to, acceptKeys, true).done(df.resolve).fail(df.reject);
                     }
@@ -282,9 +287,9 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', '
                 this.handled = true;
                 var files = e.data.files;
 
-                kloudspeaker.ui.dialogs.confirmation({
-                    title: kloudspeaker.ui.texts.get(files.length > 1 ? 'copyManyOverwriteConfirmationTitle' : 'copyOverwriteConfirmationTitle'),
-                    message: files.length > 1 ? kloudspeaker.ui.texts.get('copyManyOverwriteConfirmationMsg', [files.length]) : kloudspeaker.ui.texts.get('copyOverwriteConfirmationMsg', [files[0].name]),
+                dialogs.confirmation({
+                    title: loc.get(files.length > 1 ? 'copyManyOverwriteConfirmationTitle' : 'copyOverwriteConfirmationTitle'),
+                    message: files.length > 1 ? loc.get('copyManyOverwriteConfirmationMsg', [files.length]) : loc.get('copyOverwriteConfirmationMsg', [files[0].name]),
                     callback: function() {
                         mfs._copyMany(i, to, acceptKeys, true).done(df.resolve).fail(df.reject);
                     }
@@ -302,13 +307,13 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', '
         if (window.isArray(i) && i.length > 1) {
             if (!to) {
                 var df = $.Deferred();
-                kloudspeaker.ui.dialogs.folderSelector({
-                    title: kloudspeaker.ui.texts.get('moveMultipleFileDialogTitle'),
-                    message: kloudspeaker.ui.texts.get('moveMultipleFileMessage', [i.length]),
-                    actionTitle: kloudspeaker.ui.texts.get('moveFileDialogAction'),
+                dialogs.folderSelector({
+                    title: loc.get('moveMultipleFileDialogTitle'),
+                    message: loc.get('moveMultipleFileMessage', [i.length]),
+                    actionTitle: loc.get('moveFileDialogAction'),
                     handler: {
                         onSelect: function(f) {
-                            mfs._validated(mfs._moveMany, [i, f], "move", kloudspeaker.ui.texts.get("actionDeniedMoveMany", i.length), kloudspeaker.ui.texts.get("actionAcceptMoveMany", i.length)).done(df.resolve).fail(df.reject);
+                            mfs._validated(mfs._moveMany, [i, f], "move", loc.get("actionDeniedMoveMany", i.length), loc.get("actionAcceptMoveMany", i.length)).done(df.resolve).fail(df.reject);
                         },
                         canSelect: function(f) {
                             return mfs.canMoveTo(i, f);
@@ -324,13 +329,13 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', '
 
         if (!to) {
             var df2 = $.Deferred();
-            kloudspeaker.ui.dialogs.folderSelector({
-                title: kloudspeaker.ui.texts.get('moveFileDialogTitle'),
-                message: kloudspeaker.ui.texts.get('moveFileMessage', [i.name]),
-                actionTitle: kloudspeaker.ui.texts.get('moveFileDialogAction'),
+            dialogs.folderSelector({
+                title: loc.get('moveFileDialogTitle'),
+                message: loc.get('moveFileMessage', [i.name]),
+                actionTitle: loc.get('moveFileDialogAction'),
                 handler: {
                     onSelect: function(f) {
-                        mfs._validated(mfs._move, [i, f], "move", kloudspeaker.ui.texts.get("actionDeniedMove", i.name), kloudspeaker.ui.texts.get("actionAcceptMove", i.name)).done(df2.resolve).fail(df2.reject);
+                        mfs._validated(mfs._move, [i, f], "move", loc.get("actionDeniedMove", i.name), loc.get("actionAcceptMove", i.name)).done(df2.resolve).fail(df2.reject);
                     },
                     canSelect: function(f) {
                         return mfs.canMoveTo(i, f);
@@ -349,7 +354,7 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', '
             overwrite: !!overwrite,
             acceptKeys: acceptKeys
         }).done(function(r) {
-            kloudspeaker.events.dispatch('filesystem/move', {
+            events.dispatch('filesystem/move', {
                 items: [i],
                 to: to
             });
@@ -357,9 +362,9 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', '
         }).fail(function(e) {
             if (e.code == 204) {
                 this.handled = true;
-                kloudspeaker.ui.dialogs.confirmation({
-                    title: kloudspeaker.ui.texts.get('moveOverwriteConfirmationTitle'),
-                    message: kloudspeaker.ui.texts.get('moveOverwriteConfirmationMsg', [i.name]),
+                dialogs.confirmation({
+                    title: loc.get('moveOverwriteConfirmationTitle'),
+                    message: loc.get('moveOverwriteConfirmationMsg', [i.name]),
                     callback: function() {
                         mfs._move(i, to, acceptKeys, true).done(df.resolve).fail(df.reject);
                     }
@@ -380,7 +385,7 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', '
             overwrite: !!overwrite,
             acceptKeys: acceptKeys
         }).done(function(r) {
-            kloudspeaker.events.dispatch('filesystem/move', {
+            events.dispatch('filesystem/move', {
                 items: i,
                 to: to
             });
@@ -390,9 +395,9 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', '
                 this.handled = true;
                 var files = e.data.files;
 
-                kloudspeaker.ui.dialogs.confirmation({
-                    title: kloudspeaker.ui.texts.get(files.length > 1 ? 'moveManyOverwriteConfirmationTitle' : 'moveOverwriteConfirmationTitle'),
-                    message: files.length > 1 ? kloudspeaker.ui.texts.get('moveManyOverwriteConfirmationMsg', [files.length]) : kloudspeaker.ui.texts.get('moveOverwriteConfirmationMsg', [files[0].name]),
+                dialogs.confirmation({
+                    title: loc.get(files.length > 1 ? 'moveManyOverwriteConfirmationTitle' : 'moveOverwriteConfirmationTitle'),
+                    message: files.length > 1 ? loc.get('moveManyOverwriteConfirmationMsg', [files.length]) : loc.get('moveOverwriteConfirmationMsg', [files[0].name]),
                     callback: function() {
                         mfs._moveMany(i, to, acceptKeys, true).done(df.resolve).fail(df.reject);
                     }
@@ -407,12 +412,12 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', '
     mfs.rename = function(item, name) {
         if (!name || name.length === 0) {
             var df = $.Deferred();
-            kloudspeaker.ui.dialogs.input({
-                title: kloudspeaker.ui.texts.get(item.is_file ? 'renameDialogTitleFile' : 'renameDialogTitleFolder'),
-                message: kloudspeaker.ui.texts.get('renameDialogNewName'),
+            dialogs.input({
+                title: loc.get(item.is_file ? 'renameDialogTitleFile' : 'renameDialogTitleFolder'),
+                message: loc.get('renameDialogNewName'),
                 defaultValue: item.name,
-                yesTitle: kloudspeaker.ui.texts.get('renameDialogRenameButton'),
-                noTitle: kloudspeaker.ui.texts.get('dialogCancel'),
+                yesTitle: loc.get('renameDialogRenameButton'),
+                noTitle: loc.get('dialogCancel'),
                 handler: {
                     isAcceptable: function(n) {
                         return !!n && n.length > 0 && n != item.name;
@@ -432,7 +437,7 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', '
         return service.put("filesystem/" + item.id + "/name/", {
             name: name
         }).done(function(r) {
-            kloudspeaker.events.dispatch('filesystem/rename', {
+            events.dispatch('filesystem/rename', {
                 items: [item],
                 name: name
             });
@@ -445,7 +450,7 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', '
             // request denied
             if (e.code == 109 && e.data && e.data.items) {
                 this.handled = true;
-                kloudspeaker.ui.actions.handleDenied(action, e.data, denyMessage, acceptMessage).done(function(acceptKeys) {
+                ui.actions.handleDenied(action, e.data, denyMessage, acceptMessage).done(function(acceptKeys) {
                     var argsWithKeys = args.slice(0);
                     argsWithKeys.push(acceptKeys);
 
@@ -463,12 +468,12 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', '
 
         var df = $.Deferred();
         if (window.isArray(i) && i.length > 1) {
-            mfs._validated(mfs._delMany, [i], "delete", kloudspeaker.ui.texts.get("actionDeniedDeleteMany", i.length), kloudspeaker.ui.texts.get("actionAcceptDeleteMany", i.length)).done(df.resolve).fail(df.reject);
+            mfs._validated(mfs._delMany, [i], "delete", loc.get("actionDeniedDeleteMany", i.length), loc.get("actionAcceptDeleteMany", i.length)).done(df.resolve).fail(df.reject);
             return df.promise();
         }
 
         if (window.isArray(i)) i = i[0];
-        mfs._validated(mfs._del, [i], "delete", kloudspeaker.ui.texts.get("actionDeniedDelete", i.name), kloudspeaker.ui.texts.get("actionAcceptDelete", i.name)).done(df.resolve).fail(df.reject);
+        mfs._validated(mfs._del, [i], "delete", loc.get("actionDeniedDelete", i.name), loc.get("actionAcceptDelete", i.name)).done(df.resolve).fail(df.reject);
         return df.promise();
     };
 
@@ -476,7 +481,7 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', '
         return service.del("filesystem/" + item.id, acceptKeys ? {
             acceptKeys: acceptKeys
         } : null).done(function(r) {
-            kloudspeaker.events.dispatch('filesystem/delete', {
+            events.dispatch('filesystem/delete', {
                 items: [item]
             });
         });
@@ -488,7 +493,7 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', '
             items: i,
             acceptKeys: (acceptKeys ? acceptKeys : null)
         }).done(function(r) {
-            kloudspeaker.events.dispatch('filesystem/delete', {
+            events.dispatch('filesystem/delete', {
                 items: i
             });
         });
@@ -498,7 +503,7 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', '
         return service.post("filesystem/" + folder.id + "/folders/", {
             name: name
         }).done(function(r) {
-            kloudspeaker.events.dispatch('filesystem/createfolder', {
+            events.dispatch('filesystem/createfolder', {
                 items: [folder],
                 name: name
             });

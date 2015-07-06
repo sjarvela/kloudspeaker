@@ -148,7 +148,7 @@ define([], function() {
             return utils.urlWithParam(url, "_=" + _time);
         },
 
-        hasPermission: function(list, name, required) {
+        /*hasPermission: function(list, name, required) {
             if (!list || list[name] === undefined) return false;
             if (kloudspeaker.session.user.admin) return true;
 
@@ -160,7 +160,7 @@ define([], function() {
             var ui = options.indexOf(v);
             var ri = options.indexOf(required);
             return (ui >= ri);
-        },
+        },*/
 
         formatDateTime: function(time, fmt) {
             var ft = time.toString(fmt);
@@ -274,6 +274,7 @@ define([], function() {
             setTimeout(f, to || 0);
         },
 
+        //TODO remove global base64
         base64 : window.Base64
     };
     return utils;

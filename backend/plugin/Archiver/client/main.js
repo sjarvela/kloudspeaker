@@ -1,4 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], function(app, settings, plugins) {
+define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/permissions'], function(app, settings, plugins, permissions) {
     //TODO remove reference to global "kloudspeaker"
 
     var that = {};
@@ -122,8 +122,8 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
         itemContextHandler: function(item, ctx, data) {
             var root = (item.id == item.root_id);
 
-            var writable = !root && kloudspeaker.filesystem.hasPermission(item, "filesystem_item_access", "rw");
-            var parentWritable = !root && kloudspeaker.filesystem.hasPermission(item.parent_id, "filesystem_item_access", "rw");
+            var writable = !root && permissions.hasFilesystemPermission(item, "filesystem_item_access", "rw");
+            var parentWritable = !root && permissions.hasFilesystemPermission(item.parent_id, "filesystem_item_access", "rw");
             //TODO folder? is this ever something else than parent?
             var folderWritable = !root && ctx.folder && ctx.folder_writable;
 

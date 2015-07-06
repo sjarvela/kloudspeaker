@@ -1,21 +1,19 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], function(app, settings, plugins) {
-    //TODO remove reference to global "kloudspeaker"
-
+define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/permissions', 'kloudspeaker/filesystem', 'kloudspeaker/ui/dialogs', 'kloudspeaker/localization', 'kloudspeaker/ui'], function(settings, plugins, permissions, filesystem, dialogs, loc, ui) {
     var that = {};
 
     var doDelete = function(items) {
         var many = (window.isArray(items) && items.length > 1);
         var single = many ? null : (window.isArray(items) ? items[0] : items);
 
-        var title = many ? kloudspeaker.ui.texts.get("deleteManyConfirmationDialogTitle") : (single.is_file ? kloudspeaker.ui.texts.get("deleteFileConfirmationDialogTitle") : kloudspeaker.ui.texts.get("deleteFolderConfirmationDialogTitle"));
-        var msg = many ? kloudspeaker.ui.texts.get("confirmDeleteManyMessage", items.length) : kloudspeaker.ui.texts.get(single.is_file ? "confirmFileDeleteMessage" : "confirmFolderDeleteMessage", [single.name]);
+        var title = many ? loc.get("deleteManyConfirmationDialogTitle") : (single.is_file ? loc.get("deleteFileConfirmationDialogTitle") : loc.get("deleteFolderConfirmationDialogTitle"));
+        var msg = many ? loc.get("confirmDeleteManyMessage", items.length) : loc.get(single.is_file ? "confirmFileDeleteMessage" : "confirmFolderDeleteMessage", [single.name]);
 
         var df = $.Deferred();
-        kloudspeaker.ui.dialogs.confirmation({
+        dialogs.confirmation({
             title: title,
             message: msg,
             callback: function() {
-                $.when(kloudspeaker.filesystem.del(items)).then(df.resolve, df.reject);
+                $.when(fs.del(items)).then(df.resolve, df.reject);
             }
         });
         return df.promise();
@@ -25,10 +23,10 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
         id: "plugin-core",
         itemContextHandler: function(item, ctx, data) {
             var root = (item.id == item.root_id);
-            var writable = kloudspeaker.filesystem.hasPermission(item, "filesystem_item_access", "rw");
+            var writable = permissions.hasFilesystemPermission(item, "filesystem_item_access", "rw");
             var movable = writable && !root;
-            var deletable = !root && kloudspeaker.filesystem.hasPermission(item, "filesystem_item_access", "rwd");
-            var parentWritable = !root && kloudspeaker.filesystem.hasPermission(item.parent_id, "filesystem_item_access", "rw");
+            var deletable = !root && permissions.hasFilesystemPermission(item, "filesystem_item_access", "rwd");
+            var parentWritable = !root && permissions.hasFilesystemPermission(item.parent_id, "filesystem_item_access", "rw");
 
             var actions = [];
             if (item.is_file) {
@@ -38,24 +36,24 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                     type: "primary",
                     group: "download",
                     callback: function() {
-                        kloudspeaker.ui.download(kloudspeaker.filesystem.getDownloadUrl(item));
+                        ui.download(fs.getDownloadUrl(item));
                     }
                 });
                 actions.push({
                     title: '-'
                 });
             } else {
-                if (writable && kloudspeaker.settings["file-view"]["create-empty-file-action"])
+                if (writable && settings["file-view"]["create-empty-file-action"])
                     actions.push({
                         'title-key': 'actionCreateEmptyFileItem',
                         icon: 'file',
                         callback: function() {
-                            kloudspeaker.ui.dialogs.input({
-                                message: kloudspeaker.ui.texts.get('actionCreateEmptyFileMessage'),
-                                title: kloudspeaker.ui.texts.get('actionCreateEmptyFileTitle'),
+                            dialogs.input({
+                                message: loc.get('actionCreateEmptyFileMessage'),
+                                title: loc.get('actionCreateEmptyFileTitle'),
                                 defaultValue: "",
-                                yesTitle: kloudspeaker.ui.texts.get('ok'),
-                                noTitle: kloudspeaker.ui.texts.get('dialogCancel'),
+                                yesTitle: loc.get('ok'),
+                                noTitle: loc.get('dialogCancel'),
                                 handler: {
                                     isAcceptable: function(v) {
                                         if (!v || v.trim().length === 0) return false;
@@ -64,7 +62,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
 
                                     },
                                     onInput: function(v) {
-                                        kloudspeaker.filesystem.createEmptyFile(item, v);
+                                        filesystem.createEmptyFile(item, v);
                                     }
                                 }
                             });
@@ -76,7 +74,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                 'title-key': 'actionCopyItem',
                 icon: 'copy',
                 callback: function() {
-                    return kloudspeaker.filesystem.copy(item);
+                    return filesystem.copy(item);
                 }
             });
             if (parentWritable)
@@ -84,7 +82,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                     'title-key': 'actionCopyItemHere',
                     icon: 'copy',
                     callback: function() {
-                        return kloudspeaker.filesystem.copyHere(item);
+                        return filesystem.copyHere(item);
                     }
                 });
 
@@ -93,14 +91,14 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                     'title-key': 'actionMoveItem',
                     icon: 'mail-forward',
                     callback: function() {
-                        return kloudspeaker.filesystem.move(item);
+                        return filesystem.move(item);
                     }
                 });
                 actions.push({
                     'title-key': 'actionRenameItem',
                     icon: 'pencil',
                     callback: function() {
-                        return kloudspeaker.filesystem.rename(item);
+                        return filesystem.rename(item);
                     }
                 });
                 if (deletable)
@@ -129,7 +127,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                 'title-key': 'actionCopyMultiple',
                 icon: 'copy',
                 callback: function() {
-                    return kloudspeaker.filesystem.copy(items);
+                    return filesystem.copy(items);
                 }
             }];
 
@@ -138,7 +136,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                     'title-key': 'actionMoveMultiple',
                     icon: 'mail-forward',
                     callback: function() {
-                        return kloudspeaker.filesystem.move(items);
+                        return filesystem.move(items);
                     }
                 });
                 actions.push({

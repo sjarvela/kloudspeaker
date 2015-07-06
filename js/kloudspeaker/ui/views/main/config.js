@@ -1,6 +1,6 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings'], function(app, settings) {
+define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions'], function(app, settings, permissions) {
     //TODO split subviews etc into modules
-    
+
     kloudspeaker.view.ConfigListView = function($e, o) {
         kloudspeaker.dom.template("kloudspeaker-tmpl-configlistview", {
             title: o.title,
@@ -1336,7 +1336,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings'], function(app, settings) {
 
                 $.each(views, function(i, v) {
                     if (v.admin) {
-                        if (kloudspeaker.session.user.admin || (v.requiresPermission && kloudspeaker.session.user.hasPermission(v.requiresPermission)))
+                        if (kloudspeaker.session.user.admin || (v.requiresPermission && permissions.hasPermission(v.requiresPermission)))
                             that._adminViews.push(v);
                     } else
                         that._views.push(v);
@@ -1344,7 +1344,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings'], function(app, settings) {
             });
             _.each(kloudspeaker.ui._configViews, function(v) {
                 if (v.admin) {
-                    if (kloudspeaker.session.user.admin || (v.requiresPermission && kloudspeaker.session.user.hasPermission(v.requiresPermission)))
+                    if (kloudspeaker.session.user.admin || (v.requiresPermission && permissions.hasPermission(v.requiresPermission)))
                         that._adminViews.push(v);
                 } else {
                     that._views.push(v);
@@ -1431,7 +1431,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings'], function(app, settings) {
 
                 var addView = function(i, v) {
                     if (v.requiresPermission) {
-                        if (!kloudspeaker.session.user.admin && !kloudspeaker.session.user.hasPermission(v.requiresPermission)) return;
+                        if (!kloudspeaker.session.user.admin && !permissions.hasPermission(v.requiresPermission)) return;
                     } else {
                         if (!kloudspeaker.session.user.admin) return;
                     }

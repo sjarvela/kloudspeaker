@@ -1,7 +1,6 @@
-define([], function() {
+define(['kloudspeaker/filesystem', 'kloudspeaker/plugins', 'kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/session', 'kloudspeaker/permissions', 'kloudspeaker/ui', 'kloudspeaker/dom', 'kloudspeaker/features', 'kloudspeaker/localization', 'kloudspeaker/ui/controls', 'kloudspeaker/utils'], function(fs, plugins, service, events, session, permissions, ui, dom, features, loc, controls, utils) {
     //TODO rewrite
-    //TODO remove global references
-    
+
     return function(o) {
         var ict = {};
         ict._activeItemContext = false;
@@ -14,7 +13,7 @@ define([], function() {
             var folder = spec.folder;
 
             var popupId = "mainview-itemcontext-" + item.id;
-            if (kloudspeaker.ui.isActivePopup(popupId)) {
+            if (ui.isActivePopup(popupId)) {
                 return;
             }
 
@@ -27,7 +26,7 @@ define([], function() {
             if (item.id == openedId) return;
 
             var $cont = $t || $e.parent();
-            var html = kloudspeaker.dom.template("kloudspeaker-tmpl-main-itemcontext", item, {})[0].outerHTML;
+            var html = dom.template("kloudspeaker-tmpl-main-itemcontext", item, {})[0].outerHTML;
             $e.popover({
                 title: item.name,
                 html: true,
@@ -44,7 +43,7 @@ define([], function() {
                     }
                 };
                 api.close = api.hide;
-                kloudspeaker.ui.activePopup(api);
+                ui.activePopup(api);
 
                 var $el = $("#kloudspeaker-itemcontext-" + item.id);
                 var $pop = $el.closest(".popover");
@@ -64,7 +63,7 @@ define([], function() {
                 $pop.find(".popover-title").append($('<button type="button" class="close">×</button>').click(api.close));
                 var $content = $el.find(".kloudspeaker-itemcontext-content");
 
-                kloudspeaker.filesystem.itemDetails(item, kloudspeaker.plugins.getItemContextRequestData(item)).done(function(d) {
+                fs.itemDetails(item, plugins.getItemContextRequestData(item)).done(function(d) {
                     if (!d) {
                         $t.hide();
                         return;
@@ -72,12 +71,12 @@ define([], function() {
 
                     var ctx = {
                         details: d,
-                        hasPermission: function(name, required) {
-                            return kloudspeaker.helpers.hasPermission(d.permissions, name, required);
+                        /*hasPermission: function(name, required) {
+                            return permissions.hasPermission(d.permissions, name, required);
                         },
                         hasParentPermission: function(name, required) {
-                            return kloudspeaker.helpers.hasPermission(d.parent_permissions, name, required);
-                        },
+                            return utils.hasPermission(d.parent_permissions, name, required);
+                        },*/
                         folder: spec.folder,
                         folder_writable: spec.folder_writable
                     };
@@ -86,37 +85,37 @@ define([], function() {
                 });
             }).bind("hidden", function() {
                 $e.unbind("shown").unbind("hidden");
-                kloudspeaker.ui.removeActivePopup(popupId);
+                ui.removeActivePopup(popupId);
             });
             $e.popover('show');
         };
 
         ict.renderItemContext = function(cApi, $e, item, ctx) {
-            var df = kloudspeaker.features.hasFeature("descriptions");
-            var dp = ctx.hasPermission("edit_description");
+            var df = features.hasFeature("descriptions");
+            var dp = permissions.hasFilesystemPermission(item, "edit_description");
             var descriptionEditable = df && dp;
             var showDescription = descriptionEditable || !!ctx.details.metadata.description;
 
-            var plugins = kloudspeaker.plugins.getItemContextPlugins(item, ctx);
-            var actions = kloudspeaker.helpers.getPluginActions(plugins);
-            var primaryActions = kloudspeaker.helpers.getPrimaryActions(actions);
-            var secondaryActions = kloudspeaker.helpers.getSecondaryActions(actions);
+            var pl = plugins.getItemContextPlugins(item, ctx);
+            var actions = utils.getPluginActions(pl);
+            var primaryActions = utils.getPrimaryActions(actions);
+            var secondaryActions = utils.getSecondaryActions(actions);
 
             var o = {
                 item: item,
                 details: ctx.details,
                 showDescription: showDescription,
                 description: ctx.details.metadata.description || '',
-                session: kloudspeaker.session,
-                plugins: plugins,
+                session: session.get(),
+                plugins: pl,
                 primaryActions: primaryActions
             };
 
-            $e.removeClass("loading").empty().append(kloudspeaker.dom.template("kloudspeaker-tmpl-main-itemcontext-content", o, {
+            $e.removeClass("loading").empty().append(dom.template("kloudspeaker-tmpl-main-itemcontext-content", o, {
                 title: function(o) {
                     var a = o;
                     if (a.type == 'submenu') a = a.primary;
-                    return a.title ? a.title : kloudspeaker.ui.texts.get(a['title-key']);
+                    return a.title ? a.title : loc.get(a['title-key']);
                 }
             }));
             $e.click(function(e) {
@@ -124,17 +123,17 @@ define([], function() {
                 e.preventDefault();
                 return false;
             });
-            kloudspeaker.ui.process($e, ["localize"]);
+            ui.process($e, ["localize"]);
 
             if (descriptionEditable) {
-                kloudspeaker.ui.controls.editableLabel({
+                controls.editableLabel({
                     element: $("#kloudspeaker-itemcontext-description"),
-                    hint: kloudspeaker.ui.texts.get('itemcontextDescriptionHint'),
+                    hint: loc.get('itemcontextDescriptionHint'),
                     onedit: function(desc) {
-                        kloudspeaker.service.put("filesystem/" + item.id + "/description/", {
+                        service.put("filesystem/" + item.id + "/description/", {
                             description: desc
                         }).done(function() {
-                            kloudspeaker.events.dispatch("filesystem/item-update", {
+                            events.dispatch("filesystem/item-update", {
                                 item: item,
                                 property: 'description',
                                 value: desc
@@ -149,7 +148,7 @@ define([], function() {
                 $pae.each(function(i, $b) {
                     var a = primaryActions[i];
                     if (a.type == 'submenu') {
-                        kloudspeaker.ui.controls.dropdown({
+                        controls.dropdown({
                             element: $b,
                             items: a.items,
                             hideDelay: 0,
@@ -173,7 +172,7 @@ define([], function() {
                 });
             }
 
-            if (plugins) {
+            if (pl) {
                 var $selectors = $("#kloudspeaker-itemcontext-details-selectors");
                 var $content = $("#kloudspeaker-itemcontext-details-content");
                 var contents = {};
@@ -185,7 +184,7 @@ define([], function() {
                     var $c = contents[id] ? contents[id] : false;
                     if (!$c) {
                         $c = $('<div class="kloudspeaker-itemcontext-plugin-content"></div>');
-                        plugins[id].details["on-render"](cApi, $c, ctx);
+                        pl[id].details["on-render"](cApi, $c, ctx);
                         contents[id] = $c;
                         $content.append($c);
                     }
@@ -197,14 +196,14 @@ define([], function() {
                     var s = $(this).tmplItem().data;
                     onSelectDetails(s.id);
                 };
-                for (var id in plugins) {
-                    var plugin = plugins[id];
+                for (var id in pl) {
+                    var plugin = pl[id];
                     if (!plugin.details) continue;
 
                     if (!firstPlugin) firstPlugin = id;
 
-                    var title = plugin.details.title ? plugin.details.title : (plugin.details["title-key"] ? kloudspeaker.ui.texts.get(plugin.details["title-key"]) : id);
-                    var selector = kloudspeaker.dom.template("kloudspeaker-tmpl-main-itemcontext-details-selector", {
+                    var title = plugin.details.title ? plugin.details.title : (plugin.details["title-key"] ? loc.get(plugin.details["title-key"]) : id);
+                    var selector = dom.template("kloudspeaker-tmpl-main-itemcontext-details-selector", {
                         id: id,
                         title: title,
                         data: plugin
@@ -214,7 +213,7 @@ define([], function() {
                 if (firstPlugin) onSelectDetails(firstPlugin);
             }
 
-            kloudspeaker.ui.controls.dropdown({
+            controls.dropdown({
                 element: $e.find("#kloudspeaker-itemcontext-secondary-actions"),
                 items: secondaryActions,
                 hideDelay: 0,
