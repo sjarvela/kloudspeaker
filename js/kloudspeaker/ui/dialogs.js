@@ -1,7 +1,10 @@
-define([], function() {
-    //TODO remove global references
-
+define(['kloudspeaker/session', 'kloudspeaker/filesystem', 'kloudspeaker/localization', 'kloudspeaker/ui/controls', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/ui'], function(session, fs, loc, controls, utils, dom, ui) {
     var dh = {};
+    var app = null; //TODO remove
+
+    dh.init = function(a) {
+        app = a;
+    }
 
     dh._dialogDefaults = {
         title: "Kloudspeaker"
@@ -34,7 +37,7 @@ define([], function() {
             height: 'auto',
             minHeight: 50
         });
-        kloudspeaker.ui.handlers.localize(dlg);
+        ui.handlers.localize(dlg);
         dlg.find("#kloudspeaker-info-dialog-close-button").click(function() { dlg.dialog('destroy'); dlg.remove(); });*/
     };
 
@@ -45,8 +48,8 @@ define([], function() {
             msg = msg + "<li>" + reasons[i] + "</li>";
         }
         msg = msg + "</ul></p>";
-        kloudspeaker.ui.dialogs.error({
-            title: kloudspeaker.ui.texts.get('errorDialogTitle'),
+        dh.error({
+            title: loc.get('errorDialogTitle'),
             message: msg
         });
     }
@@ -59,7 +62,7 @@ define([], function() {
         }
         msg = msg + "</ul></p>";
         dh.custom({
-            title: kloudspeaker.ui.texts.get('errorDialogTitle'),
+            title: loc.get('errorDialogTitle'),
             content: msg,
             buttons: [{
                 id: "yes",
@@ -80,13 +83,14 @@ define([], function() {
 
     dh.showError = function(error) {
         var msg = 'errorDialogMessage_' + error.code;
-        if (!kloudspeaker.ui.texts.has(msg)) msg = 'errorDialogUnknownError';
-        if (kloudspeaker.session.user && kloudspeaker.session.user.admin && error.trace) {
+        if (!loc.has(msg)) msg = 'errorDialogUnknownError';
+        var s = session.get();
+        if (s.user && s.user.admin && error.trace) {
             dh.custom({
-                title: kloudspeaker.ui.texts.get('errorDialogTitle'),
+                title: loc.get('errorDialogTitle'),
                 content: $("#kloudspeaker-tmpl-dialog-error-debug").tmpl({
-                    title: kloudspeaker.ui.texts.get('errorDialogTitle'),
-                    message: kloudspeaker.ui.texts.get(msg),
+                    title: loc.get('errorDialogTitle'),
+                    message: loc.get(msg),
                     debug: error.trace.join("<br/>")
                 }),
                 buttons: [{
@@ -99,9 +103,9 @@ define([], function() {
                 }
             });
         } else {
-            kloudspeaker.ui.dialogs.error({
-                title: kloudspeaker.ui.texts.get('errorDialogTitle'),
-                message: kloudspeaker.ui.texts.get(msg)
+            dh.error({
+                title: loc.get('errorDialogTitle'),
+                message: loc.get(msg)
             });
         }
     };
@@ -135,7 +139,7 @@ define([], function() {
             },
             "on-show": function(h, $dlg) {
                 var $table = $($dlg.find(".kloudspeaker-selectdialog-table")[0]);
-                table = kloudspeaker.ui.controls.table($table, {
+                table = controls.table($table, {
                     key: spec.key,
                     selectOnEdit: true,
                     columns: [{
@@ -169,7 +173,7 @@ define([], function() {
         var opts = false;
         if (spec.options) {
             opts = [];
-            $.each(kloudspeaker.helpers.getKeys(spec.options), function(i, k) {
+            $.each(utils.getKeys(spec.options), function(i, k) {
                 opts.push({
                     key: k,
                     title: spec.options[k]
@@ -233,7 +237,7 @@ define([], function() {
 
     dh.wait = function(spec) {
         var $trg = (spec && spec.target) ? $("#" + spec.target) : $("body");
-        var w = kloudspeaker.dom.template("kloudspeaker-tmpl-wait", $.extend(spec, dh._dialogDefaults)).appendTo($trg).show();
+        var w = dom.template("kloudspeaker-tmpl-wait", $.extend(spec, dh._dialogDefaults)).appendTo($trg).show();
         return {
             close: function() {
                 w.remove();
@@ -242,11 +246,11 @@ define([], function() {
     };
 
     dh.notification = function(spec) {
-        if (kloudspeaker.App.activeView && kloudspeaker.App.activeView.onNotification && kloudspeaker.App.activeView.onNotification(spec)) return;
+        if (app.activeView && app.activeView.onNotification && app.activeView.onNotification(spec)) return;
 
         var $trg = (spec && spec.target) ? ((typeof spec.target === 'string') ? $("#" + spec.target) : spec.target) : $("#kloudspeaker-notification-container, .kloudspeaker-notification-container").first();
         if ($trg.length === 0) $trg = $("body");
-        var notification = kloudspeaker.dom.template("kloudspeaker-tmpl-notification", $.extend(spec, dh._dialogDefaults)).hide().appendTo($trg);
+        var notification = dom.template("kloudspeaker-tmpl-notification", $.extend(spec, dh._dialogDefaults)).hide().appendTo($trg);
         notification.fadeIn(300, function() {
             setTimeout(function() {
                 notification.fadeOut(300, function() {
@@ -266,11 +270,11 @@ define([], function() {
             $d.css("left", "50%");
         };
         var s = spec;
-        if (s['title-key']) s.title = kloudspeaker.ui.texts.get(s['title-key']);
+        if (s['title-key']) s.title = loc.get(s['title-key']);
 
         var getButtonTitle = function(b) {
             if (b.title) return b.title;
-            if (b["title-key"]) return kloudspeaker.ui.texts.get(b["title-key"]);
+            if (b["title-key"]) return loc.get(b["title-key"]);
             return "";
         };
         var $dlg = $("#kloudspeaker-tmpl-dialog-custom").tmpl($.extend(dh._dialogDefaults, s), {
@@ -348,7 +352,7 @@ define([], function() {
         }
 
         var _onDialogReady = function() {
-                if (spec.html || spec.content) kloudspeaker.ui.handlers.localize($dlg);
+                if (spec.html || spec.content) ui.handlers.localize($dlg);
                 if (!spec.buttons && _model && _model.getDialogButtons) {
                     spec.buttons = _model.getDialogButtons();
                     $("#kloudspeaker-tmpl-dialog-button").tmpl(spec.buttons, {
@@ -394,10 +398,10 @@ define([], function() {
             // content options: element, template, model or none
         if (spec.element) {
             $dlg.find(".modal-body").append(spec.element);
-            kloudspeaker.ui.handlers.localize($dlg);
+            ui.handlers.localize($dlg);
             _onDialogReady();
         } else if (spec.model) {
-            kloudspeaker.ui.viewmodel(spec.view, spec.model, $body).done(function(m) {
+            ui.viewmodel(spec.view, spec.model, $body).done(function(m) {
                 _model = m;
                 _onDialogReady();
             });
@@ -432,7 +436,7 @@ define([], function() {
             if (loaded[parent ? parent.id : "root"]) return;
 
             $selector.addClass("loading");
-            kloudspeaker.filesystem.items(parent, spec.allowFiles, spec.allRoots).done(function(r) {
+            fs.items(parent, spec.allowFiles, spec.allRoots).done(function(r) {
                 $selector.removeClass("loading");
                 loaded[parent ? parent.id : "root"] = true;
 
@@ -515,11 +519,11 @@ define([], function() {
     };
 
     dh.tableView = function(o) {
-        kloudspeaker.ui.dialogs.custom({
+        dh.custom({
             resizable: true,
             initSize: [600, 400],
             title: o.title,
-            content: kloudspeaker.dom.template("kloudspeaker-tmpl-tableview"),
+            content: dom.template("kloudspeaker-tmpl-tableview"),
             buttons: o.buttons,
             "on-button": function(btn, d) {
                 o.onButton(btn, d);
@@ -528,7 +532,7 @@ define([], function() {
                 var $content = $d.find("#kloudspeaker-tableview-content");
 
                 h.center();
-                var table = kloudspeaker.ui.controls.table("kloudspeaker-tableview-list", {
+                var table = controls.table("kloudspeaker-tableview-list", {
                     key: o.table.key,
                     columns: o.table.columns,
                     onRowAction: function(id, obj) {

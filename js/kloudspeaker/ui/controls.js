@@ -1,6 +1,4 @@
-define([], function() {
-    //TODO remove global references
-
+define(['kloudspeaker/localization', 'kloudspeaker/dom', 'kloudspeaker/service', 'kloudspeaker/ui'], function(loc, dom, service, ui) {
     var processPopupActions = function(l) {
         $.each(l, function(i, item) {
             if (item.type == 'submenu') {
@@ -8,13 +6,13 @@ define([], function() {
                 return;
             }
             if (item.title) return;
-            if (item["title-key"]) item.title = kloudspeaker.ui.texts.get(item['title-key']);
+            if (item["title-key"]) item.title = loc.get(item['title-key']);
         });
     };
     var createPopupItems = function(itemList) {
         var list = itemList || [];
         processPopupActions(list);
-        return kloudspeaker.dom.template("kloudspeaker-tmpl-popupmenu", {
+        return dom.template("kloudspeaker-tmpl-popupmenu", {
             items: list
         });
     };
@@ -42,8 +40,14 @@ define([], function() {
             return false;
         });
     };
-
+    var app = null; //TODO remove
     var controls = {
+
+        //TODO remove
+        init: function(a) {
+            app = a;
+        },
+
         dropdown: function(a) {
             var $e = $(a.element);
             var $mnu = false;
@@ -54,7 +58,7 @@ define([], function() {
                 if (!$mnu) return;
                 if (a.onHide) a.onHide();
                 $mnu.parent().removeClass("open");
-                kloudspeaker.ui.removeActivePopup(popupId);
+                ui.removeActivePopup(popupId);
             };
             var onItem = function(i, cbr) {
                 hidePopup();
@@ -82,7 +86,7 @@ define([], function() {
                 onshow: function($p) {
                     if (!$mnu) $mnu = $($p.find(".dropdown-menu")[0]);
                     if (!a.parentPopupId)
-                        popupId = kloudspeaker.ui.activePopup(api);
+                        popupId = ui.activePopup(api);
                     if (!popupItems) $mnu.addClass("loading");
                     if (a.onShow) a.onShow(api, popupItems);
                 },
@@ -103,7 +107,7 @@ define([], function() {
             var hidePopup = function() {
                 if (a.onHide) a.onHide();
                 $mnu.remove();
-                kloudspeaker.ui.removeActivePopup(popupId);
+                ui.removeActivePopup(popupId);
             };
             var onItem = function(i, cbr) {
                 hidePopup();
@@ -113,7 +117,7 @@ define([], function() {
             if (!a.items) $mnu.addClass("loading");
             $mnu.append(createPopupItems(a.items).css("display", "block"));
             if (a.style) $mnu.addClass(a.style);
-            kloudspeaker.App.getElement().append($mnu); //.on('click', hidePopup);
+            app.getElement().append($mnu); //.on('click', hidePopup);
 
             var api = {
                 hide: hidePopup,
@@ -123,7 +127,7 @@ define([], function() {
                 }
             };
             if (a.items) initPopupItems($mnu, a.items, onItem);
-            popupId = kloudspeaker.ui.activePopup(api);
+            popupId = ui.activePopup(api);
             return api;
         },
 
@@ -156,7 +160,7 @@ define([], function() {
                 content: html
             }).bind("shown", function(e) {
                 $tip = $el;
-                kloudspeaker.ui.activePopup(api);
+                ui.activePopup(api);
                 /*$tip.click(function(e) {
                     e.preventDefault();
                     return false;
@@ -168,7 +172,7 @@ define([], function() {
                 if (o.handler && o.handler.onShowBubble) o.handler.onShowBubble(actionId, api);
             }).bind("hidden", function() {
                 //$e.unbind("shown").unbind("hidden");
-                kloudspeaker.ui.removeActivePopup(api.id);
+                ui.removeActivePopup(api.id);
             });
             $e.click(function(e) {
                 e.preventDefault();
@@ -245,7 +249,7 @@ define([], function() {
             }).bind("shown", function(e) {
                 $tip = $el;
 
-                kloudspeaker.ui.activePopup(api);
+                ui.activePopup(api);
                 $tip.click(function(e) {
                     e.stopPropagation();
                 });
@@ -254,18 +258,18 @@ define([], function() {
                         api.close();
                     }));
                 if (!o.model)
-                    kloudspeaker.ui.handlers.localize($tip);
+                    ui.handlers.localize($tip);
                 if (o.handler && o.handler.onRenderBubble) o.handler.onRenderBubble(api);
 
                 if (o.model)
-                    kloudspeaker.ui.viewmodel(o.view, o.model, $tip.find('.popover-content')).done(function(m) {
+                    ui.viewmodel(o.view, o.model, $tip.find('.popover-content')).done(function(m) {
                         pos();
                         _model = m;
                         if (m.onShow) m.onShow(api);
                     });
             }).bind("hidden", function() {
                 $e.unbind("shown").unbind("hidden");
-                kloudspeaker.ui.removeActivePopup(api.id);
+                ui.removeActivePopup(api.id);
             });
             $e.popover('show');
 
@@ -665,7 +669,7 @@ define([], function() {
                         var p = o.remote.queryParams(dataInfo);
                         if (p) queryParams = $.extend(queryParams, p);
                     }
-                    var pr = kloudspeaker.service.post(o.remote.path, queryParams).done(function(r) {
+                    var pr = service.post(o.remote.path, queryParams).done(function(r) {
                         if (o.remote.paging) {
                             dataInfo = {
                                 start: r.start,
@@ -796,17 +800,17 @@ define([], function() {
             var $e = (typeof(e) === "string") ? $("#" + e) : e;
             if (!$.fn.datetimepicker.dates.kloudspeaker) {
                 $.fn.datetimepicker.dates.kloudspeaker = {
-                    days: kloudspeaker.ui.texts.get('days'),
-                    daysShort: kloudspeaker.ui.texts.get('daysShort'),
-                    daysMin: kloudspeaker.ui.texts.get('daysMin'),
-                    months: kloudspeaker.ui.texts.get('months'),
-                    monthsShort: kloudspeaker.ui.texts.get('monthsShort'),
-                    today: kloudspeaker.ui.texts.get('today'),
-                    weekStart: kloudspeaker.ui.texts.get('weekStart')
+                    days: loc.get('days'),
+                    daysShort: loc.get('daysShort'),
+                    daysMin: loc.get('daysMin'),
+                    months: loc.get('months'),
+                    monthsShort: loc.get('monthsShort'),
+                    today: loc.get('today'),
+                    weekStart: loc.get('weekStart')
                 };
             }
             var val = o.value || null;
-            var fmt = o.format || kloudspeaker.ui.texts.get('shortDateTimeFormat');
+            var fmt = o.format || loc.get('shortDateTimeFormat');
             fmt = fmt.replace(/\b[h]\b/, "hh");
             fmt = fmt.replace(/\b[M]\b/, "MM");
             fmt = fmt.replace(/\b[d]\b/, "dd");
@@ -902,7 +906,7 @@ define([], function() {
 
         slidePanel: function($e, o) {
             if (!$e) return;
-            var $p = kloudspeaker.dom.template("kloudspeaker-tmpl-slidepanel").appendTo($e);
+            var $p = dom.template("kloudspeaker-tmpl-slidepanel").appendTo($e);
             if (o.relative) $p.addClass("relative");
             var $content = $p.find(".kloudspeaker-slidepanel-content");
             if (o.resizable) {

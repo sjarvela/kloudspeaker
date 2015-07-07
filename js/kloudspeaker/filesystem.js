@@ -1,7 +1,9 @@
-define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/permissions', 'kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'kloudspeaker/ui/dialogs', 'kloudspeaker/localization', 'kloudspeaker/ui'], function(plugins, events, permissions, session, service, utils, dialogs, loc, ui) {
+define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/permissions', 'kloudspeaker/service', 'kloudspeaker/utils', 'kloudspeaker/ui/dialogs', 'kloudspeaker/localization', 'kloudspeaker/ui'], function(plugins, events, permissions, service, utils, dialogs, loc, ui) {
     var mfs = {
         mobile: false   //TODO move somewhere?
     };
+
+    var session = null;
 
     events.addEventHandler(function(e) {
         if (e.type == 'session/start' || e.type == 'session/end') {
@@ -12,11 +14,15 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/permissions
             mfs.rootsByFolderId = {};
         }
         if (e.type == 'session/start') {
-            var s = session.get();
+            var s = e.payload;
             var allRoots = (s.user && s.user.admin) ? s.data.roots : false;
             mfs.updateRoots(s.data.folders, allRoots);
         }
     });
+
+    mfs.setup = function() {
+        session = require('kloudspeaker/session');
+    };
 
     mfs.updateRoots = function(f, allRoots) {
         var s = session.get();

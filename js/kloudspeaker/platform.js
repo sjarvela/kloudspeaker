@@ -1,5 +1,5 @@
 define(['knockout', 'text', 'durandal/system', 'durandal/viewlocator', 'durandal/composition', 'durandal/binder', 'durandal/plugins/widget'], function(ko, txt, ds, vl, comp, binder, dw) {
-    var init = function() {
+    var setup = function() {
         require(['kloudspeaker/settings', 'kloudspeaker/localization', 'kloudspeaker/ui/uploader', 'kloudspeaker/ui/clipboard', 'kloudspeaker/ui/dnd'], function(settings, loc, uploader, clipboard, dnd) {
             ds.debug(!!settings.debug); //TODO remove
 
@@ -181,7 +181,7 @@ define(['knockout', 'text', 'durandal/system', 'durandal/viewlocator', 'durandal
     };
 
     return {
-        init: init,
+        setup: setup,
         composition: comp
     };
 });

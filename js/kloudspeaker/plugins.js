@@ -1,9 +1,13 @@
-define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/dom', 'kloudspeaker/localization', 'kloudspeaker/utils'], function(settings, session, dom, loc, utils) {
-    //TODO remove global references
-
+define(['kloudspeaker/settings', 'kloudspeaker/dom', 'kloudspeaker/localization', 'kloudspeaker/utils'], function(settings, dom, loc, utils) {
     var pl = {};
+    var session = null;
 
     pl._list = {};
+
+    //remove session?
+    pl.setup = function() {
+        session = require('kloudspeaker/session');
+    }
 
     pl.register = function(p) {
         var id = p.id;

@@ -1,14 +1,14 @@
-define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/parsers', 'kloudspeaker/templates', 'kloudspeaker/utils'], function(platform, settings, controls, dialogs, formatters, parsers, templates, utils) {
-    //TODO remove global references
-
+define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/templates', 'kloudspeaker/utils', 'kloudspeaker/dom'], function(platform, settings, plugins, templates, utils, dom) {
     var app = null;
     var session = null; //TODO remove session (move data to params)
-    var ui = {
-        controls: controls, //TODO remove
-        dialogs: dialogs, //TODO remove
-        formatters: formatters, //TODO remove
-        parsers: parsers //TODO remove
-    };
+    var ui = {};
+
+    require(['kloudspeaker/ui/formatters', 'kloudspeaker/ui/parsers', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs'], function(formatters, parsers, controls, dialogs) {
+        ui.controls = controls; //TODO remove
+        ui.dialogs = dialogs; //TODO remove
+        ui.formatters = formatters; //TODO remove
+        ui.parsers = parsers; //TODO remove
+    });
 
     ui._activePopup = false;
 
@@ -50,7 +50,7 @@ define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/ui/contr
 
     ui.initializeLang = function() {
         var df = $.Deferred();
-        var s = session.get();  //remove session reference, add lang param
+        var s = session.get(); //remove session reference, add lang param
         var lang = (s.user && s.user.lang) ? s.user.lang : (settings.language["default"] || 'en');
 
         //TODO remove global
@@ -119,12 +119,12 @@ define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/ui/contr
         if (view) {
             if (typeof(view) == "string") {
                 if (view.startsWith("#"))
-                    $v = kloudspeaker.dom.template(view.substring(1));
+                    $v = dom.template(view.substring(1));
                 //otherwise considered view id resolved via composition & requirejs
             } else if (window.isArray(view)) {
                 var tmpl = view[0],
                     d = (view.length > 1) ? view[1] : null;
-                $v = kloudspeaker.dom.template(tmpl, d);
+                $v = dom.template(tmpl, d);
             } else if (typeof(view) == "object") {
                 $v = view;
             }
@@ -150,16 +150,16 @@ define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/ui/contr
                     }
                 };
                 if (_view) c.view = _view;
-                platform.composition.compose($target[0], c, {});    //TODO
+                platform.composition.compose($target[0], c, {}); //TODO
             } else {
                 require([_model], function(m) {
                     if (typeof(m) == 'function') m = m();
-                    kloudspeaker.dom.bind(m, ctx, $v);
+                    dom.bind(m, ctx, $v);
                     df.resolve(m, $v);
                 });
             }
         } else {
-            kloudspeaker.dom.bind(model, null, $v);
+            dom.bind(model, null, $v);
             df.resolve(model, $v);
         }
         return df;
@@ -260,7 +260,7 @@ define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/ui/contr
                 return null;
             };
             for (var k in data.items) {
-                var plugin = kloudspeaker.plugins.get(k);
+                var plugin = plugins.get(k);
                 if (!plugin || !plugin.actionValidationHandler) return false;
 
                 var handler = plugin.actionValidationHandler();
@@ -313,7 +313,7 @@ define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/ui/contr
 
         this.init = function($c) {
             if (app._initialized)
-                kloudspeaker.dom.template("kloudspeaker-tmpl-fullpage-error", {
+                dom.template("kloudspeaker-tmpl-fullpage-error", {
                     title: title,
                     message: msg
                 }).appendTo($c.empty());

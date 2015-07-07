@@ -1,6 +1,5 @@
 define(['kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/utils'], function(service, events, utils) {
-    //TODO remove global references
-    //TODO remove permission handling -> permission module
+    //TODO remove global session
 
     var session = false;
     var init = function() {

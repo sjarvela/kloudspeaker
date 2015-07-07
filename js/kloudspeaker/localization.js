@@ -2,14 +2,15 @@ define([], function() {
     //TODO rewrite error views
 
     var tt = {};
+    var plugins = null;
 
     tt.locale = null;
     tt._dict = {};
     tt._pluginTextsLoaded = [];
 
-    tt.init = function(plugins) {
-        tt._plugins = plugins;
-    }
+    tt.setup = function() {
+        plugins = require('kloudspeaker/plugins');
+    };
 
     tt.load = function(id) {
         var df = $.Deferred();
@@ -29,7 +30,7 @@ define([], function() {
     tt.loadPlugin = function(pluginId) {
         if (tt._pluginTextsLoaded.indexOf(pluginId) >= 0) return $.Deferred().resolve();
 
-        return tt._load(tt._plugins.getLocalizationUrl(pluginId), $.Deferred()).done(function() {
+        return tt._load(plugins.getLocalizationUrl(pluginId), $.Deferred()).done(function() {
             tt._pluginTextsLoaded.push(pluginId);
         });
     };

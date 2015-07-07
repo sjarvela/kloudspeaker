@@ -1,7 +1,8 @@
-define(['kloudspeaker/session', 'kloudspeaker/utils', 'kloudspeaker/events'], function(session, utils, events) {
+define(['kloudspeaker/utils', 'kloudspeaker/events'], function(utils, events) {
     var _types = null;
     var _filesystemPermissions = {};
     var _permissions = {};
+    var session = null;
 
     var updatePermissions = function(list, permissions) {
         $.each(utils.getKeys(permissions), function(i, p) {
@@ -40,6 +41,9 @@ define(['kloudspeaker/session', 'kloudspeaker/utils', 'kloudspeaker/events'], fu
     };
 
     return {
+        setup: function() {
+            session = require('kloudspeaker/session');
+        },
         getTypes: function() {
             return _types;
         },

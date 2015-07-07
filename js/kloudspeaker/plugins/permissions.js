@@ -1,4 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], function(app, settings, plugins) {
+define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/localization', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/dom', 'kloudspeaker/utils', 'kloudspeaker/ui'], function(settings, plugins, session, service, events, loc, formatters, controls, dialogs, dom, utils, ui) {
     //TODO remove reference to global "kloudspeaker"
 
     var that = {};
@@ -7,25 +7,26 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
     that.initialize = function() {
         if (that._init) return;
 
-        kloudspeaker.events.addEventHandler(function(e) {
-            if (!that._permissionTypes && kloudspeaker.session.user) that._permissionTypes = kloudspeaker.session.data.permission_types
+        events.addEventHandler(function(e) {
+            var s = e.payload;
+            if (!that._permissionTypes && s.user) that._permissionTypes = s.data.permission_types;
         }, "session/start");
-        that._pathFormatter = new kloudspeaker.ui.formatters.FilesystemItemPath();
+        that._pathFormatter = new formatters.FilesystemItemPath();
         that._init = true;
     };
 
     that._formatPermissionName = function(p) {
-        var name = kloudspeaker.ui.texts.get('permission_' + p.name);
+        var name = loc.get('permission_' + p.name);
         if (p.subject == null && that._permissionTypes.filesystem[p.name])
-            return kloudspeaker.ui.texts.get('permission_default', name);
+            return loc.get('permission_default', name);
         return name;
     };
 
     that._formatPermissionValue = function(name, val) {
         var values = that._getPermissionValues(name);
         if (values)
-            return kloudspeaker.ui.texts.get('permission_' + name + '_value_' + val);
-        return kloudspeaker.ui.texts.get('permission_value_' + val);
+            return loc.get('permission_' + name + '_value_' + val);
+        return loc.get('permission_value_' + val);
     };
 
     that._getPermissionValues = function(name) {
@@ -41,19 +42,19 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
         var originalValues = [];
         var $content = false;
 
-        kloudspeaker.ui.dialogs.custom({
+        dialogs.custom({
             resizable: true,
             initSize: [600, 400],
-            title: kloudspeaker.ui.texts.get('pluginPermissionsEditDialogTitle', item.name),
-            content: kloudspeaker.dom.template("kloudspeaker-tmpl-permission-editor", {
+            title: loc.get('pluginPermissionsEditDialogTitle', item.name),
+            content: dom.template("kloudspeaker-tmpl-permission-editor", {
                 item: item
             }),
             buttons: [{
                 id: "yes",
-                "title": kloudspeaker.ui.texts.get('dialogSave')
+                "title": loc.get('dialogSave')
             }, {
                 id: "no",
-                "title": kloudspeaker.ui.texts.get('dialogCancel')
+                "title": loc.get('dialogCancel')
             }],
             "on-button": function(btn, d) {
                 if (btn.id == 'no') {
@@ -63,7 +64,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                 if (modificationData["new"].length === 0 && modificationData.modified.length === 0 && modificationData.removed.length === 0)
                     return;
 
-                kloudspeaker.service.put("permissions/list", modificationData).done(d.close).fail(d.close);
+                service.put("permissions/list", modificationData).done(d.close).fail(d.close);
             },
             "on-show": function(h, $d) {
                 $content = $d.find("#kloudspeaker-pluginpermissions-editor-content");
@@ -74,12 +75,12 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
 
                 h.center();
 
-                kloudspeaker.service.get("configuration/users?g=1").done(function(l) {
+                service.get("configuration/users?g=1").done(function(l) {
                     var users = that.processUserData(l);
                     var names = that._permissionTypes.keys.filesystem;
                     var init = 'filesystem_item_access';
                     var onPermissionsModified = function() {
-                        var info = (modificationData["new"].length > 0 || modificationData.modified.length > 0 || modificationData.removed.length > 0) ? "<i class='icon-exclamation-sign '/>&nbsp;" + kloudspeaker.ui.texts.get('pluginPermissionsEditDialogUnsaved') : false;
+                        var info = (modificationData["new"].length > 0 || modificationData.modified.length > 0 || modificationData.removed.length > 0) ? "<i class='icon-exclamation-sign '/>&nbsp;" + loc.get('pluginPermissionsEditDialogUnsaved') : false;
                         h.setInfo(info);
                     };
                     var getPermissionKey = function(p) {
@@ -199,10 +200,10 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                         activateTab(activeTab);
                     };
 
-                    kloudspeaker.ui.controls.select("kloudspeaker-pluginpermissions-editor-permission-name", {
+                    controls.select("kloudspeaker-pluginpermissions-editor-permission-name", {
                         onChange: onChangePermission,
                         formatter: function(name) {
-                            return kloudspeaker.ui.texts.get('permission_' + name);
+                            return loc.get('permission_' + name);
                         },
                         values: names,
                         value: init
@@ -238,12 +239,12 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                             if (!sel) return;
 
                             if (sel.user_type == 'a') {
-                                $("#kloudspeaker-pluginpermissions-editor-user-permissions-description").html(kloudspeaker.ui.texts.get("pluginPermissionsUserPermissionsAdmin"));
+                                $("#kloudspeaker-pluginpermissions-editor-user-permissions-description").html(loc.get("pluginPermissionsUserPermissionsAdmin"));
                                 return;
                             }
                             $sc.addClass("loading");
 
-                            kloudspeaker.service.get("permissions/user/" + sel.id + "?e=1&subject=" + item.id + "&name=" + selectedPermission).done(function(p) {
+                            service.get("permissions/user/" + sel.id + "?e=1&subject=" + item.id + "&name=" + selectedPermission).done(function(p) {
                                 $sc.removeClass("loading");
 
                                 var permissions = p.permissions.slice(0);
@@ -253,9 +254,9 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                             }).fail(h.close);
                         };
 
-                        kloudspeaker.ui.controls.select("kloudspeaker-pluginpermissions-editor-permission-user", {
+                        controls.select("kloudspeaker-pluginpermissions-editor-permission-user", {
                             onChange: onChangeUser,
-                            none: kloudspeaker.ui.texts.get("pluginPermissionsEditNoUser"),
+                            none: loc.get("pluginPermissionsEditNoUser"),
                             values: users.users,
                             title: "name"
                         });
@@ -290,7 +291,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
     };
 
     that.loadPermissions = function(item, name, users) {
-        return kloudspeaker.service.get("permissions/list?subject=" + item.id + (name ? "&name=" + name : "") + (users ? "&u=1" : ""));
+        return service.get("permissions/list?subject=" + item.id + (name ? "&name=" + name : "") + (users ? "&u=1" : ""));
     };
 
     that.initUserPermissionInspector = function(changes, user, item, permissionName, relatedPermissions, items, userData) {
@@ -298,11 +299,11 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
             var ep = false;
             if (relatedPermissions.length > 0) ep = relatedPermissions[0].value;
             if (ep) {
-                $("#kloudspeaker-pluginpermissions-editor-user-permissions-description").html(kloudspeaker.ui.texts.get('pluginPermissionsEffectiveUserPermission', that._formatPermissionValue(permissionName, ep)));
+                $("#kloudspeaker-pluginpermissions-editor-user-permissions-description").html(loc.get('pluginPermissionsEffectiveUserPermission', that._formatPermissionValue(permissionName, ep)));
                 $("#kloudspeaker-pluginpermissions-editor-user-related-permissions").show();
             } else {
                 var values = that._getPermissionValues(permissionName);
-                $("#kloudspeaker-pluginpermissions-editor-user-permissions-description").html(kloudspeaker.ui.texts.get('pluginPermissionsNoEffectiveUserPermission', that._formatPermissionValue(permissionName, values ? values[0] : '0')));
+                $("#kloudspeaker-pluginpermissions-editor-user-permissions-description").html(loc.get('pluginPermissionsNoEffectiveUserPermission', that._formatPermissionValue(permissionName, values ? values[0] : '0')));
             }
         }
         updateEffectivePermission();
@@ -317,46 +318,46 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
             updateEffectivePermission();
         };
 
-        var $list = kloudspeaker.ui.controls.table("kloudspeaker-pluginpermissions-editor-user-permission-list", {
+        var $list = controls.table("kloudspeaker-pluginpermissions-editor-user-permission-list", {
             key: "user_id",
             onRow: function($r, i) {
                 if (isGroup(i.user_id)) $r.addClass("group");
             },
             columns: [{
                 id: "user_id",
-                title: kloudspeaker.ui.texts.get('pluginPermissionsEditColUser'),
+                title: loc.get('pluginPermissionsEditColUser'),
                 renderer: function(i, v, $c) {
                     if (v == '0' && i.subject === '') return;
                     if (v == '0') {
-                        $c.html("<em>" + kloudspeaker.ui.texts.get('pluginPermissionsEditDefaultPermission') + "</em>");
+                        $c.html("<em>" + loc.get('pluginPermissionsEditDefaultPermission') + "</em>");
                         return;
                     }
                     $c.html(userData.usersById[v].name).addClass("user");
                 }
             }, {
                 id: "value",
-                title: kloudspeaker.ui.texts.get('pluginPermissionsPermissionValue'),
+                title: loc.get('pluginPermissionsPermissionValue'),
                 formatter: function(item, k) {
                     return that._formatPermissionValue(permissionName, k);
                 }
             }, {
                 id: "subject",
-                title: kloudspeaker.ui.texts.get('pluginPermissionsEditColSource'),
+                title: loc.get('pluginPermissionsEditColSource'),
                 renderer: function(i, s, $c) {
                     var subject = items[s];
                     if (!subject) {
-                        var n = kloudspeaker.ui.texts.get("permission_system_default");
+                        var n = loc.get("permission_system_default");
                         if (i.user_id != '0') {
                             var user = userData.usersById[i.user_id];
-                            n = kloudspeaker.ui.texts.get((user.is_group == '1' ? "permission_group_default" : "permission_user_default"));
+                            n = loc.get((user.is_group == '1' ? "permission_group_default" : "permission_user_default"));
                         }
                         $c.html("<em>" + n + "</em>");
                     } else {
                         if (subject.id == item.id) {
-                            $c.html('<i class="icon-file-alt"/>&nbsp;' + kloudspeaker.ui.texts.get('pluginPermissionsEditColItemCurrent'));
+                            $c.html('<i class="icon-file-alt"/>&nbsp;' + loc.get('pluginPermissionsEditColItemCurrent'));
                         } else {
                             var level = Math.max(item.path.count("/"), item.path.count("\\")) - Math.max(subject.path.count("/"), subject.path.count("\\")) + 1;
-                            $c.html('<i class="icon-file-alt"/>&nbsp;' + kloudspeaker.ui.texts.get('pluginPermissionsEditColItemParent', level));
+                            $c.html('<i class="icon-file-alt"/>&nbsp;' + loc.get('pluginPermissionsEditColItemParent', level));
                         }
                         $c.tooltip({
                             placement: "bottom",
@@ -371,7 +372,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                 id: "remove",
                 title: "",
                 type: "action",
-                content: kloudspeaker.dom.template("kloudspeaker-tmpl-permission-editor-listremove").html()
+                content: dom.template("kloudspeaker-tmpl-permission-editor-listremove").html()
             }],
             onRowAction: function(id, permission) {
                 changes.remove(permission);
@@ -417,21 +418,21 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
             }
         };
 
-        $list = kloudspeaker.ui.controls.table("kloudspeaker-pluginpermissions-editor-permission-list", {
+        $list = controls.table("kloudspeaker-pluginpermissions-editor-permission-list", {
             key: "user_id",
             onRow: function($r, i) {
                 if (isGroup(i.user_id)) $r.addClass("group");
             },
             columns: [{
                 id: "user_id",
-                title: kloudspeaker.ui.texts.get('pluginPermissionsEditColUser'),
+                title: loc.get('pluginPermissionsEditColUser'),
                 renderer: function(i, v, $c) {
-                    var name = (v != '0' ? userData.usersById[v].name : kloudspeaker.ui.texts.get('pluginPermissionsEditDefaultPermission'));
+                    var name = (v != '0' ? userData.usersById[v].name : loc.get('pluginPermissionsEditDefaultPermission'));
                     $c.html(name).addClass("user");
                 }
             }, {
                 id: "value",
-                title: kloudspeaker.ui.texts.get('pluginPermissionsPermissionValue'),
+                title: loc.get('pluginPermissionsPermissionValue'),
                 type: "select",
                 options: permissionValues || ['0', '1'],
                 formatter: function(item, k) {
@@ -445,7 +446,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                 id: "remove",
                 title: "",
                 type: "action",
-                content: kloudspeaker.dom.template("kloudspeaker-tmpl-permission-editor-listremove").html()
+                content: dom.template("kloudspeaker-tmpl-permission-editor-listremove").html()
             }],
             onRowAction: function(id, permission) {
                 changes.remove(permission);
@@ -454,24 +455,24 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
         });
 
         $list.add(permissions);
-        var $newUser = kloudspeaker.ui.controls.select("kloudspeaker-pluginpermissions-editor-new-user", {
-            none: kloudspeaker.ui.texts.get('pluginPermissionsEditNoUser'),
+        var $newUser = controls.select("kloudspeaker-pluginpermissions-editor-new-user", {
+            none: loc.get('pluginPermissionsEditNoUser'),
             title: "name",
             onCreate: function($o, i) {
                 if (isGroup(i.id)) $o.addClass("group");
             }
         });
         $newUser.add({
-            name: kloudspeaker.ui.texts.get('pluginPermissionsEditDefaultPermission'),
+            name: loc.get('pluginPermissionsEditDefaultPermission'),
             id: 0,
             is_group: 0
         });
         $newUser.add(userData.users);
         $newUser.add(userData.groups);
 
-        var $newPermission = kloudspeaker.ui.controls.select("kloudspeaker-pluginpermissions-editor-new-permission", {
+        var $newPermission = controls.select("kloudspeaker-pluginpermissions-editor-new-permission", {
             values: permissionValues || ['0', '1'],
-            none: kloudspeaker.ui.texts.get('pluginPermissionsEditNoPermission'),
+            none: loc.get('pluginPermissionsEditNoPermission'),
             formatter: function(p) {
                 return that._formatPermissionValue(permissionName, p);
             }
@@ -495,25 +496,25 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
     };
 
     that.renderItemContextDetails = function(el, item, $content) {
-        kloudspeaker.dom.template("kloudspeaker-tmpl-permission-context").appendTo($content);
-        kloudspeaker.ui.process($content, ["localize"]);
+        dom.template("kloudspeaker-tmpl-permission-context").appendTo($content);
+        ui.process($content, ["localize"]);
 
         that.loadPermissions(item, "filesystem_item_access", true).done(function(p) {
             var userData = that.processUserData(p.users);
 
             $("#kloudspeaker-pluginpermissions-context-content").removeClass("loading");
 
-            var $list = kloudspeaker.ui.controls.table("kloudspeaker-pluginpermissions-context-permission-list", {
+            var $list = controls.table("kloudspeaker-pluginpermissions-context-permission-list", {
                 key: "user_id",
                 columns: [{
                     id: "user_id",
-                    title: kloudspeaker.ui.texts.get('pluginPermissionsEditColUser'),
+                    title: loc.get('pluginPermissionsEditColUser'),
                     formatter: function(i, v) {
-                        return (v != '0' ? userData.usersById[v].name : kloudspeaker.ui.texts.get('pluginPermissionsEditDefaultPermission'));
+                        return (v != '0' ? userData.usersById[v].name : loc.get('pluginPermissionsEditDefaultPermission'));
                     }
                 }, {
                     id: "value",
-                    title: kloudspeaker.ui.texts.get('pluginPermissionsPermissionValue'),
+                    title: loc.get('pluginPermissionsPermissionValue'),
                     formatter: function(i, v) {
                         return that._formatPermissionValue(i.name, v);
                     }
@@ -530,7 +531,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
     };
 
     that.onActivateConfigView = function($c, cv) {
-        kloudspeaker.service.get("configuration/users?g=1").done(function(l) {
+        service.get("configuration/users?g=1").done(function(l) {
             var users = that.processUserData(l);
 
             var allTypeKeys = that._permissionTypes.keys.all;
@@ -567,21 +568,22 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
             };
 
             var removePermissions = function(list) {
-                return kloudspeaker.service.del("permissions/list/", {
+                return service.del("permissions/list/", {
                     list: list
                 });
             }
 
+            //TODO module
             var listView = new kloudspeaker.view.ConfigListView($c, {
                 actions: [{
                     id: "action-item-permissions",
                     content: '<i class="icon-file"></i>',
-                    tooltip: kloudspeaker.ui.texts.get('configAdminPermissionsEditItemPermissionsTooltip'),
+                    tooltip: loc.get('configAdminPermissionsEditItemPermissionsTooltip'),
                     callback: function(sel) {
-                        kloudspeaker.ui.dialogs.itemSelector({
-                            title: kloudspeaker.ui.texts.get('configAdminPermissionsEditItemPermissionsTitle'),
-                            message: kloudspeaker.ui.texts.get('configAdminPermissionsEditItemPermissionsMessage'),
-                            actionTitle: kloudspeaker.ui.texts.get('ok'),
+                        dialogs.itemSelector({
+                            title: loc.get('configAdminPermissionsEditItemPermissionsTitle'),
+                            message: loc.get('configAdminPermissionsEditItemPermissionsMessage'),
+                            actionTitle: loc.get('ok'),
                             allRoots: true,
                             handler: {
                                 onSelect: function(i) {
@@ -599,9 +601,9 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                     cls: "btn-danger",
                     depends: "table-selection",
                     callback: function(sel) {
-                        kloudspeaker.ui.dialogs.confirmation({
-                            title: kloudspeaker.ui.texts.get("configAdminPermissionsRemoveConfirmationTitle"),
-                            message: kloudspeaker.ui.texts.get("configAdminPermissionsRemoveConfirmationMessage", [sel.length]),
+                        dialogs.confirmation({
+                            title: loc.get("configAdminPermissionsRemoveConfirmationTitle"),
+                            message: loc.get("configAdminPermissionsRemoveConfirmationMessage", [sel.length]),
                             callback: function() {
                                 removePermissions(sel).done(refresh);
                             }
@@ -610,7 +612,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                 }, {
                     id: "action-edit-generic",
                     content: '<i class="icon-globe"></i>',
-                    tooltip: kloudspeaker.ui.texts.get('pluginPermissionsEditDefaultPermissionsAction'),
+                    tooltip: loc.get('pluginPermissionsEditDefaultPermissionsAction'),
                     callback: function() {
                         that.editGenericPermissions();
                     }
@@ -648,21 +650,21 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                         type: "selectrow"
                     }, {
                         id: "name",
-                        title: kloudspeaker.ui.texts.get('pluginPermissionsPermissionName'),
+                        title: loc.get('pluginPermissionsPermissionName'),
                         sortable: true,
                         formatter: function(item, name) {
                             return that._formatPermissionName(item);
                         }
                     }, {
                         id: "value",
-                        title: kloudspeaker.ui.texts.get('pluginPermissionsPermissionValue'),
+                        title: loc.get('pluginPermissionsPermissionValue'),
                         sortable: true,
                         formatter: function(item, k) {
                             return that._formatPermissionValue(item.name, k);
                         }
                     }, {
                         id: "user_id",
-                        title: kloudspeaker.ui.texts.get('pluginPermissionsPermissionUser'),
+                        title: loc.get('pluginPermissionsPermissionUser'),
                         sortable: true,
                         formatter: function(item, u) {
                             if (!u || u == "0")
@@ -671,7 +673,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                         }
                     }, {
                         id: "subject",
-                        title: kloudspeaker.ui.texts.get('pluginPermissionsPermissionSubject'),
+                        title: loc.get('pluginPermissionsPermissionSubject'),
                         formatter: function(item, s) {
                             if (!s) return "";
                             if ((that._permissionTypes.keys.filesystem.indexOf(item.name) >= 0) && queryItems[s]) {
@@ -684,7 +686,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                         id: "remove",
                         title: "",
                         type: "action",
-                        content: kloudspeaker.dom.template("kloudspeaker-tmpl-permission-editor-listremove").html()
+                        content: dom.template("kloudspeaker-tmpl-permission-editor-listremove").html()
                     }],
                     onRowAction: function(id, permission) {
                         removePermissions([permission]).done(refresh);
@@ -692,23 +694,23 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                 }
             });
             var $options = $c.find(".kloudspeaker-configlistview-options");
-            kloudspeaker.dom.template("kloudspeaker-tmpl-permission-admin-options").appendTo($options);
-            kloudspeaker.ui.process($options, ["localize"]);
+            dom.template("kloudspeaker-tmpl-permission-admin-options").appendTo($options);
+            ui.process($options, ["localize"]);
 
             $("#permissions-subject-any").attr('checked', true);
 
-            $optionName = kloudspeaker.ui.controls.select("permissions-name", {
+            $optionName = controls.select("permissions-name", {
                 values: allTypeKeys,
                 formatter: function(t) {
-                    return kloudspeaker.ui.texts.get('permission_' + t);
+                    return loc.get('permission_' + t);
                 },
-                none: kloudspeaker.ui.texts.get('pluginPermissionsAdminAny')
+                none: loc.get('pluginPermissionsAdminAny')
             });
 
-            $optionUser = kloudspeaker.ui.controls.select("permissions-user", {
+            $optionUser = controls.select("permissions-user", {
                 values: users.all,
                 title: "name",
-                none: kloudspeaker.ui.texts.get('pluginPermissionsAdminAny')
+                none: loc.get('pluginPermissionsAdminAny')
             });
 
             var $subjectItemSelector = $("#permissions-subject-filesystem-item-selector");
@@ -720,10 +722,10 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
             };
             $("#permissions-subject-filesystem-item-select").click(function(e) {
                 if ($optionSubject.get() == 'filesystem_item') {
-                    kloudspeaker.ui.dialogs.itemSelector({
-                        title: kloudspeaker.ui.texts.get('pluginPermissionsSelectItemTitle'),
-                        message: kloudspeaker.ui.texts.get('pluginPermissionsSelectItemMsg'),
-                        actionTitle: kloudspeaker.ui.texts.get('ok'),
+                    dialogs.itemSelector({
+                        title: loc.get('pluginPermissionsSelectItemTitle'),
+                        message: loc.get('pluginPermissionsSelectItemMsg'),
+                        actionTitle: loc.get('ok'),
                         handler: {
                             onSelect: onSelectItem,
                             canSelect: function(f) {
@@ -732,10 +734,10 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                         }
                     });
                 } else {
-                    kloudspeaker.ui.dialogs.folderSelector({
-                        title: kloudspeaker.ui.texts.get('pluginPermissionsSelectFolderTitle'),
-                        message: kloudspeaker.ui.texts.get('pluginPermissionsSelectFolderMsg'),
-                        actionTitle: kloudspeaker.ui.texts.get('ok'),
+                    dialogs.folderSelector({
+                        title: loc.get('pluginPermissionsSelectFolderTitle'),
+                        message: loc.get('pluginPermissionsSelectFolderMsg'),
+                        actionTitle: loc.get('ok'),
                         handler: {
                             onSelect: onSelectItem,
                             canSelect: function(f) {
@@ -746,12 +748,12 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                 }
                 return false;
             });
-            $optionSubject = kloudspeaker.ui.controls.select("permissions-subject", {
+            $optionSubject = controls.select("permissions-subject", {
                 values: ['none', 'filesystem_item', 'filesystem_child'],
                 formatter: function(s) {
-                    return kloudspeaker.ui.texts.get('pluginPermissionsAdminOptionSubject_' + s);
+                    return loc.get('pluginPermissionsAdminOptionSubject_' + s);
                 },
-                none: kloudspeaker.ui.texts.get('pluginPermissionsAdminAny'),
+                none: loc.get('pluginPermissionsAdminAny'),
                 onChange: function(s) {
                     if (s == 'filesystem_item' || s == 'filesystem_child') {
                         selectedSubjectItem = false;
@@ -774,19 +776,19 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
         };
         var $content = false;
 
-        kloudspeaker.ui.dialogs.custom({
+        dialogs.custom({
             resizable: true,
             initSize: [600, 400],
-            title: user ? kloudspeaker.ui.texts.get('pluginPermissionsEditDialogTitle', user.name) : kloudspeaker.ui.texts.get('pluginPermissionsEditDefaultDialogTitle'),
-            content: kloudspeaker.dom.template("kloudspeaker-tmpl-permission-generic-editor", {
+            title: user ? loc.get('pluginPermissionsEditDialogTitle', user.name) : loc.get('pluginPermissionsEditDefaultDialogTitle'),
+            content: dom.template("kloudspeaker-tmpl-permission-generic-editor", {
                 user: user
             }),
             buttons: [{
                 id: "yes",
-                "title": kloudspeaker.ui.texts.get('dialogSave')
+                "title": loc.get('dialogSave')
             }, {
                 id: "no",
-                "title": kloudspeaker.ui.texts.get('dialogCancel')
+                "title": loc.get('dialogCancel')
             }],
             "on-button": function(btn, d) {
                 if (btn.id == 'no') {
@@ -797,7 +799,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                     return;
 
                 $content.addClass("loading");
-                kloudspeaker.service.put("permissions/list", permissionData).done(function() {
+                service.put("permissions/list", permissionData).done(function() {
                     d.close();
                     if (changeCallback) changeCallback();
                 }).fail(d.close);
@@ -807,13 +809,13 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                 h.center();
                 var $list = false;
 
-                kloudspeaker.service.get("permissions/user/" + (user ? user.id : '0') + "/generic/").done(function(r) {
+                service.get("permissions/user/" + (user ? user.id : '0') + "/generic/").done(function(r) {
                     var done = function(dp) {
                         $content.removeClass("loading");
 
                         var allTypeKeys = that._permissionTypes.keys.all;
-                        var values = kloudspeaker.helpers.mapByKey(r.permissions, "name", "value");
-                        var defaultPermissions = dp ? kloudspeaker.helpers.mapByKey(dp.permissions, "name", "value") : {};
+                        var values = utils.mapByKey(r.permissions, "name", "value");
+                        var defaultPermissions = dp ? utils.mapByKey(dp.permissions, "name", "value") : {};
 
                         var permissions = [];
 
@@ -830,24 +832,24 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
 
                         var cols = [{
                             id: "name",
-                            title: kloudspeaker.ui.texts.get('pluginPermissionsPermissionName'),
+                            title: loc.get('pluginPermissionsPermissionName'),
                             formatter: function(item, name) {
                                 if (that._permissionTypes.keys.filesystem.indexOf(name) >= 0) {
-                                    if (!user) return that._formatPermissionName(item) + " (" + kloudspeaker.ui.texts.get('permission_system_default') + ")";
-                                    return that._formatPermissionName(item) + " (" + kloudspeaker.ui.texts.get(user.is_group == '1' ? 'permission_group_default' : 'permission_user_default') + ")";
+                                    if (!user) return that._formatPermissionName(item) + " (" + loc.get('permission_system_default') + ")";
+                                    return that._formatPermissionName(item) + " (" + loc.get(user.is_group == '1' ? 'permission_group_default' : 'permission_user_default') + ")";
                                 }
                                 return that._formatPermissionName(item);
                             }
                         }, {
                             id: "value",
-                            title: kloudspeaker.ui.texts.get('pluginPermissionsPermissionValue'),
+                            title: loc.get('pluginPermissionsPermissionValue'),
                             type: "select",
                             options: function(item) {
                                 var itemValues = that._permissionTypes.values[item.name];
                                 if (itemValues) return itemValues;
                                 return ["0", "1"];
                             },
-                            none: kloudspeaker.ui.texts.get('permission_value_undefined'),
+                            none: loc.get('permission_value_undefined'),
                             formatter: function(item, k) {
                                 return that._formatPermissionValue(item.name, k);
                             },
@@ -869,7 +871,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                         if (user) {
                             cols.push({
                                 id: "default",
-                                title: kloudspeaker.ui.texts.get('permission_system_default'),
+                                title: loc.get('permission_system_default'),
                                 formatter: function(p) {
                                     if (!(p.name in defaultPermissions) || defaultPermissions[p.name] === undefined) return "";
                                     return that._formatPermissionValue(p.name, defaultPermissions[p.name]);
@@ -877,13 +879,13 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                             });
                         }
 
-                        $list = kloudspeaker.ui.controls.table("kloudspeaker-pluginpermissions-editor-generic-permission-list", {
+                        $list = controls.table("kloudspeaker-pluginpermissions-editor-generic-permission-list", {
                             key: "name",
                             columns: cols
                         });
                         $list.add(permissions);
                     };
-                    if (user) kloudspeaker.service.get("permissions/user/0/generic/").done(done);
+                    if (user) service.get("permissions/user/0/generic/").done(done);
                     else done();
                 }).fail(h.close);
             }
@@ -897,13 +899,13 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
 
         var refresh = function() {
             $c.addClass("loading");
-            kloudspeaker.service.get("permissions/user/" + u.id + "/generic/").done(function(l) {
-                kloudspeaker.service.get("permissions/user/0/generic/").done(function(d) {
+            service.get("permissions/user/" + u.id + "/generic/").done(function(l) {
+                service.get("permissions/user/0/generic/").done(function(d) {
                     $c.removeClass("loading");
 
-                    defaultPermissions = kloudspeaker.helpers.mapByKey(d.permissions, "name", "value");
+                    defaultPermissions = utils.mapByKey(d.permissions, "name", "value");
 
-                    var values = kloudspeaker.helpers.mapByKey(l.permissions, "name");
+                    var values = utils.mapByKey(l.permissions, "name");
                     permissions = [];
 
                     $.each(that._permissionTypes.keys.all, function(i, t) {
@@ -927,14 +929,14 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
             actions: [{
                 id: "action-edit",
                 content: '<i class="icon-user"></i>',
-                tooltip: kloudspeaker.ui.texts.get(u.is_group == '1' ? 'pluginPermissionsEditGroupPermissionsAction' : 'pluginPermissionsEditUserPermissionsAction'),
+                tooltip: loc.get(u.is_group == '1' ? 'pluginPermissionsEditGroupPermissionsAction' : 'pluginPermissionsEditUserPermissionsAction'),
                 callback: function() {
                     that.editGenericPermissions(u, refresh);
                 }
             }, {
                 id: "action-edit-defaults",
                 content: '<i class="icon-globe"></i>',
-                tooltip: kloudspeaker.ui.texts.get('pluginPermissionsEditDefaultPermissionsAction'),
+                tooltip: loc.get('pluginPermissionsEditDefaultPermissionsAction'),
                 callback: function() {
                     that.editGenericPermissions(false, refresh);
                 }
@@ -945,22 +947,22 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                 narrow: true,
                 columns: [{
                     id: "name",
-                    title: kloudspeaker.ui.texts.get('pluginPermissionsPermissionName'),
+                    title: loc.get('pluginPermissionsPermissionName'),
                     formatter: function(p, v) {
                         if (v in that._permissionTypes.keys.filesystem)
-                            return kloudspeaker.ui.texts.get('permission_default_' + v);
-                        return kloudspeaker.ui.texts.get('permission_' + v);
+                            return loc.get('permission_default_' + v);
+                        return loc.get('permission_' + v);
                     }
                 }, {
                     id: "value",
-                    title: kloudspeaker.ui.texts.get('pluginPermissionsPermissionValue'),
+                    title: loc.get('pluginPermissionsPermissionValue'),
                     formatter: function(p, v) {
                         if (v === undefined) return "";
                         return that._formatPermissionValue(p.name, v);
                     }
                 }, {
                     id: "default",
-                    title: kloudspeaker.ui.texts.get('permission_system_default'),
+                    title: loc.get('permission_system_default'),
                     formatter: function(p) {
                         if (!(p.name in defaultPermissions) || defaultPermissions[p.name] === undefined) return "";
                         return that._formatPermissionValue(p.name, defaultPermissions[p.name]);
@@ -981,7 +983,8 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
         id: "plugin-permissions",
         initialize: that.initialize,
         itemContextHandler: function(item, ctx, data) {
-            if (!kloudspeaker.session.user.admin) return false;
+            var s = session.get();
+            if (!s.user || !s.user.admin) return false;
 
             return {
                 details: {
@@ -1004,7 +1007,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                 return [{
                     viewId: "permissions",
                     admin: true,
-                    title: kloudspeaker.ui.texts.get("pluginPermissionsConfigViewNavTitle"),
+                    title: loc.get("pluginPermissionsConfigViewNavTitle"),
                     onActivate: that.onActivateConfigView
                 }];
             }

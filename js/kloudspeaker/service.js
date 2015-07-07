@@ -1,5 +1,8 @@
-define(['kloudspeaker/settings', 'kloudspeaker/events', 'kloudspeaker/ui/dialogs', 'kloudspeaker/localization', 'kloudspeaker/ui'], function(settings, events, dialogs, loc, ui) {
+define(['kloudspeaker/settings', 'kloudspeaker/events', 'kloudspeaker/localization'], function(settings, events, loc) {
     var session = null;
+    var dialogs = null;   //TODO remove
+    var ui = null;    //TODO remove
+
     var _baseUrl = "";
     var _limitedHttpMethods = false;
     var _serviceParam = !!settings["service-param"];
@@ -11,9 +14,14 @@ define(['kloudspeaker/settings', 'kloudspeaker/events', 'kloudspeaker/ui/dialogs
         _limitedHttpMethods = !!s.features.limited_http_methods;
     }, 'session/start');
 
-    st.initialize = function(s, baseUrl) {
+    st.setup = function() {
+        session = require('kloudspeaker/session');
+        dialogs = require('kloudspeaker/ui/dialogs');   //TODO remove
+        ui = require('kloudspeaker/ui');    //TODO remove
+    }
+
+    st.initialize = function(baseUrl) {
         _baseUrl = baseUrl;
-        session = s;
     };
 
     st.url = function(u, full) {

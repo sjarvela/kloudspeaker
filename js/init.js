@@ -122,6 +122,8 @@
      *
      **/
 
+     //TODO remove global
+
     window.Base64 = {
 
         // private property

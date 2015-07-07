@@ -1,5 +1,4 @@
-define([], function() {
-    //TODO remove global references
+define(['kloudspeaker/localization', 'kloudspeaker/utils', 'kloudspeaker/filesystem'], function(loc, utils, fs) {
     var formatters = {
         ByteSize: function(nf) {
             this.format = function(b) {
@@ -12,26 +11,26 @@ define([], function() {
                 } else if (typeof(b) !== "number") return "";
 
                 if (bytes < 1024)
-                    return (bytes == 1 ? kloudspeaker.ui.texts.get('sizeOneByte') : kloudspeaker.ui.texts.get('sizeInBytes', nf.format(bytes)));
+                    return (bytes == 1 ? loc.get('sizeOneByte') : loc.get('sizeInBytes', nf.format(bytes)));
 
                 if (bytes < (1024 * 1024)) {
                     var kilobytes = bytes / 1024;
-                    return (kilobytes == 1 ? kloudspeaker.ui.texts.get('sizeOneKilobyte') : kloudspeaker.ui.texts.get('sizeInKilobytes', nf.format(kilobytes)));
+                    return (kilobytes == 1 ? loc.get('sizeOneKilobyte') : loc.get('sizeInKilobytes', nf.format(kilobytes)));
                 }
 
                 if (bytes < (1024 * 1024 * 1024)) {
                     var megabytes = bytes / (1024 * 1024);
-                    return kloudspeaker.ui.texts.get('sizeInMegabytes', nf.format(megabytes));
+                    return loc.get('sizeInMegabytes', nf.format(megabytes));
                 }
 
                 var gigabytes = bytes / (1024 * 1024 * 1024);
-                return kloudspeaker.ui.texts.get('sizeInGigabytes', nf.format(gigabytes));
+                return loc.get('sizeInGigabytes', nf.format(gigabytes));
             };
         },
         Timestamp: function(fmt) {
             this.format = function(ts) {
                 if (ts == null) return "";
-                if (typeof(ts) === 'string') ts = kloudspeaker.helpers.parseInternalTime(ts);
+                if (typeof(ts) === 'string') ts = utils.parseInternalTime(ts);
                 return ts.toString(fmt);
             };
         },
@@ -50,7 +49,7 @@ define([], function() {
         FilesystemItemPath: function(noHtml) {
             this.format = function(item) {
                 if (!item) return "";
-                return (kloudspeaker.filesystem.rootsById[item.root_id] ? kloudspeaker.filesystem.rootsById[item.root_id].name : item.root_id) + (item.path.length > 0 ? (":" + (noHtml ? ' ' : '&nbsp;') + item.path) : "");
+                return (fs.rootsById[item.root_id] ? fs.rootsById[item.root_id].name : item.root_id) + (item.path.length > 0 ? (":" + (noHtml ? ' ' : '&nbsp;') + item.path) : "");
             }
         }
     };

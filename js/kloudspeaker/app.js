@@ -58,7 +58,7 @@ define([], function() {
             app.pageParams = request.getParams(window.location.href);
             app.mobile = (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
 
-            service.initialize(session, app.baseUrl);
+            service.initialize(app.baseUrl);
 
             events.addEventHandler(function(e) {
                 if (e.type == 'session/start') {
@@ -393,18 +393,26 @@ define([], function() {
             define('kloudspeaker/settings', [], settings);
             kloudspeaker.settings = settings; //TODO remove
 
-            require(['kloudspeaker/platform', 'kloudspeaker/session', 'kloudspeaker/filesystem', 'kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/request', 'kloudspeaker/ui', 'kloudspeaker/localization', 'kloudspeaker/plugins', 'kloudspeaker/utils'], function(platform, session, fs, service, events, request, ui, loc, plugins, utils) {
-                platform.init();
-                loc.init(plugins);
-
+            require(['kloudspeaker/platform', 'kloudspeaker/session', 'kloudspeaker/filesystem', 'kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/request', 'kloudspeaker/ui', 'kloudspeaker/localization', 'kloudspeaker/plugins', 'kloudspeaker/permissions', 'kloudspeaker/utils'], function(platform, session, fs, service, events, request, ui, loc, plugins, permissions, utils) {
                 var app = createApp(settings, session, fs, service, events, request, ui, plugins, utils);
                 //define('kloudspeaker/app', [], app);
                 define('kloudspeaker/instance', [], app);
                 kloudspeaker.App = app; //TODO remove
+                
+                platform.setup();
+                service.setup();
+                loc.setup();
+                plugins.setup();
+                permissions.setup();
+                fs.setup();
                 fs.mobile = app.mobile; //TODO move somewhere?
 
-                // legacy, remove
-                require(['kloudspeaker/templates', 'kloudspeaker/features', 'kloudspeaker/dom'], function(templates, features, dom) {
+                require(['kloudspeaker/ui/dialogs', 'kloudspeaker/ui/controls', 'kloudspeaker/templates', 'kloudspeaker/features', 'kloudspeaker/dom'], function(dialogs, controls, templates, features, dom) {
+                    //init circular dependencies
+                    //TODO rethink modules, should not have circular dependencies
+                    controls.init(app);
+                    dialogs.init(app);
+
                     kloudspeaker.helpers = utils; //remove when global "kloudspeaker" not needed
                     kloudspeaker.ui = ui; //remove when global "kloudspeaker" not needed
                     kloudspeaker.plugins = plugins; //remove when global "kloudspeaker" not needed
