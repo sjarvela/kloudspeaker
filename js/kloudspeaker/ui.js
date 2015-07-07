@@ -247,6 +247,7 @@ define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins'
         }
     };
 
+    //TODO move into module
     ui.actions = {
         handleDenied: function(action, data, msgTitleDenied, msgTitleAccept) {
             var df = $.Deferred();

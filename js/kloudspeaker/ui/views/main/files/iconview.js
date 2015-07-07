@@ -1,5 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd'], function(app, settings, dnd) {
-    //TODO remove reference to global "kloudspeaker"
+define(['kloudspeaker/settings', 'kloudspeaker/service', 'kloudspeaker/ui/dnd', 'kloudspeaker/dom'], function(settings, service, dnd, dom) {
     return function(container, $headerContainer, id, cls, thumbs) {
         var t = this;
         t.$c = $("#" + container);
@@ -10,7 +9,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd'], fun
 
             $headerContainer.append("<div class='kloudspeaker-iconview-header'></div>");
 
-            kloudspeaker.dom.template("kloudspeaker-tmpl-iconview", {
+            dom.template("kloudspeaker-tmpl-iconview", {
                 viewId: t.viewId
             }).appendTo(t.$c.empty());
             t.$l = $("#" + t.viewId);
@@ -23,13 +22,13 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd'], fun
 
             var supportedThumbs = ["jpg", "png", "gif", "jpeg"]; //TODO settings
 
-            kloudspeaker.dom.template("kloudspeaker-tmpl-iconview-item", items, {
+            dom.template("kloudspeaker-tmpl-iconview-item", items, {
                 showThumb: function(item) {
                     if (!thumbs || !item.is_file || !item.extension) return false;
                     return (supportedThumbs.indexOf(item.extension.toLowerCase()) >= 0);
                 },
                 thumbUrl: function(item) {
-                    return kloudspeaker.service.url("filesystem/" + item.id + "/thumbnail/");
+                    return service.url("filesystem/" + item.id + "/thumbnail/");
                 },
                 typeClass: function(item) {
                     var c = item.is_file ? 'item-file' : 'item-folder';

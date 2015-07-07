@@ -1,6 +1,5 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions', 'kloudspeaker/ui/views/main/files/filelist', 'kloudspeaker/ui/views/main/files/iconview', 'kloudspeaker/ui/uploader', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/files/itemcontext'], function(app, settings, permissions, FileList, IconView, uploader, dnd, ItemContext) {
+define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/localization', 'kloudspeaker/service', 'kloudspeaker/request', 'kloudspeaker/features', 'kloudspeaker/events', 'kloudspeaker/permissions', 'kloudspeaker/plugins', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views/main/files/filelist', 'kloudspeaker/ui/views/main/files/iconview', 'kloudspeaker/ui/uploader', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/dom', 'kloudspeaker/ui/files/itemcontext', 'kloudspeaker/utils', 'kloudspeaker/ui'], function(app, settings, loc, service, request, features, events, permissions, plugins, fs, FileList, IconView, uploader, dnd, formatters, controls, dialogs, dom, ItemContext, utils, ui) {
     return function() {
-        //TODO remove reference to global "kloudspeaker"
         var that = this;
         that.viewId = "files";
 
@@ -11,9 +10,9 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
         that._customFolderTypes = {};
         that._selectedItems = [];
         that._formatters = {
-            byteSize: new kloudspeaker.ui.formatters.ByteSize(new kloudspeaker.ui.formatters.Number(2, false, kloudspeaker.ui.texts.get('decimalSeparator'))),
-            timestamp: new kloudspeaker.ui.formatters.Timestamp(kloudspeaker.ui.texts.get('shortDateTimeFormat')),
-            uploadSpeed: new kloudspeaker.ui.formatters.Number(1, kloudspeaker.ui.texts.get('dataRateKbps'), kloudspeaker.ui.texts.get('decimalSeparator'))
+            byteSize: new formatters.ByteSize(new formatters.Number(2, false, loc.get('decimalSeparator'))),
+            timestamp: new formatters.Timestamp(loc.get('shortDateTimeFormat')),
+            uploadSpeed: new formatters.Number(1, loc.get('dataRateKbps'), loc.get('decimalSeparator'))
         };
 
         that._filelist = {
@@ -41,12 +40,12 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
             "id": "path",
             "title-key": "fileListColumnTitlePath",
             "sort": function(i1, i2, sort, data) {
-                var p1 = kloudspeaker.filesystem.rootsById[i1.root_id].name + i1.path;
-                var p2 = kloudspeaker.filesystem.rootsById[i2.root_id].name + i2.path;
+                var p1 = fs.rootsById[i1.root_id].name + i1.path;
+                var p2 = fs.rootsById[i2.root_id].name + i2.path;
                 return p1.toLowerCase().localeCompare(p2.toLowerCase()) * sort;
             },
             "content": function(item, data) {
-                return '<span class="item-path-root">' + kloudspeaker.filesystem.rootsById[item.root_id].name + '</span>: <span class="item-path-val">' + item.path + '</span>';
+                return '<span class="item-path-root">' + fs.rootsById[item.root_id].name + '</span>: <span class="item-path-val">' + item.path + '</span>';
             }
         });
         that._filelist.addColumn({
@@ -89,7 +88,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
             },
             "content": function(item, data) {
                 if (!item.id || !item.is_file || !data || !data["core-file-modified"] || !data["core-file-modified"][item.id]) return "";
-                return that._formatters.timestamp.format(kloudspeaker.helpers.parseInternalTime(data["core-file-modified"][item.id]));
+                return that._formatters.timestamp.format(utils.parseInternalTime(data["core-file-modified"][item.id]));
             }
         });
         that._filelist.addColumn({
@@ -136,13 +135,13 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
         });
 
         that.init = function(mainview) {
-            that.title = kloudspeaker.ui.texts.get('mainviewMenuTitle');
+            that.title = loc.get('mainviewMenuTitle');
             that.icon = "icon-file-alt";
             that._viewStyle = 0;
-            if (kloudspeaker.settings["file-view"]["default-view-mode"] == "small-icon") that._viewStyle = 1;
-            if (kloudspeaker.settings["file-view"]["default-view-mode"] == "large-icon") that._viewStyle = 2;
+            if (settings["file-view"]["default-view-mode"] == "small-icon") that._viewStyle = 1;
+            if (settings["file-view"]["default-view-mode"] == "large-icon") that._viewStyle = 2;
 
-            kloudspeaker.events.addEventHandler(that.onEvent, false, 'fileview');
+            events.addEventHandler(that.onEvent, false, 'fileview');
 
             that.addCustomFolderType("search", {
                 onSelectFolder: function(f) {
@@ -156,7 +155,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
                     });
 
                     var text = decodeURIComponent(f);
-                    kloudspeaker.service.post("filesystem/search", {
+                    service.post("filesystem/search", {
                         text: text,
                         rq_data: that.getDataRequest()
                     }).done(function(r) {
@@ -180,12 +179,12 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
                 },
 
                 onRenderFolderView: function(f, fi, $h, $tb) {
-                    kloudspeaker.dom.template("kloudspeaker-tmpl-main-searchresults", {
+                    dom.template("kloudspeaker-tmpl-main-searchresults", {
                         folder: f,
                         info: fi
                     }).appendTo($h);
-                    $("#kloudspeaker-searchresults-title-text").text(kloudspeaker.ui.texts.get('mainViewSearchResultsTitle', ["" + fi.info.count]));
-                    $("#kloudspeaker-searchresults-desc-text").text(kloudspeaker.ui.texts.get('mainViewSearchResultsDesc', [fi.text]));
+                    $("#kloudspeaker-searchresults-title-text").text(loc.get('mainViewSearchResultsTitle', ["" + fi.info.count]));
+                    $("#kloudspeaker-searchresults-desc-text").text(loc.get('mainViewSearchResultsDesc', [fi.text]));
 
                     var $fa = $("#kloudspeaker-fileview-folder-actions");
                     that.addCommonFileviewActions($fa);
@@ -198,25 +197,25 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
                         var first = true;
                         $.each(l, function(i, li) {
                             if (!first) r = r + ", ";
-                            r = r + kloudspeaker.ui.texts.get('mainViewSearchResultTooltipMatchType_' + li.type);
+                            r = r + loc.get('mainViewSearchResultTooltipMatchType_' + li.type);
                             first = false;
                         });
                         return r;
                     };
-                    var matchesTitle = kloudspeaker.ui.texts.get('mainViewSearchResultTooltipMatches');
+                    var matchesTitle = loc.get('mainViewSearchResultTooltipMatches');
                     $(".kloudspeaker-filelist-item").each(function() {
                         var $i = $(this);
                         var item = $i.tmplItem().data;
-                        var title = kloudspeaker.filesystem.rootsById[item.root_id].name + '/' + item.path + ', ' + matchesTitle + matchList(fi.info.matches[item.id].matches);
+                        var title = fs.rootsById[item.root_id].name + '/' + item.path + ', ' + matchesTitle + matchList(fi.info.matches[item.id].matches);
 
-                        kloudspeaker.ui.controls.tooltip($i, {
+                        controls.tooltip($i, {
                             title: title
                         });
                     });
                 }
             });
 
-            $.each(kloudspeaker.plugins.getFileViewPlugins(), function(i, p) {
+            $.each(plugins.getFileViewPlugins(), function(i, p) {
                 if (p.fileViewHandler.onInit) p.fileViewHandler.onInit(that);
 
                 if (!p.fileViewHandler.filelistColumns) return;
@@ -227,7 +226,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
                     that._filelist.addColumn(cols[j]);
             });
 
-            _.each(kloudspeaker.ui._fileViewHandlers, function(h) {
+            _.each(ui._fileViewHandlers, function(h) {
                 if (h.onInit) h.onInit(that);
 
                 if (!h.filelistColumns) return;
@@ -242,7 +241,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
         }
 
         that.deinit = function() {
-            kloudspeaker.events.removeEventHandler('fileview');
+            events.removeEventHandler('fileview');
         }
 
         that.addCustomFolderType = function(id, h) {
@@ -252,12 +251,12 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
         that.onResize = function() {}
 
         that.onActivate = function(h) {
-            kloudspeaker.dom.template("kloudspeaker-tmpl-fileview").appendTo(h.content);
+            dom.template("kloudspeaker-tmpl-fileview").appendTo(h.content);
             that.showProgress();
             // TODO expose file urls
 
             var navBarItems = [];
-            $.each(kloudspeaker.filesystem.roots, function(i, f) {
+            $.each(fs.roots, function(i, f) {
                 navBarItems.push({
                     title: f.name,
                     obj: f,
@@ -267,7 +266,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
                 })
             });
             that.rootNav = h.addNavBar({
-                title: kloudspeaker.ui.texts.get("mainViewRootsTitle"),
+                title: loc.get("mainViewRootsTitle"),
                 items: navBarItems,
                 onRender: dnd ? function($nb, $items, objs) {
                     dnd.enableDrop($items, {
@@ -301,7 +300,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
 
             if (uploader && uploader.initDragAndDropUploader) {
                 that._dndUploader = uploader.initDragAndDropUploader({
-                    container: kloudspeaker.App.getElement(),
+                    container: app.getElement(),
                     dropElement: $("#kloudspeaker-folderview"),
                     handler: that._getUploadHandler()
                 });
@@ -311,31 +310,31 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
             that._scrollInThreshold = 0;
             $(window).bind('scroll', that._updateScroll);
 
-            $.each(kloudspeaker.plugins.getFileViewPlugins(), function(i, p) {
+            $.each(plugins.getFileViewPlugins(), function(i, p) {
                 if (p.fileViewHandler.onActivate)
-                    p.fileViewHandler.onActivate(kloudspeaker.App.getElement(), h);
+                    p.fileViewHandler.onActivate(app.getElement(), h);
             });
-            _.each(kloudspeaker.ui._fileViewHandlers, function(fvh) {
+            _.each(ui._fileViewHandlers, function(fvh) {
                 if (fvh.onActivate)
-                    fvh.onActivate(kloudspeaker.App.getElement(), h);
+                    fvh.onActivate(app.getElement(), h);
             });
 
-            if (kloudspeaker.filesystem.roots.length === 0) {
+            if (fs.roots.length === 0) {
                 that.showNoRoots();
                 return;
             }
 
-            var params = kloudspeaker.request.getParams();
+            var params = request.getParams();
             if (params.path) {
-                kloudspeaker.filesystem.findFolder({
+                fs.findFolder({
                     path: params.path
                 }, that.getDataRequest()).done(function(r) {
                     var folder = r.folder;
                     that.changeToFolder(folder);
                 }).fail(function(e) {
                     if (e.code == 203) {
-                        kloudspeaker.ui.dialogs.error({
-                            message: kloudspeaker.ui.texts.get('mainviewFolderNotFound', params.path)
+                        dialogs.error({
+                            message: loc.get('mainviewFolderNotFound', params.path)
                         });
                         that.handled = true;
                     }
@@ -372,21 +371,22 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
                         var ext = fn.split('.').pop();
                         if (!ext) return;
 
+                        var s = session.get();
                         ext = ext.toLowerCase();
-                        if (kloudspeaker.session.data.filesystem.forbidden_file_upload_types.length > 0 && kloudspeaker.session.data.filesystem.forbidden_file_upload_types.indexOf(ext) >= 0) allowed = false;
+                        if (s.data.filesystem.forbidden_file_upload_types.length > 0 && s.data.filesystem.forbidden_file_upload_types.indexOf(ext) >= 0) allowed = false;
 
-                        if (kloudspeaker.session.data.filesystem.allowed_file_upload_types.length > 0 && kloudspeaker.session.data.filesystem.allowed_file_upload_types.indexOf(ext) < 0) allowed = false;
+                        if (s.data.filesystem.allowed_file_upload_types.length > 0 && s.data.filesystem.allowed_file_upload_types.indexOf(ext) < 0) allowed = false;
                     });
                     if (!allowed) {
-                        kloudspeaker.ui.dialogs.notification({
-                            message: kloudspeaker.ui.texts.get('mainviewFileUploadNotAllowed'),
+                        dialogs.notification({
+                            message: loc.get('mainviewFileUploadNotAllowed'),
                             type: "warning"
                         });
                     }
                     return allowed;
                 },
                 start: function(files, ready, cancel) {
-                    that.uploadProgress.show(kloudspeaker.ui.texts.get(files.length > 1 ? "mainviewUploadProgressManyMessage" : "mainviewUploadProgressOneMessage", files.length), function() {
+                    that.uploadProgress.show(loc.get(files.length > 1 ? "mainviewUploadProgressManyMessage" : "mainviewUploadProgressOneMessage", files.length), function() {
                         ready();
                     }, cancel);
                 },
@@ -398,8 +398,8 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
                 finished: function() {
                     if (c) c.close();
                     that.uploadProgress.hide();
-                    kloudspeaker.ui.dialogs.notification({
-                        message: kloudspeaker.ui.texts.get('mainviewFileUploadComplete'),
+                    dialogs.notification({
+                        message: loc.get('mainviewFileUploadComplete'),
                         type: "success"
                     });
                     that.refresh();
@@ -407,8 +407,8 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
                 aborted: function(f) {
                     if (c) c.close();
                     that.uploadProgress.hide();
-                    kloudspeaker.ui.dialogs.notification({
-                        message: kloudspeaker.ui.texts.get('mainviewFileUploadAborted'),
+                    dialogs.notification({
+                        message: loc.get('mainviewFileUploadAborted'),
                         type: "info"
                     });
                     that.refresh();
@@ -417,10 +417,10 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
                     if (c) c.close();
                     that.uploadProgress.hide();
                     if (e && e.code == 109 && e.data && e.data.items) {
-                        kloudspeaker.ui.actions.handleDenied('upload', e.data, kloudspeaker.ui.texts.get('actionDeniedUpload'), false);
+                        ui.actions.handleDenied('upload', e.data, loc.get('actionDeniedUpload'), false);
                     } else {
-                        kloudspeaker.ui.dialogs.notification({
-                            message: kloudspeaker.ui.texts.get('mainviewFileUploadFailed'),
+                        dialogs.notification({
+                            message: loc.get('mainviewFileUploadFailed'),
                             type: "error"
                         });
                     }
@@ -441,8 +441,8 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
         };
 
         that.openInitialFolder = function() {
-            if (kloudspeaker.filesystem.roots.length === 0) that.showNoRoots();
-            else if (kloudspeaker.filesystem.roots.length == 1) that.changeToFolder(kloudspeaker.filesystem.roots[0]);
+            if (fs.roots.length === 0) that.showNoRoots();
+            else if (fs.roots.length == 1) that.changeToFolder(fs.roots[0]);
             else that.changeToFolder(null);
         };
 
@@ -451,20 +451,20 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
 
             if (that._dndUploader) that._dndUploader.destroy();
 
-            $.each(kloudspeaker.plugins.getFileViewPlugins(), function(i, p) {
+            $.each(plugins.getFileViewPlugins(), function(i, p) {
                 if (p.fileViewHandler.onDeactivate)
                     p.fileViewHandler.onDeactivate();
             });
-            _.each(kloudspeaker.ui._fileViewHandlers, function(fvh) {
+            _.each(ui._fileViewHandlers, function(fvh) {
                 if (fvh.onDeactivate)
                     fvh.onDeactivate();
             });
         };
 
         that.initViewTools = function($t) {
-            kloudspeaker.dom.template("kloudspeaker-tmpl-fileview-tools").appendTo($t);
+            dom.template("kloudspeaker-tmpl-fileview-tools").appendTo($t);
 
-            kloudspeaker.ui.process($t, ["radio"], that);
+            ui.process($t, ["radio"], that);
             that.controls["kloudspeaker-fileview-style-options"].set(that._viewStyle);
 
             var onSearch = function() {
@@ -486,7 +486,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
             var rq = (!that._currentFolder || !that._currentFolder.type) ? {
                 'parent-metadata': {}
             } : {};
-            $.each(kloudspeaker.plugins.getFileViewPlugins(), function(i, p) {
+            $.each(plugins.getFileViewPlugins(), function(i, p) {
                 if (p.fileViewHandler.getDataRequest)
                     rq = $.extend(rq, p.fileViewHandler.getDataRequest(that._currentFolder));
             });
@@ -547,7 +547,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
             //TODO show message, for admin instruct opening admin tool?
             that._currentFolder = false;
             that._currentFolderData = {
-                items: kloudspeaker.filesystem.roots
+                items: fs.roots
             };
             that._updateUI();
         };
@@ -563,11 +563,11 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
         that.changeToFolder = function(f, noStore) {
             var id = f;
             if (!id) {
-                if (kloudspeaker.filesystem.roots)
-                    id = kloudspeaker.filesystem.roots[0].id;
+                if (fs.roots)
+                    id = fs.roots[0].id;
             } else if (typeof(id) != "string") id = that._getFolderPublicId(id);
 
-            if (!noStore) kloudspeaker.App.storeView("files/" + (id ? id : ""));
+            if (!noStore) app.storeView("files/" + (id ? id : ""));
 
             var oldType = (that._currentFolder && that._currentFolder.type) ? that._currentFolder.type : null;
             if (that._currentFolder && that._currentFolder.type && that._customFolderTypes[that._currentFolder.type]) {
@@ -596,7 +596,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
             var onFail = function() {
                 that.hideProgress();
             };
-            kloudspeaker.ui.hideActivePopup();
+            ui.hideActivePopup();
             that.showProgress();
 
             that._currentFolderType = null;
@@ -607,12 +607,12 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
             if (that._currentFolderType) {
                 return that._customFolderTypes[that._currentFolderType].onSelectFolder(idParts[1]).done(that._setFolder).fail(onFail);
             } else if (!id || idParts.length == 1) {
-                return kloudspeaker.filesystem.folderInfo(id ? idParts[0] : null, true, that.getDataRequest()).done(function(r) {
+                return fs.folderInfo(id ? idParts[0] : null, true, that.getDataRequest()).done(function(r) {
                     var folder = r.folder;
-                    if (folder.id == folder.root_id && kloudspeaker.filesystem.rootsById[folder.id]) folder = kloudspeaker.filesystem.rootsById[folder.id];
+                    if (folder.id == folder.root_id && fs.rootsById[folder.id]) folder = fs.rootsById[folder.id];
                     var data = r;
                     data.items = r.folders.slice(0).concat(r.files);
-                    if (data.hierarchy && kloudspeaker.filesystem.rootsById[data.hierarchy[0].id]) data.hierarchy[0] = kloudspeaker.filesystem.rootsById[data.hierarchy[0].id]; //replace root item with user instance
+                    if (data.hierarchy && fs.rootsById[data.hierarchy[0].id]) data.hierarchy[0] = fs.rootsById[data.hierarchy[0].id]; //replace root item with user instance
 
                     that._setFolder(folder, data, oldType);
                 }).fail(onFail);
@@ -645,7 +645,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
             if (!that._currentFolder) return;
 
             that.showProgress();
-            kloudspeaker.service.post("filesystem/" + that._currentFolder.id + "/retrieve", {
+            service.post("filesystem/" + that._currentFolder.id + "/retrieve", {
                 url: url
             }).done(function(r) {
                 that.hideProgress();
@@ -655,8 +655,8 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
                 //301 resource not found
                 if (error.code == 301) {
                     that.handled = true;
-                    kloudspeaker.ui.views.dialogs.error({
-                        message: kloudspeaker.ui.texts.get('mainviewRetrieveFileResourceNotFound', [url])
+                    dialogs.error({
+                        message: loc.get('mainviewRetrieveFileResourceNotFound', [url])
                     });
                 }
             });
@@ -674,8 +674,8 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
             if (!window.isArray(i)) single = i;
             else if (i.length == 1) single = i[0];
 
-            if (kloudspeaker.settings["file-view"] && kloudspeaker.settings["file-view"]["drop-type"]) {
-                var dt = kloudspeaker.settings["file-view"]["drop-type"];
+            if (settings["file-view"] && settings["file-view"]["drop-type"]) {
+                var dt = settings["file-view"]["drop-type"];
                 var t = typeof(dt);
                 if (t == 'function') return dt(to, i);
                 else if (t == 'object') {
@@ -696,12 +696,12 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
             var droptype = that.dropType(to, itm);
 
             if (single)
-                return (droptype == "copy") ? kloudspeaker.filesystem.canCopyTo(single, to) : kloudspeaker.filesystem.canMoveTo(single, to);
+                return (droptype == "copy") ? fs.canCopyTo(single, to) : fs.canMoveTo(single, to);
 
             var can = true;
             for (var i = 0; i < itm.length; i++) {
                 var item = itm[i];
-                if (!(droptype == "copy" ? kloudspeaker.filesystem.canCopyTo(item, to) : kloudspeaker.filesystem.canMoveTo(item, to))) {
+                if (!(droptype == "copy" ? fs.canCopyTo(item, to) : fs.canMoveTo(item, to))) {
                     can = false;
                     break;
                 }
@@ -713,14 +713,14 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
             var copy = (that.dropType(to, itm) == 'copy');
             //console.log((copy ? "copy " : "move ") +itm.name+" to "+to.name);
 
-            if (copy) kloudspeaker.filesystem.copy(itm, to);
-            else kloudspeaker.filesystem.move(itm, to);
+            if (copy) fs.copy(itm, to);
+            else fs.move(itm, to);
         };
 
         that._updateUI = function() {
             var opt = {
                 title: function() {
-                    return that.data.title ? that.data.title : kloudspeaker.ui.texts.get(that.data['title-key']);
+                    return that.data.title ? that.data.title : loc.get(that.data['title-key']);
                 }
             };
             var $h = $("#kloudspeaker-folderview-header-content").empty();
@@ -734,24 +734,24 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
                 that.rootNav.setActive(currentRoot);
 
                 if (that._currentFolder)
-                    kloudspeaker.dom.template("kloudspeaker-tmpl-fileview-header", {
+                    dom.template("kloudspeaker-tmpl-fileview-header", {
                         canWrite: that._canWrite(),
                         folder: that._currentFolder
                     }).appendTo($h);
                 else
-                    kloudspeaker.dom.template("kloudspeaker-tmpl-main-rootfolders").appendTo($h);
+                    dom.template("kloudspeaker-tmpl-main-rootfolders").appendTo($h);
 
                 var $tb = $("#kloudspeaker-fileview-folder-tools").empty();
                 var $fa = $("#kloudspeaker-fileview-folder-actions");
 
                 if (that._currentFolder) {
                     if (that._canWrite()) {
-                        kloudspeaker.dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
+                        dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
                             icon: 'icon-folder-close'
                         }, opt).appendTo($tb).click(function() {
-                            kloudspeaker.ui.controls.dynamicBubble({
+                            controls.dynamicBubble({
                                 element: $(this),
-                                content: kloudspeaker.dom.template("kloudspeaker-tmpl-main-createfolder-bubble"),
+                                content: dom.template("kloudspeaker-tmpl-main-createfolder-bubble"),
                                 handler: {
                                     onRenderBubble: function(b) {
                                         var $i = $("#kloudspeaker-mainview-createfolder-name-input");
@@ -760,7 +760,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
                                             if (!name) return;
 
                                             b.hide();
-                                            kloudspeaker.filesystem.createFolder(that._currentFolder, name);
+                                            fs.createFolder(that._currentFolder, name);
                                         };
                                         $("#kloudspeaker-mainview-createfolder-button").click(onCreate);
                                         $i.bind('keypress', function(e) {
@@ -771,20 +771,20 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
                             });
                             return false;
                         });
-                        if (uploader) kloudspeaker.dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
+                        if (uploader) dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
                             icon: 'icon-upload-alt'
                         }, opt).appendTo($tb).click(function() {
-                            kloudspeaker.ui.controls.dynamicBubble({
+                            controls.dynamicBubble({
                                 element: $(this),
-                                content: kloudspeaker.dom.template("kloudspeaker-tmpl-main-addfile-bubble"),
+                                content: dom.template("kloudspeaker-tmpl-main-addfile-bubble"),
                                 handler: {
                                     onRenderBubble: function(b) {
                                         uploader.initUploadWidget($("#kloudspeaker-mainview-addfile-upload"), {
-                                            url: kloudspeaker.filesystem.getUploadUrl(that._currentFolder),
+                                            url: fs.getUploadUrl(that._currentFolder),
                                             handler: that._getUploadHandler(b)
                                         });
 
-                                        if (!kloudspeaker.features.hasFeature('retrieve_url')) {
+                                        if (!features.hasFeature('retrieve_url')) {
                                             $("#kloudspeaker-mainview-addfile-retrieve").remove();
                                         }
                                         var onRetrieve = function() {
@@ -805,11 +805,11 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
                     }
 
                     // FOLDER
-                    var actionsElement = kloudspeaker.dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
+                    var actionsElement = dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
                         icon: 'icon-cog',
                         dropdown: true
                     }, opt).appendTo($fa);
-                    kloudspeaker.ui.controls.dropdown({
+                    controls.dropdown({
                         element: actionsElement,
                         items: false,
                         hideDelay: 0,
@@ -833,11 +833,11 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
                 }
 
                 if (that._dndUploader)
-                    that._dndUploader.setUrl(that._canWrite() ? kloudspeaker.filesystem.getUploadUrl(that._currentFolder) : false);
+                    that._dndUploader.setUrl(that._canWrite() ? fs.getUploadUrl(that._currentFolder) : false);
                 that.addCommonFileviewActions($fa);
             }
 
-            kloudspeaker.ui.process($h, ['localize']);
+            ui.process($h, ['localize']);
 
             that._scrollOutThreshold = $("#kloudspeaker-folderview-header").outerHeight() + 40;
             that._scrollInThreshold = that._scrollOutThreshold - 60;
@@ -852,16 +852,16 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
                 $("#kloudspeaker-folder-description").text(that._currentFolderData.data['parent-metadata'].description);
 
             var $dsc = $("#kloudspeaker-folder-description");
-            var descriptionEditable = that._currentFolder && !that._currentFolder.type && $dsc.length > 0 && kloudspeaker.session.features.descriptions && permissions.hasFilesystemPermission(that._currentFolder, "edit_description");
+            var descriptionEditable = that._currentFolder && !that._currentFolder.type && $dsc.length > 0 && features.hasFeature('descriptions') && permissions.hasFilesystemPermission(that._currentFolder, "edit_description");
             if (descriptionEditable) {
-                kloudspeaker.ui.controls.editableLabel({
+                controls.editableLabel({
                     element: $dsc,
-                    hint: kloudspeaker.ui.texts.get('mainviewDescriptionHint'),
+                    hint: loc.get('mainviewDescriptionHint'),
                     onedit: function(desc) {
-                        kloudspeaker.service.put("filesystem/" + that._currentFolder.id + "/description/", {
+                        service.put("filesystem/" + that._currentFolder.id + "/description/", {
                             description: desc
                         }).done(function() {
-                            kloudspeaker.events.dispatch("filesystem/item-update", {
+                            events.dispatch("filesystem/item-update", {
                                 item: that._currentFolder,
                                 property: 'description',
                                 value: desc
@@ -876,7 +876,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
             // update file list
             that._updateList();
 
-            kloudspeaker.events.dispatch('fileview/init', {
+            events.dispatch('fileview/init', {
                 folder: that._currentFolder,
                 data: that._currentFolderData,
                 canWrite: that._canWrite(),
@@ -890,18 +890,18 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
             //TODO kaikki action-luonnit omaan luokkaan
             var opt = {
                 title: function() {
-                    return that.data.title ? that.data.title : kloudspeaker.ui.texts.get(that.data['title-key']);
+                    return that.data.title ? that.data.title : loc.get(that.data['title-key']);
                 }
             };
 
             // SELECT
-            that._selectModeBtn = kloudspeaker.dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
+            that._selectModeBtn = dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
                 icon: 'icon-check',
                 dropdown: true,
                 style: "narrow",
                 action: true
             }, opt).appendTo($c).click(that._onToggleSelect);
-            kloudspeaker.ui.controls.dropdown({
+            controls.dropdown({
                 element: that._selectModeBtn,
                 items: false,
                 hideDelay: 0,
@@ -918,7 +918,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
             });
 
             // REFRESH                  
-            kloudspeaker.dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
+            dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
                 icon: 'icon-refresh'
             }, opt).appendTo($c).click(that.refresh);
         };
@@ -960,11 +960,11 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
 
             var result = [];
             if (that._selectMode && that._selectedItems.length > 0) {
-                var plugins = kloudspeaker.plugins.getItemCollectionPlugins(that._selectedItems);
-                result = kloudspeaker.helpers.getPluginActions(plugins);
+                var plugins = plugins.getItemCollectionPlugins(that._selectedItems);
+                result = utils.getPluginActions(plugins);
             }
 
-            cb(addDefaultActions(kloudspeaker.helpers.cleanupActions(result)));
+            cb(addDefaultActions(utils.cleanupActions(result)));
         };
 
         that._onToggleSelect = function() {
@@ -992,8 +992,8 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
                     that.changeToFolder(r);
                 };
             };
-            for (var i = 0, j = kloudspeaker.filesystem.roots.length; i < j; i++) {
-                var root = kloudspeaker.filesystem.roots[i];
+            for (var i = 0, j = fs.roots.length; i < j; i++) {
+                var root = fs.roots[i];
                 rootItems.push({
                     title: root.name,
                     callback: rootCb(root)
@@ -1004,11 +1004,11 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
 
         that.setupHierarchy = function(h, $t) {
             var items = h;
-            var p = $t.append(kloudspeaker.dom.template("kloudspeaker-tmpl-fileview-folder-hierarchy", {
+            var p = $t.append(dom.template("kloudspeaker-tmpl-fileview-folder-hierarchy", {
                 items: items
             }));
 
-            kloudspeaker.ui.controls.dropdown({
+            controls.dropdown({
                 element: $("#kloudspeaker-folder-hierarchy-item-root"),
                 items: that._getRootItems(),
                 hideDelay: 0,
@@ -1049,8 +1049,8 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
         };
 
         that._handleCustomAction = function(action, item, t) {
-            if (!kloudspeaker.settings["file-view"] || !kloudspeaker.settings["file-view"].actions) return false;
-            var actions = kloudspeaker.settings["file-view"].actions;
+            if (!settings["file-view"] || !settings["file-view"].actions) return false;
+            var actions = settings["file-view"].actions;
             if (!actions[action] || (typeof(actions[action]) !== "function")) return false;
 
             var ctx = that._getCtxObj(item, t);
@@ -1088,13 +1088,13 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
         that.initList = function() {
             var $h = $("#kloudspeaker-folderview-header-items").empty();
             if (that.isListView()) {
-                var cols = kloudspeaker.settings["file-view"]["list-view-columns"];
+                var cols = settings["file-view"]["list-view-columns"];
                 if (that._currentFolderType && that._customFolderTypes[that._currentFolderType] && that._customFolderTypes[that._currentFolderType].getFileListCols) {
                     cols = that._customFolderTypes[that._currentFolderType].getFileListCols();
                 }
                 that.itemWidget = new FileList('kloudspeaker-folderview-items', $h, 'main', that._filelist, cols);
             } else {
-                var thumbs = !!kloudspeaker.session.features.thumbnails;
+                var thumbs = features.hasFeature('thumbnails');
                 that.itemWidget = new IconView('kloudspeaker-folderview-items', $h, 'main', that._viewStyle == 1 ? 'iconview-small' : 'iconview-large', thumbs);
             }
 
@@ -1114,7 +1114,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
                         if (col["on-click"]) {
                             col["on-click"].apply({
                                 showBubble: function(spec) {
-                                    kloudspeaker.ui.controls.dynamicBubble({
+                                    controls.dynamicBubble({
                                         element: $col,
                                         title: spec.title,
                                         model: spec.model,
@@ -1173,7 +1173,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
 
         that._updateList = function() {
             that._items = that._currentFolderData.items;
-            that._itemsById = kloudspeaker.helpers.mapByKey(that._items, "id");
+            that._itemsById = utils.mapByKey(that._items, "id");
             if (that._selectedItems) {
                 var existing = [];
                 var ids = {};
@@ -1192,7 +1192,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
 
         that.showActionMenu = function(item, c) {
             c.addClass("open");
-            var popup = kloudspeaker.ui.controls.popupmenu({
+            var popup = controls.popupmenu({
                 element: c,
                 onHide: function() {
                     c.removeClass("open");
@@ -1217,7 +1217,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
                 return;
             }
 
-            kloudspeaker.filesystem.itemDetails(item, kloudspeaker.plugins.getItemContextRequestData(item)).done(function(d) {
+            fs.itemDetails(item, plugins.getItemContextRequestData(item)).done(function(d) {
                 if (!d) {
                     cb([]);
                     return;
@@ -1228,7 +1228,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions',
                     folder: that._currentFolder,
                     folder_writable: that._currentFolder ? permissions.hasFilesystemPermission(that._currentFolder, "filesystem_item_access", "rw") : false
                 };
-                cb(kloudspeaker.helpers.cleanupActions(kloudspeaker.helpers.getPluginActions(kloudspeaker.plugins.getItemContextPlugins(item, ctx))));
+                cb(utils.cleanupActions(utils.getPluginActions(plugins.getItemContextPlugins(item, ctx))));
             });
         };
 

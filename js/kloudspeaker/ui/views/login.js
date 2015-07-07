@@ -1,19 +1,18 @@
-define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/service'], function(settings, session, service) {
-    //TODO remove reference to global "kloudspeaker"
+define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/localization', 'kloudspeaker/features', 'kloudspeaker/plugins', 'kloudspeaker/ui/dialogs', 'kloudspeaker/dom', 'kloudspeaker/templates'], function(settings, session, service, loc, features, plugins, dialogs, dom, templates) {
     return function() {
         var that = this;
 
         that.init = function($c) {
-            return kloudspeaker.dom.loadContentInto($c, kloudspeaker.templates.url("loginview.html"), that, ['localize', 'bubble']);
+            return dom.loadContentInto($c, templates.url("loginview.html"), that, ['localize', 'bubble']);
         }
 
         that.onLoad = function() {
-            if (kloudspeaker.features.hasFeature('lost_password')) {
+            if (features.hasFeature('lost_password')) {
                 $("#kloudspeaker-login-forgot-password").show();
             }
-            if (kloudspeaker.features.hasFeature('registration') && kloudspeaker.plugins.exists("plugin-registration")) {
+            if (features.hasFeature('registration') && plugins.exists("plugin-registration")) {
                 $("#kloudspeaker-login-register").click(function() {
-                    kloudspeaker.plugins.get("plugin-registration").openRegistration();
+                    plugins.get("plugin-registration").openRegistration();
                 }).show();
             }
 
@@ -33,18 +32,19 @@ define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/service']
                     if (!email) return;
 
                     bubble.hide();
-                    that.wait = kloudspeaker.ui.dialogs.wait({
+                    that.wait = dialogs.wait({
                         target: "kloudspeaker-login-main"
                     });
                     that.onResetPassword(email);
                 });
-                if (kloudspeaker.session.plugins.LostPassword && kloudspeaker.session.plugins.LostPassword.enable_hint)
+                var s = session.get();
+                if (s.plugins.LostPassword && s.plugins.LostPassword.enable_hint)
                     $("#kloudspeaker-login-forgot-button-hint").click(function() {
                         var email = $("#kloudspeaker-login-forgot-email").val();
                         if (!email) return;
 
                         bubble.hide();
-                        that.wait = kloudspeaker.ui.dialogs.wait({
+                        that.wait = dialogs.wait({
                             target: "kloudspeaker-login-main"
                         });
                         that.onResetPassword(email, true);
@@ -67,7 +67,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/service']
                 $("#kloudspeaker-login-password").focus();
                 return;
             }
-            that.wait = kloudspeaker.ui.dialogs.wait({
+            that.wait = dialogs.wait({
                 target: "kloudspeaker-login-main"
             });
             session.authenticate(username, password, remember).fail(function(e) {
@@ -85,15 +85,15 @@ define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/service']
             service.post("lostpassword", data).done(function(r) {
                 that.wait.close();
 
-                kloudspeaker.ui.dialogs.notification({
-                    message: kloudspeaker.ui.texts.get(hint ? 'resetPasswordPopupSendHintSuccess' : 'resetPasswordPopupResetSuccess')
+                dialogs.notification({
+                    message: loc.get(hint ? 'resetPasswordPopupSendHintSuccess' : 'resetPasswordPopupResetSuccess')
                 });
             }).fail(function(e) {
                 this.handled = true;
                 that.wait.close();
 
-                kloudspeaker.ui.dialogs.info({
-                    message: kloudspeaker.ui.texts.get(hint ? 'resetPasswordPopupSendHintFailed' : 'resetPasswordPopupResetFailed')
+                dialogs.info({
+                    message: loc.get(hint ? 'resetPasswordPopupSendHintFailed' : 'resetPasswordPopupResetFailed')
                 });
             });
         }
@@ -101,8 +101,8 @@ define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/service']
         that.showLoginError = function() {
             that.wait.close();
 
-            kloudspeaker.ui.dialogs.notification({
-                message: kloudspeaker.ui.texts.get('loginDialogLoginFailedMessage')
+            dialogs.notification({
+                message: loc.get('loginDialogLoginFailedMessage')
             });
         }
     };
