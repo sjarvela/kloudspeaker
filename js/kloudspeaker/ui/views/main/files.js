@@ -609,7 +609,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/localiza
             } else if (!id || idParts.length == 1) {
                 return fs.folderInfo(id ? idParts[0] : null, true, that.getDataRequest()).done(function(r) {
                     var folder = r.folder;
-                    if (folder.id == folder.root_id && fs.rootsById[folder.id]) folder = fs.rootsById[folder.id];
+                    if (folder && folder.id == folder.root_id && fs.rootsById[folder.id]) folder = fs.rootsById[folder.id];
                     var data = r;
                     data.items = r.folders.slice(0).concat(r.files);
                     if (data.hierarchy && fs.rootsById[data.hierarchy[0].id]) data.hierarchy[0] = fs.rootsById[data.hierarchy[0].id]; //replace root item with user instance
@@ -630,7 +630,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/localiza
 
         that._setFolder = function(folder, data) {
             that._currentFolder = folder;
-            that._currentFolderType = folder.type ? folder.type : null;
+            that._currentFolderType = (folder && folder.type) ? folder.type : null;
             that._currentFolderData = data;
 
             that.hideProgress();
@@ -960,8 +960,8 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/localiza
 
             var result = [];
             if (that._selectMode && that._selectedItems.length > 0) {
-                var plugins = plugins.getItemCollectionPlugins(that._selectedItems);
-                result = utils.getPluginActions(plugins);
+                var pl = plugins.getItemCollectionPlugins(that._selectedItems);
+                result = utils.getPluginActions(pl);
             }
 
             cb(addDefaultActions(utils.cleanupActions(result)));

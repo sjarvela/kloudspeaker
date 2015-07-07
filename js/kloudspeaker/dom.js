@@ -1,4 +1,4 @@
-define(['kloudspeaker/settings', 'kloudspeaker/utils', 'kloudspeaker/ui'], function(settings, utils, ui) {
+define(['kloudspeaker/settings', 'kloudspeaker/utils', 'kloudspeaker/ui', 'kloudspeaker/resources'], function(settings, utils, ui, resources) {
     //TODO remove global references
 
     var _hiddenInd = 0;
@@ -6,7 +6,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils', 'kloudspeaker/ui'], funct
     md._hiddenLoaded = [];
 
     md.importScript = function(url) {
-        var u = kloudspeaker.resourceUrl(url);
+        var u = resources.url(url);
         if (!u)
             return $.Deferred().resolve().promise();
         var df = $.Deferred();
@@ -18,7 +18,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils', 'kloudspeaker/ui'], funct
     };
 
     md.importCss = function(url) {
-        var u = kloudspeaker.resourceUrl(url);
+        var u = resources.url(url);
         if (!u) return;
 
         var link = $("<link>");
@@ -35,7 +35,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils', 'kloudspeaker/ui'], funct
             if (cb) cb();
             return;
         }
-        var u = kloudspeaker.resourceUrl(url);
+        var u = resources.url(url);
         if (!u) {
             if (cb) cb();
             return;
@@ -48,7 +48,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils', 'kloudspeaker/ui'], funct
     };
 
     md.loadContentInto = function($target, url, handler, process) {
-        var u = kloudspeaker.resourceUrl(url);
+        var u = resources.url(url);
         if (!u) return $.Deferred().resolve().promise();
 
         var df = $.Deferred();

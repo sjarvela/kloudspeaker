@@ -1,4 +1,4 @@
-define([], function() {
+define(['kloudspeaker/resources'], function(resources) {
     //TODO rewrite error views
 
     var tt = {};
@@ -36,7 +36,7 @@ define([], function() {
     };
 
     tt._load = function(u, df) {
-        var url = kloudspeaker.resourceUrl(u);
+        var url = resources.url(u);
         if (!url) return df.resolve();
 
         $.ajax({

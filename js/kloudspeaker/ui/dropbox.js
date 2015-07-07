@@ -1,4 +1,4 @@
-define(['kloudspeaker/plugins', 'kloudspeaker/ui/views', 'kloudspeaker/events', 'kloudspeaker/ui', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/controls', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/ui/files/itemcontext'], function(plugins, views, events, ui, dnd, formatters, controls, utils, dom, ItemContext) {
+define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/ui/views', 'kloudspeaker/events', 'kloudspeaker/ui', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/controls', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/ui', 'kloudspeaker/ui/files/itemcontext'], function(app, plugins, views, events, ui, dnd, formatters, controls, utils, dom, ui, ItemContext) {
     var that = this;
     that.w = 0;
     that.$dbE = false;
@@ -7,14 +7,14 @@ define(['kloudspeaker/plugins', 'kloudspeaker/ui/views', 'kloudspeaker/events', 
 
     events.addEventHandler(function(e) {
         if (e.type == 'filesystem/delete') that.onRemoveItems(utils.extractValue(e.payload.items, "id"));
-        //TODO else if (e.type == 'filesystem/rename') that.updateItems(kloudspeaker.helpers.extractValue(e.payload.items));
+        //TODO else if (e.type == 'filesystem/rename') that.updateItems(utils.extractValue(e.payload.items));
     });
 
     that._pathFormatter = new formatters.FilesystemItemPath();
     that.itemContext = new ItemContext();
 
     this.onFileViewActivate = function($container) {
-        kloudspeaker.dom.template("kloudspeaker-tmpl-mainview-dropbox").appendTo($container);
+        dom.template("kloudspeaker-tmpl-mainview-dropbox").appendTo($container);
         $("#kloudspeaker-dropbox-handle").click(function() {
             that.openDropbox();
         });
@@ -168,8 +168,8 @@ define(['kloudspeaker/plugins', 'kloudspeaker/ui/views', 'kloudspeaker/events', 
             that.itemContext.open({
                 item: item,
                 element: $i,
-                container: kloudspeaker.App.getElement(),
-                viewport: kloudspeaker.App.getElement()
+                container: app.getElement(),
+                viewport: app.getElement()
             });
             return false;
         }).each(function() {
@@ -194,7 +194,7 @@ define(['kloudspeaker/plugins', 'kloudspeaker/ui/views', 'kloudspeaker/events', 
             });
         }
         $("#kloudspeaker-dropbox-list .kloudspeaker-dropbox-list-item > a.item-remove").click(function() {
-            kloudspeaker.ui.hideActivePopup();
+            ui.hideActivePopup();
             var $t = $(this);
             that.onRemoveItem($t.tmplItem().data);
         });

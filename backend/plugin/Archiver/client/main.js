@@ -1,6 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/permissions'], function(app, settings, plugins, permissions) {
-    //TODO remove reference to global "kloudspeaker"
-
+define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/permissions', 'kloudspeaker/localization', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui', 'kloudspeaker/utils'], function(settings, plugins, service, events, permissions, loc, dialogs, ui, utils) {
     var that = {};
 
     that.initialize = function() {};
@@ -10,7 +8,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
 
         var defaultName = '';
         var item = false;
-        var items = kloudspeaker.helpers.arrayize(i);
+        var items = utils.arrayize(i);
         if (items.length == 1) {
             item = i[0];
         }
@@ -19,12 +17,12 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
         var doCompress = function(folder) {
             if (item) defaultName = item.name + ".zip";
 
-            kloudspeaker.ui.dialogs.input({
-                title: kloudspeaker.ui.texts.get('pluginArchiverCompressDialogTitle'),
-                message: kloudspeaker.ui.texts.get('pluginArchiverCompressDialogMessage'),
+            dialogs.input({
+                title: loc.get('pluginArchiverCompressDialogTitle'),
+                message: loc.get('pluginArchiverCompressDialogMessage'),
                 defaultValue: defaultName,
-                yesTitle: kloudspeaker.ui.texts.get('pluginArchiverCompressDialogAction'),
-                noTitle: kloudspeaker.ui.texts.get('dialogCancel'),
+                yesTitle: loc.get('pluginArchiverCompressDialogAction'),
+                noTitle: loc.get('dialogCancel'),
                 handler: {
                     isAcceptable: function(n) {
                         return (!!n && n.length > 0 && (!item || n != item.name));
@@ -36,10 +34,10 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
             });
         };
         if (!f) {
-            kloudspeaker.ui.dialogs.folderSelector({
-                title: kloudspeaker.ui.texts.get('pluginArchiverCompressDialogTitle'),
-                message: kloudspeaker.ui.texts.get('pluginArchiverCompressSelectFolderDialogMessage'),
-                actionTitle: kloudspeaker.ui.texts.get('ok'),
+            dialogs.folderSelector({
+                title: loc.get('pluginArchiverCompressDialogTitle'),
+                message: loc.get('pluginArchiverCompressSelectFolderDialogMessage'),
+                actionTitle: loc.get('ok'),
                 handler: {
                     onSelect: function(folder) {
                         doCompress(folder);
@@ -58,41 +56,41 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
 
     that.onDownloadCompressed = function(items) {
         //TODO show progress
-        return kloudspeaker.service.post("archiver/download", {
+        return service.post("archiver/download", {
             items: items
         }).done(function(r) {
             //TODO remove progress
-            kloudspeaker.ui.download(kloudspeaker.service.url('archiver/download/' + r.id, true));
+            ui.download(service.url('archiver/download/' + r.id, true));
         });
     };
 
     that._onCompress = function(items, folder, name) {
-        return kloudspeaker.service.post("archiver/compress", {
+        return service.post("archiver/compress", {
             'items': items,
             'folder': folder,
             'name': name
         }).done(function(r) {
-            kloudspeaker.events.dispatch('archiver/compress', {
+            events.dispatch('archiver/compress', {
                 items: items,
                 folder: folder,
                 name: name
             });
-            kloudspeaker.events.dispatch('filesystem/update', {
+            events.dispatch('filesystem/update', {
                 folder: folder
             });
         });
     };
 
     that._onExtract = function(a, folder) {
-        return kloudspeaker.service.post("archiver/extract", {
+        return service.post("archiver/extract", {
             item: a,
             folder: folder
         }).done(function(r) {
-            kloudspeaker.events.dispatch('archiver/extract', {
+            events.dispatch('archiver/extract', {
                 item: a,
                 folder: folder
             });
-            kloudspeaker.events.dispatch('filesystem/update', {
+            events.dispatch('filesystem/update', {
                 folder: folder
             });
         });
@@ -115,7 +113,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
             else if (i.length == 1) single = i[0];
 
             if (single)
-                return kloudspeaker.service.url("archiver/download?item=" + single.id, true);
+                return service.url("archiver/download?item=" + single.id, true);
 
             return false; //TODO enable downloading array of items?
         },
@@ -126,9 +124,10 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
             var parentWritable = !root && permissions.hasFilesystemPermission(item.parent_id, "filesystem_item_access", "rw");
             //TODO folder? is this ever something else than parent?
             var folderWritable = !root && ctx.folder && ctx.folder_writable;
+            var s = session.get();
 
             if (parentWritable && that._isArchive(item)) {
-                if (!kloudspeaker.session.plugins.Archiver.actions.extract) return false;
+                if (!s.plugins.Archiver.actions.extract) return false;
 
                 return {
                     actions: [{
@@ -142,7 +141,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
 
             var actions = [];
 
-            if (kloudspeaker.session.plugins.Archiver.actions.download) actions.push({
+            if (s.plugins.Archiver.actions.download) actions.push({
                 "title-key": "pluginArchiverDownloadCompressed",
                 icon: 'archive',
                 type: "primary",
@@ -151,7 +150,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
                     that.onDownloadCompressed([item]);
                 }
             });
-            if (ctx.folder && folderWritable && kloudspeaker.session.plugins.Archiver.actions.compress) actions.push({
+            if (ctx.folder && folderWritable && s.plugins.Archiver.actions.compress) actions.push({
                 "title-key": "pluginArchiverCompress",
                 icon: 'archive',
                 callback: function() {
@@ -164,14 +163,15 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
         },
         itemCollectionHandler: function(items, ctx) {
             var actions = [];
-            if (kloudspeaker.session.plugins.Archiver.actions.compress) actions.push({
+            var s = session.get();
+            if (s.plugins.Archiver.actions.compress) actions.push({
                 "title-key": "pluginArchiverCompress",
                 icon: 'archive',
                 callback: function() {
                     return that.onCompress(items)
                 }
             });
-            if (kloudspeaker.session.plugins.Archiver.actions.download) actions.push({
+            if (s.plugins.Archiver.actions.download) actions.push({
                 "title-key": "pluginArchiverDownloadCompressed",
                 icon: 'archive',
                 type: "primary",
