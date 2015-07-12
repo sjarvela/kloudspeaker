@@ -382,36 +382,34 @@ define([], function() {
 
             require(['kloudspeaker/platform', 'kloudspeaker/session', 'kloudspeaker/filesystem', 'kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/request', 'kloudspeaker/ui', 'kloudspeaker/localization', 'kloudspeaker/plugins', 'kloudspeaker/permissions', 'kloudspeaker/utils'], function(platform, session, fs, service, events, request, ui, loc, plugins, permissions, utils) {
                 var app = createApp(settings, session, fs, service, events, request, ui, plugins, utils);
-                //define('kloudspeaker/app', [], app);
                 define('kloudspeaker/instance', [], app);
                 kloudspeaker.App = app; //TODO remove
-                
-                platform.setup();
-                service.setup();
-                loc.setup();
-                plugins.setup();
-                permissions.setup();
-                fs.setup();
-                fs.mobile = app.mobile; //TODO move somewhere?
 
-                require(['kloudspeaker/ui/dialogs', 'kloudspeaker/ui/controls', 'kloudspeaker/templates', 'kloudspeaker/features', 'kloudspeaker/dom'], function(dialogs, controls, templates, features, dom) {
-                    //init circular dependencies
-                    //TODO rethink modules, should not have circular dependencies
-                    controls.init(app);
-                    dialogs.init(app);
+                require(['kloudspeaker/instance', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/controls'], function(appInstance, dialogs, controls) {
+                    //TODO are these all needed?
+                    platform.setup();
+                    service.setup();
+                    loc.setup();
+                    plugins.setup();
+                    permissions.setup();
+                    fs.setup();
+                    controls.setup();
+                    dialogs.setup();
 
-                    kloudspeaker.helpers = utils; //remove when global "kloudspeaker" not needed
-                    kloudspeaker.ui = ui; //remove when global "kloudspeaker" not needed
-                    kloudspeaker.plugins = plugins; //remove when global "kloudspeaker" not needed
-                    kloudspeaker.request = request; //remove when global "kloudspeaker" not needed
-                    kloudspeaker.events = events; //remove when global "kloudspeaker" not needed
-                    kloudspeaker.service = service; //remove when global "kloudspeaker" not needed
-                    kloudspeaker.filesystem = fs; //remove when global "kloudspeaker" not needed
-                    kloudspeaker.templates = templates; //remove when global "kloudspeaker" not needed
-                    kloudspeaker.features = features; //remove when global "kloudspeaker" not needed
-                    kloudspeaker.dom = dom; //remove when global "kloudspeaker" not needed
+                    require(['kloudspeaker/templates', 'kloudspeaker/features', 'kloudspeaker/dom'], function(templates, features, dom) {
+                        kloudspeaker.helpers = utils; //remove when global "kloudspeaker" not needed
+                        kloudspeaker.ui = ui; //remove when global "kloudspeaker" not needed
+                        kloudspeaker.plugins = plugins; //remove when global "kloudspeaker" not needed
+                        kloudspeaker.request = request; //remove when global "kloudspeaker" not needed
+                        kloudspeaker.events = events; //remove when global "kloudspeaker" not needed
+                        kloudspeaker.service = service; //remove when global "kloudspeaker" not needed
+                        kloudspeaker.filesystem = fs; //remove when global "kloudspeaker" not needed
+                        kloudspeaker.templates = templates; //remove when global "kloudspeaker" not needed
+                        kloudspeaker.features = features; //remove when global "kloudspeaker" not needed
+                        kloudspeaker.dom = dom; //remove when global "kloudspeaker" not needed
 
-                    app.init(p).done(df.resolve).fail(df.reject);
+                        app.init(p).done(df.resolve).fail(df.reject);
+                    });
                 });
             });
 

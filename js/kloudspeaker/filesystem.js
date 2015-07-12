@@ -1,9 +1,10 @@
 define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/permissions', 'kloudspeaker/service', 'kloudspeaker/utils', 'kloudspeaker/ui/dialogs', 'kloudspeaker/localization', 'kloudspeaker/ui'], function(plugins, events, permissions, service, utils, dialogs, loc, ui) {
     var mfs = {
-        mobile: false   //TODO move somewhere?
+        
     };
 
     var session = null;
+    var mobile = false;   //TODO move somewhere?
 
     events.addEventHandler(function(e) {
         if (e.type == 'session/start' || e.type == 'session/end') {
@@ -22,6 +23,8 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/permissions
 
     mfs.setup = function() {
         session = require('kloudspeaker/session');
+        var app =  require('kloudspeaker/instance');
+        mobile = app.mobile;    //TODO remove
     };
 
     mfs.updateRoots = function(f, allRoots) {

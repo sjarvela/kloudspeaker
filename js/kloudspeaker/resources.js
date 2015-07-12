@@ -11,7 +11,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils'], function(settings, utils
             if (mapped === false) return false;
 
             return mapped + urlParts.paramsString;
-        };
+        }
     };
 
     return resources;

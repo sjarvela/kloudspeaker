@@ -44,8 +44,8 @@ define(['kloudspeaker/localization', 'kloudspeaker/dom', 'kloudspeaker/service',
     var controls = {
 
         //TODO remove
-        init: function(a) {
-            app = a;
+        setup: function(a) {
+            app = require('kloudspeaker/instance');
         },
 
         dropdown: function(a) {

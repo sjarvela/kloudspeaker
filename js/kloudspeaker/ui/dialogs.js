@@ -2,8 +2,9 @@ define(['kloudspeaker/session', 'kloudspeaker/filesystem', 'kloudspeaker/localiz
     var dh = {};
     var app = null; //TODO remove
 
-    dh.init = function(a) {
-        app = a;
+    dh.setup = function() {
+        //TODO remove
+        app = require('kloudspeaker/instance');
     }
 
     dh._dialogDefaults = {

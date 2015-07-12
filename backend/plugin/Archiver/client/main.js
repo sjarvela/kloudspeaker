@@ -1,4 +1,4 @@
-define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/permissions', 'kloudspeaker/localization', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui', 'kloudspeaker/utils'], function(settings, plugins, service, events, permissions, loc, dialogs, ui, utils) {
+define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/plugins', 'kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/permissions', 'kloudspeaker/localization', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui', 'kloudspeaker/utils'], function(settings, session, plugins, service, events, permissions, loc, dialogs, ui, utils) {
     var that = {};
 
     that.initialize = function() {};
