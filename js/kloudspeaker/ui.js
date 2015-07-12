@@ -3,19 +3,21 @@ define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins'
     var session = null; //TODO remove session (move data to params)
     var ui = {};
 
-    require(['kloudspeaker/ui/formatters', 'kloudspeaker/ui/parsers', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs'], function(formatters, parsers, controls, dialogs) {
-        ui.controls = controls; //TODO remove
-        ui.dialogs = dialogs; //TODO remove
-        ui.formatters = formatters; //TODO remove
-        ui.parsers = parsers; //TODO remove
-    });
-
     ui._activePopup = false;
 
-    ui.initialize = function(a, s) {
-        app = a;
-        session = s;
+    ui.setup = function() {
+        app = require('kloudspeaker/instance');
+        session = require('kloudspeaker/session');
 
+        require(['kloudspeaker/ui/formatters', 'kloudspeaker/ui/parsers', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs'], function(formatters, parsers, controls, dialogs) {
+            ui.controls = controls; //TODO remove
+            ui.dialogs = dialogs; //TODO remove
+            ui.formatters = formatters; //TODO remove
+            ui.parsers = parsers; //TODO remove
+        });
+    };
+
+    ui.initialize = function() {
         var list = [];
         list.push(ui.initializeLang());
 

@@ -1,9 +1,12 @@
-define(['kloudspeaker/settings', 'kloudspeaker/utils', 'kloudspeaker/ui', 'kloudspeaker/resources'], function(settings, utils, ui, resources) {
-    //TODO remove global references
-
+define(['kloudspeaker/settings', 'kloudspeaker/utils', 'kloudspeaker/resources'], function(settings, utils, resources) {
     var _hiddenInd = 0;
     var md = {};
+    var ui = null;  //TODO remove dependency for UI module
     md._hiddenLoaded = [];
+
+    md.setup = function() {
+        ui = require('kloudspeaker/ui');  //TODO remove dependency for UI module
+    };
 
     md.importScript = function(url) {
         var u = resources.url(url);

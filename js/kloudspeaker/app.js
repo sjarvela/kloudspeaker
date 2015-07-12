@@ -68,7 +68,7 @@ define([], function() {
                 }
             });
 
-            ui.initialize(app, session).done(function() {
+            ui.initialize().done(function() {
                 app.initModules();
                 var deps = ['kloudspeaker/ui/views/main', 'kloudspeaker/ui/views/login', 'kloudspeaker/plugins/core', 'kloudspeaker/plugins/permissions'];
                 if (settings.modules.load) deps = deps.concat(settings.modules.load);
@@ -395,8 +395,11 @@ define([], function() {
                     fs.setup();
                     controls.setup();
                     dialogs.setup();
+                    ui.setup();
 
                     require(['kloudspeaker/templates', 'kloudspeaker/features', 'kloudspeaker/dom'], function(templates, features, dom) {
+                        dom.setup();
+                        
                         kloudspeaker.helpers = utils; //remove when global "kloudspeaker" not needed
                         kloudspeaker.ui = ui; //remove when global "kloudspeaker" not needed
                         kloudspeaker.plugins = plugins; //remove when global "kloudspeaker" not needed
