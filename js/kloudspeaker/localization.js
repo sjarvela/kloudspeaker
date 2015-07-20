@@ -8,7 +8,7 @@ define(['kloudspeaker/resources', 'kloudspeaker/events'], function(resources, ev
 
     tt.locale = null;
     tt._dict = {};
-    tt._pluginTextsLoaded = [];
+    tt._plugins = [];
 
     tt.setup = function() {
         plugins = require('kloudspeaker/plugins');
@@ -36,9 +36,9 @@ define(['kloudspeaker/resources', 'kloudspeaker/events'], function(resources, ev
             app.getElement().addClass("lang-" + lang);
         }));*/
 
-        var pluginTextsLoaded = tt._pluginTextsLoaded;
-        if (pluginTextsLoaded) {
-            $.each(pluginTextsLoaded, function(i, id) {
+        var pluginsList = tt._plugins;
+        if (pluginsList) {
+            $.each(pluginsList, function(i, id) {
                 list.push(tt.loadPlugin(id, true));
             });
         }
@@ -61,19 +61,17 @@ define(['kloudspeaker/resources', 'kloudspeaker/events'], function(resources, ev
     tt.clear = function() {
         tt.locale = null;
         tt._dict = {};
-        tt._pluginTextsLoaded = [];
+        //tt._plugins = [];
     };
 
     tt.loadPlugin = function(pluginId, init) {
-        if (!init && tt._pluginTextsLoaded.indexOf(pluginId) >= 0) return $.Deferred().resolve();
-
-        if (!init && !tt.locale) {
-            tt._pluginTextsLoaded.push(pluginId);
-            return $.Deferred().resolve();
+        var registered = (tt._plugins.indexOf(pluginId) >= 0);
+        if (!registered) tt._plugins.push(pluginId);
+        if (!init) {
+            if (registered || !tt.locale) return $.Deferred().resolve();
         }
-        return tt._load(plugins.getLocalizationUrl(pluginId), $.Deferred()).done(function() {
-            tt._pluginTextsLoaded.push(pluginId);
-        });
+
+        return tt._load(plugins.getLocalizationUrl(pluginId), $.Deferred());
     };
 
     tt._load = function(u, df) {
