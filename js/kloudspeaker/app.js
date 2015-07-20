@@ -38,7 +38,7 @@ define([], function() {
         }
     };
 
-    var createApp = function(settings, session, fs, service, events, request, ui, plugins, utils) {
+    var createApp = function(settings, session, fs, service, events, request, ui, loc, plugins, utils) {
         var app = {
             _initDf: $.Deferred(),
             _initialized: false,
@@ -103,6 +103,7 @@ define([], function() {
 
         app._onSessionStart = function() {
             var s = session.get();
+            var lang = (s.user && s.user.lang) ? s.user.lang : (settings.language["default"] || 'en');
 
             var onError = function() {
                 //TODO rewrite
@@ -134,12 +135,14 @@ define([], function() {
 
                 df.done(function() {
                     plugins.load(s.plugins).done(function() {
-                        ui.initializeLang().done(app._doStart).fail(onError);
+                        loc.initialize(lang).done(app._doStart).fail(onError);
+                        //ui.initializeLang().done(app._doStart).fail(onError);
                     }).fail(onError);
                 });
                 app._modulesInitialized = true;
             } else {
-                ui.initializeLang().done(app._doStart).fail(onError);
+                loc.initialize(lang).done(app._doStart).fail(onError);
+                //ui.initializeLang().done(app._doStart).fail(onError);
             }
         };
 
@@ -381,7 +384,7 @@ define([], function() {
             kloudspeaker.settings = settings; //TODO remove
 
             require(['kloudspeaker/platform', 'kloudspeaker/session', 'kloudspeaker/filesystem', 'kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/request', 'kloudspeaker/ui', 'kloudspeaker/localization', 'kloudspeaker/plugins', 'kloudspeaker/permissions', 'kloudspeaker/utils'], function(platform, session, fs, service, events, request, ui, loc, plugins, permissions, utils) {
-                var app = createApp(settings, session, fs, service, events, request, ui, plugins, utils);
+                var app = createApp(settings, session, fs, service, events, request, ui, loc, plugins, utils);
                 define('kloudspeaker/instance', [], app);
                 kloudspeaker.App = app; //TODO remove
 
@@ -399,7 +402,7 @@ define([], function() {
 
                     require(['kloudspeaker/templates', 'kloudspeaker/features', 'kloudspeaker/dom'], function(templates, features, dom) {
                         dom.setup();
-                        
+
                         kloudspeaker.helpers = utils; //remove when global "kloudspeaker" not needed
                         kloudspeaker.ui = ui; //remove when global "kloudspeaker" not needed
                         kloudspeaker.plugins = plugins; //remove when global "kloudspeaker" not needed

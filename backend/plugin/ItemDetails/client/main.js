@@ -1,4 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], function(app, settings, plugins) {
+define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localization', 'kloudspeaker/events', 'kloudspeaker/ui/formatters'], function(settings, plugins, loc, events, formatters) {
     //TODO remove reference to global "kloudspeaker"
 
     var that = {};
@@ -6,8 +6,6 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
     that.typeConfs = false;
 
     that.initialize = function() {
-        that.fileSizeFormatter = new kloudspeaker.ui.formatters.ByteSize(new kloudspeaker.ui.formatters.Number(2, false, kloudspeaker.ui.texts.get('decimalSeparator')));
-        that.timestampFormatter = new kloudspeaker.ui.formatters.Timestamp(kloudspeaker.ui.texts.get('shortDateTimeFormat'));
         /*if (sp) {
             for (var i=0; i<sp.length;i++)
                 that.addDetailsSpec(sp[i]);
@@ -28,6 +26,11 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                 }
             }
         }
+
+        events.on('localization/init', function() {
+            that.fileSizeFormatter = new formatters.ByteSize(new formatters.Number(2, false, loc.get('decimalSeparator')));
+            that.timestampFormatter = new formatters.Timestamp(loc.get('shortDateTimeFormat'));
+        });
     };
 
     /*this.addDetailsSpec = function(s) {

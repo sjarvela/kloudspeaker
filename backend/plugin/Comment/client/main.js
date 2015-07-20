@@ -1,10 +1,13 @@
-define(['kloudspeaker/session', 'kloudspeaker/plugins', 'kloudspeaker/service', 'kloudspeaker/permissions', 'kloudspeaker/localization', 'kloudspeaker/ui/formatters', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/templates', 'kloudspeaker/ui/controls'], function(session, plugins, service, permissions, loc, formatters, utils, dom, templates, controls) {
+define(['kloudspeaker/session', 'kloudspeaker/plugins', 'kloudspeaker/service', 'kloudspeaker/permissions', 'kloudspeaker/localization', 'kloudspeaker/ui/formatters', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/templates', 'kloudspeaker/ui/controls', 'kloudspeaker/events'], function(session, plugins, service, permissions, loc, formatters, utils, dom, templates, controls, events) {
     //TODO rewrite using viewmodel
     var that = {};
 
     that.initialize = function() {
-        that._timestampFormatter = new formatters.Timestamp(loc.get('shortDateTimeFormat'));
         dom.importCss(plugins.url("Comment", "style.css"));
+
+        events.on('localization/init', function() {
+            that._timestampFormatter = new formatters.Timestamp(loc.get('shortDateTimeFormat'));
+        });
     };
 
     that.getListCellContent = function(item, data) {

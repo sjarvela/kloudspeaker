@@ -1,4 +1,4 @@
-define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/templates', 'kloudspeaker/utils', 'kloudspeaker/dom'], function(platform, settings, plugins, templates, utils, dom) {
+define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/templates', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/localization'], function(platform, settings, plugins, templates, utils, dom, loc) {
     var app = null;
     var session = null; //TODO remove session (move data to params)
     var ui = {};
@@ -15,11 +15,14 @@ define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins'
             ui.formatters = formatters; //TODO remove
             ui.parsers = parsers; //TODO remove
         });
+
+        //TODO remove deprecated ui.texts
+        ui.texts = loc;
     };
 
     ui.initialize = function() {
         var list = [];
-        list.push(ui.initializeLang());
+        //list.push(ui.initializeLang());
 
         // add invisible download frame
         $("body").append('<div style="width: 0px; height: 0px; overflow: hidden;"><iframe id="kloudspeaker-download-frame" src=""></iframe></div>');
@@ -36,47 +39,7 @@ define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins'
         });
         list.push(templates.load("dialogs.html"));
 
-        //if (!ui.draganddrop) ui.draganddrop = (window.Modernizr.draganddrop) ? new kloudspeaker.HTML5DragAndDrop() : new kloudspeaker.JQueryDragAndDrop();
-        /*if (!ui.uploader) {
-            var Uploader = require("kloudspeaker/ui/uploader");
-            ui.uploader = new Uploader();
-        }*/
-        //if (!ui.clipboard) new kloudspeaker.ZeroClipboard(function(cb) {
-        //    ui.clipboard = cb;
-        //});
-
         var df = $.Deferred();
-        $.when.apply($, list).done(df.resolve).fail(df.reject);
-        return df;
-    };
-
-    ui.initializeLang = function() {
-        var df = $.Deferred();
-        var s = session.get(); //remove session reference, add lang param
-        var lang = (s.user && s.user.lang) ? s.user.lang : (settings.language["default"] || 'en');
-
-        //TODO remove global
-        if (!ui.texts) ui.texts = require('kloudspeaker/localization');
-
-        if (ui.texts.locale && ui.texts.locale == lang) return df.resolve();
-
-        var pluginTextsLoaded = ui.texts._pluginTextsLoaded;
-        if (ui.texts.locale) {
-            app.getElement().removeClass("lang-" + ui.texts.locale);
-            ui.texts.clear();
-        }
-
-        var list = [];
-        list.push(ui.texts.load(lang).done(function(locale) {
-            $("html").attr("lang", locale);
-            app.getElement().addClass("lang-" + locale);
-        }));
-
-        if (pluginTextsLoaded) {
-            $.each(pluginTextsLoaded, function(i, id) {
-                list.push(ui.texts.loadPlugin(id));
-            });
-        }
         $.when.apply($, list).done(df.resolve).fail(df.reject);
         return df;
     };

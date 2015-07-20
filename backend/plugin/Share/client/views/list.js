@@ -1,4 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/ui/texts', 'kloudspeaker/utils', 'knockout'], function(app, share, repository, texts, utils, ko) {
+define(['kloudspeaker/instance', 'kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/ui/texts', 'kloudspeaker/utils', 'knockout'], function(app, share, repository, texts, utils, ko) {
     return function() {
         var that = this;
         var model = {

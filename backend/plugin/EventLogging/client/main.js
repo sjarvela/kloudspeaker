@@ -1,4 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/plugins', 'kloudspeaker/session', 'kloudspeaker/ui/views', 'kloudspeaker/localization'], function(app, plugins, session, views, localization) {
+define(['kloudspeaker/plugins', 'kloudspeaker/ui/views', 'kloudspeaker/localization'], function(plugins, views, localization) {
     localization.registerPluginResource('EventLogging');
 
     views.registerConfigView({

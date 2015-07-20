@@ -1,8 +1,10 @@
-define(['kloudspeaker/resources'], function(resources) {
+define(['kloudspeaker/resources', 'kloudspeaker/events'], function(resources, events) {
     //TODO rewrite error views
 
     var tt = {};
     var plugins = null;
+    var app = null; //remove
+    var session = null; //remove
 
     tt.locale = null;
     tt._dict = {};
@@ -10,16 +12,51 @@ define(['kloudspeaker/resources'], function(resources) {
 
     tt.setup = function() {
         plugins = require('kloudspeaker/plugins');
+        app = require('kloudspeaker/instance');
+        session = require('kloudspeaker/session');
     };
 
-    tt.load = function(id) {
+    tt.initialize = function(lang) {
         var df = $.Deferred();
+        if (tt.locale && tt.locale == lang) return df.resolve();
+
         if (tt.locale) {
-            return df.resolve();
+            app.getElement().removeClass("lang-" + tt.locale);
+            tt.clear();
         }
 
-        return tt._load("localization/texts_" + (id || 'en') + ".json", df);
+        tt.locale = lang;
+        var list = [];
+        list.push(tt._load("localization/texts_" + lang + ".json", $.Deferred()).done(function() {
+            $("html").attr("lang", lang); //TODO move to UI?
+            app.getElement().addClass("lang-" + lang);
+        }));
+        /*list.push(tt.load(lang).done(function() {
+            $("html").attr("lang", lang); //TODO move to UI?
+            app.getElement().addClass("lang-" + lang);
+        }));*/
+
+        var pluginTextsLoaded = tt._pluginTextsLoaded;
+        if (pluginTextsLoaded) {
+            $.each(pluginTextsLoaded, function(i, id) {
+                list.push(tt.loadPlugin(id, true));
+            });
+        }
+        $.when.apply($, list).done(function() {
+            events.dispatch('localization/init', lang);
+            df.resolve();
+        }).fail(df.reject);
+        return df;
     };
+
+    /*tt.load = function(id) {
+        var df = $.Deferred();
+        //if (tt.locale) {
+        //    return df.resolve();
+        //}
+
+        return tt._load("localization/texts_" + (id || 'en') + ".json", df);
+    };*/
 
     tt.clear = function() {
         tt.locale = null;
@@ -27,9 +64,13 @@ define(['kloudspeaker/resources'], function(resources) {
         tt._pluginTextsLoaded = [];
     };
 
-    tt.loadPlugin = function(pluginId) {
-        if (tt._pluginTextsLoaded.indexOf(pluginId) >= 0) return $.Deferred().resolve();
+    tt.loadPlugin = function(pluginId, init) {
+        if (!init && tt._pluginTextsLoaded.indexOf(pluginId) >= 0) return $.Deferred().resolve();
 
+        if (!init && !tt.locale) {
+            tt._pluginTextsLoaded.push(pluginId);
+            return $.Deferred().resolve();
+        }
         return tt._load(plugins.getLocalizationUrl(pluginId), $.Deferred()).done(function() {
             tt._pluginTextsLoaded.push(pluginId);
         });

@@ -4,6 +4,10 @@ define([], function() {
     et._handlerTypes = {};
     et._handlersById = {};
 
+    et.on = function(t, h, id) {
+        et.addEventHandler(h, t, id);
+    };
+
     et.addEventHandler = function(h, t, id) {
         if (et._handlers.indexOf(h) >= 0) return;
         et._handlers.push(h);
