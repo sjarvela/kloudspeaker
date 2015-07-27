@@ -1,4 +1,4 @@
-define(['durandal/composition', 'knockout', 'jquery', 'kloudspeaker/ui/texts'], function(composition, ko, $, texts) {
+define(['durandal/composition', 'knockout', 'jquery', 'kloudspeaker/localization', 'kloudspeaker/ui/controls'], function(composition, ko, $, loc, controls) {
     var ctor = function() {};
     ctor.prototype.activate = function(settings) {
         this.settings = settings;
@@ -8,8 +8,8 @@ define(['durandal/composition', 'knockout', 'jquery', 'kloudspeaker/ui/texts'], 
         var $e = $(e);
         var $input = $e.find("input");
 
-        that.api = kloudspeaker.ui.controls.datepicker($e, {
-            format: texts.get('shortDateTimeFormat'),
+        that.api = controls.datepicker($e, {
+            format: loc.get('shortDateTimeFormat'),
             time: true,
             value: that.settings.value()
         });

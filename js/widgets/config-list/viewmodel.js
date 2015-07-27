@@ -1,4 +1,4 @@
-define(['kloudspeaker/ui/texts', 'kloudspeaker/utils', 'durandal/composition', 'knockout', 'jquery'], function(texts, utils, composition, ko, $) {
+define(['kloudspeaker/localization', 'kloudspeaker/utils', 'durandal/composition', 'knockout', 'jquery'], function(texts, utils, composition, ko, $) {
     var ctor = function() {};
 
     ctor.prototype.activate = function(settings) {

@@ -260,6 +260,7 @@
     var df = $.Deferred();
 
     //TODO remove global kloudspeaker
+    //TODO warn deprecated "kloudspeaker.App.init"
     var kloudspeaker = {
         App: {
             init: function(s, p) {
@@ -281,7 +282,6 @@
     window.kloudspeaker = kloudspeaker;
 
     require(['kloudspeaker/app'], function(app) {
-        //bs.start()
         df.resolve(app);
     });
 }(window.jQuery);

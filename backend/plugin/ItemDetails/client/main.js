@@ -10,7 +10,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
             for (var i=0; i<sp.length;i++)
                 that.addDetailsSpec(sp[i]);
         }*/
-        var conf = settings.plugins.itemdetails;
+        var conf = (settings.plugins && settings.plugins.itemdetails) ? settings.plugins.itemdetails : false;
         if (!conf) conf = kloudspeaker.plugin.conf.itemdetails; //legacy
 
         if (conf) {

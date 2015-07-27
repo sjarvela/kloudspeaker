@@ -74,14 +74,14 @@ module.exports = function(grunt) {
             },
             kloudspeaker: {
                 src: [
-                    'js/init.js',
-                    'js/ui.js',
-                    'js/loginview.js',
-                    'js/mainview.js',
-                    'js/plugins.js',
-                    'js/configview.js',
-                    'js/uploader.js',
                     'js/lib/require.js',
+                    'js/init.js',
+                    //'js/ui.js',
+                    //'js/loginview.js',
+                    //'js/mainview.js',
+                    'js/plugins.js',
+                    //'js/configview.js',
+                    //'js/uploader.js',
                     'js/module-config.js',
                     'out/modules.js',
                 ],
@@ -187,10 +187,12 @@ module.exports = function(grunt) {
                     baseUrl: "js",
                     //mainConfigFile: "path/to/config.js",
                     include: ['text',
-                        'durandal/system', 'durandal/viewlocator', 'durandal/plugins/widget', 'durandal/composition',   //durandal
-                        'widgets/time-picker/viewmodel', 'text!widgets/time-picker/view.html', 'widgets/config-list/viewmodel', 'text!widgets/config-list/view.html',   //widgets
+                        'durandal/system', 'durandal/viewlocator', 'durandal/plugins/widget', 'durandal/composition', //durandal
+                        'kloudspeaker/app', 'kloudspeaker/request', 'kloudspeaker/session', 'kloudspeaker/filesystem', 'kloudspeaker/events', 'kloudspeaker/service', 'kloudspeaker/plugins', 'kloudspeaker/features', //ks
+                        'kloudspeaker/ui/parsers', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/views/login', 'kloudspeaker/ui/views/main',
+                        'widgets/time-picker/viewmodel', 'text!widgets/time-picker/view.html', 'widgets/config-list/viewmodel', 'text!widgets/config-list/view.html', //widgets
                         'kloudspeaker/config/system', 'kloudspeaker/config/user/addedit',
-                        'kloudspeaker/ui/dropbox', //kloudspeaker plugins
+                        'kloudspeaker/ui/uploader', 'kloudspeaker/ui/dropbox', 'kloudspeaker/ui/clipboard', 'kloudspeaker/plugins/core', 'kloudspeaker/plugins/permissions' //kloudspeaker plugins
                     ],
                     out: "out/modules.js",
                     paths: {
@@ -198,26 +200,29 @@ module.exports = function(grunt) {
                         'knockout': 'empty:',
                         'durandal': 'durandal/js/',
                         'text': 'requirejs-text/text',
-                        'kloudspeaker/app': 'empty:',
+                        'kloudspeaker/instance': 'empty:',
                         'kloudspeaker/settings': 'empty:',
-                        'kloudspeaker/session': 'empty:',
-                        'kloudspeaker/filesystem': 'empty:',
-                        'kloudspeaker/events': 'empty:',
-                        'kloudspeaker/request': 'empty:',
-                        'kloudspeaker/service': 'empty:',
-                        'kloudspeaker/plugins': 'empty:',
-                        'kloudspeaker/features': 'empty:',
-                        'kloudspeaker/dom': 'empty:',
-                        'kloudspeaker/utils': 'empty:',
+                        //'kloudspeaker/session': 'empty:',
+                        //'kloudspeaker/filesystem': 'empty:',
+                        //'kloudspeaker/events': 'empty:',
+                        //'kloudspeaker/request': 'empty:',
+                        //'kloudspeaker/service': 'empty:',
+                        //'kloudspeaker/plugins': 'empty:',
+                        //'kloudspeaker/features': 'empty:',
+                        //'kloudspeaker/dom': 'empty:',
+                        //'kloudspeaker/utils': 'empty:',
                         'kloudspeaker/ui/texts': 'empty:',
-                        'kloudspeaker/ui/formatters': 'empty:',
-                        'kloudspeaker/ui/controls': 'empty:',
-                        'kloudspeaker/ui/dialogs': 'empty:',
-                        'kloudspeaker/ui': 'empty:',
-                        'kloudspeaker/ui/dropbox' : 'kloudspeaker/ui/dropbox',   //override "empty" ui
-                        'kloudspeaker/ui/dnd': 'empty:',
-                        'kloudspeaker/ui/uploader': 'empty:',
-                        'kloudspeaker/ui/clipboard': 'empty:'
+                        'kloudspeaker/ui/views': 'empty:',
+                        'kloudspeaker/ui/views/login': 'kloudspeaker/ui/views/login',   //override
+                        'kloudspeaker/ui/views/main': 'kloudspeaker/ui/views/main',   //override
+                        //'kloudspeaker/ui/formatters': 'empty:',
+                        //'kloudspeaker/ui/controls': 'empty:',
+                        //'kloudspeaker/ui/dialogs': 'empty:',
+                        //'kloudspeaker/ui': 'empty:',
+                        //'kloudspeaker/ui/dropbox' : 'kloudspeaker/ui/dropbox',   //override "empty" ui
+                        //'kloudspeaker/ui/dnd': 'empty:',
+                        //'kloudspeaker/ui/uploader': 'empty:',
+                        //'kloudspeaker/ui/clipboard': 'empty:'
                     }
                 }
             }
