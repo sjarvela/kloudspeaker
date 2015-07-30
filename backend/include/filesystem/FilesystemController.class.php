@@ -400,6 +400,8 @@ class FilesystemController {
 	}
 
 	private function hasItemRights($item, $required) {
+		if ($this->allowFilesystems and ($required == self::PERMISSION_LEVEL_READ or $required == self::PERMISSION_LEVEL_READWRITE)) return TRUE;
+
 		if (!$this->env->authentication()->isAdmin()) {
 			// if not admin, folder must be assigned
 			if (!$item->filesystem()->allowUnassigned() and !in_array($item->filesystem()->id(), $this->getUserFilesystemIds())) return FALSE;
