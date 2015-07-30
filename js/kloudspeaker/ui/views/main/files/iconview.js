@@ -32,7 +32,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/service', 'kloudspeaker/ui/dnd', 
                 },
                 typeClass: function(item) {
                     var c = item.is_file ? 'item-file' : 'item-folder';
-                    if (item.is_file && item.extension) c += ' item-type-' + item.extension;
+                    if (item.is_file && item.extension) c += ' item-type-' + item.extension.toLowerCase();
                     else if (!item.is_file && item.id == item.root_id) c += ' item-root-folder';
                     return c;
                 }
