@@ -2,6 +2,10 @@ define(['kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/utils'], fu
     //TODO remove global session
 
     var session = false;
+    var reset = function() {
+        events.dispatch('session/end');
+        init();
+    }
     var init = function() {
         service.get("session/info/").fail(function() {
             //TODO rewrite
@@ -50,14 +54,15 @@ define(['kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/utils'], fu
                 onStart(s);
             });
         },
-        end: function() {
+        end: function(dontSend) {
             session = false;
             kloudspeaker.session = false; //TODO remove
 
-            return service.post("session/logout").done(function(s) {
-                events.dispatch('session/end');
-                init();
-            });
+            if (!dontSend)
+                return service.post("session/logout").done(function(s) {
+                    reset();
+                });
+            reset();
         },
         get: function() {
             return session;

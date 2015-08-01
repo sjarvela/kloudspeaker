@@ -95,7 +95,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/events', 'kloudspeaker/localizati
                 }
                 
                 if (error.code == 100 && s.user) {
-                    events.dispatch('session/end');
+                    session.end(true);
                     failContext.handled = true;
                 }
                 // push default handler to end of callback list

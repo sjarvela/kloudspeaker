@@ -64,7 +64,7 @@ define([], function() {
                 if (e.type == 'session/start') {
                     app._onSessionStart();
                 } else if (e.type == 'session/end') {
-                    //start();
+                    // nothing to do, session will start unauthenticated
                 }
             });
 
@@ -136,13 +136,11 @@ define([], function() {
                 df.done(function() {
                     plugins.load(s.plugins).done(function() {
                         loc.initialize(lang).done(app._doStart).fail(onError);
-                        //ui.initializeLang().done(app._doStart).fail(onError);
                     }).fail(onError);
                 });
                 app._modulesInitialized = true;
             } else {
                 loc.initialize(lang).done(app._doStart).fail(onError);
-                //ui.initializeLang().done(app._doStart).fail(onError);
             }
         };
 
@@ -276,12 +274,12 @@ define([], function() {
             app._views[id] = h;
         };
 
-        app.openPage = function(pageUrl) {
-            window.location = app.getPageUrl(pageUrl);
+        app.openPage = function(p) {
+            window.location = app.getPageUrl(p);
         };
 
-        app.getPageUrl = function(pageUrl) {
-            return app.pageUrl + "?v=" + pageUrl;
+        app.getPageUrl = function(p) {
+            return app.pageUrl + "?v=" + p;
         };
 
         app.initModules = function() {
