@@ -1,4 +1,5 @@
-define(['kloudspeaker/app'], function(app) {
+define(['kloudspeaker/settings', 'kloudspeaker/dom', 'kloudspeaker/ui', 'kloudspeaker/templates'], function(settings, dom, ui, templates) {
+	//TODO make widget etc
     var t = {};
 
     // prevent default file drag&drop		
@@ -49,7 +50,7 @@ define(['kloudspeaker/app'], function(app) {
 		};*/
 
     t._getUploaderSettings = function() {
-        return kloudspeaker.settings["html5-uploader"] || {};
+        return settings["html5-uploader"] || {};
     };
 
     t._initDropZoneEffects = function($e) {
@@ -76,8 +77,8 @@ define(['kloudspeaker/app'], function(app) {
     };
 
     t.initWidget = function($e, o) {
-        var $d = kloudspeaker.dom.template("kloudspeaker-tmpl-uploader-widget").appendTo($e);
-        kloudspeaker.ui.handlers.localize($e);
+        var $d = dom.template("kloudspeaker-tmpl-uploader-widget").appendTo($e);
+        ui.handlers.localize($e);
         var $dropZone = o.dropElement || $e;
         var started = false;
         var rejected = false;
@@ -164,7 +165,7 @@ define(['kloudspeaker/app'], function(app) {
 
     return {
         initUploadWidget: function($e, o) {
-            kloudspeaker.templates.load("kloudspeaker-uploader", kloudspeaker.templates.url("uploader.html")).done(function() {
+            templates.load("kloudspeaker-uploader", templates.url("uploader.html")).done(function() {
                 t.initWidget($e, o);
             });
         },
