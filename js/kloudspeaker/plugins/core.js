@@ -23,10 +23,10 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/permissio
         id: "plugin-core",
         itemContextHandler: function(item, ctx, data) {
             var root = (item.id == item.root_id);
-            var writable = permissions.hasFilesystemPermission(item, "filesystem_item_access", "rw");
+            var writable = permissions.hasFilesystemPermission(item, "filesystem_item_access", "rw", true);
             var movable = writable && !root;
-            var deletable = !root && permissions.hasFilesystemPermission(item, "filesystem_item_access", "rwd");
-            var parentWritable = !root && permissions.hasFilesystemPermission(item.parent_id, "filesystem_item_access", "rw");
+            var deletable = !root && permissions.hasFilesystemPermission(item, "filesystem_item_access", "rwd", true);
+            var parentWritable = !root && permissions.hasFilesystemPermission(item.parent_id, "filesystem_item_access", "rw", true);
 
             var actions = [];
             if (item.is_file) {

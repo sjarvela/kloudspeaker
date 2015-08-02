@@ -195,16 +195,20 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/share/rep
                 dataRequest: 'plugin-share/item-info',
 
                 "on-click": function(item, data) {
-                    if (!permissions.hasFilesystemPermission(item, "share_item")) return false;
-                    
-                    var itemData = getDataObj(data, item);
-                    if (itemData === false) return;
+                    var that = this;
 
-                    this.showBubble({
-                        model: ['kloudspeaker/share/views/list', {
-                            item: item
-                        }],
-                        title: item.name
+                    permissions.hasFilesystemPermission(item, "share_item").done(function(hp) {
+                        if (!hp) return;
+
+                        var itemData = getDataObj(data, item);
+                        if (itemData === false) return;
+
+                        that.showBubble({
+                            model: ['kloudspeaker/share/views/list', {
+                                item: item
+                            }],
+                            title: item.name
+                        });
                     });
                 }
             }];

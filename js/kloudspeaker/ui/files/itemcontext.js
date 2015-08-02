@@ -92,7 +92,7 @@ define(['kloudspeaker/filesystem', 'kloudspeaker/plugins', 'kloudspeaker/service
 
         ict.renderItemContext = function(cApi, $e, item, ctx) {
             var df = features.hasFeature("descriptions");
-            var dp = permissions.hasFilesystemPermission(item, "edit_description");
+            var dp = permissions.hasFilesystemPermission(item, "edit_description", null, true);
             var descriptionEditable = df && dp;
             var showDescription = descriptionEditable || !!ctx.details.metadata.description;
 

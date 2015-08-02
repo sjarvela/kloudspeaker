@@ -430,7 +430,6 @@ class Kloudspeaker_PermissionsController {
 
 		$types = $this->getTypes();
 		$t = array(
-
 			"keys" => array(
 				"generic" => array_keys($types["generic"]),
 				"filesystem" => array_keys($types["filesystem"]),

@@ -638,7 +638,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/localiza
         };
 
         that._canWrite = function() {
-            return permissions.hasFilesystemPermission(that._currentFolder, "filesystem_item_access", "rw");
+            return permissions.hasFilesystemPermission(that._currentFolder, "filesystem_item_access", "rw", true);
         }
 
         that.onRetrieveUrl = function(url) {
@@ -852,7 +852,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/localiza
                 $("#kloudspeaker-folder-description").text(that._currentFolderData.data['parent-metadata'].description);
 
             var $dsc = $("#kloudspeaker-folder-description");
-            var descriptionEditable = that._currentFolder && !that._currentFolder.type && $dsc.length > 0 && features.hasFeature('descriptions') && permissions.hasFilesystemPermission(that._currentFolder, "edit_description");
+            var descriptionEditable = that._currentFolder && !that._currentFolder.type && $dsc.length > 0 && features.hasFeature('descriptions') && permissions.hasFilesystemPermission(that._currentFolder, "edit_description", null, true);
             if (descriptionEditable) {
                 controls.editableLabel({
                     element: $dsc,
@@ -1075,7 +1075,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/localiza
                 viewport: that.itemWidget.getContainerElement(),
                 container: $("#kloudspeaker-folderview-items"),
                 folder: that._currentFolder,
-                folder_writable: that._currentFolder ? permissions.hasFilesystemPermission(that._currentFolder, "filesystem_item_access", "rw") : false
+                folder_writable: that._currentFolder ? permissions.hasFilesystemPermission(that._currentFolder, "filesystem_item_access", "rw", true) : false
             };
         }
 
@@ -1226,7 +1226,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/localiza
                     fileview: that,
                     details: d,
                     folder: that._currentFolder,
-                    folder_writable: that._currentFolder ? permissions.hasFilesystemPermission(that._currentFolder, "filesystem_item_access", "rw") : false
+                    folder_writable: that._currentFolder ? permissions.hasFilesystemPermission(that._currentFolder, "filesystem_item_access", "rw", true) : false
                 };
                 cb(utils.cleanupActions(utils.getPluginActions(plugins.getItemContextPlugins(item, ctx))));
             });

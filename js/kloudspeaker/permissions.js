@@ -1,4 +1,4 @@
-define(['kloudspeaker/utils', 'kloudspeaker/events'], function(utils, events) {
+define(['kloudspeaker/utils', 'kloudspeaker/events', 'kloudspeaker/service'], function(utils, events, service) {
     var _types = null;
     var _filesystemPermissions = {};
     var _permissions = {};
@@ -51,14 +51,38 @@ define(['kloudspeaker/utils', 'kloudspeaker/events'], function(utils, events) {
             if (!_filesystemPermissions[id]) _filesystemPermissions[id] = {};
             updatePermissions(_filesystemPermissions[id], permissions);
         },
-        hasFilesystemPermission: function(item, name, required) {
-            if (_types.keys.all.indexOf(name) < 0) return false;
-
-            var user = session.get().user;
-            if (!user) return false;
+        hasFilesystemPermission: function(item, name, required, dontFetch) {
+            var df = $.Deferred();
+            if (_types.keys.all.indexOf(name) < 0) {
+                if (dontFetch) return false;
+                return df.resolve(false);
+            }
             
-            if (user.admin) return true;
-            return hasPermission(_filesystemPermissions[((typeof(item) === "string") ? item : item.id)], name, required);
+            var user = session.get().user;
+            if (!user) {
+                if (dontFetch) return false;
+                return df.resolve(false);
+            }
+
+            if (user.admin) {
+                if (dontFetch) return true;
+                return df.resolve(true);
+            }
+            var itemId = ((typeof(item) === "string") ? item : item.id);
+            var list = _filesystemPermissions[itemId];
+            if (!list) {
+                if (dontFetch) throw "Cannot resolve permission, permissions not fetched";
+
+                service.get('permissions/items/' + itemId).done(function(p) {
+                    _filesystemPermissions[itemId] = p;
+                    df.resolve(hasPermission(p, name, required));
+                });
+            } else {
+                var p = hasPermission(list, name, required);
+                if (dontFetch) return p;
+                df.resolve(p);
+            }
+            return df;
         },
         hasPermission: function(name, required) {
             if (_types.keys.all.indexOf(name) < 0) return false;

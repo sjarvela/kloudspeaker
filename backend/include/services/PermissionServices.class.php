@@ -19,11 +19,13 @@ class PermissionServices extends ServicesBase {
 	}
 
 	protected function isAdminRequired() {
-		return TRUE;
+		return FALSE;
 	}
 
 	public function processGet() {
 		if ($this->path[0] === 'types') {
+			$this->env->authentication()->assertAdmin();
+
 			$result = array("types" => $this->env->permissions()->getTypes());
 
 			$users = ($this->env->request()->hasParam("u") and strcmp($this->env->request()->param("u"), "1") == 0);
@@ -33,7 +35,15 @@ class PermissionServices extends ServicesBase {
 
 			$this->response()->success($result);
 			return;
+		} else if ($this->path[0] === 'items') {
+			if (count($this->path) != 2) throw $this->invalidRequestException();
+
+			$item = $this->item($this->path[1]);
+			$this->response()->success($this->env->permissions()->getAllFilesystemPermissions($item));
+			return;
 		} else if ($this->path[0] === 'list') {
+			$this->env->authentication()->assertAdmin();
+
 			$data = $this->request->data;
 			$name = $this->env->request()->hasParam("name") ? $this->env->request()->param("name") : NULL;
 			$subject = $this->env->request()->hasParam("subject") ? $this->env->request()->param("subject") : NULL;
@@ -55,6 +65,8 @@ class PermissionServices extends ServicesBase {
 			$this->response()->success($result);
 			return;
 		} else if ($this->path[0] === 'user' and count($this->path) >= 2) {
+			$this->env->authentication()->assertAdmin();
+
 			$userId = $this->path[1];
 			$subject = $this->env->request()->hasParam("subject") ? $this->env->request()->param("subject") : NULL;
 
@@ -87,6 +99,8 @@ class PermissionServices extends ServicesBase {
 	}
 
 	public function processPut() {
+		$this->env->authentication()->assertAdmin();
+
 		if ($this->path[0] === 'list') {
 			$this->response()->success($this->env->permissions()->updatePermissions($this->request->data));
 			return;
@@ -95,6 +109,8 @@ class PermissionServices extends ServicesBase {
 	}
 
 	public function processDelete() {
+		$this->env->authentication()->assertAdmin();
+
 		if ($this->path[0] === 'list') {
 			if (!isset($this->request->data["list"]) or !is_array($this->request->data["list"])) {
 				throw $this->invalidRequestException();
@@ -109,6 +125,8 @@ class PermissionServices extends ServicesBase {
 	}
 
 	public function processPost() {
+		$this->env->authentication()->assertAdmin();
+
 		if ($this->path[0] === 'query') {
 			$this->response()->success($this->env->permissions()->processQuery($this->request->data));
 			return;
