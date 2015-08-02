@@ -1,4 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/share/repository', 'kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/texts', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/permissions'], function(app, settings, plugins, repository, service, fs, views, formatters, dialogs, texts, utils, dom, permissions) {
+define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/share/repository', 'kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/texts', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/permissions'], function(settings, plugins, repository, service, fs, views, formatters, dialogs, texts, utils, dom, permissions) {
     var that = {};
 
     that._timestampFormatter = new formatters.Timestamp(texts.get('shortDateTimeFormat'));
@@ -95,6 +95,13 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
         if (!d || !d["plugin-share/item-info"]) return false;
         return d["plugin-share/item-info"][item.id];
     };
+    var createDataWithOwn = function(d, item, own) {
+        if (!item || !item.id || item.id.length === 0 || !d) return false;
+        if (!d["plugin-share/item-info"]) d["plugin-share/item-info"] = {};
+        if (!d["plugin-share/item-info"][item.id])
+            d["plugin-share/item-info"][item.id] = {};
+        d["plugin-share/item-info"][item.id].own = own;
+    };
 
     that.onAddShare = function(item) {
         return dialogs.custom({
@@ -107,10 +114,12 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
             var fv = views.getActiveFileView();
             if (fv) fv.updateData(function(d) {
                 var itemData = getDataObj(d, item);
-                if (!itemData) return;
-
-                if (typeof(itemData.own) === 'string') itemData.own = (parseInt(itemData.own, 10));
-                itemData.own += 1;  // add one
+                if (!itemData)
+                    createDataWithOwn(d, item, 1);
+                else {
+                    if (typeof(itemData.own) === 'string') itemData.own = (parseInt(itemData.own, 10));
+                    itemData.own += 1; // add one
+                }
 
                 // refresh this item
                 return [item];
@@ -136,7 +145,11 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
                 if (!itemData) return;
 
                 if (typeof(itemData.own) === 'string') itemData.own = (parseInt(itemData.own, 10));
-                itemData.own -= 1;  // reduce one
+                itemData.own -= 1; // reduce one
+
+                if (typeof(itemData.other) === 'string') itemData.other = (parseInt(itemData.other, 10));
+                // if last was removed, remove data obj
+                if (itemData.own <= 0 && !itemData.other) d["plugin-share/item-info"][item.id] = false;
 
                 // refresh that item
                 return [item];
@@ -182,6 +195,8 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
                 dataRequest: 'plugin-share/item-info',
 
                 "on-click": function(item, data) {
+                    if (!permissions.hasFilesystemPermission(item, "share_item")) return false;
+                    
                     var itemData = getDataObj(data, item);
                     if (itemData === false) return;
 
