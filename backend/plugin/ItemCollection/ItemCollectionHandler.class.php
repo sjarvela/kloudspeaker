@@ -152,7 +152,8 @@ class ItemCollectionHandler {
 				$this->dao()->deleteCollectionItems($item);
 			}
 		} else if (strcmp(UserEvent::EVENT_TYPE_USER, $type) == 0 and $subType === UserEvent::USER_REMOVE) {
-			$ids = $this->dao()->deleteUserItemCollections($e->id());
+			$userId = $e->id();
+			$ids = $this->dao()->deleteUserItemCollections($userId);
 			if ($this->env->plugins()->hasPlugin("Share") and count($ids) > 0) {
 				foreach ($ids as $id) {
 					$this->env->plugins()->getPlugin("Share")->deleteSharesForItem("ic_" . $id);

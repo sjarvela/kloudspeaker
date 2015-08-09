@@ -44,8 +44,12 @@ class Share extends PluginBase {
 		$this->handler->registerHandler($type, $handler);
 	}
 
-	public function deleteSharesForItem($itemId) {
-		$this->handler->deleteSharesForItem($itemId);
+	public function deleteSharesForItem($item) {
+		$this->handler->deleteSharesForItem($item);
+	}
+
+	public function deleteUserSharesForItem($item, $userId = NULL) {
+		$this->handler->deleteUserSharesForItemId($item, $userId);
 	}
 
 	public function getHandler() {

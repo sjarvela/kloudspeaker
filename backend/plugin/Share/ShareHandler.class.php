@@ -199,8 +199,16 @@ class ShareHandler {
 		$this->dao()->deleteSharesById($ids);
 	}
 
-	public function deleteSharesForItem($itemId) {
-		$this->dao()->deleteSharesForItem($itemId);
+	public function deleteSharesForItem($item) {
+		if (is_object($item)) $this->dao()->deleteShares($item);
+		else $this->dao()->deleteSharesForItemId($item);
+	}
+
+	public function deleteUserSharesForItem($item, $userId = NULL) {
+		$id = (is_object($item)) ? $item->id() : $item;
+		$uid = $userId;
+		if ($uid === NULL) $uid = $this->env->session()->userId();
+		$this->dao()->deleteSharesForItemId($id, $uid);
 	}
 
 	public function getPublicShareInfo($id) {

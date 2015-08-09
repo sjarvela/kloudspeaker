@@ -124,7 +124,7 @@ class ShareServices extends ServicesBase {
 			}
 
 			$id = $this->path[1];
-			$this->handler()->deleteSharesForItem($id);
+			$this->handler()->deleteUserSharesForItem($id);
 			$this->response()->success(array());
 		} else if ($this->path[0] == "list") {
 			if (count($this->path) != 1) {

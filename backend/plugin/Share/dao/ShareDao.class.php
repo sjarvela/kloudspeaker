@@ -264,11 +264,13 @@ class ShareDao {
 		return $success;
 	}
 
-	public function deleteSharesForItem($itemId) {
+	public function deleteSharesForItemId($itemId, $userId = NULL) {
 		$db = $this->env->db();
 		$db->startTransaction();
 
 		$criteria = "item_id = " . $db->string($itemId, TRUE);
+		if ($userId != NULL) $criteria .= " and user_id = " . $db->string($userId, TRUE);
+
 		$db->update("DELETE FROM " . $db->table("share_auth") . " WHERE id in (SELECT id FROM " . $db->table("share") . " WHERE " . $criteria . ")");
 		$success = $db->update("DELETE FROM " . $db->table("share") . " WHERE " . $criteria);
 
