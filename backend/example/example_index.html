@@ -6,56 +6,43 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
     <link rel="stylesheet" href="css/kloudspeaker.min.css">
-    <!-- "Full" includes kloudspeaker, jQuery and all the other libs required -->
     <script type="text/javascript" language="javascript" src="js/kloudspeaker.full.min.js"></script>
-    <!-- If you don't want to use full package, you can load them separately -->
-    <!--script type="text/javascript" language="javascript" src="js/lib/jquery.min.js"></script>
-		<script type="text/javascript" language="javascript" src="js/lib/json.js"></script>
-		<script type="text/javascript" language="javascript" src="js/lib/jquery.tmpl.min.js"></script>
-		<script type="text/javascript" language="javascript" src="js/lib/jquery-ui.js"></script>
-		<script type="text/javascript" language="javascript" src="js/lib/jquery-file-uploader.js"></script>
-		<script type="text/javascript" language="javascript" src="js/lib/jquery-singledoubleclick.js"></script>
-		<script type="text/javascript" language="javascript" src="js/lib/bootstrap.js"></script>
-		<script type="text/javascript" language="javascript" src="js/lib/bootstrap-lightbox.js"></script>
-		<script type="text/javascript" language="javascript" src="js/lib/bootstrap-datetimepicker.js"></script>
-		<script type="text/javascript" language="javascript" src="js/lib/ZeroClipboard.js"></script>
-		<script type="text/javascript" language="javascript" src="js/lib/modernizr.js"></script>
-		<script type="text/javascript" language="javascript" src="js/lib/date.js"></script>
-		<script type="text/javascript" language="javascript" src="js/kloudspeaker.js"></script-->
     <script type="text/javascript">
     $(document).ready(function() {
-        kloudspeaker.App.init({
-            "language": {
-                "default": "en"
-            },
-            "file-view": {
-                "list-view-columns": {
-                    "name": {
-                        width: 250
-                    },
-                    "size": {},
-                    "file-modified": {
-                        width: 150
-                    }
-                }
-            },
-            plugins: {
-                "itemdetails": {
-                    filetypes: {
-                        "jpg,tiff": {
-                            "metadata-created": {},
-                            "last-modified": {},
-                            "size": {},
-                            "exif": {},
+        require(['kloudspeaker/app'], function(app) {
+            app.init({
+                "language": {
+                    "default": "en"
+                },
+                "file-view": {
+                    "list-view-columns": {
+                        "name": {
+                            width: 250
                         },
-                        "*": {
-                            "metadata-created": {},
-                            "last-modified": {},
-                            "size": {}
+                        "size": {},
+                        "file-modified": {
+                            width: 150
+                        }
+                    }
+                },
+                plugins: {
+                    "itemdetails": {
+                        filetypes: {
+                            "jpg,tiff": {
+                                "metadata-created": {},
+                                "last-modified": {},
+                                "size": {},
+                                "exif": {},
+                            },
+                            "*": {
+                                "metadata-created": {},
+                                "last-modified": {},
+                                "size": {}
+                            }
                         }
                     }
                 }
-            }
+            });
         });
     });
     </script>
