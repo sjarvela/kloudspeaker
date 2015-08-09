@@ -6,3 +6,5 @@ npm-debug.log
 backend/configuration.php
 
 out/modules.js
+
+release.sh
