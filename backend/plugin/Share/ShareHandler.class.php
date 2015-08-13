@@ -104,42 +104,54 @@ class ShareHandler {
 		if ($share["user_id"] != $this->env->session()->userId()) return NULL;
 
 		$itemId = $share["item_id"];
-		$type = NULL;
-		$name = NULL;
+		$item = $this->getShareItem($itemId);
 
+		$possibleTypes = $this->getShareTypes($item);
+		if ($share["type"] == NULL) {
+			$share["type"] = $possibleTypes[0];
+		} else {
+			if (!in_array($share["type"], $possibleTypes))
+				throw new ServiceException("INVALID_REQUEST", "Invalid share type");
+		}
+
+		return array("share" => $share, "item" => (is_array($item) ? $item : $item->data()), "share_types" => $possibleTypes);
+	}
+
+	private function getShareItem($itemId) {
 		if (strpos($itemId, "_") > 0) {
 			$parts = explode("_", $itemId);
-			$info = $this->getCustomShareInfo($parts[0], $parts[1], $share);
+			$info = $this->getCustomShareItem($parts[0], $parts[1]);
 			if ($info == NULL) {
 				return NULL;
 			}
-			$item = array("id" => $itemId, "name" => $info["name"], "custom" => TRUE);
-			$type = $info["type"];
-		} else {
-			$item = $this->env->filesystem()->item($itemId);
-			$type = $item->isFile() ? "download" : "upload";
-			$item = $item->data();
+			return array("id" => $itemId, "item_id" => $parts[0], "name" => $info["name"], "custom" => TRUE, "type" => $parts[0]);
 		}
-
-		return array("share" => $share, "item" => $item, "share_type" => $type);
+		return $this->env->filesystem()->item($itemId);
 	}
 
 	public function getShareOptions($itemId) {
-		if (strpos($itemId, "_") > 0) {
-			$parts = explode("_", $itemId);
-			$info = $this->getCustomShareOptions($parts[0], $parts[1]);
-			if ($info == NULL) {
-				return NULL;
-			}
-			$item = array("id" => $itemId, "name" => $info["name"], "custom" => TRUE);
-			$type = $info["type"];
-		} else {
-			$item = $this->env->filesystem()->item($itemId);
-			$type = $item->isFile() ? "download" : "upload";
-			$item = $item->data();
+		$item = $this->getShareItem($itemId);
+		return array("item" => (is_array($item) ? $item : $item->data()), "share_types" => $this->getShareTypes($item));
+	}
+
+	private function getShareTypes($item) {
+		if (is_array($item)) {
+			return $this->getCustomShareTypes($item["type"], $item["item_id"]);
 		}
-		//TODO type option list
-		return array("item" => $item, "share_type" => $type);
+		return $this->getFileShareTypes($item);
+	}
+
+	private function getFileShareTypes($item) {
+		// file
+		if ($item->isFile()) return array("download");
+
+		// folder
+		$types = array();
+		$types[] = "upload";
+		if ($this->env->plugins()->exists("Archiver")) {
+			$types[] = "prepared_download";
+		}
+		return $types;
 	}
 
 	public function getUserShares() {
@@ -158,7 +170,7 @@ class ShareHandler {
 		return $this->dao()->getShareUsers($i);
 	}
 
-	public function addShare($itemId, $name, $expirationTs, $active, $restriction) {
+	public function addShare($itemId, $name, $type, $expirationTs, $active, $restriction) {
 		if (strpos($itemId, "_") === FALSE) {
 			$this->env->filesystem()->item($itemId);
 			$item = $this->env->filesystem()->item($itemId);
@@ -167,8 +179,14 @@ class ShareHandler {
 			}
 		}
 
+		$possibleTypes = $this->getShareTypes();
+		if ($type != NULL) {
+			if (!in_array($type, $possibleTypes))
+				throw new ServiceException("INVALID_REQUEST", "Invalid share type");
+		}
+
 		$created = $this->env->configuration()->formatTimestampInternal(time());
-		$this->dao()->addShare($this->GUID(), $itemId, $name, $this->env->session()->userId(), $expirationTs, $created, $active, $restriction);
+		$this->dao()->addShare($this->GUID(), $itemId, $name, $type, $this->env->session()->userId(), $expirationTs, $created, $active, $restriction);
 	}
 
 	public function editShare($id, $name, $expirationTs, $active, $restriction) {
@@ -225,6 +243,7 @@ class ShareHandler {
 		$type = NULL;
 		$name = NULL;
 
+		//TODO get types list
 		if (strpos($itemId, "_") > 0) {
 			$parts = explode("_", $itemId);
 			$info = $this->getCustomShareInfo($parts[0], $parts[1], $share);
@@ -338,22 +357,22 @@ class ShareHandler {
 		throw new ServiceException("REQUEST_FAILED", "Invalid share restriction: " . $share["restriction"]);
 	}
 
-	public function getCustomShareInfo($type, $id, $share) {
+	public function getCustomShareItem($type, $id) {
 		if (!array_key_exists($type, $this->customShareHandlers)) {
 			Logging::logError("No custom share handler found: " . $type);
 			return NULL;
 		}
 		$handler = $this->customShareHandlers[$type];
-		return $handler->getShareInfo($id, $share);
+		return $handler->getShareItem($id);
 	}
 
-	public function getCustomShareOptions($type, $id) {
+	public function getCustomShareTypes($type, $id) {
 		if (!array_key_exists($type, $this->customShareHandlers)) {
 			Logging::logError("No custom share handler found: " . $type);
 			return NULL;
 		}
 		$handler = $this->customShareHandlers[$type];
-		return $handler->getShareOptions($id);
+		return $handler->getShareTypes($id);
 	}
 
 	public function processShareGet($id, $params) {

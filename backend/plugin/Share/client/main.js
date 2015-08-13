@@ -1,7 +1,9 @@
-define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/share/repository', 'kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/texts', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/permissions'], function(settings, plugins, repository, service, fs, views, formatters, dialogs, texts, utils, dom, permissions) {
+define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/share/repository', 'kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/texts', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/permissions'], function(settings, plugins, events, repository, service, fs, views, formatters, dialogs, texts, utils, dom, permissions) {
     var that = {};
 
-    that._timestampFormatter = new formatters.Timestamp(texts.get('shortDateTimeFormat'));
+    events.on('localization/init', function() {
+        that._timestampFormatter = new formatters.Timestamp(texts.get('shortDateTimeFormat'));
+    });
 
     views.registerView("share", function(rqParts, urlParams) {
         if (rqParts.length != 2) return false;

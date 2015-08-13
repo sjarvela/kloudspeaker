@@ -67,6 +67,10 @@ class PluginController {
 		return isset($this->plugins[$id]);
 	}
 
+	public function exists($id) {
+		return $this->hasPlugin($id);
+	}
+
 	public function getSessionInfo() {
 		$result = array();
 		$settings = $this->env->settings()->setting("plugins");

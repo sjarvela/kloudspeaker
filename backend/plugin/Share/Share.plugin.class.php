@@ -15,11 +15,11 @@ class Share extends PluginBase {
 	private $handler;
 
 	public function version() {
-		return "1_3";
+		return "1_4";
 	}
 
 	public function versionHistory() {
-		return array("1_0", "1_1", "1_2", "1_3");
+		return array("1_0", "1_1", "1_2", "1_3", "1_4");
 	}
 
 	public function setup() {

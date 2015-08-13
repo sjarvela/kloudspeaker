@@ -1,7 +1,8 @@
 CREATE TABLE share (
   id char(32) PRIMARY KEY,
   item_id char(255) NOT NULL,
-  restriction char(32) NULL,
+  type char(32) NULL,
+  restriction char(32) NULL,  
   name varchar(255) NOT NULL,
   user_id INTEGER NOT NULL,
   expiration bigint(11) NULL,

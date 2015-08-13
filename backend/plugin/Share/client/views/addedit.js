@@ -6,6 +6,7 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/ui/
             item: null,
             itemName: ko.observable(''),
             shareType: ko.observable(''),
+            shareTypeOptions: ko.observableArray([]),
 
             name: ko.observable(''),
             active: ko.observable(true),
@@ -20,7 +21,7 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/ui/
             deep: false
         });
 
-        var getShareTypeText = function(item, shareType) {
+        /*var getShareTypeText = function(item, shareType) {
             //TODO get custom text from plugin?
             var t = shareType;
             if (t == 'prepared_download') t = 'download';
@@ -29,6 +30,16 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/ui/
                 return texts.get('shareDialogShareType_' + t);
             else
                 return texts.get('shareDialogShareType_' + (item.is_file ? 'file' : 'folder') + '_' + t);
+        };*/
+
+        model.shareTypeOptionTitle = function(type) {
+            var t = type;
+            if (t == 'prepared_download') t = 'download';
+
+            if (model.item.custom)
+                return texts.get('shareDialogShareType_' + t);
+            else
+                return texts.get('shareDialogShareType_' + (model.item.is_file ? 'file' : 'folder') + '_' + t);
         };
 
         return {
@@ -94,9 +105,11 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/ui/
                     model.edit = true;
                     repository.getShare(params.share.id, true).done(function(r) {
                         model.share = r.share;
+                        model.item = r.item;
 
                         model.itemName(r.item.name);
-                        model.shareType(getShareTypeText(r.item, r.share_type));
+                        model.shareType(r.share.type);
+                        model.shareTypeOptions(r.share_types);
 
                         model.name(model.share.name);
                         model.active(model.share.active);
@@ -109,7 +122,8 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/ui/
 
                     model.itemName(params.item.name);
                     repository.getShareOptions(params.item.id).done(function(r) {
-                        model.shareType(getShareTypeText(r.item, r.share_type));
+                        model.shareType(r.share_types[0]);
+                        model.shareTypeOptions(r.share_types);
                     });
                 }
             }

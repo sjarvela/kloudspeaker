@@ -229,7 +229,7 @@ class ShareServices extends ServicesBase {
 			throw $this->invalidRequestException("Invalid datatype: expiration");
 		}
 
-		$this->handler()->addShare($itemId, $data["name"], $data["expiration"], isset($data["active"]) ? $data["active"] : TRUE, $data["restriction"]);
+		$this->handler()->addShare($itemId, $data["name"], $data["type"], $data["expiration"], isset($data["active"]) ? $data["active"] : TRUE, $data["restriction"]);
 		$this->response()->success($this->handler()->getShares($itemId));
 	}
 

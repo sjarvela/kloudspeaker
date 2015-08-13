@@ -81,17 +81,17 @@ class ItemCollectionHandler {
 		unlink($file);
 	}
 
-	public function getShareInfo($id, $share) {
+	public function getShareItem($id) {
 		$ic = $this->dao()->getItemCollection($id);
 		if (!$ic) {
 			Logging::logDebug("Invalid share request, no item collection found with id " . $id);
 			return NULL;
 		}
-		return array("name" => $ic["name"], "type" => "prepared_download");
+		return array("name" => $ic["name"]);
 	}
 
-	public function getShareOptions($id) {
-		return $this->getShareInfo($id, NULL);	//no share specific info, use NULL
+	public function getShareTypes($id) {
+		return array("prepared_download");
 	}
 
 	/* -> share handler */

@@ -12,12 +12,31 @@
             <input id="share-general-name" type="text" data-bind="value: model.name" autofocus></input>
         </div>
     </div>
-    <div class="control-group">
+    <!--div class="control-group">
         <label class="control-label" data-i18n="shareDialogShareTypeTitle"></label>
         <div class="controls">
             <input type="text" data-bind="value: model.shareType" readonly="true"></input>
         </div>
+    </div-->
+    <!-- ko if: model.shareTypeOptions().length > 1 -->
+    <div class="control-group">
+        <label class="control-label" data-i18n="shareDialogShareTypeTitle"></label>
+        <div class="controls">
+            <select data-bind="value: model.shareType, options: model.shareTypeOptions, optionsText: model.shareTypeOptionTitle">
+            </select>
+        </div>
     </div>
+    <!-- /ko -->
+    <!-- ko if: model.shareTypeOptions().length == 1 -->
+    <div class="control-group">
+        <label class="control-label" data-i18n="shareDialogShareTypeTitle"></label>
+        <div class="controls">
+            <input type="text" data-bind="value: model.shareTypeOptionTitle(model.shareType())" readonly="true"></input>
+            </select>
+        </div>
+    </div>
+    <!-- /ko -->
+
     <div class="control-group">
         <label class="control-label" for="share-general-active" data-i18n="shareDialogShareActiveTitle"></label>
         <div class="controls">
@@ -29,7 +48,7 @@
         <label class="control-label" for="share-validity-expirationdate-value" data-i18n="shareDialogShareExpirationTitle"></label>
         <div class="controls">
             <div class="input-append">
-                <div id="share-validity-expirationdate-value" data-bind="time-picker:{ value: model.expiration }"/>
+                <div id="share-validity-expirationdate-value" data-bind="time-picker:{ value: model.expiration }" />
             </div>
         </div>
     </div>
@@ -42,7 +61,7 @@
                 <span data-i18n="shareDialogShareAccessNoRestrictionTitle"></span>
             </label>
             <label class="radio">
-                <input type="radio" name="shareAccess" value="pw" data-bind="checked: model.accessRestriction" >
+                <input type="radio" name="shareAccess" value="pw" data-bind="checked: model.accessRestriction">
                 <span data-i18n="shareDialogShareAccessPasswordTitle"></span>
             </label>
             <div class="control-group" data-bind="attr: {class: 'control-group inner ' + (model.passwordMissing() ? 'error' : '')}">
