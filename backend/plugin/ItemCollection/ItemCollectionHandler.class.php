@@ -42,17 +42,12 @@ class ItemCollectionHandler {
 
 		$am = $ap->getArchiveManager();
 		$af = $am->compress($items);
-		$key = str_replace(".", "", uniqid('', true));
 
 		$this->env->events()->onEvent(MultiFileEvent::download($items));
-
-		Logging::logDebug("Storing prepared package " . $key . ":" . $af);
-		$this->env->session()->param($key, $af);
-
-		return array("key" => $key);
+		return $af;
 	}
 
-	public function processGetShare($id, $share, $params) {
+	/*public function processGetShare($id, $share, $params) {
 		if ($params == NULL or !isset($params["key"])) {
 			throw new ServiceException("INVALID_REQUEST");
 		}
@@ -79,7 +74,7 @@ class ItemCollectionHandler {
 		$mobile = ($this->env->request()->hasParam("m") and strcmp($this->env->request()->param("m"), "1") == 0);
 		$this->env->response()->sendFile($file, $name . "." . $type, $type, $mobile, filesize($file));
 		unlink($file);
-	}
+	}*/
 
 	public function getShareItem($id) {
 		$ic = $this->dao()->getItemCollection($id);

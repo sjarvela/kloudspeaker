@@ -5,10 +5,10 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/ui/
             share: null,
             item: null,
             itemName: ko.observable(''),
-            shareType: ko.observable(''),
-            shareTypeOptions: ko.observableArray([]),
 
             name: ko.observable(''),
+            type: ko.observable(''),
+            typeOptions: ko.observableArray([]),
             active: ko.observable(true),
             expiration: ko.observable(null),
             accessRestriction: ko.observable('no'),
@@ -21,18 +21,7 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/ui/
             deep: false
         });
 
-        /*var getShareTypeText = function(item, shareType) {
-            //TODO get custom text from plugin?
-            var t = shareType;
-            if (t == 'prepared_download') t = 'download';
-
-            if (item.custom)
-                return texts.get('shareDialogShareType_' + t);
-            else
-                return texts.get('shareDialogShareType_' + (item.is_file ? 'file' : 'folder') + '_' + t);
-        };*/
-
-        model.shareTypeOptionTitle = function(type) {
+        model.typeOptionTitle = function(type) {
             var t = type;
             if (t == 'prepared_download') t = 'download';
 
@@ -80,6 +69,7 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/ui/
                 }
                 var share = {
                     name: model.name(),
+                    type: model.type(),
                     active: model.active(),
                     expiration: model.expiration(),
                     restriction: {
@@ -108,10 +98,10 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/ui/
                         model.item = r.item;
 
                         model.itemName(r.item.name);
-                        model.shareType(r.share.type);
-                        model.shareTypeOptions(r.share_types);
 
                         model.name(model.share.name);
+                        model.type(r.share.type);
+                        model.typeOptions(r.share_types);
                         model.active(model.share.active);
                         model.expiration(model.share.expiration);
                         model.accessRestriction(model.share.restriction || 'no');
@@ -122,8 +112,8 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/ui/
 
                     model.itemName(params.item.name);
                     repository.getShareOptions(params.item.id).done(function(r) {
-                        model.shareType(r.share_types[0]);
-                        model.shareTypeOptions(r.share_types);
+                        model.type(r.share_types[0]);
+                        model.typeOptions(r.share_types);
                     });
                 }
             }

@@ -40,6 +40,7 @@ define(['kloudspeaker/service', 'kloudspeaker/utils'], function(service, utils) 
             return service.post("share/", {
                 item: item.id,
                 name: share.name,
+                type: share.type,
                 expiration: utils.formatInternalTime(share.expiration),
                 active: share.active,
                 restriction: share.restriction
@@ -50,6 +51,7 @@ define(['kloudspeaker/service', 'kloudspeaker/utils'], function(service, utils) 
             return service.put("share/" + id, {
                 id: id,
                 name: share.name,
+                type: share.type,
                 expiration: utils.formatInternalTime(share.expiration),
                 active: share.active,
                 restriction: share.restriction

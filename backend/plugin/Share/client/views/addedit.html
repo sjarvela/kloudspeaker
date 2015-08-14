@@ -12,26 +12,20 @@
             <input id="share-general-name" type="text" data-bind="value: model.name" autofocus></input>
         </div>
     </div>
-    <!--div class="control-group">
-        <label class="control-label" data-i18n="shareDialogShareTypeTitle"></label>
-        <div class="controls">
-            <input type="text" data-bind="value: model.shareType" readonly="true"></input>
-        </div>
-    </div-->
-    <!-- ko if: model.shareTypeOptions().length > 1 -->
+    <!-- ko if: model.typeOptions().length > 1 -->
     <div class="control-group">
         <label class="control-label" data-i18n="shareDialogShareTypeTitle"></label>
         <div class="controls">
-            <select data-bind="value: model.shareType, options: model.shareTypeOptions, optionsText: model.shareTypeOptionTitle">
+            <select data-bind="value: model.type, options: model.typeOptions, optionsText: model.typeOptionTitle">
             </select>
         </div>
     </div>
     <!-- /ko -->
-    <!-- ko if: model.shareTypeOptions().length == 1 -->
+    <!-- ko if: model.typeOptions().length == 1 -->
     <div class="control-group">
         <label class="control-label" data-i18n="shareDialogShareTypeTitle"></label>
         <div class="controls">
-            <input type="text" data-bind="value: model.shareTypeOptionTitle(model.shareType())" readonly="true"></input>
+            <input type="text" data-bind="value: model.typeOptionTitle(model.type())" readonly="true"></input>
             </select>
         </div>
     </div>

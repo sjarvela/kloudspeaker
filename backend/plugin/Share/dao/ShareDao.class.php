@@ -158,7 +158,7 @@ class ShareDao {
 
 		$db = $this->env->db();
 		$db->startTransaction();
-		$db->update(sprintf("INSERT INTO " . $db->table("share") . " (id, name, type, item_id, user_id, expiration, created, active, restriction) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", $db->string($id, TRUE), $db->string($name, TRUE), $db->string($type, TRUE), $db->string($itemId, TRUE), $db->string($userId, TRUE), $db->string($expirationTime), $db->string($time), ($active ? "1" : "0"), $db->string($restrictionType, TRUE)));
+		$db->update(sprintf("INSERT INTO " . $db->table("share") . " (id, name, type, item_id, user_id, expiration, created, active, restriction) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", $db->string($id, TRUE), $db->string($name, TRUE), $db->string($type, TRUE), $db->string($itemId, TRUE), $db->string($userId, TRUE), $db->string($expirationTime), $db->string($time), ($active ? "1" : "0"), $db->string($restrictionType, TRUE)));
 
 		if ($restrictionType == "pw") {
 			$this->createAuth($db, $id, $restriction["value"]);
@@ -172,7 +172,7 @@ class ShareDao {
 		$db->update(sprintf("INSERT INTO " . $db->table("share_auth") . " (id, hash, salt) VALUES (%s, %s, %s)", $db->string($id, TRUE), $db->string($hash["hash"], TRUE), $db->string($hash["salt"], TRUE)));
 	}
 
-	public function editShare($id, $name, $expirationTime, $active, $restriction) {
+	public function editShare($id, $name, $type, $expirationTime, $active, $restriction) {
 		$old = $this->getShare($id);
 
 		$oldRestrictionType = $old["restriction"];
@@ -198,7 +198,7 @@ class ShareDao {
 			$db->update("DELETE FROM " . $db->table("share_auth") . " WHERE id = " . $db->string($id, TRUE));
 		}
 
-		$db->update(sprintf("UPDATE " . $db->table("share") . " SET name = %s, active = %s, expiration = %s, restriction = %s WHERE id=%s", $db->string($name, TRUE), ($active ? "1" : "0"), $db->string($expirationTime), $db->string($restrictionType, TRUE), $db->string($id, TRUE)));
+		$db->update(sprintf("UPDATE " . $db->table("share") . " SET name = %s, type = %s, active = %s, expiration = %s, restriction = %s WHERE id=%s", $db->string($name, TRUE), $db->string($type, TRUE), ($active ? "1" : "0"), $db->string($expirationTime), $db->string($restrictionType, TRUE), $db->string($id, TRUE)));
 		if ($restrictionPwValue) {
 			$this->createAuth($db, $id, $restriction["value"]);
 		}
