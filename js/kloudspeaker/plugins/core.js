@@ -13,7 +13,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/permissio
             title: title,
             message: msg,
             callback: function() {
-                $.when(fs.del(items)).then(df.resolve, df.reject);
+                $.when(filesystem.del(items)).then(df.resolve, df.reject);
             }
         });
         return df.promise();
@@ -36,7 +36,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/permissio
                     type: "primary",
                     group: "download",
                     callback: function() {
-                        ui.download(fs.getDownloadUrl(item));
+                        ui.download(filesystem.getDownloadUrl(item));
                     }
                 });
                 actions.push({
