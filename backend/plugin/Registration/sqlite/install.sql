@@ -8,4 +8,4 @@ CREATE TABLE registration (
   time bigint(11) NOT NULL,
   confirmed bigint(11) NULL
 );
-INSERT INTO parameter (name, value) VALUES ('plugin_Registration_version', '1_1');
+INSERT INTO parameter (name, value) VALUES ('plugin_Registration_version', '1_2');
