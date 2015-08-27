@@ -18,8 +18,8 @@ class SendViaEmail extends PluginBase {
 		$this->addService("sendviaemail", "SendViaEmailServices");
 	}
 
-	public function getClientPlugin() {
-		return "client/plugin.js";
+	public function getClientModuleId() {
+		return "kloudspeaker/sendviaemail";
 	}
 
 	public function __toString() {

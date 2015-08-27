@@ -1,0 +1,36 @@
+<form class="sendviaemail-send form-horizontal">
+    <!-- ko if: model.single -->
+    <div class="control-group">
+        <label class="control-label" data-i18n="sendViaEmailSendItemTitle"></label>
+        <div class="controls">
+            <input type="text" data-bind="value: model.items[0].name" readonly="true"></input>
+        </div>
+    </div>
+    <!-- /ko -->
+    <!-- ko if: !model.single -->
+    <div class="control-group">
+        TODO
+    </div>
+    <!-- /ko -->
+
+    <div class="control-group">
+        <label class="control-label" data-i18n="sendViaEmailSendRecipient"></label>        
+        <div class="controls">
+            <input type="text" data-bind="value: model.recipient"></input>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label" data-i18n="sendViaEmailSendTitle"></label>        
+        <div class="controls">
+            <input type="text" data-bind="value: model.title"></input>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label" data-i18n="sendViaEmailSendMsg"></label>        
+        <div class="controls">
+            <textarea data-bind="value: model.msg"></textarea>
+        </div>
+    </div>
+</form>

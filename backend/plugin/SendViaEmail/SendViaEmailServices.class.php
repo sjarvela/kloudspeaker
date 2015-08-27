@@ -20,15 +20,15 @@
 		
 		public function processPost() {
 			$data = $this->request->data;
-			if (!isset($data['to']) or !isset($data['title']) or !isset($data['message']) or !isset($data['items']))
-				throw $this->invalidRequestException();
+			if (!isset($data['to']) or !isset($data['title']) or !isset($data['msg']) or !isset($data['items']))
+				throw $this->invalidRequestException("Data missing");
 			
 			$to = $data['to'];
-			$message = $data['message'];
+			$message = $data['msg'];
 			$title = $data['title'];
 			$items = $this->items($data['items']);
 			
-			if (count($items) == 0) throw $this->invalidRequestException();
+			if (count($items) == 0) throw $this->invalidRequestException("Items missing");
 
 			if (Logging::isDebug())
 				Logging::logDebug("SENDVIAEMAIL: Sending mail ".$to.":".Util::array2str($items));
