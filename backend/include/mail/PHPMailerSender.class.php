@@ -60,7 +60,7 @@
 			$mailer->From = $f;
 			if ($fromName != NULL) $mailer->FromName = $fromName;
 			foreach ($validRecipients as $recipient) {
-				$mailer->addBCC($recipient["email"], $recipient["name"]);
+				$mailer->addBCC($recipient["email"], isset($recipient["name"]) ? $recipient["name"] : "");
 			}
 
 			if (!$isHtml)
@@ -92,7 +92,13 @@
 		private function getValidRecipients($recipients) {
 			$valid = array();
 			foreach ($recipients as $recipient) {
-				if ($recipient["email"] === NULL or strlen($recipient["email"]) == 0) continue;
+				if (is_string($recipient)) {
+					$valid[] = array("email" => $recipient);
+					continue;
+				}
+				else
+					if ($recipient["email"] === NULL or strlen($recipient["email"]) == 0) continue;
+
 				$valid[] = $recipient;
 			}
 			return $valid;

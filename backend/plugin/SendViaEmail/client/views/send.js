@@ -2,9 +2,17 @@ define(['kloudspeaker/service', 'kloudspeaker/localization', 'kloudspeaker/utils
     return function() {
         var that = this;
         var model = {
-            title: ko.observable(''),
-            msg: ko.observable(''),
-            recipient: ko.observable('')
+            title: ko.observable('').extend({
+                required: true
+            }),
+            msg: ko.observable('').extend({
+                required: true
+            }),
+            recipient: ko.observable('').extend({
+                required: true
+            }).extend({
+                email: true
+            })
         };
 
         model.errors = ko.validation.group(model, {
@@ -35,7 +43,16 @@ define(['kloudspeaker/service', 'kloudspeaker/localization', 'kloudspeaker/utils
                     return;
                 }
                 var that = this;
-                //TODO validate
+
+                //TODO force validation
+                model.title.valueHasMutated();
+                model.msg.valueHasMutated();
+                model.recipient.valueHasMutated();
+                
+                if (model.errors().length > 0) {
+                    errors.showAllMessages(true);
+                    return;
+                }
 
                 service.post('sendviaemail', {
                     items: model.items,

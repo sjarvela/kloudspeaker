@@ -13,21 +13,21 @@
     </div>
     <!-- /ko -->
 
-    <div class="control-group">
+    <div class="control-group" data-bind="validationElement: model.recipient">
         <label class="control-label" data-i18n="sendViaEmailSendRecipient"></label>        
         <div class="controls">
-            <input type="text" data-bind="value: model.recipient"></input>
+            <input type="text" data-bind="value: model.recipient" autofocus></input>
         </div>
     </div>
 
-    <div class="control-group">
+    <div class="control-group" data-bind="validationElement: model.title">
         <label class="control-label" data-i18n="sendViaEmailSendTitle"></label>        
         <div class="controls">
             <input type="text" data-bind="value: model.title"></input>
         </div>
     </div>
 
-    <div class="control-group">
+    <div class="control-group" data-bind="validationElement: model.msg">
         <label class="control-label" data-i18n="sendViaEmailSendMsg"></label>        
         <div class="controls">
             <textarea data-bind="value: model.msg"></textarea>
