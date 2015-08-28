@@ -48,9 +48,8 @@ define(['kloudspeaker/service', 'kloudspeaker/localization', 'kloudspeaker/utils
                 model.title.valueHasMutated();
                 model.msg.valueHasMutated();
                 model.recipient.valueHasMutated();
-                
+
                 if (model.errors().length > 0) {
-                    errors.showAllMessages(true);
                     return;
                 }
 

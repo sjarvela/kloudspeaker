@@ -9,6 +9,10 @@ define(['knockout', 'text', 'durandal/system', 'durandal/viewlocator', 'durandal
             dw.registerKind('config-list');
 
             //configure knockout validation
+            ko.validation.customRuleMessage = function(rule, ctx) {
+                if (ctx.message) return ctx.message;
+                return loc.get("validationError-" + ctx.rule);
+            };
             ko.validation.init({
                 insertMessages: false,
                 decorateInputElement: true,

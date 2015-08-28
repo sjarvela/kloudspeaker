@@ -3,7 +3,7 @@
 	License:		MIT (http://opensource.org/licenses/mit-license.php)		
 																				
 	Description:	Validation Library for KnockoutJS							
-	Version:		2.0.2											
+	Version:		2.0.3											
 ===============================================================================
 */
 /*globals require: false, exports: false, define: false, ko: false */
@@ -439,10 +439,13 @@ kv.configuration = configuration;
 			if (utils.isObject(params) && params.typeAttr) {
 				params = params.value;
 			}
-			if (typeof (message) === 'function') {
+			if (typeof message === 'function') {
 				return message(params, observable);
 			}
-			var replacements = unwrap(params) || [];
+			var replacements = unwrap(params);
+            if (replacements == null) {
+                replacements = [];
+            }
 			if (!utils.isArray(replacements)) {
 				replacements = [replacements];
 			}
@@ -1290,8 +1293,9 @@ function validateSync(observable, rule, ctx) {
 	if (!rule.validator(observable(), (ctx.params === undefined ? true : unwrap(ctx.params)))) { // default param is true, eg. required = true
 
 		//not valid, so format the error message and stick it in the 'error' variable
+		var msg = kv.customRuleMessage ? kv.customRuleMessage(rule, ctx) : (ctx.message || rule.message);	// kloudspeaker
 		observable.setError(kv.formatMessage(
-					ctx.message || rule.message,
+					msg,
 					unwrap(ctx.params),
 					observable));
 		return false;
@@ -1336,8 +1340,10 @@ function validateAsync(observable, rule, ctx) {
 		observable.isValidating(false);
 	};
 
-	//fire the validator and hand it the callback
-	rule.validator(observable(), unwrap(ctx.params || true), callBack);
+	kv.utils.async(function() {
+	    //fire the validator and hand it the callback
+        rule.validator(observable(), ctx.params === undefined ? true : unwrap(ctx.params), callBack);
+	});
 }
 
 kv.validateObservable = function (observable) {

@@ -522,6 +522,9 @@
 		"pluginNotificatorNotificationEditEventFiltersType": "Type",
 		"pluginNotificatorNotificationEditEventFiltersValue": "Value",
 		"pluginNotificatorNotificationEventFilterFolderEditorSelectTitle": "Select folder",
-		"pluginNotificatorNotificationEventFilterFolderEditorSelectMsg": "Select folder for the event filter"
+		"pluginNotificatorNotificationEventFilterFolderEditorSelectMsg": "Select folder for the event filter",
+
+		"validationError-required" : "This field is required",
+		"validationError-email" : "Valid email address is required"
 	}
 }
