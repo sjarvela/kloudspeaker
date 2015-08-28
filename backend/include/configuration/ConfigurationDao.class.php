@@ -105,10 +105,6 @@ class ConfigurationDao {
 		$this->db->update(sprintf("UPDATE " . $this->db->table("user_auth") . " SET type=%s WHERE user_id=%s", $this->db->string($type, TRUE), $this->db->string($id, TRUE)));
 	}
 
-	public function getUserLegacyPw($id) {
-		return $this->db->query(sprintf("SELECT password FROM " . $this->db->table("user") . " WHERE id=%s", $this->db->string($id, TRUE)))->value();
-	}
-
 	public function getUserByName($username, $expiration = FALSE) {
 		$expirationCriteria = $expiration ? " AND (expiration is null or expiration > " . $this->formatTimestampInternal($expiration) . ")" : "";
 
