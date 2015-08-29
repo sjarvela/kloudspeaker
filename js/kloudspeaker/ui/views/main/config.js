@@ -1,13 +1,13 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions'], function(app, settings, permissions) {
+define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/plugins', 'kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/permissions', 'kloudspeaker/dom', 'kloudspeaker/templates', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/localization', 'kloudspeaker/utils'], function(settings, session, plugins, service, fs, permissions, dom, templates, controls, dialogs, loc, utils) {
     //TODO split subviews etc into modules
 
     kloudspeaker.view.ConfigListView = function($e, o) {
-        kloudspeaker.dom.template("kloudspeaker-tmpl-configlistview", {
+        dom.template("kloudspeaker-tmpl-configlistview", {
             title: o.title,
             actions: o.actions || false
         }).appendTo($e);
         var $table = $e.find(".kloudspeaker-configlistview-table");
-        var table = kloudspeaker.ui.controls.table($table, o.table);
+        var table = controls.table($table, o.table);
         var enableAction = function(id, e) {
             if (e)
                 $e.find("#kloudspeaker-configlistview-action-" + id).removeClass("disabled");
@@ -17,7 +17,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
         if (o.actions) {
             $.each(o.actions, function(i, a) {
                 if (a.depends) enableAction(a.id, false);
-                if (a.tooltip) kloudspeaker.ui.controls.tooltip($("#kloudspeaker-configlistview-action-" + a.id), {
+                if (a.tooltip) controls.tooltip($("#kloudspeaker-configlistview-action-" + a.id), {
                     title: a.tooltip
                 });
             });
@@ -60,10 +60,12 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
     kloudspeaker.view.config.user.AccountView = function(mv) {
         var that = this;
         this.viewId = "account";
-        this.title = kloudspeaker.ui.texts.get("configUserAccountNavTitle");
+        this.title = loc.get("configUserAccountNavTitle");
 
         this.onActivate = function($c) {
-            kloudspeaker.dom.template("kloudspeaker-tmpl-config-useraccountview", kloudspeaker.session).appendTo($c);
+            var s = session.get();
+
+            dom.template("kloudspeaker-tmpl-config-useraccountview", s).appendTo($c);
             kloudspeaker.ui.process($c, ["localize"]);
             $("#user-account-change-password-btn").click(mv.changePassword);
         }
@@ -76,7 +78,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
 
         this.init = function(opt, cv) {
             that._cv = cv;
-            that.title = kloudspeaker.ui.texts.get("configAdminUsersNavTitle");
+            that.title = loc.get("configAdminUsersNavTitle");
 
             that._authenticationOptions = opt.authentication_methods;
             that._authFormatter = function(am) {
@@ -84,14 +86,14 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
             }
             that._defaultAuthMethod = opt.authentication_methods[0];
             that._langFormatter = function(l) {
-                return kloudspeaker.ui.texts.get('language_' + l);
+                return loc.get('language_' + l);
             }
         }
 
         this.onActivate = function($c) {
             var users = false;
             var listView = false;
-            that._details = kloudspeaker.ui.controls.slidePanel($("#kloudspeaker-mainview-viewcontent"), {
+            that._details = controls.slidePanel($("#kloudspeaker-mainview-viewcontent"), {
                 resizable: true
             });
 
@@ -134,9 +136,9 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                     cls: "btn-danger",
                     depends: "table-selection",
                     callback: function(sel) {
-                        kloudspeaker.ui.dialogs.confirmation({
-                            title: kloudspeaker.ui.texts.get("configAdminUsersRemoveUsersConfirmationTitle"),
-                            message: kloudspeaker.ui.texts.get("configAdminUsersRemoveUsersConfirmationMessage", [sel.length]),
+                        dialogs.confirmation({
+                            title: loc.get("configAdminUsersRemoveUsersConfirmationTitle"),
+                            message: loc.get("configAdminUsersRemoveUsersConfirmationMessage", [sel.length]),
                             callback: function() {
                                 that._removeUsers(sel).done(updateUsers);
                             }
@@ -174,31 +176,31 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         content: '<i class="fa fa-user"></i>'
                     }, {
                         id: "id",
-                        title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
+                        title: loc.get('configAdminTableIdTitle')
                     }, {
                         id: "name",
-                        title: kloudspeaker.ui.texts.get('configAdminUsersNameTitle'),
+                        title: loc.get('configAdminUsersNameTitle'),
                         sortable: true
                     }, {
                         id: "user_type",
-                        title: kloudspeaker.ui.texts.get('configAdminUsersTypeTitle'),
+                        title: loc.get('configAdminUsersTypeTitle'),
                         sortable: true,
                         valueMapper: function(item, type) {
-                            if (type == null) return kloudspeaker.ui.texts.get("configAdminUsersTypeNormal");
-                            return kloudspeaker.ui.texts.get("configAdminUsersType_" + type.toLowerCase());
+                            if (type == null) return loc.get("configAdminUsersTypeNormal");
+                            return loc.get("configAdminUsersType_" + type.toLowerCase());
                         }
                     }, {
                         id: "email",
-                        title: kloudspeaker.ui.texts.get('configAdminUsersEmailTitle'),
+                        title: loc.get('configAdminUsersEmailTitle'),
                         sortable: true
                     }, {
                         id: "edit",
-                        title: kloudspeaker.ui.texts.get('configAdminActionEditTitle'),
+                        title: loc.get('configAdminActionEditTitle'),
                         type: "action",
                         content: '<i class="fa fa-edit"></i>'
                     }, {
                         id: "pw",
-                        title: kloudspeaker.ui.texts.get('configAdminUsersActionChangePasswordTitle'),
+                        title: loc.get('configAdminUsersActionChangePasswordTitle'),
                         type: "action",
                         content: '<i class="fa fa-key"></i>',
                         enabled: function(u) {
@@ -208,7 +210,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         }
                     }, {
                         id: "remove",
-                        title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'),
+                        title: loc.get('configAdminActionRemoveTitle'),
                         type: "action",
                         content: '<i class="fa fa-trash"></i>'
                     }],
@@ -218,11 +220,11 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         } else if (id == "pw") {
                             that.onChangePassword(u);
                         } else if (id == "remove") {
-                            kloudspeaker.ui.dialogs.confirmation({
-                                title: kloudspeaker.ui.texts.get("configAdminUsersRemoveUserConfirmationTitle"),
-                                message: kloudspeaker.ui.texts.get("configAdminUsersRemoveUserConfirmationMessage", [u.name]),
+                            dialogs.confirmation({
+                                title: loc.get("configAdminUsersRemoveUserConfirmationTitle"),
+                                message: loc.get("configAdminUsersRemoveUserConfirmationMessage", [u.name]),
                                 callback: function() {
-                                    kloudspeaker.service.del("configuration/users/" + u.id).done(updateUsers);
+                                    service.del("configuration/users/" + u.id).done(updateUsers);
                                 }
                             });
                         }
@@ -241,13 +243,13 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
             that._cv.showLoading(true);
 
             var $options = $c.find(".kloudspeaker-configlistview-options");
-            kloudspeaker.dom.template("kloudspeaker-tmpl-config-admin-user-searchoptions").appendTo($options);
+            dom.template("kloudspeaker-tmpl-config-admin-user-searchoptions").appendTo($options);
             kloudspeaker.ui.process($options, ["localize"]);
 
-            var gp = kloudspeaker.service.get("configuration/usergroups").done(function(g) {
+            var gp = service.get("configuration/usergroups").done(function(g) {
                 that._allGroups = g;
             });
-            var fp = kloudspeaker.service.get("configuration/folders").done(function(f) {
+            var fp = service.get("configuration/folders").done(function(f) {
                 that._allFolders = f;
             });
             $.when(gp, fp).done(refresh);
@@ -258,19 +260,19 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
             var $name = false;
             var $password = false;
 
-            kloudspeaker.ui.dialogs.custom({
+            dialogs.custom({
                 resizable: true,
                 initSize: [600, 200],
-                title: kloudspeaker.ui.texts.get('configAdminUsersChangePasswordDialogTitle', u.name),
-                content: kloudspeaker.dom.template("kloudspeaker-tmpl-config-admin-userchangepassworddialog", {
+                title: loc.get('configAdminUsersChangePasswordDialogTitle', u.name),
+                content: dom.template("kloudspeaker-tmpl-config-admin-userchangepassworddialog", {
                     user: u
                 }),
                 buttons: [{
                     id: "yes",
-                    "title": kloudspeaker.ui.texts.get('dialogSave')
+                    "title": loc.get('dialogSave')
                 }, {
                     id: "no",
-                    "title": kloudspeaker.ui.texts.get('dialogCancel')
+                    "title": loc.get('dialogCancel')
                 }],
                 "on-button": function(btn, d) {
                     if (btn.id == 'no') {
@@ -281,12 +283,12 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                     var password = $password.val();
                     if (!password || password.length === 0) return;
 
-                    kloudspeaker.service.put("configuration/users/" + u.id + "/password", {
+                    service.put("configuration/users/" + u.id + "/password", {
                         "new": window.Base64.encode(password)
                     }).done(d.close).done(cb);
                 },
                 "on-show": function(h, $d) {
-                    $("#change-password-title").text(kloudspeaker.ui.texts.get('configAdminUsersChangePasswordTitle', u.name));
+                    $("#change-password-title").text(loc.get('configAdminUsersChangePasswordTitle', u.name));
 
                     $content = $d.find("#kloudspeaker-config-admin-userchangepassworddialog-content");
                     $password = $d.find("#passwordField");
@@ -306,7 +308,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
         };
 
         this._showUserDetails = function(u, $e, allGroups, allFolders) {
-            kloudspeaker.dom.template("kloudspeaker-tmpl-config-admin-userdetails", {
+            dom.template("kloudspeaker-tmpl-config-admin-userdetails", {
                 user: u
             }).appendTo($e);
             kloudspeaker.ui.process($e, ["localize"]);
@@ -320,7 +322,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
 
             var updateGroups = function() {
                 $groups.addClass("loading");
-                kloudspeaker.service.get("configuration/users/" + u.id + "/groups/").done(function(l) {
+                service.get("configuration/users/" + u.id + "/groups/").done(function(l) {
                     $groups.removeClass("loading");
                     groups = l;
                     groupsView.table.set(groups);
@@ -328,22 +330,22 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
             };
             var updateFolders = function() {
                 $folders.addClass("loading");
-                kloudspeaker.service.get("configuration/users/" + u.id + "/folders/").done(function(l) {
+                service.get("configuration/users/" + u.id + "/folders/").done(function(l) {
                     $folders.removeClass("loading");
                     folders = l;
                     foldersView.table.set(folders);
                 });
             };
             var onAddUserFolders = function() {
-                var currentIds = kloudspeaker.helpers.extractValue(folders, "id");
-                var selectable = kloudspeaker.helpers.filter(allFolders, function(f) {
+                var currentIds = utils.extractValue(folders, "id");
+                var selectable = utils.filter(allFolders, function(f) {
                     return currentIds.indexOf(f.id) < 0;
                 });
                 //if (selectable.length === 0) return;
 
-                kloudspeaker.ui.dialogs.select({
-                    title: kloudspeaker.ui.texts.get('configAdminUserAddFolderTitle'),
-                    message: kloudspeaker.ui.texts.get('configAdminUserAddFolderMessage'),
+                dialogs.select({
+                    title: loc.get('configAdminUserAddFolderTitle'),
+                    message: loc.get('configAdminUserAddFolderMessage'),
                     key: "id",
                     initSize: [600, 400],
                     columns: [{
@@ -353,17 +355,17 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         content: '<i class="fa fa-folder"></i>'
                     }, {
                         id: "id",
-                        title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
+                        title: loc.get('configAdminTableIdTitle')
                     }, {
                         id: "name",
-                        title: kloudspeaker.ui.texts.get('configAdminUsersFolderDefaultNameTitle')
+                        title: loc.get('configAdminUsersFolderDefaultNameTitle')
                     }, {
                         id: "user_name",
-                        title: kloudspeaker.ui.texts.get('configAdminUsersFolderNameTitle'),
+                        title: loc.get('configAdminUsersFolderNameTitle'),
                         type: "input"
                     }, {
                         id: "path",
-                        title: kloudspeaker.ui.texts.get('configAdminFoldersPathTitle')
+                        title: loc.get('configAdminFoldersPathTitle')
                     }],
                     list: selectable,
                     onSelect: function(sel, o) {
@@ -377,20 +379,20 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                                 folder.name = name;
                             folders.push(folder);
                         });
-                        kloudspeaker.service.post("configuration/users/" + u.id + "/folders/", folders).done(updateFolders);
+                        service.post("configuration/users/" + u.id + "/folders/", folders).done(updateFolders);
                     }
                 });
             };
             var onAddUserGroups = function() {
-                var currentIds = kloudspeaker.helpers.extractValue(groups, "id");
-                var selectable = kloudspeaker.helpers.filter(allGroups, function(f) {
+                var currentIds = utils.extractValue(groups, "id");
+                var selectable = utils.filter(allGroups, function(f) {
                     return currentIds.indexOf(f.id) < 0;
                 });
                 //if (selectable.length === 0) return;
 
-                kloudspeaker.ui.dialogs.select({
-                    title: kloudspeaker.ui.texts.get('configAdminUserAddGroupTitle'),
-                    message: kloudspeaker.ui.texts.get('configAdminUserAddGroupMessage'),
+                dialogs.select({
+                    title: loc.get('configAdminUserAddGroupTitle'),
+                    message: loc.get('configAdminUserAddGroupMessage'),
                     key: "id",
                     initSize: [600, 400],
                     columns: [{
@@ -400,23 +402,23 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         content: '<i class="fa fa-folder"></i>'
                     }, {
                         id: "id",
-                        title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
+                        title: loc.get('configAdminTableIdTitle')
                     }, {
                         id: "name",
-                        title: kloudspeaker.ui.texts.get('configAdminUsersGroupNameTitle')
+                        title: loc.get('configAdminUsersGroupNameTitle')
                     }, {
                         id: "description",
-                        title: kloudspeaker.ui.texts.get('configAdminGroupsDescriptionTitle')
+                        title: loc.get('configAdminGroupsDescriptionTitle')
                     }],
                     list: selectable,
                     onSelect: function(sel, o) {
-                        kloudspeaker.service.post("configuration/users/" + u.id + "/groups/", kloudspeaker.helpers.extractValue(sel, "id")).done(updateGroups);
+                        service.post("configuration/users/" + u.id + "/groups/", utils.extractValue(sel, "id")).done(updateGroups);
                     }
                 });
             };
 
             foldersView = new kloudspeaker.view.ConfigListView($e.find(".kloudspeaker-config-admin-userdetails-folders"), {
-                title: kloudspeaker.ui.texts.get('configAdminUsersFoldersTitle'),
+                title: loc.get('configAdminUsersFoldersTitle'),
                 actions: [{
                     id: "action-add",
                     content: '<i class="fa fa-plus"></i>',
@@ -427,8 +429,8 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                     cls: "btn-danger",
                     depends: "table-selection",
                     callback: function(sel) {
-                        kloudspeaker.service.del("configuration/users/" + u.id + "/folders/", {
-                            ids: kloudspeaker.helpers.extractValue(sel, "id")
+                        service.del("configuration/users/" + u.id + "/folders/", {
+                            ids: utils.extractValue(sel, "id")
                         }).done(updateFolders);
                     }
                 }],
@@ -445,34 +447,34 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         content: '<i class="fa fa-folder"></i>'
                     }, {
                         id: "id",
-                        title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
+                        title: loc.get('configAdminTableIdTitle')
                     }, {
                         id: "name",
-                        title: kloudspeaker.ui.texts.get('configAdminUsersFolderNameTitle'),
+                        title: loc.get('configAdminUsersFolderNameTitle'),
                         formatter: function(f, v) {
                             var n = f.name;
                             if (n && n.length > 0) return n;
-                            return kloudspeaker.ui.texts.get('configAdminUsersFolderDefaultName', f.default_name);
+                            return loc.get('configAdminUsersFolderDefaultName', f.default_name);
                         }
                     }, {
                         id: "path",
-                        title: kloudspeaker.ui.texts.get('configAdminFoldersPathTitle')
+                        title: loc.get('configAdminFoldersPathTitle')
                     }, {
                         id: "remove",
-                        title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'),
+                        title: loc.get('configAdminActionRemoveTitle'),
                         type: "action",
                         content: '<i class="fa fa-trash"></i>'
                     }],
                     onRowAction: function(id, f) {
                         if (id == "remove") {
-                            kloudspeaker.service.del("configuration/users/" + u.id + "/folders/" + f.id).done(updateFolders);
+                            service.del("configuration/users/" + u.id + "/folders/" + f.id).done(updateFolders);
                         }
                     }
                 }
             });
 
             groupsView = new kloudspeaker.view.ConfigListView($e.find(".kloudspeaker-config-admin-userdetails-groups"), {
-                title: kloudspeaker.ui.texts.get('configAdminUsersGroupsTitle'),
+                title: loc.get('configAdminUsersGroupsTitle'),
                 actions: [{
                     id: "action-add",
                     content: '<i class="fa fa-plus"></i>',
@@ -483,8 +485,8 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                     cls: "btn-danger",
                     depends: "table-selection",
                     callback: function(sel) {
-                        kloudspeaker.service.del("configuration/users/" + u.id + "/groups/", {
-                            ids: kloudspeaker.helpers.extractValue(sel, "id")
+                        service.del("configuration/users/" + u.id + "/groups/", {
+                            ids: utils.extractValue(sel, "id")
                         }).done(updateGroups);
                     }
                 }],
@@ -501,25 +503,25 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         content: '<i class="fa fa-user"></i>'
                     }, {
                         id: "id",
-                        title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
+                        title: loc.get('configAdminTableIdTitle')
                     }, {
                         id: "name",
-                        title: kloudspeaker.ui.texts.get('configAdminUsersGroupNameTitle')
+                        title: loc.get('configAdminUsersGroupNameTitle')
                     }, {
                         id: "remove",
-                        title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'),
+                        title: loc.get('configAdminActionRemoveTitle'),
                         type: "action",
                         content: '<i class="fa fa-trash"></i>'
                     }],
                     onRowAction: function(id, g) {
                         if (id == "remove") {
-                            kloudspeaker.service.del("configuration/users/" + u.id + "/groups/" + g.id).done(updateGroups);
+                            service.del("configuration/users/" + u.id + "/groups/" + g.id).done(updateGroups);
                         }
                     }
                 }
             });
 
-            kloudspeaker.plugins.get('plugin-permissions').getUserConfigPermissionsListView($e.find(".kloudspeaker-config-admin-userdetails-permissions"), kloudspeaker.ui.texts.get('configAdminUsersPermissionsTitle'), u);
+            plugins.get('plugin-permissions').getUserConfigPermissionsListView($e.find(".kloudspeaker-config-admin-userdetails-permissions"), loc.get('configAdminUsersPermissionsTitle'), u);
 
             updateGroups();
             updateFolders();
@@ -549,14 +551,14 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
         }
 
         this._removeUsers = function(users) {
-            return kloudspeaker.service.del("configuration/users", {
-                ids: kloudspeaker.helpers.extractValue(users, "id")
+            return service.del("configuration/users", {
+                ids: utils.extractValue(users, "id")
             });
         }
 
         this.onAddEditUser = function(userId, cb) {
-            kloudspeaker.ui.dialogs.custom({
-                title: kloudspeaker.ui.texts.get(userId ? 'configAdminUsersUserDialogEditTitle' : 'configAdminUsersUserDialogAddTitle'),
+            dialogs.custom({
+                title: loc.get(userId ? 'configAdminUsersUserDialogEditTitle' : 'configAdminUsersUserDialogAddTitle'),
                 model: ['kloudspeaker/config/user/addedit', {
                     userId: userId,
                     authenticationOptions: that._authenticationOptions
@@ -564,10 +566,10 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                 view: 'templates/kloudspeaker/config/user/addedit',
                 buttons: [{
                     id: "yes",
-                    "title": kloudspeaker.ui.texts.get('dialogSave')
+                    "title": loc.get('dialogSave')
                 }, {
                     id: "no",
-                    "title": kloudspeaker.ui.texts.get('dialogCancel')
+                    "title": loc.get('dialogCancel')
                 }]
             }).done(cb);
         }
@@ -580,20 +582,20 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
 
         this.init = function(s, cv) {
             that._cv = cv;
-            that.title = kloudspeaker.ui.texts.get("configAdminGroupsNavTitle");
+            that.title = loc.get("configAdminGroupsNavTitle");
         }
 
         this.onActivate = function($c) {
             var groups = false;
             var listView = false;
-            that._details = kloudspeaker.ui.controls.slidePanel($("#kloudspeaker-mainview-viewcontent"), {
+            that._details = controls.slidePanel($("#kloudspeaker-mainview-viewcontent"), {
                 resizable: true
             });
 
             var updateGroups = function() {
                 that._details.hide();
                 that._cv.showLoading(true);
-                kloudspeaker.service.get("configuration/usergroups/").done(function(l) {
+                service.get("configuration/usergroups/").done(function(l) {
                     that._cv.showLoading(false);
                     groups = l;
                     listView.table.set(groups);
@@ -613,9 +615,9 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                     cls: "btn-danger",
                     depends: "table-selection",
                     callback: function(sel) {
-                        kloudspeaker.ui.dialogs.confirmation({
-                            title: kloudspeaker.ui.texts.get("configAdminGroupsRemoveGroupsConfirmationTitle"),
-                            message: kloudspeaker.ui.texts.get("configAdminGroupsRemoveGroupsConfirmationMessage", [sel.length]),
+                        dialogs.confirmation({
+                            title: loc.get("configAdminGroupsRemoveGroupsConfirmationTitle"),
+                            message: loc.get("configAdminGroupsRemoveGroupsConfirmationMessage", [sel.length]),
                             callback: function() {
                                 that._removeGroups(sel).done(updateGroups);
                             }
@@ -640,21 +642,21 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         content: '<i class="fa fa-user"></i>'
                     }, {
                         id: "id",
-                        title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
+                        title: loc.get('configAdminTableIdTitle')
                     }, {
                         id: "name",
-                        title: kloudspeaker.ui.texts.get('configAdminGroupsNameTitle')
+                        title: loc.get('configAdminGroupsNameTitle')
                     }, {
                         id: "description",
-                        title: kloudspeaker.ui.texts.get('configAdminGroupsDescriptionTitle')
+                        title: loc.get('configAdminGroupsDescriptionTitle')
                     }, {
                         id: "edit",
-                        title: kloudspeaker.ui.texts.get('configAdminActionEditTitle'),
+                        title: loc.get('configAdminActionEditTitle'),
                         type: "action",
                         content: '<i class="fa fa-edit"></i>'
                     }, {
                         id: "remove",
-                        title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'),
+                        title: loc.get('configAdminActionRemoveTitle'),
                         type: "action",
                         content: '<i class="fa fa-trash"></i>'
                     }],
@@ -662,11 +664,11 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         if (id == "edit") {
                             that.onAddEditGroup(g, updateGroups);
                         } else if (id == "remove") {
-                            kloudspeaker.ui.dialogs.confirmation({
-                                title: kloudspeaker.ui.texts.get("configAdminGroupsRemoveGroupConfirmationTitle"),
-                                message: kloudspeaker.ui.texts.get("configAdminGroupsRemoveGroupConfirmationMessage", [g.name]),
+                            dialogs.confirmation({
+                                title: loc.get("configAdminGroupsRemoveGroupConfirmationTitle"),
+                                message: loc.get("configAdminGroupsRemoveGroupConfirmationMessage", [g.name]),
                                 callback: function() {
-                                    kloudspeaker.service.del("configuration/usergroups/" + g.id).done(updateGroups);
+                                    service.del("configuration/usergroups/" + g.id).done(updateGroups);
                                 }
                             });
                         }
@@ -684,10 +686,10 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
             updateGroups();
 
             that._cv.showLoading(true);
-            var up = kloudspeaker.service.get("configuration/users").done(function(u) {
+            var up = service.get("configuration/users").done(function(u) {
                 that._allUsers = u;
             });
-            var fp = kloudspeaker.service.get("configuration/folders").done(function(f) {
+            var fp = service.get("configuration/folders").done(function(f) {
                 that._allFolders = f;
             });
             $.when(up, fp).done(function() {
@@ -700,7 +702,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
         };
 
         this._showGroupDetails = function(g, $e, allUsers, allFolders) {
-            kloudspeaker.dom.template("kloudspeaker-tmpl-config-admin-groupdetails", {
+            dom.template("kloudspeaker-tmpl-config-admin-groupdetails", {
                 group: g
             }).appendTo($e);
             kloudspeaker.ui.process($e, ["localize"]);
@@ -713,7 +715,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
 
             var updateUsers = function() {
                 $users.addClass("loading");
-                kloudspeaker.service.get("configuration/usergroups/" + g.id + "/users/").done(function(l) {
+                service.get("configuration/usergroups/" + g.id + "/users/").done(function(l) {
                     $users.removeClass("loading");
                     users = l;
                     usersView.table.set(users);
@@ -721,22 +723,22 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
             };
             var updateFolders = function() {
                 $folders.addClass("loading");
-                kloudspeaker.service.get("configuration/users/" + g.id + "/folders/").done(function(l) {
+                service.get("configuration/users/" + g.id + "/folders/").done(function(l) {
                     $folders.removeClass("loading");
                     folders = l;
                     foldersView.table.set(folders);
                 });
             };
             var onAddGroupUsers = function() {
-                var currentIds = kloudspeaker.helpers.extractValue(users, "id");
-                var selectable = kloudspeaker.helpers.filter(allUsers, function(u) {
+                var currentIds = utils.extractValue(users, "id");
+                var selectable = utils.filter(allUsers, function(u) {
                     return u.is_group === 0 && currentIds.indexOf(u.id) < 0;
                 });
                 //if (selectable.length === 0) return;
 
-                kloudspeaker.ui.dialogs.select({
-                    title: kloudspeaker.ui.texts.get('configAdminGroupAddUserTitle'),
-                    message: kloudspeaker.ui.texts.get('configAdminGroupAddUserMessage'),
+                dialogs.select({
+                    title: loc.get('configAdminGroupAddUserTitle'),
+                    message: loc.get('configAdminGroupAddUserMessage'),
                     key: "id",
                     initSize: [600, 400],
                     columns: [{
@@ -746,27 +748,27 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         content: '<i class="fa fa-folder"></i>'
                     }, {
                         id: "id",
-                        title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
+                        title: loc.get('configAdminTableIdTitle')
                     }, {
                         id: "name",
-                        title: kloudspeaker.ui.texts.get('configAdminUsersNameTitle')
+                        title: loc.get('configAdminUsersNameTitle')
                     }],
                     list: selectable,
                     onSelect: function(sel, o) {
-                        kloudspeaker.service.post("configuration/usergroups/" + g.id + "/users/", kloudspeaker.helpers.extractValue(sel, "id")).done(updateUsers);
+                        service.post("configuration/usergroups/" + g.id + "/users/", utils.extractValue(sel, "id")).done(updateUsers);
                     }
                 });
             };
             var onAddGroupFolders = function() {
-                var currentIds = kloudspeaker.helpers.extractValue(folders, "id");
-                var selectable = kloudspeaker.helpers.filter(allFolders, function(f) {
+                var currentIds = utils.extractValue(folders, "id");
+                var selectable = utils.filter(allFolders, function(f) {
                     return currentIds.indexOf(f.id) < 0;
                 });
                 //if (selectable.length === 0) return;
 
-                kloudspeaker.ui.dialogs.select({
-                    title: kloudspeaker.ui.texts.get('configAdminGroupAddFolderTitle'),
-                    message: kloudspeaker.ui.texts.get('configAdminGroupAddFolderMessage'),
+                dialogs.select({
+                    title: loc.get('configAdminGroupAddFolderTitle'),
+                    message: loc.get('configAdminGroupAddFolderMessage'),
                     key: "id",
                     initSize: [600, 400],
                     columns: [{
@@ -776,17 +778,17 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         content: '<i class="fa fa-folder"></i>'
                     }, {
                         id: "id",
-                        title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
+                        title: loc.get('configAdminTableIdTitle')
                     }, {
                         id: "name",
-                        title: kloudspeaker.ui.texts.get('configAdminUsersFolderDefaultNameTitle')
+                        title: loc.get('configAdminUsersFolderDefaultNameTitle')
                     }, {
                         id: "user_name",
-                        title: kloudspeaker.ui.texts.get('configAdminUsersFolderNameTitle'),
+                        title: loc.get('configAdminUsersFolderNameTitle'),
                         type: "input"
                     }, {
                         id: "path",
-                        title: kloudspeaker.ui.texts.get('configAdminFoldersPathTitle')
+                        title: loc.get('configAdminFoldersPathTitle')
                     }],
                     list: selectable,
                     onSelect: function(sel, o) {
@@ -800,13 +802,13 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                                 folder.name = name;
                             folders.push(folder);
                         });
-                        kloudspeaker.service.post("configuration/users/" + g.id + "/folders/", folders).done(updateFolders);
+                        service.post("configuration/users/" + g.id + "/folders/", folders).done(updateFolders);
                     }
                 });
             };
 
             foldersView = new kloudspeaker.view.ConfigListView($folders, {
-                title: kloudspeaker.ui.texts.get('configAdminGroupsFoldersTitle'),
+                title: loc.get('configAdminGroupsFoldersTitle'),
                 actions: [{
                     id: "action-add",
                     content: '<i class="fa fa-plus"></i>',
@@ -817,8 +819,8 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                     cls: "btn-danger",
                     depends: "table-selection",
                     callback: function(sel) {
-                        kloudspeaker.service.del("configuration/users/" + g.id + "/folders/", {
-                            ids: kloudspeaker.helpers.extractValue(sel, "id")
+                        service.del("configuration/users/" + g.id + "/folders/", {
+                            ids: utils.extractValue(sel, "id")
                         }).done(updateFolders);
                     }
                 }],
@@ -835,34 +837,34 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         content: '<i class="fa fa-folder"></i>'
                     }, {
                         id: "id",
-                        title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
+                        title: loc.get('configAdminTableIdTitle')
                     }, {
                         id: "name",
-                        title: kloudspeaker.ui.texts.get('configAdminUsersFolderNameTitle'),
+                        title: loc.get('configAdminUsersFolderNameTitle'),
                         valueMapper: function(f, v) {
                             var n = f.name;
                             if (n && n.length > 0) return n;
-                            return kloudspeaker.ui.texts.get('configAdminUsersFolderDefaultName', f.default_name);
+                            return loc.get('configAdminUsersFolderDefaultName', f.default_name);
                         }
                     }, {
                         id: "path",
-                        title: kloudspeaker.ui.texts.get('configAdminFoldersPathTitle')
+                        title: loc.get('configAdminFoldersPathTitle')
                     }, {
                         id: "remove",
-                        title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'),
+                        title: loc.get('configAdminActionRemoveTitle'),
                         type: "action",
                         content: '<i class="fa fa-trash"></i>'
                     }],
                     onRowAction: function(id, f) {
                         if (id == "remove") {
-                            kloudspeaker.service.del("configuration/users/" + g.id + "/folders/" + f.id).done(updateFolders);
+                            service.del("configuration/users/" + g.id + "/folders/" + f.id).done(updateFolders);
                         }
                     }
                 }
             });
 
             usersView = new kloudspeaker.view.ConfigListView($users, {
-                title: kloudspeaker.ui.texts.get('configAdminGroupsUsersTitle'),
+                title: loc.get('configAdminGroupsUsersTitle'),
                 actions: [{
                     id: "action-add",
                     content: '<i class="fa fa-plus"></i>',
@@ -873,7 +875,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                     cls: "btn-danger",
                     depends: "table-selection",
                     callback: function(sel) {
-                        kloudspeaker.service.post("configuration/usergroups/" + g.id + "/remove_users/", kloudspeaker.helpers.extractValue(sel, "id")).done(updateUsers);
+                        service.post("configuration/usergroups/" + g.id + "/remove_users/", utils.extractValue(sel, "id")).done(updateUsers);
                     }
                 }],
                 table: {
@@ -884,33 +886,33 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         type: "selectrow"
                     }, {
                         id: "id",
-                        title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
+                        title: loc.get('configAdminTableIdTitle')
                     }, {
                         id: "name",
-                        title: kloudspeaker.ui.texts.get('configAdminUsersNameTitle')
+                        title: loc.get('configAdminUsersNameTitle')
                     }, {
                         id: "remove",
-                        title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'),
+                        title: loc.get('configAdminActionRemoveTitle'),
                         type: "action",
                         content: '<i class="fa fa-trash"></i>'
                     }],
                     onRowAction: function(id, u) {
                         if (id == "remove") {
-                            kloudspeaker.service.post("configuration/usergroups/" + g.id + "/remove_users/", [u.id]).done(updateUsers);
+                            service.post("configuration/usergroups/" + g.id + "/remove_users/", [u.id]).done(updateUsers);
                         }
                     }
                 }
             });
 
-            kloudspeaker.plugins.get('plugin-permissions').getUserConfigPermissionsListView($e.find(".kloudspeaker-config-admin-groupdetails-permissions"), kloudspeaker.ui.texts.get('configAdminGroupsPermissionsTitle'), g);
+            plugins.get('plugin-permissions').getUserConfigPermissionsListView($e.find(".kloudspeaker-config-admin-groupdetails-permissions"), loc.get('configAdminGroupsPermissionsTitle'), g);
 
             updateUsers();
             updateFolders();
         }
 
         this._removeGroups = function(groups) {
-            return kloudspeaker.service.del("configuration/usergroups", {
-                ids: kloudspeaker.helpers.extractValue(groups, "id")
+            return service.del("configuration/usergroups", {
+                ids: utils.extractValue(groups, "id")
             });
         }
 
@@ -919,19 +921,19 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
             var $name = false;
             var $description = false;
 
-            kloudspeaker.ui.dialogs.custom({
+            dialogs.custom({
                 resizable: true,
                 initSize: [600, 400],
-                title: kloudspeaker.ui.texts.get(g ? 'configAdminGroupsDialogEditTitle' : 'configAdminGroupsDialogAddTitle'),
-                content: kloudspeaker.dom.template("kloudspeaker-tmpl-config-admin-groupdialog", {
+                title: loc.get(g ? 'configAdminGroupsDialogEditTitle' : 'configAdminGroupsDialogAddTitle'),
+                content: dom.template("kloudspeaker-tmpl-config-admin-groupdialog", {
                     group: g
                 }),
                 buttons: [{
                     id: "yes",
-                    "title": kloudspeaker.ui.texts.get('dialogSave')
+                    "title": loc.get('dialogSave')
                 }, {
                     id: "no",
-                    "title": kloudspeaker.ui.texts.get('dialogCancel')
+                    "title": loc.get('dialogCancel')
                 }],
                 "on-button": function(btn, d) {
                     if (btn.id == 'no') {
@@ -948,9 +950,9 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                     };
 
                     if (g) {
-                        kloudspeaker.service.put("configuration/usergroups/" + g.id, group).done(d.close).done(cb);
+                        service.put("configuration/usergroups/" + g.id, group).done(d.close).done(cb);
                     } else {
-                        kloudspeaker.service.post("configuration/usergroups", group).done(d.close).done(cb);
+                        service.post("configuration/usergroups", group).done(d.close).done(cb);
                     }
                 },
                 "on-show": function(h, $d) {
@@ -978,20 +980,20 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
         this.init = function(s, cv) {
             that._cv = cv;
             that._settings = s;
-            that.title = kloudspeaker.ui.texts.get("configAdminFoldersNavTitle");
+            that.title = loc.get("configAdminFoldersNavTitle");
         }
 
         this.onActivate = function($c) {
             var folders = false;
             var listView = false;
-            that._details = kloudspeaker.ui.controls.slidePanel($("#kloudspeaker-mainview-viewcontent"), {
+            that._details = controls.slidePanel($("#kloudspeaker-mainview-viewcontent"), {
                 resizable: true
             });
 
             var updateFolders = function() {
                 that._cv.showLoading(true);
 
-                kloudspeaker.service.get("configuration/folders/").done(function(l) {
+                service.get("configuration/folders/").done(function(l) {
                     that._cv.showLoading(false);
                     folders = l;
                     listView.table.set(folders);
@@ -1011,9 +1013,9 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                     cls: "btn-danger",
                     depends: "table-selection",
                     callback: function(sel) {
-                        kloudspeaker.ui.dialogs.confirmation({
-                            title: kloudspeaker.ui.texts.get("configAdminFoldersRemoveFoldersConfirmationTitle"),
-                            message: kloudspeaker.ui.texts.get("configAdminFoldersRemoveFoldersConfirmationMessage", [sel.length]),
+                        dialogs.confirmation({
+                            title: loc.get("configAdminFoldersRemoveFoldersConfirmationTitle"),
+                            message: loc.get("configAdminFoldersRemoveFoldersConfirmationMessage", [sel.length]),
                             callback: function() {
                                 that._removeFolders(sel).done(updateFolders);
                             }
@@ -1038,21 +1040,21 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         content: '<i class="fa fa-folder"></i>'
                     }, {
                         id: "id",
-                        title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
+                        title: loc.get('configAdminTableIdTitle')
                     }, {
                         id: "name",
-                        title: kloudspeaker.ui.texts.get('configAdminFoldersNameTitle')
+                        title: loc.get('configAdminFoldersNameTitle')
                     }, {
                         id: "path",
-                        title: kloudspeaker.ui.texts.get('configAdminFoldersPathTitle')
+                        title: loc.get('configAdminFoldersPathTitle')
                     }, {
                         id: "edit",
-                        title: kloudspeaker.ui.texts.get('configAdminActionEditTitle'),
+                        title: loc.get('configAdminActionEditTitle'),
                         type: "action",
                         content: '<i class="fa fa-edit"></i>'
                     }, {
                         id: "remove",
-                        title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'),
+                        title: loc.get('configAdminActionRemoveTitle'),
                         type: "action",
                         content: '<i class="fa fa-trash"></i>'
                     }],
@@ -1060,17 +1062,17 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         if (id == "edit") {
                             that.onAddEditFolder(f, updateFolders);
                         } else if (id == "remove") {
-                            kloudspeaker.ui.dialogs.confirmation({
-                                title: kloudspeaker.ui.texts.get("configAdminFoldersRemoveFolderConfirmationTitle"),
-                                message: kloudspeaker.ui.texts.get("configAdminFoldersRemoveFolderConfirmationMessage", [f.name]),
+                            dialogs.confirmation({
+                                title: loc.get("configAdminFoldersRemoveFolderConfirmationTitle"),
+                                message: loc.get("configAdminFoldersRemoveFolderConfirmationMessage", [f.name]),
                                 options: {
-                                    deleteContents: kloudspeaker.ui.texts.get("configAdminFoldersRemoveFolderContentConfirmation")
+                                    deleteContents: loc.get("configAdminFoldersRemoveFolderContentConfirmation")
                                 },
                                 callback: function(opts) {
                                     var p = "configuration/folders/" + f.id;
                                     if (opts.deleteContents) p += '?delete=true'
-                                    kloudspeaker.service.del(p).done(function(f) {
-                                        kloudspeaker.filesystem.updateRoots(f.folders, f.roots);
+                                    service.del(p).done(function(f) {
+                                        fs.updateRoots(f.folders, f.roots);
                                         updateFolders();
                                     });
                                 }
@@ -1090,7 +1092,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
             updateFolders();
 
             that._cv.showLoading(true);
-            var gp = kloudspeaker.service.get("configuration/usersgroups").done(function(r) {
+            var gp = service.get("configuration/usersgroups").done(function(r) {
                 that._allUsers = r.users;
                 that._allGroups = r.groups;
                 that._cv.showLoading(false);
@@ -1102,7 +1104,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
         };
 
         this._showFolderDetails = function(f, $e, allUsers, allGroups) {
-            kloudspeaker.dom.template("kloudspeaker-tmpl-config-admin-folderdetails", {
+            dom.template("kloudspeaker-tmpl-config-admin-folderdetails", {
                 folder: f
             }).appendTo($e);
             kloudspeaker.ui.process($e, ["localize"]);
@@ -1113,22 +1115,22 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
 
             var updateUsersAndGroups = function() {
                 $usersAndGroups.addClass("loading");
-                kloudspeaker.service.get("configuration/folders/" + f.id + "/users/").done(function(l) {
+                service.get("configuration/folders/" + f.id + "/users/").done(function(l) {
                     $usersAndGroups.removeClass("loading");
                     usersAndGroups = l;
                     usersAndGroupsView.table.set(l);
                 });
             };
             var onAddUserGroup = function() {
-                var currentIds = kloudspeaker.helpers.extractValue(usersAndGroups, "id");
-                var selectable = kloudspeaker.helpers.filter(allUsersAndGroups, function(ug) {
+                var currentIds = utils.extractValue(usersAndGroups, "id");
+                var selectable = utils.filter(allUsersAndGroups, function(ug) {
                     return currentIds.indexOf(ug.id) < 0;
                 });
                 //if (selectable.length === 0) return;
 
-                kloudspeaker.ui.dialogs.select({
-                    title: kloudspeaker.ui.texts.get('configAdminFolderAddUserTitle'),
-                    message: kloudspeaker.ui.texts.get('configAdminFolderAddUserMessage'),
+                dialogs.select({
+                    title: loc.get('configAdminFolderAddUserTitle'),
+                    message: loc.get('configAdminFolderAddUserMessage'),
                     key: "id",
                     initSize: [600, 400],
                     columns: [{
@@ -1140,15 +1142,15 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         }
                     }, {
                         id: "id",
-                        title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
+                        title: loc.get('configAdminTableIdTitle')
                     }, {
                         id: "name",
-                        title: kloudspeaker.ui.texts.get('configAdminUserDialogUsernameTitle')
+                        title: loc.get('configAdminUserDialogUsernameTitle')
                     }],
                     list: selectable,
                     onSelect: function(sel, o) {
-                        kloudspeaker.service.post("configuration/folders/" + f.id + "/users/", kloudspeaker.helpers.extractValue(sel, "id")).done(function(f) {
-                            kloudspeaker.filesystem.updateRoots(f.folders, f.roots);
+                        service.post("configuration/folders/" + f.id + "/users/", utils.extractValue(sel, "id")).done(function(f) {
+                            fs.updateRoots(f.folders, f.roots);
                             updateUsersAndGroups()
                         });
                     }
@@ -1156,7 +1158,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
             }
 
             usersAndGroupsView = new kloudspeaker.view.ConfigListView($usersAndGroups, {
-                title: kloudspeaker.ui.texts.get('configAdminFolderUsersTitle'),
+                title: loc.get('configAdminFolderUsersTitle'),
                 actions: [{
                     id: "action-add",
                     content: '<i class="fa fa-plus"></i>',
@@ -1167,8 +1169,8 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                     cls: "btn-danger",
                     depends: "table-selection",
                     callback: function(sel) {
-                        kloudspeaker.service.post("configuration/folders/" + f.id + "/remove_users/", kloudspeaker.helpers.extractValue(sel, "id")).done(function(f) {
-                            kloudspeaker.filesystem.updateRoots(f.folders, f.roots);
+                        service.post("configuration/folders/" + f.id + "/remove_users/", utils.extractValue(sel, "id")).done(function(f) {
+                            fs.updateRoots(f.folders, f.roots);
                             updateUsersAndGroups();
                         });
                     }
@@ -1188,19 +1190,19 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         }
                     }, {
                         id: "id",
-                        title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
+                        title: loc.get('configAdminTableIdTitle')
                     }, {
                         id: "name",
-                        title: kloudspeaker.ui.texts.get('configAdminUserDialogUsernameTitle')
+                        title: loc.get('configAdminUserDialogUsernameTitle')
                     }, {
                         id: "remove",
-                        title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'),
+                        title: loc.get('configAdminActionRemoveTitle'),
                         type: "action",
                         content: '<i class="fa fa-trash"></i>'
                     }],
                     onRowAction: function(id, u) {
                         if (id == "remove") {
-                            kloudspeaker.service.post("configuration/folders/" + f.id + "/remove_users/", [u.id]).done(updateUsersAndGroups);
+                            service.post("configuration/folders/" + f.id + "/remove_users/", [u.id]).done(updateUsersAndGroups);
                         }
                     }
                 }
@@ -1210,8 +1212,8 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
         }
 
         this._removeFolders = function(f) {
-            return kloudspeaker.service.del("configuration/folders", {
-                ids: kloudspeaker.helpers.extractValue(f, "id")
+            return service.del("configuration/folders", {
+                ids: utils.extractValue(f, "id")
             });
         }
 
@@ -1230,19 +1232,19 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
             var $name = false;
             var $path = false;
 
-            kloudspeaker.ui.dialogs.custom({
+            dialogs.custom({
                 resizable: true,
                 initSize: [500, 300],
-                title: kloudspeaker.ui.texts.get(f ? 'configAdminFoldersFolderDialogEditTitle' : 'configAdminFoldersFolderDialogAddTitle'),
-                content: kloudspeaker.dom.template("kloudspeaker-tmpl-config-admin-folderdialog", {
+                title: loc.get(f ? 'configAdminFoldersFolderDialogEditTitle' : 'configAdminFoldersFolderDialogAddTitle'),
+                content: dom.template("kloudspeaker-tmpl-config-admin-folderdialog", {
                     folder: f
                 }),
                 buttons: [{
                     id: "yes",
-                    "title": kloudspeaker.ui.texts.get('dialogSave')
+                    "title": loc.get('dialogSave')
                 }, {
                     id: "no",
-                    "title": kloudspeaker.ui.texts.get('dialogCancel')
+                    "title": loc.get('dialogCancel')
                 }],
                 "on-button": function(btn, d) {
                     if (btn.id == 'no') {
@@ -1275,23 +1277,23 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         if (e.code == 105 && !f) {
                             this.handled = true;
 
-                            kloudspeaker.ui.dialogs.confirmation({
-                                title: kloudspeaker.ui.texts.get('configAdminFoldersFolderDialogAddTitle'),
-                                message: kloudspeaker.ui.texts.get('configAdminFoldersFolderDialogAddFolderDoesNotExist'),
+                            dialogs.confirmation({
+                                title: loc.get('configAdminFoldersFolderDialogAddTitle'),
+                                message: loc.get('configAdminFoldersFolderDialogAddFolderDoesNotExist'),
                                 callback: function() {
                                     folder.create = true;
                                     if (!f)
-                                        kloudspeaker.service.post("configuration/folders", folder).done(d.close).done(cb);
+                                        service.post("configuration/folders", folder).done(d.close).done(cb);
                                     else
-                                        kloudspeaker.service.put("configuration/folders/" + f.id, folder).done(d.close).done(cb);
+                                        service.put("configuration/folders/" + f.id, folder).done(d.close).done(cb);
                                 }
                             });
                         }
                     };
                     if (f) {
-                        kloudspeaker.service.put("configuration/folders/" + f.id, folder).done(d.close).done(cb).fail(onFail);
+                        service.put("configuration/folders/" + f.id, folder).done(d.close).done(cb).fail(onFail);
                     } else {
-                        kloudspeaker.service.post("configuration/folders", folder).done(d.close).done(cb).fail(onFail);
+                        service.post("configuration/folders", folder).done(d.close).done(cb).fail(onFail);
                     }
                 },
                 "on-show": function(h, $d) {
@@ -1323,12 +1325,13 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
         this._adminViewsLoaded = false;
 
         this.init = function(mv) {
-            that.title = kloudspeaker.ui.texts.get('configviewMenuTitle');
+            that.title = loc.get('configviewMenuTitle');
             that.icon = "fa fa-cogs";
 
             that._views.push(new kloudspeaker.view.config.user.AccountView(mv));
 
-            $.each(kloudspeaker.plugins.getConfigViewPlugins(), function(i, p) {
+            var s = session.get();
+            $.each(plugins.getConfigViewPlugins(), function(i, p) {
                 if (!p.configViewHandler.views) return;
 
                 var views = p.configViewHandler.views();
@@ -1336,7 +1339,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
 
                 $.each(views, function(i, v) {
                     if (v.admin) {
-                        if (kloudspeaker.session.user.admin || (v.requiresPermission && permissions.hasPermission(v.requiresPermission)))
+                        if (s.user.admin || (v.requiresPermission && permissions.hasPermission(v.requiresPermission)))
                             that._adminViews.push(v);
                     } else
                         that._views.push(v);
@@ -1344,7 +1347,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
             });
             _.each(kloudspeaker.ui._configViews, function(v) {
                 if (v.admin) {
-                    if (kloudspeaker.session.user.admin || (v.requiresPermission && permissions.hasPermission(v.requiresPermission)))
+                    if (s.user.admin || (v.requiresPermission && permissions.hasPermission(v.requiresPermission)))
                         that._adminViews.push(v);
                 } else {
                     that._views.push(v);
@@ -1355,16 +1358,16 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
         this.onResize = function() {}
 
         this.onActivate = function(h) {
-            kloudspeaker.templates.load("configview", kloudspeaker.templates.url("configview.html")).done(function() {
-                kloudspeaker.dom.template("kloudspeaker-tmpl-configview").appendTo(h.content);
+            templates.load("configview", templates.url("configview.html")).done(function() {
+                dom.template("kloudspeaker-tmpl-configview").appendTo(h.content);
 
                 that.showLoading(true);
 
                 var navBarItems = [];
                 $.each(that._views, function(i, v) {
                     var title = v.title;
-                    if (typeof(title) === "string" && title.startsWith("i18n:")) title = kloudspeaker.ui.texts.get(title.substring(5));
-                    if (window.isArray(title)) title = kloudspeaker.ui.texts.get(title[0], title.slice(1));
+                    if (typeof(title) === "string" && title.startsWith("i18n:")) title = loc.get(title.substring(5));
+                    if (window.isArray(title)) title = loc.get(title[0], title.slice(1));
 
                     navBarItems.push({
                         title: title,
@@ -1376,7 +1379,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                 });
 
                 that._userNav = h.addNavBar({
-                    title: kloudspeaker.ui.texts.get("configViewUserNavTitle"),
+                    title: loc.get("configViewUserNavTitle"),
                     items: navBarItems
                 });
 
@@ -1388,21 +1391,22 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                     that._adminViewsLoaded = true;
 
                     // default admin views
-                    if (kloudspeaker.session.user.admin) {
+                    var s = session.get();
+                    if (s.user.admin) {
                         that._adminViews.unshift(new kloudspeaker.view.config.admin.FoldersView());
                         that._adminViews.unshift(new kloudspeaker.view.config.admin.GroupsView());
                         that._adminViews.unshift(new kloudspeaker.view.config.admin.UsersView());
                         that._adminViews.unshift({
                             viewId: 'system',
-                            title: kloudspeaker.ui.texts.get("configSystemNavTitle"),
+                            title: loc.get("configSystemNavTitle"),
                             model: 'kloudspeaker/config/system',
                             view: '#kloudspeaker-tmpl-config-systemview'
                         });
                     }
 
                     var plugins = [];
-                    for (var k in kloudspeaker.session.plugins) {
-                        if (!kloudspeaker.session.plugins[k] || !kloudspeaker.session.plugins[k].admin) continue;
+                    for (var k in s.plugins) {
+                        if (!s.plugins[k] || !s.plugins[k].admin) continue;
                         plugins.push(k);
                     }
                     kloudspeaker.admin = {
@@ -1418,12 +1422,14 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
         this._loadAdminPlugins = function(ids) {
             var df = $.Deferred();
             var l = [];
-            if (kloudspeaker.session.user.admin)
-                l.push(kloudspeaker.service.get("configuration/settings").done(function(s) {
+            var s = session.get();
+
+            if (s.user.admin)
+                l.push(service.get("configuration/settings").done(function(s) {
                     that._settings = s;
                 }));
             for (var i = 0, j = ids.length; i < j; i++) {
-                l.push(kloudspeaker.dom.importScript(kloudspeaker.plugins.url(ids[i], "plugin.js", true)));
+                l.push(dom.importScript(plugins.url(ids[i], "plugin.js", true)));
             }
 
             $.when.apply($, l).done(function() {
@@ -1431,9 +1437,9 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
 
                 var addView = function(i, v) {
                     if (v.requiresPermission) {
-                        if (!kloudspeaker.session.user.admin && !permissions.hasPermission(v.requiresPermission)) return;
+                        if (!s.user.admin && !permissions.hasPermission(v.requiresPermission)) return;
                     } else {
-                        if (!kloudspeaker.session.user.admin) return;
+                        if (!s.user.admin) return;
                     }
                     that._adminViews.push(v);
                 };
@@ -1442,9 +1448,9 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                     if (!p || !p.views) continue;
 
                     if (p.resources && p.resources.texts)
-                        o.push(kloudspeaker.ui.texts.loadPlugin(pk));
+                        o.push(loc.loadPlugin(pk));
                     if (p.resources && p.resources.css)
-                        o.push(kloudspeaker.dom.importCss(kloudspeaker.plugins.url(pk, "plugin.css", true)));
+                        o.push(dom.importCss(plugins.url(pk, "plugin.css", true)));
                     $.each(p.views, addView);
                 }
 
@@ -1462,8 +1468,8 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                 var navBarItems = [];
                 $.each(that._adminViews, function(i, v) {
                     var title = v.title;
-                    if (typeof(title) === "string" && title.startsWith("i18n:")) title = kloudspeaker.ui.texts.get(title.substring(5));
-                    if (window.isArray(title)) title = kloudspeaker.ui.texts.get(title[0], title.slice(1));
+                    if (typeof(title) === "string" && title.startsWith("i18n:")) title = loc.get(title.substring(5));
+                    if (window.isArray(title)) title = loc.get(title[0], title.slice(1));
 
                     navBarItems.push({
                         title: title,
@@ -1475,7 +1481,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                 });
 
                 that._adminNav = h.addNavBar({
-                    title: kloudspeaker.ui.texts.get("configViewAdminNavTitle"),
+                    title: loc.get("configViewAdminNavTitle"),
                     items: navBarItems
                 });
             }
@@ -1533,8 +1539,8 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
             that.showLoading(false);
 
             var title = v.title;
-            if (typeof(title) === "string" && title.startsWith("i18n:")) title = kloudspeaker.ui.texts.get(title.substring(5));
-            if (window.isArray(title)) title = kloudspeaker.ui.texts.get(title[0], title.slice(1));
+            if (typeof(title) === "string" && title.startsWith("i18n:")) title = loc.get(title.substring(5));
+            if (window.isArray(title)) title = loc.get(title[0], title.slice(1));
 
             if (v.model) {
                 var model = v.model;
