@@ -2,9 +2,7 @@
 	<div class="navbar-inner">
 		<div class="container-fluid">
 			<button type="button" id="kloudspeaker-mainview-navcollapse" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-responsive-collapse">
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
+				<span class="fa fa-navicon"></span>
 			</button>
       
 			<div id="kloudspeaker-mainview-logo" class="brand"></div>
@@ -106,13 +104,13 @@
 
 <script id="kloudspeaker-tmpl-fileview-tools" type="text/x-jquery-tmpl">
 	<div id="kloudspeaker-fileview-style-options" class="kloudspeaker-radio">
-		<button id="kloudspeaker-fileview-style-list" class="btn btn-inverse btn-flat fileview-style-option"><i class="icon-list-ul"></i></a>
-		<button id="kloudspeaker-fileview-style-small-icons" class="btn btn-inverse btn-flat fileview-style-option"><i class="icon-th"></i></a>
-		<button id="kloudspeaker-fileview-style-large-icons" class="btn btn-inverse btn-flat fileview-style-option"><i class="icon-th-large"></i></a>
+		<button id="kloudspeaker-fileview-style-list" class="btn btn-inverse btn-flat fileview-style-option"><i class="fa fa-list-ul"></i></a>
+		<button id="kloudspeaker-fileview-style-small-icons" class="btn btn-inverse btn-flat fileview-style-option"><i class="fa fa-th"></i></a>
+		<button id="kloudspeaker-fileview-style-large-icons" class="btn btn-inverse btn-flat fileview-style-option"><i class="fa fa-th-large"></i></a>
 	</div>
 	<div id="kloudspeaker-fileview-search" class="input-append">
 		<input id="kloudspeaker-fileview-search-input" class="hintbox" type="text" hint-key="mainViewSearch">
-		<button class="btn" type="button"><i class="icon-search"></i></button>
+		<button class="btn" type="button"><i class="fa fa-search"></i></button>
 	</div>
 </script>
 
@@ -193,7 +191,7 @@
 		<span id="kloudspeaker-mainview-createfolder-title" class="localized" text-key="mainviewCreateFolderTitle"></span>
 		<div id="kloudspeaker-mainview-createfolder-name" class="input-append pull-right">
 			<input id="kloudspeaker-mainview-createfolder-name-input" class="hintbox" type="text" hint-key="mainviewCreateFolderName">
-			<button id="kloudspeaker-mainview-createfolder-button" class="btn" type="button"><i class="icon-arrow-right"></i></button>
+			<button id="kloudspeaker-mainview-createfolder-button" class="btn" type="button"><i class="fa fa-arrow-right"></i></button>
 		</div>
 	</div>
 </script>
@@ -210,7 +208,7 @@
 			<span id="kloudspeaker-mainview-addfile-retrieve-title" class="localized" text-key="mainviewRetrieveFileTitle"></span>
 			<div class="input-append pull-right">
 				<input id="kloudspeaker-mainview-addfile-retrieve-url-input" class="hintbox" type="text" hint-key="mainviewRetrieveUrlTitle">
-				<button id="kloudspeaker-mainview-addfile-retrieve-button" class="btn" type="button"><i class="icon-arrow-right"></i></button>
+				<button id="kloudspeaker-mainview-addfile-retrieve-button" class="btn" type="button"><i class="fa fa-arrow-right"></i></button>
 			</div>
 		</div>
 	</div>
@@ -254,8 +252,8 @@
 <script id="kloudspeaker-tmpl-filelist-item" type="text/x-jquery-tmpl">
 	<div id="kloudspeaker-filelist-item-${id}" class="kloudspeaker-filelist-item ${$item.typeClass($data)}" unselectable="on">
 		<div class="kloudspeaker-filelist-col kloudspeaker-filelist-col-sel">
-			<i class="kloudspeaker-filelist-item-sel unselected icon-check-empty"></i>
-			<i class="kloudspeaker-filelist-item-sel selected icon-check"></i>
+			<i class="kloudspeaker-filelist-item-sel unselected fa fa-square-o"></i>
+			<i class="kloudspeaker-filelist-item-sel selected fa fa-check-square-o"></i>
 		</div>
 		<div class="kloudspeaker-filelist-col kloudspeaker-filelist-col-icon">
 			<div class="kloudspeaker-filelist-item-icon"></div>
@@ -274,15 +272,15 @@
 <script id="kloudspeaker-tmpl-iconview-item" type="text/x-jquery-tmpl">
 	<div id="kloudspeaker-iconview-item-${id}" title="${name}" class="kloudspeaker-iconview-item ${$item.typeClass($data)}">
 		{{if $item.showThumb($data)}}
-		<div class="kloudspeaker-iconview-item-icon-thumb"><img src="${$item.thumbUrl($data)}"></img></div>
+		<div class="kloudspeaker-iconview-item-fa fa-thumb"><img src="${$item.thumbUrl($data)}"></img></div>
 		{{else}}
 		<div class="kloudspeaker-iconview-item-icon"></div>
 		{{/if}}
 		<div class="kloudspeaker-iconview-item-label">${name}</div>
-		<div class="kloudspeaker-iconview-item-info"><i class="icon-info-sign"></i></div>
+		<div class="kloudspeaker-iconview-item-info"><i class="fa fa-info-sign"></i></div>
 		<div class="kloudspeaker-iconview-item-sel">
-			<i class="kloudspeaker-iconview-item-sel-option unselected icon-check-empty"></i>
-			<i class="kloudspeaker-iconview-item-sel-option selected icon-check"></i>
+			<i class="kloudspeaker-iconview-item-sel-option unselected fa fa-square-o"></i>
+			<i class="kloudspeaker-iconview-item-sel-option selected fa fa-check-square-o"></i>
 		</div>
 	</div>
 </script>
@@ -401,7 +399,7 @@
 					</select>
 					<select id="kloudspeaker-pluginpermissions-editor-new-permission">
 					</select>
-					<button id="kloudspeaker-pluginpermissions-editor-new-add" class="btn btn-success"><i class="icon-plus"></i></button>
+					<button id="kloudspeaker-pluginpermissions-editor-new-add" class="btn btn-success"><i class="fa fa-plus"></i></button>
 				</div>
 			</div>
 			
@@ -436,7 +434,7 @@
 </script>
 
 <script id="kloudspeaker-tmpl-permission-editor-listremove" type="text/x-jquery-tmpl">
-	<div><i class='icon-trash'></i></div>
+	<div><i class='fa fa-trash'></i></div>
 </script>
 
 <script id="kloudspeaker-tmpl-permission-generic-editor" type="text/x-jquery-tmpl">
@@ -493,10 +491,10 @@
 	<div id="kloudspeaker-dropbox" class="closed">
 		<div id="kloudspeaker-dropbox-handle">
 			<div id="kloudspeaker-dropbox-handle-icon-open" class="kloudspeaker-dropbox-handle-icon">
-				<i class="icon-caret-left"></i>
+				<i class="fa fa-caret-left"></i>
 			</div>
 			<div id="kloudspeaker-dropbox-handle-icon-close" class="kloudspeaker-dropbox-handle-icon">
-				<i class="icon-caret-right"></i>
+				<i class="fa fa-caret-right"></i>
 			</div>
 		</div>
 		<div id="kloudspeaker-dropbox-container">
@@ -505,7 +503,7 @@
 				</div>
 				<div class="btn-group">
 					<li id="kloudspeaker-dropbox-actions">
-						<button class="btn dropdown-toggle"><i class="icon-cog"></i>&nbsp;<b class="caret"></b></button>
+						<button class="btn dropdown-toggle"><i class="fa fa-cog"></i>&nbsp;<b class="caret"></b></button>
 					</li>
 				</div>
 			</div>
@@ -517,6 +515,6 @@
 	<div class="kloudspeaker-dropbox-list-item {{if is_file}}file{{else}}folder{{/if}}">
 		<div class="item-icon"></div>
 		<div class="item-label">${name}</div>
-		<a class="item-remove" href="javascript: void(0);"><i class="icon-trash"></i></a>
+		<a class="item-remove" href="javascript: void(0);"><i class="fa fa-trash"></i></a>
 	</div>
 </script>

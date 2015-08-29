@@ -6,7 +6,7 @@
         <!-- ko if: settings.tools -->
         <div class="btn-toolbar tools" role="toolbar">
             <!-- ko foreach: {data: settings.tools, as: 'tool'} -->
-            <button type="button" class="btn btn-default" data-bind="click: function() { $parent.onTool(tool) }, attr: { disabled: tool._disabled, title: (typeof(tool.tooltip) === 'function') ? tool.tooltip() : tool.tooltip, class: 'btn btn-default '+(tool.cls ? tool.cls : '') }"><i data-bind="attr: {class: 'icon-'+tool.icon }"></i></button>
+            <button type="button" class="btn btn-default" data-bind="click: function() { $parent.onTool(tool) }, attr: { disabled: tool._disabled, title: (typeof(tool.tooltip) === 'function') ? tool.tooltip() : tool.tooltip, class: 'btn btn-default '+(tool.cls ? tool.cls : '') }"><i data-bind="attr: {class: 'fa fa-'+tool.icon }"></i></button>
             <!-- /ko -->
         </div>
         <!-- /ko -->
@@ -15,7 +15,7 @@
         <div class="accordion-group">
             <div class="accordion-heading">
                 <a class="accordion-toggle" data-toggle="collapse" href="#config-options-content">
-                    <i class="icon-chevron-down"></i>
+                    <i class="fa fa-chevron-down"></i>
                 </a>
             </div>
             <div id="config-options-content" class="accordion-body collapse">

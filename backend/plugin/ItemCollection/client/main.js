@@ -75,7 +75,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                         id: "icon",
                         title: "",
                         renderer: function(i, v, $c) {
-                            $c.html(i.is_file ? '<i class="icon-file"></i>' : '<i class="icon-folder-close-alt"></i>');
+                            $c.html(i.is_file ? '<i class="fa fa-file"></i>' : '<i class="fa fa-folder-o"></i>');
                         }
                     }, {
                         id: "name",
@@ -84,7 +84,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                         id: "remove",
                         title: "",
                         type: "action",
-                        content: '<i class="icon-trash"></i>'
+                        content: '<i class="fa fa-trash"></i>'
                     }]
                 },
                 onTableRowAction: function(d, table, id, item) {
@@ -206,7 +206,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                 };
                 var $fa = $("#kloudspeaker-fileview-folder-actions");
                 var actionsElement = kloudspeaker.dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
-                    icon: 'icon-cog',
+                    icon: 'fa fa-cog',
                     dropdown: true
                 }, opt).appendTo($fa);
                 kloudspeaker.ui.controls.dropdown({

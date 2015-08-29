@@ -63,7 +63,7 @@ define(['kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/ui/form
                 };
                 var $fa = $("#kloudspeaker-fileview-folder-actions");
                 var actionsElement = dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
-                    icon: 'icon-cog',
+                    icon: 'fa fa-cog',
                     dropdown: true
                 }, opt).appendTo($fa);
 
@@ -167,14 +167,14 @@ define(['kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/ui/form
                         id: "restore",
                         content: function(item, data) {
                             if (!controller.canRestore(item)) return "";
-                            return "<a href='javascript: void(0)' title='" + texts.get("pluginTrashBinRestoreAction") + "'><i class='icon-reply'></i></a>";
+                            return "<a href='javascript: void(0)' title='" + texts.get("pluginTrashBinRestoreAction") + "'><i class='fa fa-reply'></i></a>";
                         }
                     },
                     "delete": {
                         id: "delete",
                         content: function(item, data) {
                             if (!controller.canDelete(item)) return "";
-                            return "<a href='javascript: void(0)' title='" + texts.get("pluginTrashBinDeleteAction") + "'><i class='icon-trash'></i></a>";
+                            return "<a href='javascript: void(0)' title='" + texts.get("pluginTrashBinDeleteAction") + "'><i class='fa fa-trash'></i></a>";
                         }
                     }
                 };

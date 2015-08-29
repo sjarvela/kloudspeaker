@@ -1,0 +1,8 @@
+{
+  "name": "kloudspeaker",
+  "version": "2.7",
+  "main": [],
+  "dependencies": {
+    "font-awesome": "4.4"
+  }
+}

@@ -41,13 +41,13 @@
                 listView = new kloudspeaker.view.ConfigListView($c, {
                     actions: [{
                         id: "action-add",
-                        content: '<i class="icon-plus"></i>',
+                        content: '<i class="fa fa-plus"></i>',
                         callback: function() {
                             that.onAddRegistration(updateList);
                         }
                     }, {
                         id: "action-remove",
-                        content: '<i class="icon-trash"></i>',
+                        content: '<i class="fa fa-trash"></i>',
                         cls: "btn-danger",
                         depends: "table-selection",
                         callback: function(sel) {
@@ -57,7 +57,7 @@
                         }
                     }, {
                         id: "action-refresh",
-                        content: '<i class="icon-refresh"></i>',
+                        content: '<i class="fa fa-refresh"></i>',
                         callback: updateList
                     }],
                     table: {
@@ -70,7 +70,7 @@
                             id: "icon",
                             title: "",
                             valueMapper: function(r) {
-                                return (r.confirmed) ? '<i class="icon-ok"></i>' : '<i class="icon-pencil"></i>';
+                                return (r.confirmed) ? '<i class="fa fa-check"></i>' : '<i class="fa fa-pencil"></i>';
                             }
                         }, {
                             id: "id",
@@ -96,7 +96,7 @@
                             id: "approve",
                             title: kloudspeaker.ui.texts.get('pluginRegistrationAdminApproveTitle'),
                             type: "action",
-                            content: '<i class="icon-thumbs-up"></i>',
+                            content: '<i class="fa fa-thumbs-up"></i>',
                             enabled: function(r) {
                                 return kloudspeaker.session.plugins.Registration.require_approval && r.confirmed;
                             }
@@ -104,7 +104,7 @@
                             id: "remove",
                             title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'),
                             type: "action",
-                            content: '<i class="icon-trash"></i>'
+                            content: '<i class="fa fa-trash"></i>'
                         }],
                         onRow: function($r, r) {
                             if (r.confirmed) $r.addClass("success");

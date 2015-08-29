@@ -465,7 +465,7 @@ define(['kloudspeaker/session', 'kloudspeaker/filesystem', 'kloudspeaker/localiz
                 if ($e) {
                     $e.after(c);
                     $e.addClass("loaded");
-                    if ($e) $e.find(".kloudspeaker-itemselector-folder-indicator").find("i").removeClass("icon-caret-right").addClass("icon-caret-down");
+                    if ($e) $e.find(".kloudspeaker-itemselector-folder-indicator").find("i").removeClass("fa fa-caret-right").addClass("fa fa-caret-down");
                 } else {
                     $selector.append(c);
                 }

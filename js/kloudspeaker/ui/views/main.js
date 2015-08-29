@@ -149,7 +149,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/session', 'kl
                 if (nb.dropdown) {
                     $items.each(function(i, e) {
                         var item = items[$items.index(this)];
-                        var $tr = $('<li class="kloudspeaker-mainview-navbar-dropdown"><a href="#" class="dropdown-toggle"><i class="icon-cog"></i></a></li>').appendTo($(e));
+                        var $tr = $('<li class="kloudspeaker-mainview-navbar-dropdown"><a href="#" class="dropdown-toggle"><i class="fa fa-cog"></i></a></li>').appendTo($(e));
                         var dropdownItems = [];
                         if (typeof(nb.dropdown.items) != 'function') dropdownItems = nb.dropdown.items;
                         kloudspeaker.ui.controls.dropdown({

@@ -41,7 +41,7 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/ses
                     if (item.customType) return ""; //TODO type icon
                     if (!isValidItem(item)) return "exclamation";
 
-                    if (!item.is_file) return 'folder-close';
+                    if (!item.is_file) return 'folder-open';
                     return 'file';
                 }
             }, {

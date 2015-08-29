@@ -124,13 +124,13 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
             listView = new kloudspeaker.view.ConfigListView($c, {
                 actions: [{
                     id: "action-add",
-                    content: '<i class="icon-plus"></i>',
+                    content: '<i class="fa fa-plus"></i>',
                     callback: function() {
                         that.onAddEditUser(false, updateUsers);
                     }
                 }, {
                     id: "action-remove",
-                    content: '<i class="icon-trash"></i>',
+                    content: '<i class="fa fa-trash"></i>',
                     cls: "btn-danger",
                     depends: "table-selection",
                     callback: function(sel) {
@@ -144,7 +144,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                     }
                 }, {
                     id: "action-refresh",
-                    content: '<i class="icon-refresh"></i>',
+                    content: '<i class="fa fa-refresh"></i>',
                     callback: refresh
                 }],
                 table: {
@@ -171,7 +171,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         id: "icon",
                         title: "",
                         type: "static",
-                        content: '<i class="icon-user"></i>'
+                        content: '<i class="fa fa-user"></i>'
                     }, {
                         id: "id",
                         title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
@@ -195,12 +195,12 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         id: "edit",
                         title: kloudspeaker.ui.texts.get('configAdminActionEditTitle'),
                         type: "action",
-                        content: '<i class="icon-edit"></i>'
+                        content: '<i class="fa fa-edit"></i>'
                     }, {
                         id: "pw",
                         title: kloudspeaker.ui.texts.get('configAdminUsersActionChangePasswordTitle'),
                         type: "action",
-                        content: '<i class="icon-key"></i>',
+                        content: '<i class="fa fa-key"></i>',
                         enabled: function(u) {
                             var auth = u.auth;
                             if (!auth) auth = that._defaultAuthMethod;
@@ -210,7 +210,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         id: "remove",
                         title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'),
                         type: "action",
-                        content: '<i class="icon-trash"></i>'
+                        content: '<i class="fa fa-trash"></i>'
                     }],
                     onRowAction: function(id, u) {
                         if (id == "edit") {
@@ -350,7 +350,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         id: "icon",
                         title: "",
                         type: "static",
-                        content: '<i class="icon-folder"></i>'
+                        content: '<i class="fa fa-folder"></i>'
                     }, {
                         id: "id",
                         title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
@@ -397,7 +397,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         id: "icon",
                         title: "",
                         type: "static",
-                        content: '<i class="icon-folder"></i>'
+                        content: '<i class="fa fa-folder"></i>'
                     }, {
                         id: "id",
                         title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
@@ -419,11 +419,11 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                 title: kloudspeaker.ui.texts.get('configAdminUsersFoldersTitle'),
                 actions: [{
                     id: "action-add",
-                    content: '<i class="icon-plus"></i>',
+                    content: '<i class="fa fa-plus"></i>',
                     callback: onAddUserFolders
                 }, {
                     id: "action-remove",
-                    content: '<i class="icon-trash"></i>',
+                    content: '<i class="fa fa-trash"></i>',
                     cls: "btn-danger",
                     depends: "table-selection",
                     callback: function(sel) {
@@ -442,7 +442,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         id: "icon",
                         title: "",
                         type: "static",
-                        content: '<i class="icon-folder"></i>'
+                        content: '<i class="fa fa-folder"></i>'
                     }, {
                         id: "id",
                         title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
@@ -461,7 +461,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         id: "remove",
                         title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'),
                         type: "action",
-                        content: '<i class="icon-trash"></i>'
+                        content: '<i class="fa fa-trash"></i>'
                     }],
                     onRowAction: function(id, f) {
                         if (id == "remove") {
@@ -475,11 +475,11 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                 title: kloudspeaker.ui.texts.get('configAdminUsersGroupsTitle'),
                 actions: [{
                     id: "action-add",
-                    content: '<i class="icon-plus"></i>',
+                    content: '<i class="fa fa-plus"></i>',
                     callback: onAddUserGroups
                 }, {
                     id: "action-remove",
-                    content: '<i class="icon-trash"></i>',
+                    content: '<i class="fa fa-trash"></i>',
                     cls: "btn-danger",
                     depends: "table-selection",
                     callback: function(sel) {
@@ -498,7 +498,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         id: "icon",
                         title: "",
                         type: "static",
-                        content: '<i class="icon-user"></i>'
+                        content: '<i class="fa fa-user"></i>'
                     }, {
                         id: "id",
                         title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
@@ -509,7 +509,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         id: "remove",
                         title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'),
                         type: "action",
-                        content: '<i class="icon-trash"></i>'
+                        content: '<i class="fa fa-trash"></i>'
                     }],
                     onRowAction: function(id, g) {
                         if (id == "remove") {
@@ -603,13 +603,13 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
             listView = new kloudspeaker.view.ConfigListView($c, {
                 actions: [{
                     id: "action-add",
-                    content: '<i class="icon-plus"></i>',
+                    content: '<i class="fa fa-plus"></i>',
                     callback: function() {
                         that.onAddEditGroup(false, updateGroups);
                     }
                 }, {
                     id: "action-remove",
-                    content: '<i class="icon-trash"></i>',
+                    content: '<i class="fa fa-trash"></i>',
                     cls: "btn-danger",
                     depends: "table-selection",
                     callback: function(sel) {
@@ -623,7 +623,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                     }
                 }, {
                     id: "action-refresh",
-                    content: '<i class="icon-refresh"></i>',
+                    content: '<i class="fa fa-refresh"></i>',
                     callback: updateGroups
                 }],
                 table: {
@@ -637,7 +637,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         id: "icon",
                         title: "",
                         type: "static",
-                        content: '<i class="icon-user"></i>'
+                        content: '<i class="fa fa-user"></i>'
                     }, {
                         id: "id",
                         title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
@@ -651,12 +651,12 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         id: "edit",
                         title: kloudspeaker.ui.texts.get('configAdminActionEditTitle'),
                         type: "action",
-                        content: '<i class="icon-edit"></i>'
+                        content: '<i class="fa fa-edit"></i>'
                     }, {
                         id: "remove",
                         title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'),
                         type: "action",
-                        content: '<i class="icon-trash"></i>'
+                        content: '<i class="fa fa-trash"></i>'
                     }],
                     onRowAction: function(id, g) {
                         if (id == "edit") {
@@ -743,7 +743,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         id: "icon",
                         title: "",
                         type: "static",
-                        content: '<i class="icon-folder"></i>'
+                        content: '<i class="fa fa-folder"></i>'
                     }, {
                         id: "id",
                         title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
@@ -773,7 +773,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         id: "icon",
                         title: "",
                         type: "static",
-                        content: '<i class="icon-folder"></i>'
+                        content: '<i class="fa fa-folder"></i>'
                     }, {
                         id: "id",
                         title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
@@ -809,11 +809,11 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                 title: kloudspeaker.ui.texts.get('configAdminGroupsFoldersTitle'),
                 actions: [{
                     id: "action-add",
-                    content: '<i class="icon-plus"></i>',
+                    content: '<i class="fa fa-plus"></i>',
                     callback: onAddGroupFolders
                 }, {
                     id: "action-remove",
-                    content: '<i class="icon-trash"></i>',
+                    content: '<i class="fa fa-trash"></i>',
                     cls: "btn-danger",
                     depends: "table-selection",
                     callback: function(sel) {
@@ -832,7 +832,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         id: "icon",
                         title: "",
                         type: "static",
-                        content: '<i class="icon-folder"></i>'
+                        content: '<i class="fa fa-folder"></i>'
                     }, {
                         id: "id",
                         title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
@@ -851,7 +851,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         id: "remove",
                         title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'),
                         type: "action",
-                        content: '<i class="icon-trash"></i>'
+                        content: '<i class="fa fa-trash"></i>'
                     }],
                     onRowAction: function(id, f) {
                         if (id == "remove") {
@@ -865,11 +865,11 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                 title: kloudspeaker.ui.texts.get('configAdminGroupsUsersTitle'),
                 actions: [{
                     id: "action-add",
-                    content: '<i class="icon-plus"></i>',
+                    content: '<i class="fa fa-plus"></i>',
                     callback: onAddGroupUsers
                 }, {
                     id: "action-remove",
-                    content: '<i class="icon-trash"></i>',
+                    content: '<i class="fa fa-trash"></i>',
                     cls: "btn-danger",
                     depends: "table-selection",
                     callback: function(sel) {
@@ -892,7 +892,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         id: "remove",
                         title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'),
                         type: "action",
-                        content: '<i class="icon-trash"></i>'
+                        content: '<i class="fa fa-trash"></i>'
                     }],
                     onRowAction: function(id, u) {
                         if (id == "remove") {
@@ -1001,13 +1001,13 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
             listView = new kloudspeaker.view.ConfigListView($c, {
                 actions: [{
                     id: "action-add",
-                    content: '<i class="icon-plus"></i>',
+                    content: '<i class="fa fa-plus"></i>',
                     callback: function() {
                         that.onAddEditFolder(false, updateFolders);
                     }
                 }, {
                     id: "action-remove",
-                    content: '<i class="icon-trash"></i>',
+                    content: '<i class="fa fa-trash"></i>',
                     cls: "btn-danger",
                     depends: "table-selection",
                     callback: function(sel) {
@@ -1021,7 +1021,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                     }
                 }, {
                     id: "action-refresh",
-                    content: '<i class="icon-refresh"></i>',
+                    content: '<i class="fa fa-refresh"></i>',
                     callback: updateFolders
                 }],
                 table: {
@@ -1035,7 +1035,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         id: "icon",
                         title: "",
                         type: "static",
-                        content: '<i class="icon-folder-close"></i>'
+                        content: '<i class="fa fa-folder"></i>'
                     }, {
                         id: "id",
                         title: kloudspeaker.ui.texts.get('configAdminTableIdTitle')
@@ -1049,12 +1049,12 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         id: "edit",
                         title: kloudspeaker.ui.texts.get('configAdminActionEditTitle'),
                         type: "action",
-                        content: '<i class="icon-edit"></i>'
+                        content: '<i class="fa fa-edit"></i>'
                     }, {
                         id: "remove",
                         title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'),
                         type: "action",
-                        content: '<i class="icon-trash"></i>'
+                        content: '<i class="fa fa-trash"></i>'
                     }],
                     onRowAction: function(id, f) {
                         if (id == "edit") {
@@ -1135,8 +1135,8 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         id: "icon",
                         title: "",
                         valueMapper: function(i, v) {
-                            if (i.is_group == 1) return "<i class='icon-user'></i><i class='icon-user'></i>";
-                            return "<i class='icon-user'></i>";
+                            if (i.is_group == 1) return "<i class='fa fa-user'></i><i class='fa fa-user'></i>";
+                            return "<i class='fa fa-user'></i>";
                         }
                     }, {
                         id: "id",
@@ -1159,11 +1159,11 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                 title: kloudspeaker.ui.texts.get('configAdminFolderUsersTitle'),
                 actions: [{
                     id: "action-add",
-                    content: '<i class="icon-plus"></i>',
+                    content: '<i class="fa fa-plus"></i>',
                     callback: onAddUserGroup
                 }, {
                     id: "action-remove",
-                    content: '<i class="icon-trash"></i>',
+                    content: '<i class="fa fa-trash"></i>',
                     cls: "btn-danger",
                     depends: "table-selection",
                     callback: function(sel) {
@@ -1183,8 +1183,8 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         id: "icon",
                         title: "",
                         valueMapper: function(i, v) {
-                            if (i.is_group == 1) return "<i class='icon-user'></i><i class='icon-user'></i>";
-                            return "<i class='icon-user'></i>";
+                            if (i.is_group == 1) return "<i class='fa fa-user'></i><i class='fa fa-user'></i>";
+                            return "<i class='fa fa-user'></i>";
                         }
                     }, {
                         id: "id",
@@ -1196,7 +1196,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
                         id: "remove",
                         title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'),
                         type: "action",
-                        content: '<i class="icon-trash"></i>'
+                        content: '<i class="fa fa-trash"></i>'
                     }],
                     onRowAction: function(id, u) {
                         if (id == "remove") {
@@ -1324,7 +1324,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/permissions']
 
         this.init = function(mv) {
             that.title = kloudspeaker.ui.texts.get('configviewMenuTitle');
-            that.icon = "icon-cogs";
+            that.icon = "fa fa-cogs";
 
             that._views.push(new kloudspeaker.view.config.user.AccountView(mv));
 

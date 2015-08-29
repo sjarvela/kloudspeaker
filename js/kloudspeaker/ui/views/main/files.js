@@ -122,7 +122,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             },
             "content": function(item, data) {
                 if (item.is_file) return "";
-                return '<div class="go-into-folder"><i class="icon-level-down"></i></div>';
+                return '<div class="go-into-folder"><i class="fa fa-level-down"></i></div>';
             },
             "on-init": function(list) {
                 list.$i.delegate(".go-into-folder", "click", function(e) {
@@ -136,7 +136,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
 
         that.init = function(mainview) {
             that.title = loc.get('mainviewMenuTitle');
-            that.icon = "icon-file-alt";
+            that.icon = "fa fa-file-o";
             that._viewStyle = 0;
             if (settings["file-view"]["default-view-mode"] == "small-icon") that._viewStyle = 1;
             if (settings["file-view"]["default-view-mode"] == "large-icon") that._viewStyle = 2;
@@ -747,7 +747,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 if (that._currentFolder) {
                     if (that._canWrite()) {
                         dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
-                            icon: 'icon-folder-close'
+                            icon: 'fa fa-folder'
                         }, opt).appendTo($tb).click(function() {
                             controls.dynamicBubble({
                                 element: $(this),
@@ -772,7 +772,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                             return false;
                         });
                         if (uploader) dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
-                            icon: 'icon-upload-alt'
+                            icon: 'fa fa-upload'
                         }, opt).appendTo($tb).click(function() {
                             controls.dynamicBubble({
                                 element: $(this),
@@ -806,7 +806,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
 
                     // FOLDER
                     var actionsElement = dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
-                        icon: 'icon-cog',
+                        icon: 'fa fa-cog',
                         dropdown: true
                     }, opt).appendTo($fa);
                     controls.dropdown({
@@ -896,7 +896,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
 
             // SELECT
             that._selectModeBtn = dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
-                icon: 'icon-check',
+                icon: 'fa fa-check-square-o',
                 dropdown: true,
                 style: "narrow",
                 action: true
@@ -919,7 +919,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
 
             // REFRESH                  
             dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
-                icon: 'icon-refresh'
+                icon: 'fa fa-refresh'
             }, opt).appendTo($c).click(that.refresh);
         };
 

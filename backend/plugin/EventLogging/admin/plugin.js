@@ -68,7 +68,7 @@
 		
 					listView = new kloudspeaker.view.ConfigListView($c, {
 						actions: [
-							{ id: "action-refresh", content:'<i class="icon-refresh"></i>', callback: refresh }
+							{ id: "action-refresh", content:'<i class="fa fa-refresh"></i>', callback: refresh }
 						],
 						table: {
 							id: "config-admin-folders",

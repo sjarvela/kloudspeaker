@@ -434,7 +434,7 @@ define(['kloudspeaker/localization', 'kloudspeaker/dom', 'kloudspeaker/service',
                 $e.find("th.sortable > .kloudspeaker-tableheader-sort").empty();
                 if (!sortKey) return;
                 var $col = $("th.col-" + sortKey.id + " > .kloudspeaker-tableheader-sort");
-                $col.html("<i class='" + (sortKey.asc ? "icon-caret-up" : "icon-caret-down") + "'></i>");
+                $col.html("<i class='" + (sortKey.asc ? "fa fa-caret-up" : "fa fa-caret-down") + "'></i>");
             };
             $e.delegate("th.sortable", "click", function(e) {
                 var $t = $(this);

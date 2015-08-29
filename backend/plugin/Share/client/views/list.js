@@ -30,7 +30,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/share', 'kloudspeaker/share/repos
                             // TODO register type handlers from plugins
                             if (model.item.customType == 'ic') title = texts.get("pluginItemCollectionShareTitle");
                         } else {
-                            title = texts.get(model.item.is_file ? 'shareDialogShareFileTitle' : 'shareDialogShareFolderTitle');
+                            title = texts.get(model.item.is_file ? 'shareDialogShareFileTitle' : 'shareDialogShareFolderTitle') + " " + model.item.name;
                         }
                     }
 

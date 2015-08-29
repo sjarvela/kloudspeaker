@@ -190,8 +190,8 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 
                     if (!itemData) return "<div class='filelist-item-share-info empty'></div>";
 
                     if (itemData.own > 0)
-                        return "<div class='filelist-item-share-info'><i class='icon-external-link'></i>&nbsp;" + itemData.own + "</div>";
-                    return "<div class='filelist-item-share-info others' title='" + texts.get("pluginShareFilelistColOtherShared") + "'><i class='icon-external-link'></i></div>";
+                        return "<div class='filelist-item-share-info'><i class='fa fa-external-link'></i>&nbsp;" + itemData.own + "</div>";
+                    return "<div class='filelist-item-share-info others' title='" + texts.get("pluginShareFilelistColOtherShared") + "'><i class='fa fa-external-link'></i></div>";
                 },
 
                 dataRequest: 'plugin-share/item-info',

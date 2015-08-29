@@ -121,9 +121,9 @@
 	
 				listView = new kloudspeaker.view.ConfigListView($c, {
 					actions: [
-						{ id: "action-add", content:'<i class="icon-plus"></i>', callback: function() { that.onAddEditNotification(false, updateList); }},
-						{ id: "action-remove", content:'<i class="icon-trash"></i>', cls:"btn-danger", depends: "table-selection", callback: function(sel) { kloudspeaker.service.del("notificator/list/", { ids: kloudspeaker.helpers.extractValue(sel, "id") }).done(updateList); }},
-						{ id: "action-refresh", content:'<i class="icon-refresh"></i>', callback: updateList }
+						{ id: "action-add", content:'<i class="fa fa-plus"></i>', callback: function() { that.onAddEditNotification(false, updateList); }},
+						{ id: "action-remove", content:'<i class="fa fa-trash"></i>', cls:"btn-danger", depends: "table-selection", callback: function(sel) { kloudspeaker.service.del("notificator/list/", { ids: kloudspeaker.helpers.extractValue(sel, "id") }).done(updateList); }},
+						{ id: "action-refresh", content:'<i class="fa fa-refresh"></i>', callback: updateList }
 					],
 					table: {
 						id: "plugin-notifications-list",
@@ -132,11 +132,11 @@
 						hilight: true,
 						columns: [
 							{ type:"selectrow" },
-							{ id: "icon", title:"", type:"static", content: '<i class="icon-envelope-alt"></i>' },
+							{ id: "icon", title:"", type:"static", content: '<i class="fa fa-envelope-o"></i>' },
 							{ id: "name", title: kloudspeaker.ui.texts.get('pluginNotificatorAdminNameTitle') },
 							{ id: "id", title: kloudspeaker.ui.texts.get('configAdminTableIdTitle') },
-							{ id: "edit", title: "", type: "action", content: '<i class="icon-edit"></i>' },
-							{ id: "remove", title: "", type: "action", content: '<i class="icon-trash"></i>' }
+							{ id: "edit", title: "", type: "action", content: '<i class="fa fa-edit"></i>' },
+							{ id: "remove", title: "", type: "action", content: '<i class="fa fa-trash"></i>' }
 						],
 						onRowAction: function(id, n) {
 							if (id == "remove") {
@@ -239,7 +239,7 @@
 							message: kloudspeaker.ui.texts.get('pluginNotificatorNotificationAddEventMessage'),
 							initSize: [600, 400],
 							columns: [
-								{ id: "icon", title:"", type:"static", content: '<i class="icon-folder"></i>' },
+								{ id: "icon", title:"", type:"static", content: '<i class="fa fa-folder"></i>' },
 								{ id: "id", title: kloudspeaker.ui.texts.get('configAdminTableIdTitle'), valueMapper: function(i) { return i; } }
 							],
 							list: selectable,
@@ -266,7 +266,7 @@
 							key: "id",
 							initSize: [600, 400],
 							columns: [
-								{ id: "icon", title:"", valueMapper: function(i, v) { if (i.is_group == 1) return "<i class='icon-user'></i><i class='icon-user'></i>"; return "<i class='icon-user'></i>"; } },
+								{ id: "icon", title:"", valueMapper: function(i, v) { if (i.is_group == 1) return "<i class='fa fa-group'></i>"; return "<i class='fa fa-user'></i>"; } },
 								{ id: "id", title: kloudspeaker.ui.texts.get('configAdminTableIdTitle') },
 								{ id: "name", title: kloudspeaker.ui.texts.get('configAdminUserDialogUsernameTitle') }
 							],
@@ -288,7 +288,7 @@
 							key: "id",
 							initSize: [600, 400],
 							columns: [
-								{ id: "icon", title:"", valueMapper: function(i, v) { if (i.is_group == 1) return "<i class='icon-user'></i><i class='icon-user'></i>"; return "<i class='icon-user'></i>"; } },
+								{ id: "icon", title:"", valueMapper: function(i, v) { if (i.is_group == 1) return "<i class='fa fa-group'></i>"; return "<i class='fa fa-user'></i>"; } },
 								{ id: "id", title: kloudspeaker.ui.texts.get('configAdminTableIdTitle') },
 								{ id: "name", title: kloudspeaker.ui.texts.get('configAdminUserDialogUsernameTitle') }
 							],
@@ -408,8 +408,8 @@
 					eventsView = new kloudspeaker.view.ConfigListView($events, {
 						title: kloudspeaker.ui.texts.get('pluginNotificatorNotificationEventsTitle'),
 						actions: [
-							{ id: "action-add", content:'<i class="icon-plus"></i>', callback: onAddEvents },
-							{ id: "action-remove", content:'<i class="icon-trash"></i>', cls:"btn-danger", depends: "table-selection", callback: function(sel) {
+							{ id: "action-add", content:'<i class="fa fa-plus"></i>', callback: onAddEvents },
+							{ id: "action-remove", content:'<i class="fa fa-trash"></i>', cls:"btn-danger", depends: "table-selection", callback: function(sel) {
 								kloudspeaker.service.del("notificator/list/"+nd.id+"/events/", { ids: kloudspeaker.helpers.extractValue(sel, "id") }).done(update);
 							}}
 						],
@@ -418,11 +418,11 @@
 							narrow: true,
 							columns: [
 								{ type:"selectrow" },
-								{ id: "icon", title:"", type:"static", content: '<i class="icon-folder"></i>' },
+								{ id: "icon", title:"", type:"static", content: '<i class="fa fa-folder"></i>' },
 								{ id: "type", title: kloudspeaker.ui.texts.get('pluginNotificatorAdminEventTypeTitle') },
 								{ id: "filter", title: kloudspeaker.ui.texts.get('pluginNotificatorAdminEventFilterTitle'), valueMapper: function(i, v) { return (i.filters && i.filters.length > 0) ? i.filters.length : ""; } },
-								{ id: "set_filter", title: "", type: "action", content: '<i class="icon-filter"></i>' },
-								{ id: "remove", title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'), type: "action", content: '<i class="icon-trash"></i>' }
+								{ id: "set_filter", title: "", type: "action", content: '<i class="fa fa-filter"></i>' },
+								{ id: "remove", title: kloudspeaker.ui.texts.get('configAdminActionRemoveTitle'), type: "action", content: '<i class="fa fa-trash"></i>' }
 							],
 							onRowAction: function(id, e) {
 								if (id == "remove") {
@@ -437,8 +437,8 @@
 					eventUsersgroupsView = new kloudspeaker.view.ConfigListView($eventUsersgroups, {
 						title: kloudspeaker.ui.texts.get('pluginNotificatorNotificationEventUsersTitle'),
 						actions: [
-							{ id: "action-add", content:'<i class="icon-plus"></i>', callback: onAddEventUsersgroups },
-							{ id: "action-remove", content:'<i class="icon-trash"></i>', cls:"btn-danger", depends: "table-selection", callback: function(sel) {
+							{ id: "action-add", content:'<i class="fa fa-plus"></i>', callback: onAddEventUsersgroups },
+							{ id: "action-remove", content:'<i class="fa fa-trash"></i>', cls:"btn-danger", depends: "table-selection", callback: function(sel) {
 								kloudspeaker.service.del("notificator/list/"+nd.id+"/users/", { ids: kloudspeaker.helpers.extractValue(sel, "id") }).done(update);
 							}}
 						],
@@ -449,10 +449,10 @@
 							emptyHint: kloudspeaker.ui.texts.get('pluginNotificatorNotificationNoEventUsersMsg'),
 							columns: [
 								{ type:"selectrow" },
-								{ id: "icon", title:"", valueMapper: function(i, v) { if (i.is_group == 1) return "<i class='icon-user'></i><i class='icon-user'></i>"; return "<i class='icon-user'></i>"; } },
+								{ id: "icon", title:"", valueMapper: function(i, v) { if (i.is_group == 1) return "<i class='fa fa-group'></i>"; return "<i class='fa fa-user'></i>"; } },
 								{ id: "id", title: kloudspeaker.ui.texts.get('configAdminTableIdTitle') },
 								{ id: "name", title: kloudspeaker.ui.texts.get('configAdminUserDialogUsernameTitle') },
-								{ id: "remove", title: "", type: "action", content: '<i class="icon-trash"></i>' }
+								{ id: "remove", title: "", type: "action", content: '<i class="fa fa-trash"></i>' }
 							],
 							onRowAction: function(id, g) {
 								if (id == "remove") {
@@ -465,8 +465,8 @@
 					usersgroupsView = new kloudspeaker.view.ConfigListView($usersgroups, {
 						title: kloudspeaker.ui.texts.get('pluginNotificatorNotificationUsersTitle'),
 						actions: [
-							{ id: "action-add", content:'<i class="icon-plus"></i>', callback: onAddUsersgroups },
-							{ id: "action-remove", content:'<i class="icon-trash"></i>', cls:"btn-danger", depends: "table-selection", callback: function(sel) {
+							{ id: "action-add", content:'<i class="fa fa-plus"></i>', callback: onAddUsersgroups },
+							{ id: "action-remove", content:'<i class="fa fa-trash"></i>', cls:"btn-danger", depends: "table-selection", callback: function(sel) {
 								kloudspeaker.service.del("notificator/list/"+nd.id+"/recipients/", { ids: kloudspeaker.helpers.extractValue(sel, "id") }).done(update);
 							}}
 						],
@@ -476,10 +476,10 @@
 							narrow: true,
 							columns: [
 								{ type:"selectrow" },
-								{ id: "icon", title:"", valueMapper: function(i, v) { if (i.is_group == 1) return "<i class='icon-user'></i><i class='icon-user'></i>"; return "<i class='icon-user'></i>"; } },
+								{ id: "icon", title:"", valueMapper: function(i, v) { if (i.is_group == 1) return "<i class='fa fa-user'></i><i class='fa fa-user'></i>"; return "<i class='fa fa-user'></i>"; } },
 								{ id: "id", title: kloudspeaker.ui.texts.get('configAdminTableIdTitle') },
 								{ id: "name", title: kloudspeaker.ui.texts.get('configAdminUserDialogUsernameTitle') },
-								{ id: "remove", title: "", type: "action", content: '<i class="icon-trash"></i>' }
+								{ id: "remove", title: "", type: "action", content: '<i class="fa fa-trash"></i>' }
 							],
 							onRowAction: function(id, r) {
 								if (id == "remove") {

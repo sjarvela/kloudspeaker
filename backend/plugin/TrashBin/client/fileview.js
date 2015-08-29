@@ -5,7 +5,7 @@ define(['kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/ui/text
         // file view init
         this.onInit = function(fv) {
             that._fileView = fv;
-            that.$el = $('<div id="kloudspeaker-trashbin" style="display: none"><i class="icon-trash drop-target dropdown-toggle"></i></div>').appendTo($("body"));
+            that.$el = $('<div id="kloudspeaker-trashbin" style="display: none"><i class="fa fa-trash drop-target dropdown-toggle"></i></div>').appendTo($("body"));
 
             dnd.enableDrop(that.$el.find(".drop-target"), {
                 canDrop: function($e, e, obj) {

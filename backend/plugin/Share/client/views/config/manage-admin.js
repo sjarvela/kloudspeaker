@@ -80,7 +80,7 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/cor
                 }
             }, {
                 id: "action-activate",
-                icon: 'check',
+                icon: 'check-square-o',
                 depends: "selection",
                 tooltip: texts.get('pluginShareConfigViewShareActivate'),
                 action: function(sel) {
@@ -88,7 +88,7 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/cor
                 }
             }, {
                 id: "action-deactivate",
-                icon: 'check-empty',
+                icon: 'square-o',
                 depends: "selection",
                 tooltip: texts.get('pluginShareConfigViewShareDeactivate'),
                 action: function(sel) {
@@ -108,7 +108,7 @@ define(['kloudspeaker/share', 'kloudspeaker/share/repository', 'kloudspeaker/cor
 
                     var item = model.items[s.item_id];
                     if (item.customType) return ""; //TODO type icon
-                    if (!item.is_file) return 'folder-close';
+                    if (!item.is_file) return 'folder-open';
                     return 'file';
                 }
             }, {

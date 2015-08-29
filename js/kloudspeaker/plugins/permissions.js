@@ -80,7 +80,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/session',
                     var names = that._permissionTypes.keys.filesystem;
                     var init = 'filesystem_item_access';
                     var onPermissionsModified = function() {
-                        var info = (modificationData["new"].length > 0 || modificationData.modified.length > 0 || modificationData.removed.length > 0) ? "<i class='icon-exclamation-sign '/>&nbsp;" + loc.get('pluginPermissionsEditDialogUnsaved') : false;
+                        var info = (modificationData["new"].length > 0 || modificationData.modified.length > 0 || modificationData.removed.length > 0) ? "<i class='fa fa-exclamation-circle '/>&nbsp;" + loc.get('pluginPermissionsEditDialogUnsaved') : false;
                         h.setInfo(info);
                     };
                     var getPermissionKey = function(p) {
@@ -354,10 +354,10 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/session',
                         $c.html("<em>" + n + "</em>");
                     } else {
                         if (subject.id == item.id) {
-                            $c.html('<i class="icon-file-alt"/>&nbsp;' + loc.get('pluginPermissionsEditColItemCurrent'));
+                            $c.html('<i class="fa fa-file-o"/>&nbsp;' + loc.get('pluginPermissionsEditColItemCurrent'));
                         } else {
                             var level = Math.max(item.path.count("/"), item.path.count("\\")) - Math.max(subject.path.count("/"), subject.path.count("\\")) + 1;
-                            $c.html('<i class="icon-file-alt"/>&nbsp;' + loc.get('pluginPermissionsEditColItemParent', level));
+                            $c.html('<i class="fa fa-file-o"/>&nbsp;' + loc.get('pluginPermissionsEditColItemParent', level));
                         }
                         $c.tooltip({
                             placement: "bottom",
@@ -577,7 +577,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/session',
             var listView = new kloudspeaker.view.ConfigListView($c, {
                 actions: [{
                     id: "action-item-permissions",
-                    content: '<i class="icon-file"></i>',
+                    content: '<i class="fa fa-file"></i>',
                     tooltip: loc.get('configAdminPermissionsEditItemPermissionsTooltip'),
                     callback: function(sel) {
                         dialogs.itemSelector({
@@ -597,7 +597,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/session',
                     },
                 }, {
                     id: "action-remove",
-                    content: '<i class="icon-trash"></i>',
+                    content: '<i class="fa fa-trash"></i>',
                     cls: "btn-danger",
                     depends: "table-selection",
                     callback: function(sel) {
@@ -611,14 +611,14 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/session',
                     }
                 }, {
                     id: "action-edit-generic",
-                    content: '<i class="icon-globe"></i>',
+                    content: '<i class="fa fa-globe"></i>',
                     tooltip: loc.get('pluginPermissionsEditDefaultPermissionsAction'),
                     callback: function() {
                         that.editGenericPermissions();
                     }
                 }, {
                     id: "action-refresh",
-                    content: '<i class="icon-refresh"></i>',
+                    content: '<i class="fa fa-refresh"></i>',
                     callback: refresh
                 }],
                 table: {
@@ -928,14 +928,14 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/session',
             title: title,
             actions: [{
                 id: "action-edit",
-                content: '<i class="icon-user"></i>',
+                content: '<i class="fa fa-user"></i>',
                 tooltip: loc.get(u.is_group == '1' ? 'pluginPermissionsEditGroupPermissionsAction' : 'pluginPermissionsEditUserPermissionsAction'),
                 callback: function() {
                     that.editGenericPermissions(u, refresh);
                 }
             }, {
                 id: "action-edit-defaults",
-                content: '<i class="icon-globe"></i>',
+                content: '<i class="fa fa-globe"></i>',
                 tooltip: loc.get('pluginPermissionsEditDefaultPermissionsAction'),
                 callback: function() {
                     that.editGenericPermissions(false, refresh);

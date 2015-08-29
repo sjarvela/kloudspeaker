@@ -3,7 +3,7 @@
 		{{if canAdd}}
 		<div id='new-comment-container' class="input-append pull-right">
 			<input class="comments-dialog-add-text hintbox" type="text" hint-key="commentsDialogNewComment">
-			<button class="comments-dialog-add btn" type="button"><i class="icon-comment"></i></button>
+			<button class="comments-dialog-add btn" type="button"><i class="fa fa-comment"></i></button>
 		</div>
 		{{/if}}
 		<div class='comments-list'></div>
@@ -13,12 +13,12 @@
 <script id="comment-template" type="text/x-jquery-tmpl"> 
 	<div id="comment-${id}" class="comment-content">
 		<div class="comment-header">
-			<div class="comment-icon"><i class="icon-comment-alt"></i></div>
+			<div class="comment-icon"><i class="fa fa-comment-alt"></i></div>
 			<span class="comment-info">${username} ${time}</span>
 		</div>
 		{{if remove}}
 		<div class="comment-tools">
-			<a class="link comment-remove-action" href="#"><i class="icon-remove"></i></a>
+			<a class="link comment-remove-action" href="#"><i class="fa fa-remove"></i></a>
 		</div>
 		{{/if}}
 		<blockquote>

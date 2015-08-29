@@ -5,17 +5,17 @@
     <div class="kloudspeaker-fullpage-form center wide container">
         <!-- ko if: model.failed -->
         <h2>
-        	<i class="icon-exclamation-sign"></i>&nbsp;&nbsp;<span data-bind="text: model.failed"></span>
+        	<i class="fa fa-exclamation-circle"></i>&nbsp;&nbsp;<span data-bind="text: model.failed"></span>
         </h2>
         <!-- /ko -->
         <!-- ko if: model.confirmed -->
 	        <!-- ko ifnot: model.confirmedRequireApproval -->
-	        <h1><i class="icon-ok"></i>&nbsp;&nbsp;<span data-i18n="registrationConfirmSuccessTitle"></span></h1>
+	        <h1><i class="fa fa-check"></i>&nbsp;&nbsp;<span data-i18n="registrationConfirmSuccessTitle"></span></h1>
 	        <p data-i18n="registrationConfirmSuccessMessage"></p>
 	        <a class="btn btn-large btn-primary primary-action" data-i18n="registrationContinueButton" href="?"></a>
 	        <!-- /ko -->
 	        <!-- ko if: model.confirmedRequireApproval -->
-	        <h1><i class="icon-ok"></i>&nbsp;&nbsp;<span data-i18n="registrationConfirmSuccessWaitApprovalTitle"></span></h1>
+	        <h1><i class="fa fa-check"></i>&nbsp;&nbsp;<span data-i18n="registrationConfirmSuccessWaitApprovalTitle"></span></h1>
 	        <p data-i18n="registrationConfirmSuccessWaitApprovalMessage"></p>
         <!-- /ko -->
         <!-- /ko -->    

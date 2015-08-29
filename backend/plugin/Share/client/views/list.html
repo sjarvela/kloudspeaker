@@ -10,13 +10,13 @@
                 <div class="share-info">
                     <div class="share-icon">
                         <!-- ko if: restriction == 'private' -->
-                        <i class="icon-user"></i>
+                        <i class="fa fa-user"></i>
                         <!-- /ko -->
                         <!-- ko if: restriction == 'pw' -->
-                        <i class="icon-lock"></i>
+                        <i class="fa fa-lock"></i>
                         <!-- /ko -->
                         <!-- ko ifnot: restriction -->
-                        <i class="icon-globe"></i>
+                        <i class="fa fa-globe"></i>
                         <!-- /ko -->
                     </div>
                     <!-- ko if: name -->
@@ -29,16 +29,16 @@
                 <!-- ko if: active -->
                 <ul class="share-actions nav nav-pills">
                     <li class="share-link-toggle-item">
-                        <a class="share-link-toggle" data-bind="click: function() { $data._expanded(!$data._expanded()) }"><i class="icon-external-link"></i>&nbsp;<span data-i18n="shareDialogItemLinkTitle"></span></a>
+                        <a class="share-link-toggle" data-bind="click: function() { $data._expanded(!$data._expanded()) }"><i class="fa fa-external-link"></i>&nbsp;<span data-i18n="shareDialogItemLinkTitle"></span></a>
                     </li>
                     <li>
-                        <a class="share-link-copy" data-bind="clipboard: { data: $root.getShareLink($data), hover: true, hand: true }"><i class="icon-copy"></i>&nbsp;<span data-i18n="shareDialogShareLinkCopyToClipboard"></span></a>
+                        <a class="share-link-copy" data-bind="clipboard: { data: $root.getShareLink($data), hover: true, hand: true }"><i class="fa fa-copy"></i>&nbsp;<span data-i18n="shareDialogShareLinkCopyToClipboard"></span></a>
                     </li>
                     <li>
-                        <a class="share-edit share-tool" data-bind="click: $root.onEditShare"><i class="icon-edit"></i>&nbsp;<span data-i18n="shareDialogShareEditButton"></span></a>
+                        <a class="share-edit share-tool" data-bind="click: $root.onEditShare"><i class="fa fa-edit"></i>&nbsp;<span data-i18n="shareDialogShareEditButton"></span></a>
                     </li>
                     <li>
-                        <a class="share-remove share-tool" data-bind="click: $root.onRemoveShare"><i class="icon-trash"></i>&nbsp;<span data-i18n="shareDialogShareRemoveButton"></span></a>
+                        <a class="share-remove share-tool" data-bind="click: $root.onRemoveShare"><i class="fa fa-trash"></i>&nbsp;<span data-i18n="shareDialogShareRemoveButton"></span></a>
                     </li>
                 </ul>
                 <!-- ko if: _expanded -->
@@ -54,16 +54,16 @@
                 <div class="share-inactive-title" data-i18n="shareDialogItemInactiveLinkTitle"></div>
                 <ul class="share-actions nav nav-pills">
                     <li>
-                        <a class="share-edit share-tool" data-bind="click: $root.onEditShare"><i class="icon-edit"></i>&nbsp;<span data-i18n="shareDialogShareEditButton"></span></a>
+                        <a class="share-edit share-tool" data-bind="click: $root.onEditShare"><i class="fa fa-edit"></i>&nbsp;<span data-i18n="shareDialogShareEditButton"></span></a>
                     </li>
                     <li>
-                        <a class="share-remove share-tool" data-bind="click: $root.onRemoveShare"><i class="icon-trash"></i>&nbsp;<span data-i18n="shareDialogShareRemoveButton"></span></a>
+                        <a class="share-remove share-tool" data-bind="click: $root.onRemoveShare"><i class="fa fa-trash"></i>&nbsp;<span data-i18n="shareDialogShareRemoveButton"></span></a>
                     </li>
                 </ul>
                 <!-- /ko -->
             </div>
         </div>
         <!-- /ko -->
-        <a class="add-share btn btn-primary" data-bind="click: onAddShare"><i class="icon-plus"></i>&nbsp;<span data-i18n="shareDialogShareAddTitle"></span></a>
+        <a class="add-share btn btn-primary" data-bind="click: onAddShare"><i class="fa fa-plus"></i>&nbsp;<span data-i18n="shareDialogShareAddTitle"></span></a>
     </div>
 </div>

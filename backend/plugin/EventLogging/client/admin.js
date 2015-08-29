@@ -131,7 +131,7 @@ define(['kloudspeaker/eventlogging/repository', 'kloudspeaker/core/user/reposito
             }, {
                 id: 'view',
                 type: 'action',
-                icon: 'eye-open',
+                icon: 'eye',
                 title: '',
                 action: viewEvent
             }],

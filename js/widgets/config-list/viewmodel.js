@@ -81,7 +81,7 @@ define(['kloudspeaker/localization', 'kloudspeaker/utils', 'durandal/composition
         if (!this.settings.sort) return;
 
         var $col = $("th.col-" + this.settings.sort.id + " > .sort-indicator");
-        $col.html("<i class='" + (this.settings.sort.asc ? "icon-caret-up" : "icon-caret-down") + "'></i>");
+        $col.html("<i class='" + (this.settings.sort.asc ? "fa fa-caret-up" : "fa fa-caret-down") + "'></i>");
     }
     ctor.prototype._updateCols = function() {
         var that = this;
@@ -127,11 +127,11 @@ define(['kloudspeaker/localization', 'kloudspeaker/utils', 'durandal/composition
             if (col.type == 'select') {
                 var $sel = $('<input type="checkbox"></input>').appendTo($cell.empty().addClass("select"));
             } else if (col.type == 'icon') {
-                $cell.empty().html('<i class="icon-' + (typeof(col.name) === 'function' ? col.name(row) : col.name) + '"></i>');
+                $cell.empty().html('<i class="fa fa-' + (typeof(col.name) === 'function' ? col.name(row) : col.name) + '"></i>');
             } else if (col.type == 'action') {
                 var html = '';
                 if ((typeof(col.enabled) === 'undefined') || col.enabled(row)) {
-                    html = col.icon ? '<i class="icon-' + (typeof(col.icon) === 'function' ? col.icon(row) : col.icon) + '"></i>' : (col.content ? col.content : '');
+                    html = col.icon ? '<i class="fa fa-' + (typeof(col.icon) === 'function' ? col.icon(row) : col.icon) + '"></i>' : (col.content ? col.content : '');
                     if (col.formatter) html = col.formatter(item, v);
                     if (html) $("<a title='" + col.title + "'></a>").html(html).appendTo($cell.empty().addClass("action"));
                 }
