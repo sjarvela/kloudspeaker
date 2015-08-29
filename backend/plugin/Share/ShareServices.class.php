@@ -54,12 +54,12 @@ class ShareServices extends ServicesBase {
 					}
 					if (strpos($ik, "_") !== FALSE) {
 						$parts = explode("_", $ik);
-						$info = $this->handler()->getCustomShareInfo($parts[0], $parts[1], $i);
-						if ($info == NULL) {
+						$item = $this->handler()->getCustomShareItem($parts[0], $parts[1]);
+						if ($item == NULL) {
 							continue;
 						}
 
-						$nonFs[] = array("id" => $ik, "type" => $parts[0], "name" => $info["name"]);
+						$nonFs[] = array("id" => $ik, "type" => $parts[0], "name" => $item["name"]);
 						continue;
 					}
 
@@ -173,12 +173,12 @@ class ShareServices extends ServicesBase {
 					$s["nonfs"] = TRUE;
 
 					$parts = explode("_", $ik);
-					$info = $this->handler()->getCustomShareInfo($parts[0], $parts[1], $s);
-					if ($info == NULL) {
+					$item = $this->handler()->getCustomShareItem($parts[0], $parts[1]);
+					if ($item == NULL) {
 						continue;
 					}
 
-					$nonFs[] = array("id" => $ik, "type" => $parts[0], "name" => $info["name"]);
+					$nonFs[] = array("id" => $ik, "type" => $parts[0], "name" => $item["name"]);
 					continue;
 				}
 
