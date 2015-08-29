@@ -1,5 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/permissions', 'kloudspeaker/ui/views/main/files', 'kloudspeaker/ui/views/main/config'], function(app, settings, session, permissions, FilesView, ConfigView) {
-    //TODO remove reference to global "kloudspeaker"
+define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/features', 'kloudspeaker/permissions', 'kloudspeaker/plugins', 'kloudspeaker/dom', 'kloudspeaker/templates', 'kloudspeaker/ui', 'kloudspeaker/ui/dialogs', 'kloudspeaker/localization', 'kloudspeaker/ui/views/main/files', 'kloudspeaker/ui/views/main/config'], function(app, settings, session, service, features, permissions, plugins, dom, templates, ui, dialogs, loc, FilesView, ConfigView) {
     return function() {
         var that = this;
         that._mainFileView = false;
@@ -12,14 +11,14 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/session', 'kl
             that._mainConfigView = new ConfigView();
             that._views = [that._mainFileView, that._mainConfigView];
 
-            $.each(kloudspeaker.plugins.getMainViewPlugins(), function(i, p) {
+            $.each(plugins.getMainViewPlugins(), function(i, p) {
                 if (!p.mainViewHandler) return;
                 var view = p.mainViewHandler();
                 that._views.push(view);
             });
 
             //that.itemContext = new ItemContext();
-            return kloudspeaker.dom.loadContentInto($c, kloudspeaker.templates.url("mainview.html"), function() {
+            return dom.loadContentInto($c, templates.url("mainview.html"), function() {
                 that.onLoad(viewId);
             }, ['localize']);
         }
@@ -35,9 +34,10 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/session', 'kl
             $(window).resize(that.onResize);
             that.onResize();
 
-            kloudspeaker.dom.template("kloudspeaker-tmpl-main-username", kloudspeaker.session).appendTo("#kloudspeaker-mainview-user");
-            if (kloudspeaker.session.user) {
-                kloudspeaker.ui.controls.dropdown({
+            var s = session.get();
+            dom.template("kloudspeaker-tmpl-main-username", s).appendTo("#kloudspeaker-mainview-user");
+            if (s.user) {
+                ui.controls.dropdown({
                     element: $('#kloudspeaker-username-dropdown'),
                     items: that.getSessionActions()
                 });
@@ -53,7 +53,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/session', 'kl
             });
 
             var $mb = $("#kloudspeaker-mainview-menu");
-            var $mbitems = kloudspeaker.dom.template("kloudspeaker-tmpl-main-menubar", menuitems).appendTo($mb);
+            var $mbitems = dom.template("kloudspeaker-tmpl-main-menubar", menuitems).appendTo($mb);
             $mbitems.click(function() {
                 var i = $mbitems.index($(this));
                 that.activateView(that._views[i]);
@@ -100,7 +100,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/session', 'kl
         };
 
         that.activateView = function(v, id) {
-            kloudspeaker.ui.hideActivePopup();
+            ui.hideActivePopup();
             if (that._currentView && that._currentView.onDeactivate) that._currentView.onDeactivate();
             $("#kloudspeaker-mainview-navlist-parent").empty();
 
@@ -123,7 +123,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/session', 'kl
 
         that.onNotification = function(spec) {
             var $trg = (spec && spec.target) ? ((typeof spec.target === 'string') ? $("#" + spec.target) : spec.target) : $("#kloudspeaker-mainview-content");
-            var $ntf = kloudspeaker.dom.template("kloudspeaker-tmpl-main-notification", spec).hide().appendTo($trg);
+            var $ntf = dom.template("kloudspeaker-tmpl-main-notification", spec).hide().appendTo($trg);
             $ntf.fadeIn(300, function() {
                 setTimeout(function() {
                     $ntf.fadeOut(300, function() {
@@ -141,7 +141,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/session', 'kl
         };
 
         that.addNavBar = function(nb) {
-            var $nb = kloudspeaker.dom.template("kloudspeaker-tmpl-main-navbar", nb).appendTo($("#kloudspeaker-mainview-navlist-parent"));
+            var $nb = dom.template("kloudspeaker-tmpl-main-navbar", nb).appendTo($("#kloudspeaker-mainview-navlist-parent"));
             var items = nb.items;
             var initItems = function() {
                 var $items = $nb.find(".kloudspeaker-mainview-navbar-item");
@@ -152,7 +152,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/session', 'kl
                         var $tr = $('<li class="kloudspeaker-mainview-navbar-dropdown"><a href="#" class="dropdown-toggle"><i class="fa fa-cog"></i></a></li>').appendTo($(e));
                         var dropdownItems = [];
                         if (typeof(nb.dropdown.items) != 'function') dropdownItems = nb.dropdown.items;
-                        kloudspeaker.ui.controls.dropdown({
+                        ui.controls.dropdown({
                             element: $tr,
                             items: dropdownItems,
                             onShow: function(api, menuItems) {
@@ -194,7 +194,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/session', 'kl
                 update: function(l) {
                     items = l;
                     $nb.find(".kloudspeaker-mainview-navbar-item").remove();
-                    kloudspeaker.dom.template("kloudspeaker-tmpl-main-navbar-item", items).appendTo($nb);
+                    dom.template("kloudspeaker-tmpl-main-navbar-item", items).appendTo($nb);
                     initItems();
                 }
             };
@@ -206,7 +206,8 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/session', 'kl
 
         that.getSessionActions = function() {
             var actions = [];
-            if (kloudspeaker.features.hasFeature('change_password') && kloudspeaker.session.user.auth == 'pw' && permissions.hasPermission("change_password")) {
+            var s = session.get();
+            if (features.hasFeature('change_password') && s.user.auth == 'pw' && permissions.hasPermission("change_password")) {
                 actions.push({
                     "title-key": "mainViewChangePasswordTitle",
                     callback: that.changePassword
@@ -228,24 +229,24 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/session', 'kl
             var $new1 = false;
             var $new2 = false;
             var $hint = false;
-            var errorTextMissing = kloudspeaker.ui.texts.get('mainviewChangePasswordErrorValueMissing');
-            var errorConfirm = kloudspeaker.ui.texts.get('mainviewChangePasswordErrorConfirm');
+            var errorTextMissing = loc.get('mainviewChangePasswordErrorValueMissing');
+            var errorConfirm = loc.get('mainviewChangePasswordErrorConfirm');
 
             var doChangePassword = function(oldPw, newPw, hint, successCb) {
-                kloudspeaker.service.put("configuration/users/current/password/", {
+                service.put("configuration/users/current/password/", {
                     old: window.Base64.encode(oldPw),
                     "new": window.Base64.encode(newPw),
                     hint: hint
                 }).done(function(r) {
                     successCb();
-                    kloudspeaker.ui.dialogs.notification({
-                        message: kloudspeaker.ui.texts.get('mainviewChangePasswordSuccess')
+                    dialogs.notification({
+                        message: loc.get('mainviewChangePasswordSuccess')
                     });
                 }).fail(function(e) {
                     that.handled = true;
                     if (e.code == 107) {
-                        kloudspeaker.ui.dialogs.notification({
-                            message: kloudspeaker.ui.texts.get('mainviewChangePasswordError'),
+                        dialogs.notification({
+                            message: loc.get('mainviewChangePasswordError'),
                             type: 'error',
                             cls: 'full',
                             target: $dlg.find(".modal-footer")
@@ -254,18 +255,18 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/session', 'kl
                 });
             }
 
-            kloudspeaker.ui.dialogs.custom({
-                title: kloudspeaker.ui.texts.get('mainviewChangePasswordTitle'),
+            dialogs.custom({
+                title: loc.get('mainviewChangePasswordTitle'),
                 content: $("#kloudspeaker-tmpl-main-changepassword").tmpl({
-                    message: kloudspeaker.ui.texts.get('mainviewChangePasswordMessage')
+                    message: loc.get('mainviewChangePasswordMessage')
                 }),
                 buttons: [{
                     id: "yes",
-                    "title": kloudspeaker.ui.texts.get('mainviewChangePasswordAction'),
+                    "title": loc.get('mainviewChangePasswordAction'),
                     cls: "btn-primary"
                 }, {
                     id: "no",
-                    "title": kloudspeaker.ui.texts.get('dialogCancel')
+                    "title": loc.get('dialogCancel')
                 }],
                 "on-button": function(btn, d) {
                     var old = false;
