@@ -1,10 +1,11 @@
-define(['kloudspeaker/session', 'kloudspeaker/filesystem', 'kloudspeaker/localization', 'kloudspeaker/ui/controls', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/ui'], function(session, fs, loc, controls, utils, dom, ui) {
+define(['kloudspeaker/session', 'kloudspeaker/localization', 'kloudspeaker/ui/controls', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/ui'], function(session, loc, controls, utils, dom, ui) {
     var dh = {};
-    var app = null; //TODO remove
+    var app = null;
+    var fs = null;
 
     dh.setup = function() {
-        //TODO remove
         app = require('kloudspeaker/instance');
+        fs = require('kloudspeaker/filesystem');
     }
 
     dh._dialogDefaults = {
