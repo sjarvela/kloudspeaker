@@ -114,9 +114,10 @@ module.exports = function(grunt) {
                     'css/libs.css',
                     'css/bootstrap.css',
                     'css/bootstrap-responsive.css',
-                    'css/font-awesome.css',
+                    'css/font-awesome3.css',
                     'css/bootstrap-lightbox.css',
                     'css/bootstrap-datetimepicker.min.css',
+                    'bower_components/font-awesome/css/font-awesome.css',
                     'css/style.css'
                 ],
                 dest: 'dist/css/<%= pkg.name %>.css'
@@ -231,8 +232,20 @@ module.exports = function(grunt) {
         copy: {
             css: {
                 expand: true,
-                src: ['css/font/**', 'css/images/**'],
+                src: ['css/images/**'],
                 dest: 'dist/'
+            },
+            fonts: {
+                expand: true,
+                cwd: 'fonts',
+                src: ['*'],
+                dest: 'dist/fonts'
+            },
+            fa: {
+                expand: true,
+                cwd: 'bower_components/font-awesome/fonts',
+                src: ['*'],
+                dest: 'dist/fonts'
             },
             js: {
                 expand: true,
@@ -342,7 +355,7 @@ module.exports = function(grunt) {
     grunt.registerTask('dist-js', ['jshint', 'concat', 'uglify', 'copy:js']);
 
     // CSS distribution task.
-    grunt.registerTask('dist-css', ['concat:css', 'cssmin', 'usebanner', 'copy:css']);
+    grunt.registerTask('dist-css', ['concat:css', 'cssmin', 'usebanner', 'copy:css', 'copy:fonts', 'copy:fa']);
 
     // JS distribution task.
     grunt.registerTask('dist-backend', ['copy:backend']);
