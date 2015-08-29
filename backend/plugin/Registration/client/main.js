@@ -1,4 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/plugins', 'kloudspeaker/session', 'kloudspeaker/ui/views'], function(app, plugins, session, views) {
+define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/session', 'kloudspeaker/ui/views'], function(app, plugins, session, views) {
     var that = this;
 
     views.registerView("registration", function(rqParts, urlParams) {
