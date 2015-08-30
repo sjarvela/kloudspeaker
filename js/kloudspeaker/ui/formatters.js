@@ -2,7 +2,7 @@ define(['kloudspeaker/localization', 'kloudspeaker/utils', 'kloudspeaker/filesys
     var formatters = {
         ByteSize: function(nf) {
             this.format = function(b) {
-                if (!window.def(b)) return "";
+                if (!utils.isDefined(b)) return "";
 
                 var bytes = b;
                 if (typeof(b) === "string") {
@@ -36,7 +36,7 @@ define(['kloudspeaker/localization', 'kloudspeaker/utils', 'kloudspeaker/filesys
         },
         Number: function(precision, unit, ds) {
             this.format = function(n) {
-                if (!window.def(n) || typeof(n) !== 'number') return "";
+                if (!utils.isDefined(n) || typeof(n) !== 'number') return "";
 
                 var s = Math.pow(10, precision);
                 var v = Math.floor(n * s) / s;

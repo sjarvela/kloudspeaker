@@ -1,5 +1,4 @@
-define([], function() {
-    //TODO remove global references
+define(['kloudspeaker/utils'], function(utils) {
     var parsers = {
         Number: function(precision) {
             this.parse = function(v) {
@@ -11,7 +10,7 @@ define([], function() {
                 try {
                     var n = parseFloat(text.replace(/\,/g, '.'));
                     if (isNaN(n) || typeof(n) !== 'number') return null;
-                    if (window.def(precision)) {
+                    if (utils.isDefined(precision)) {
                         var p = Math.pow(10, precision);
                         n = Math.floor(n * p + 0.50) / p;
                     }

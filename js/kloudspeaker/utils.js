@@ -3,10 +3,14 @@ define([], function() {
 
     var _time = new Date().getTime();
     var utils = {
+        isDefined = function(o) {
+            return (typeof(o) != 'undefined');
+        },
+
         isArray: function(o) {
             return Object.prototype.toString.call(o) === '[object Array]';
         },
-        
+
         generatePassword: function(l) {
             var length = l || 8;
             var password = '';
@@ -145,7 +149,7 @@ define([], function() {
         urlWithParam: function(url, param, v) {
             var p = param;
             if (v) p = param + "=" + encodeURIComponent(v);
-            return url + (window.strpos(url, "?") ? "&" : "?") + p;
+            return url + (utils.strpos(url, "?") ? "&" : "?") + p;
         },
 
         noncachedUrl: function(url) {
@@ -209,11 +213,11 @@ define([], function() {
             if (!list) return byKey;
             for (var i = 0, j = list.length; i < j; i++) {
                 var r = list[i];
-                if (!window.def(r)) continue;
+                if (!utils.isDefined(r)) continue;
                 var v = r[key];
-                if (!window.def(v)) continue;
+                if (!utils.isDefined(v)) continue;
 
-                if (window.def(value) && r[value])
+                if (utils.isDefined(value) && r[value])
                     byKey[v] = r[value];
                 else
                     byKey[v] = r;
@@ -279,7 +283,55 @@ define([], function() {
         },
 
         //TODO remove global base64
-        base64: window.Base64
+        base64: window.Base64,
+
+        strpos: function(haystack, needle, offset) {
+            // Finds position of first occurrence of a string within another  
+            // 
+            // version: 1109.2015
+            // discuss at: http://phpjs.org/functions/strpos
+            // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+            // +   improved by: Onno Marsman    
+            // +   bugfixed by: Daniel Esteban
+            // +   improved by: Brett Zamir (http://brett-zamir.me)
+            var i = (haystack + '').indexOf(needle, (offset || 0));
+            return i === -1 ? false : i;
+        },
+
+        //TODO is this needed
+        strpad: function(str, len, padstr, dir) {
+            var STR_PAD_LEFT = 1;
+            var STR_PAD_RIGHT = 2;
+            var STR_PAD_BOTH = 3;
+
+            if (typeof(len) == "undefined") {
+                len = 0;
+            }
+            if (typeof(padstr) == "undefined") {
+                padstr = ' ';
+            }
+            if (typeof(dir) == "undefined") {
+                dir = STR_PAD_RIGHT;
+            }
+
+            if (len + 1 >= str.length) {
+                switch (dir) {
+                    case STR_PAD_LEFT:
+                        str = new Array(len + 1 - str.length).join(padstr) + str;
+                        break;
+                    case STR_PAD_BOTH:
+                        var padlen = len - str.length;
+                        var right = Math.ceil(padlen / 2);
+                        var left = padlen - right;
+                        str = new Array(left + 1).join(padstr) + str + new Array(right + 1).join(padstr);
+                        break;
+                    default:
+                        str = str + new Array(len + 1 - str.length).join(padstr);
+                        break;
+                }
+            }
+            return str;
+        }
     };
     return utils;
 });

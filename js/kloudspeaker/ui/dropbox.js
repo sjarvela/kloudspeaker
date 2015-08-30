@@ -99,7 +99,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/ui/views'
 
     this.openDropbox = function(o) {
         var open = that.$dbE.hasClass("opened");
-        if (window.def(o)) {
+        if (utils.isDefined(o)) {
             if (o == open) return;
         } else {
             o = !open;

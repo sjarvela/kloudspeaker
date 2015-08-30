@@ -1,4 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/features', 'kloudspeaker/permissions', 'kloudspeaker/plugins', 'kloudspeaker/dom', 'kloudspeaker/templates', 'kloudspeaker/ui', 'kloudspeaker/ui/dialogs', 'kloudspeaker/localization', 'kloudspeaker/ui/views/main/files', 'kloudspeaker/ui/views/main/config'], function(app, settings, session, service, features, permissions, plugins, dom, templates, ui, dialogs, loc, FilesView, ConfigView) {
+define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/features', 'kloudspeaker/permissions', 'kloudspeaker/plugins', 'kloudspeaker/dom', 'kloudspeaker/templates', 'kloudspeaker/ui', 'kloudspeaker/ui/dialogs', 'kloudspeaker/localization', 'kloudspeaker/ui/views/main/files', 'kloudspeaker/ui/views/main/config', 'kloudspeaker/utils'], function(settings, session, service, features, permissions, plugins, dom, templates, ui, dialogs, loc, FilesView, ConfigView, utils) {
     return function() {
         var that = this;
         that._mainFileView = false;
@@ -184,7 +184,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/session', 'kl
                         var obj = items[i].obj;
                         if (!obj) return;
 
-                        var match = window.def(o.id) ? o.id == obj.id : o == obj;
+                        var match = utils.isDefined(o.id) ? o.id == obj.id : o == obj;
                         if (match) {
                             $(itm).addClass("active");
                             return false;

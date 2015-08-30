@@ -65,7 +65,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/dom', 'kloudspeaker/localization'
     };
 
     pl.get = function(id) {
-        if (!window.def(id)) return pl._list;
+        if (!utils.isDefined(id)) return pl._list;
         return pl._list[id];
     };
 

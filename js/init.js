@@ -40,10 +40,6 @@
         }
     }
 
-    window.def = function(o) {
-        return (typeof(o) != 'undefined');
-    }
-
     if (!Array.prototype.indexOf) {
         Array.prototype.indexOf = function(obj, start) {
             for (var i = (start || 0), j = this.length; i < j; i++) {
@@ -64,53 +60,6 @@
             this.length = from < 0 ? this.length + from : from;
             return this.push.apply(this, rest);
         };
-    }
-
-    window.strpos = function(haystack, needle, offset) {
-        // Finds position of first occurrence of a string within another  
-        // 
-        // version: 1109.2015
-        // discuss at: http://phpjs.org/functions/strpos
-        // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-        // +   improved by: Onno Marsman    
-        // +   bugfixed by: Daniel Esteban
-        // +   improved by: Brett Zamir (http://brett-zamir.me)
-        var i = (haystack + '').indexOf(needle, (offset || 0));
-        return i === -1 ? false : i;
-    }
-
-    var STR_PAD_LEFT = 1;
-    var STR_PAD_RIGHT = 2;
-    var STR_PAD_BOTH = 3;
-
-    function pad(str, len, padstr, dir) {
-        if (typeof(len) == "undefined") {
-            len = 0;
-        }
-        if (typeof(padstr) == "undefined") {
-            padstr = ' ';
-        }
-        if (typeof(dir) == "undefined") {
-            dir = STR_PAD_RIGHT;
-        }
-
-        if (len + 1 >= str.length) {
-            switch (dir) {
-                case STR_PAD_LEFT:
-                    str = new Array(len + 1 - str.length).join(padstr) + str;
-                    break;
-                case STR_PAD_BOTH:
-                    var padlen = len - str.length;
-                    var right = Math.ceil(padlen / 2);
-                    var left = padlen - right;
-                    str = new Array(left + 1).join(padstr) + str + new Array(right + 1).join(padstr);
-                    break;
-                default:
-                    str = str + new Array(len + 1 - str.length).join(padstr);
-                    break;
-            }
-        }
-        return str;
     }
 
     /**
