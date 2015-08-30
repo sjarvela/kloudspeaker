@@ -234,8 +234,8 @@ define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/service',
 
             var doChangePassword = function(oldPw, newPw, hint, successCb) {
                 service.put("configuration/users/current/password/", {
-                    old: window.Base64.encode(oldPw),
-                    "new": window.Base64.encode(newPw),
+                    old: utils.Base64.encode(oldPw),
+                    "new": utils.Base64.encode(newPw),
                     hint: hint
                 }).done(function(r) {
                     successCb();

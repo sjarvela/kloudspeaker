@@ -1,8 +1,6 @@
 define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/service', 'kloudspeaker/localization', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/ui', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/controls'], function(settings, plugins, service, loc, utils, dom, ui, dialogs, controls) {
     var that = {};
 
-    that.initialize = function() {};
-
     that.onStore = function(items) {
         var df = $.Deferred();
         dialogs.input({
@@ -250,7 +248,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/service',
 
     plugins.register({
         id: "plugin-itemcollection",
-        initialize: that.initialize,
+
         itemCollectionHandler: function(items) {
             return {
                 actions: [{

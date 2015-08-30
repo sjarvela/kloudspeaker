@@ -1,8 +1,6 @@
 define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/plugins', 'kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/permissions', 'kloudspeaker/localization', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui', 'kloudspeaker/utils'], function(settings, session, plugins, service, events, permissions, loc, dialogs, ui, utils) {
     var that = {};
 
-    that.initialize = function() {};
-
     that.onCompress = function(i, f) {
         if (!i) return;
 
@@ -105,7 +103,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/plugins',
 
     plugins.register({
         id: "plugin-archiver",
-        initialize: that.initialize,
+
         getDownloadCompressedUrl: function(i) {
             var single = false;
 

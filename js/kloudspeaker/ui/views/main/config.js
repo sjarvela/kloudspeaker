@@ -284,7 +284,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/plugins',
                     if (!password || password.length === 0) return;
 
                     service.put("configuration/users/" + u.id + "/password", {
-                        "new": window.Base64.encode(password)
+                        "new": utils.Base64.encode(password)
                     }).done(d.close).done(cb);
                 },
                 "on-show": function(h, $d) {

@@ -297,51 +297,10 @@ define([], function() {
                 packages: packages
             });
 
-            //TODO extract&rewrite into real modules
-
-            //define('kloudspeaker/app', [], app);
-            /*define('kloudspeaker/session', [], {
-                get: function() {
-                    return kloudspeaker.session;
-                }
-            });*/
-            //define('kloudspeaker/filesystem', [], kloudspeaker.filesystem);
-            //define('kloudspeaker/events', [], kloudspeaker.events);
-            //define('kloudspeaker/request', [], kloudspeaker.request);
-            //define('kloudspeaker/service', [], kloudspeaker.service);
-            //define('kloudspeaker/plugins', [], kloudspeaker.plugins);
-            //define('kloudspeaker/features', [], kloudspeaker.features);
-            //define('kloudspeaker/dom', [], kloudspeaker.dom);
-            //define('kloudspeaker/utils', [], kloudspeaker.helpers);
-            kloudspeaker.helpers.Base64 = window.Base64;
+            //TODO remove alias
             define('kloudspeaker/ui/texts', [], require("kloudspeaker/localization"));
-            //define('kloudspeaker/ui/formatters', [], kloudspeaker.ui.formatters);
-            //define('kloudspeaker/ui/controls', [], kloudspeaker.ui.controls);
-            //define('kloudspeaker/ui/dialogs', [], kloudspeaker.ui.dialogs);
 
-            /*define('kloudspeaker/ui', [], {
-                window: kloudspeaker.ui.window,
-                download: kloudspeaker.ui.download,
-                process: kloudspeaker.ui.process,
-                handlers: kloudspeaker.ui.handlers,
-                viewmodel: kloudspeaker.ui.viewmodel,
-            });*/
-            //define('kloudspeaker/ui/dnd', [], kloudspeaker.ui.draganddrop);
-            //define('kloudspeaker/ui/uploader', [], kloudspeaker.ui.uploader);
-            /*define('kloudspeaker/ui/clipboard', [], function() {
-                return kloudspeaker.ui.clipboard;
-            });*/
-            /*define('kloudspeaker/localization', [], function() {
-                return {
-                    registerPluginResource: function(pluginId) {
-                        //TODO refactor localization into separate module
-                        //use require.js to load resources, can be optimized
-                        //into package
-                        kloudspeaker.ui.texts.loadPlugin(pluginId);
-                    }
-                }
-            });*/
-
+            //TODO rewrite
             ui._configViews = {};
             ui._fileViewHandlers = [];
             define('kloudspeaker/ui/views', [], {
