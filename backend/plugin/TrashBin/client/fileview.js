@@ -56,8 +56,8 @@ define(['kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/ui/text
         };
 
         this._onDrop = function(items) {
-            var many = (window.isArray(items) && items.length > 1);
-            var single = many ? null : (window.isArray(items) ? items[0] : items);
+            var many = (utils.isArray(items) && items.length > 1);
+            var single = many ? null : (utils.isArray(items) ? items[0] : items);
 
             var title = many ? texts.get("deleteManyConfirmationDialogTitle") : (single.is_file ? texts.get("deleteFileConfirmationDialogTitle") : texts.get("deleteFolderConfirmationDialogTitle"));
             var msg = many ? texts.get("confirmDeleteManyMessage", items.length) : texts.get(single.is_file ? "confirmFileDeleteMessage" : "confirmFolderDeleteMessage", [single.name]);
@@ -84,7 +84,7 @@ define(['kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/ui/text
         };
 
         this.onRestore = function(i) {
-            var items = window.isArray(i) ? i : [i];
+            var items = utils.isArray(i) ? i : [i];
             var allowed = true;
             $.each(items, function(ind, item) {
                 if (!that.canRestore(item)) allowed = false;
@@ -118,7 +118,7 @@ define(['kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/ui/text
         };
 
         this.onDelete = function(i) {
-            var items = window.isArray(i) ? i : [i];
+            var items = utils.isArray(i) ? i : [i];
             var allowed = true;
             $.each(items, function(ind, item) {
                 if (!that.canDelete(item)) allowed = false;

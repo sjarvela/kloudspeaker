@@ -1,18 +1,16 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], function(app, settings, plugins) {
-    //TODO remove reference to global "kloudspeaker"
-
+define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/service', 'kloudspeaker/localization', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/ui', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/controls'], function(settings, plugins, service, loc, utils, dom, ui, dialogs, controls) {
     var that = {};
 
     that.initialize = function() {};
 
     that.onStore = function(items) {
         var df = $.Deferred();
-        kloudspeaker.ui.dialogs.input({
-            title: kloudspeaker.ui.texts.get('pluginItemCollectionStoreDialogTitle'),
-            message: kloudspeaker.ui.texts.get('pluginItemCollectionStoreDialogMessage'),
+        dialogs.input({
+            title: loc.get('pluginItemCollectionStoreDialogTitle'),
+            message: loc.get('pluginItemCollectionStoreDialogMessage'),
             defaultValue: "",
-            yesTitle: kloudspeaker.ui.texts.get('pluginItemCollectionStoreDialogAction'),
-            noTitle: kloudspeaker.ui.texts.get('dialogCancel'),
+            yesTitle: loc.get('pluginItemCollectionStoreDialogAction'),
+            noTitle: loc.get('dialogCancel'),
             handler: {
                 isAcceptable: function(n) {
                     return (!!n && n.length > 0);
@@ -26,7 +24,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
     };
 
     that._onStore = function(items, name) {
-        return kloudspeaker.service.post("itemcollections", {
+        return service.post("itemcollections", {
             items: items,
             name: name
         }).done(function(list) {
@@ -36,14 +34,14 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
     };
 
     that.onAddItems = function(ic, items) {
-        return kloudspeaker.service.post("itemcollections/" + ic.id, {
-            items: window.isArray(items) ? items : [items]
+        return service.post("itemcollections/" + ic.id, {
+            items: utils.isArray(items) ? items : [items]
         });
     };
 
     that._removeCollectionItem = function(ic, items) {
-        return kloudspeaker.service.del("itemcollections/" + ic.id + "/items", {
-            items: window.isArray(items) ? items : [items]
+        return service.del("itemcollections/" + ic.id + "/items", {
+            items: utils.isArray(items) ? items : [items]
         });
     };
 
@@ -52,15 +50,15 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
     };
 
     that.editCollection = function(ic, done) {
-        kloudspeaker.service.get("itemcollections/" + ic.id).done(function(loaded) {
-            kloudspeaker.ui.dialogs.tableView({
-                title: kloudspeaker.ui.texts.get('pluginItemCollectionsEditDialogTitle', ic.name),
+        service.get("itemcollections/" + ic.id).done(function(loaded) {
+            dialogs.tableView({
+                title: loc.get('pluginItemCollectionsEditDialogTitle', ic.name),
                 buttons: [{
                     id: "close",
-                    title: kloudspeaker.ui.texts.get('dialogClose')
+                    title: loc.get('dialogClose')
                 }, {
                     id: "remove",
-                    title: kloudspeaker.ui.texts.get("pluginItemCollectionsEditDialogRemove"),
+                    title: loc.get("pluginItemCollectionsEditDialogRemove"),
                     type: "secondary",
                     cls: "btn-danger secondary"
                 }],
@@ -79,7 +77,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                         }
                     }, {
                         id: "name",
-                        title: kloudspeaker.ui.texts.get('fileListColumnTitleName')
+                        title: loc.get('fileListColumnTitleName')
                     }, {
                         id: "remove",
                         title: "",
@@ -125,15 +123,15 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
     }
 
     that.removeCollection = function(ic) {
-        return kloudspeaker.service.del("itemcollections/" + ic.id).done(that._updateNavBar);
+        return service.del("itemcollections/" + ic.id).done(that._updateNavBar);
     };
 
     that._onShareNavItem = function(ic) {
-        if (!kloudspeaker.plugins.exists("plugin-share")) return;
-        kloudspeaker.plugins.get("plugin-share").openShares({
+        if (!plugins.exists("plugin-share")) return;
+        plugins.get("plugin-share").openShares({
             id: "ic_" + ic.id,
             "name": ic.name,
-            shareTitle: kloudspeaker.ui.texts.get("pluginItemCollectionShareTitle")
+            shareTitle: loc.get("pluginItemCollectionShareTitle")
         });
     };
 
@@ -156,7 +154,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                 that.removeCollection(ic);
             }
         }];
-        if (kloudspeaker.plugins.exists("plugin-share")) items.push({
+        if (plugins.exists("plugin-share")) items.push({
             "title-key": "pluginItemCollectionsNavShare",
             callback: function() {
                 that._onShareNavItem(ic);
@@ -170,7 +168,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
         that._fileView.addCustomFolderType("ic", {
             onSelectFolder: function(id) {
                 var df = $.Deferred();
-                kloudspeaker.service.post("itemcollections/" + id + "/data", {
+                service.post("itemcollections/" + id + "/data", {
                     rq_data: that._fileView.getDataRequest()
                 }).done(function(r) {
                     that._collectionsNav.setActive(r.ic);
@@ -195,21 +193,21 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
             },
 
             onRenderFolderView: function(f, data, $h, $tb) {
-                kloudspeaker.dom.template("kloudspeaker-tmpl-fileview-header-custom", {
+                dom.template("kloudspeaker-tmpl-fileview-header-custom", {
                     folder: f
                 }).appendTo($h);
 
                 var opt = {
                     title: function() {
-                        return that.data.title ? that.data.title : kloudspeaker.ui.texts.get(that.data['title-key']);
+                        return that.data.title ? that.data.title : loc.get(that.data['title-key']);
                     }
                 };
                 var $fa = $("#kloudspeaker-fileview-folder-actions");
-                var actionsElement = kloudspeaker.dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
+                var actionsElement = dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
                     icon: 'fa fa-cog',
                     dropdown: true
                 }, opt).appendTo($fa);
-                kloudspeaker.ui.controls.dropdown({
+                controls.dropdown({
                     element: actionsElement,
                     items: that._getItemActions(data.ic),
                     hideDelay: 0,
@@ -222,14 +220,14 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
 
     that._onFileViewActivate = function($e, h) {
         that._collectionsNav = h.addNavBar({
-            title: kloudspeaker.ui.texts.get("pluginItemCollectionsNavTitle"),
+            title: loc.get("pluginItemCollectionsNavTitle"),
             classes: "ic-navbar-item",
             items: [],
             dropdown: {
                 items: that._getItemActions
             },
-            onRender: kloudspeaker.ui.draganddrop ? function($nb, $items, objs) {
-                kloudspeaker.ui.draganddrop.enableDrop($items, {
+            onRender: ui.draganddrop ? function($nb, $items, objs) {
+                ui.draganddrop.enableDrop($items, {
                     canDrop: function($e, e, obj) {
                         if (!obj || obj.type != 'filesystemitem') return false;
                         return true;
@@ -247,7 +245,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins'], fu
                 });
             } : false
         });
-        kloudspeaker.service.get("itemcollections").done(that._updateNavBar);
+        service.get("itemcollections").done(that._updateNavBar);
     };
 
     plugins.register({

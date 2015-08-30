@@ -109,7 +109,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/plugins',
         getDownloadCompressedUrl: function(i) {
             var single = false;
 
-            if (!window.isArray(i)) single = i;
+            if (!utils.isArray(i)) single = i;
             else if (i.length == 1) single = i[0];
 
             if (single)
