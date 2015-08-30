@@ -1,4 +1,4 @@
-define(['kloudspeaker/resources', 'kloudspeaker/events'], function(resources, events) {
+define(['kloudspeaker/resources', 'kloudspeaker/events', 'kloudspeaker/utils'], function(resources, events, utils) {
     //TODO rewrite error views
 
     var tt = {};
@@ -129,7 +129,7 @@ define(['kloudspeaker/resources', 'kloudspeaker/events'], function(resources, ev
         var t = tt._dict[id];
         if (!t) return "!" + tt.locale + ":" + id;
         if (p !== undefined) {
-            if (!window.isArray(p)) p = [p];
+            if (!utils.isArray(p)) p = [p];
             for (var i = 0, j = p.length; i < j; i++)
                 t = t.replace("{" + i + "}", p[i]);
         }

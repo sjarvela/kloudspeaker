@@ -126,7 +126,7 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/permissions
     mfs.copy = function(i, to) {
         if (!i) return;
 
-        if (window.isArray(i) && i.length > 1) {
+        if (utils.isArray(i) && i.length > 1) {
             if (!to) {
                 var df = $.Deferred();
                 dialogs.folderSelector({
@@ -149,7 +149,7 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/permissions
             return;
         }
 
-        if (window.isArray(i)) i = i[0];
+        if (utils.isArray(i)) i = i[0];
 
         if (!to) {
             var df2 = $.Deferred();
@@ -198,7 +198,7 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/permissions
     };
 
     mfs.canCopyTo = function(item, to) {
-        if (window.isArray(item)) {
+        if (utils.isArray(item)) {
             for (var i = 0, j = item.length; i < j; i++)
                 if (!mfs.canCopyTo(item[i], to)) return false;
             return true;
@@ -216,7 +216,7 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/permissions
     };
 
     mfs.canMoveTo = function(item, to) {
-        if (window.isArray(item)) {
+        if (utils.isArray(item)) {
             for (var i = 0, j = item.length; i < j; i++)
                 if (!mfs.canMoveTo(item[i], to)) return false;
             return true;
@@ -313,7 +313,7 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/permissions
     mfs.move = function(i, to) {
         if (!i) return;
 
-        if (window.isArray(i) && i.length > 1) {
+        if (utils.isArray(i) && i.length > 1) {
             if (!to) {
                 var df = $.Deferred();
                 dialogs.folderSelector({
@@ -334,7 +334,7 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/permissions
                 return mfs._moveMany(i, to);
         }
 
-        if (window.isArray(i)) i = i[0];
+        if (utils.isArray(i)) i = i[0];
 
         if (!to) {
             var df2 = $.Deferred();
@@ -476,12 +476,12 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/permissions
         if (!i) return;
 
         var df = $.Deferred();
-        if (window.isArray(i) && i.length > 1) {
+        if (utils.isArray(i) && i.length > 1) {
             mfs._validated(mfs._delMany, [i], "delete", loc.get("actionDeniedDeleteMany", i.length), loc.get("actionAcceptDeleteMany", i.length)).done(df.resolve).fail(df.reject);
             return df.promise();
         }
 
-        if (window.isArray(i)) i = i[0];
+        if (utils.isArray(i)) i = i[0];
         mfs._validated(mfs._del, [i], "delete", loc.get("actionDeniedDelete", i.name), loc.get("actionAcceptDelete", i.name)).done(df.resolve).fail(df.reject);
         return df.promise();
     };
@@ -523,7 +523,7 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/permissions
         if (!i) return false;
         var single = false;
 
-        if (!window.isArray(i)) single = i;
+        if (!utils.isArray(i)) single = i;
         else if (i.length === 0) single = i[0];
 
         if (single && single.is_file) {

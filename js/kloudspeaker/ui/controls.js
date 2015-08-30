@@ -1,4 +1,4 @@
-define(['kloudspeaker/localization', 'kloudspeaker/dom', 'kloudspeaker/service', 'kloudspeaker/ui'], function(loc, dom, service, ui) {
+define(['kloudspeaker/localization', 'kloudspeaker/dom', 'kloudspeaker/service', 'kloudspeaker/ui', 'kloudspeaker/utils'], function(loc, dom, service, ui, utils) {
     var processPopupActions = function(l) {
         $.each(l, function(i, item) {
             if (item.type == 'submenu') {
@@ -524,7 +524,7 @@ define(['kloudspeaker/localization', 'kloudspeaker/dom', 'kloudspeaker/service',
                     if (!$sl) {
                         var selOptions = [];
                         if (typeof(col.options) == "function") selOptions = col.options(item);
-                        else if (window.isArray(col.options)) selOptions = col.options;
+                        else if (utils.isArray(col.options)) selOptions = col.options;
 
                         var noneOption;
                         if (col.none) {
@@ -637,7 +637,7 @@ define(['kloudspeaker/localization', 'kloudspeaker/dom', 'kloudspeaker/service',
                 add: function(item) {
                     if (!item) return;
 
-                    if (window.isArray(item)) {
+                    if (utils.isArray(item)) {
                         for (var i = 0, j = item.length; i < j; i++) addItem(item[i]);
                     } else {
                         addItem(item);
@@ -732,7 +732,7 @@ define(['kloudspeaker/localization', 'kloudspeaker/dom', 'kloudspeaker/service',
                 add: function(item) {
                     if (!item) return;
 
-                    if (window.isArray(item)) {
+                    if (utils.isArray(item)) {
                         for (var i = 0, j = item.length; i < j; i++) addItem(item[i]);
                     } else {
                         addItem(item);

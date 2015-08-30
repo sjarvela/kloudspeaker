@@ -1,4 +1,4 @@
-define(['kloudspeaker/settings', 'kloudspeaker/filesystem', 'kloudspeaker/ui'], function(settings, fs, ui) {
+define(['kloudspeaker/settings', 'kloudspeaker/filesystem', 'kloudspeaker/ui', 'kloudspeaker/utils'], function(settings, fs, ui, utils) {
     var t = {};
     t.dragObj = false;
     t.dragEl = false;
@@ -53,8 +53,8 @@ define(['kloudspeaker/settings', 'kloudspeaker/filesystem', 'kloudspeaker/ui'], 
 
                 if (t.dragObj.type == 'filesystemitem') {
                     var pl = t.dragObj.payload;
-                    if (!window.isArray(pl) || pl.length == 1) {
-                        var item = window.isArray(pl) ? pl[0] : pl;
+                    if (!utils.isArray(pl) || pl.length == 1) {
+                        var item = utils.isArray(pl) ? pl[0] : pl;
 
                         if (!item.is_file) dragImageType = "filesystemitem-folder";
                         else dragImageType = "filesystemitem-file";

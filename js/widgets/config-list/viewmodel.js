@@ -154,7 +154,7 @@ define(['kloudspeaker/localization', 'kloudspeaker/utils', 'durandal/composition
                     if (!$sl) {
                         var selOptions = [];
                         if (typeof(col.options) == "function") selOptions = col.options(item);
-                        else if (window.isArray(col.options)) selOptions = col.options;
+                        else if (utils.isArray(col.options)) selOptions = col.options;
 
                         var noneOption;
                         if (col.none) {

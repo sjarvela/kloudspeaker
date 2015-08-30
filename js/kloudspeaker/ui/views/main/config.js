@@ -1367,7 +1367,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/plugins',
                 $.each(that._views, function(i, v) {
                     var title = v.title;
                     if (typeof(title) === "string" && title.startsWith("i18n:")) title = loc.get(title.substring(5));
-                    if (window.isArray(title)) title = loc.get(title[0], title.slice(1));
+                    if (utils.isArray(title)) title = loc.get(title[0], title.slice(1));
 
                     navBarItems.push({
                         title: title,
@@ -1469,7 +1469,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/plugins',
                 $.each(that._adminViews, function(i, v) {
                     var title = v.title;
                     if (typeof(title) === "string" && title.startsWith("i18n:")) title = loc.get(title.substring(5));
-                    if (window.isArray(title)) title = loc.get(title[0], title.slice(1));
+                    if (utils.isArray(title)) title = loc.get(title[0], title.slice(1));
 
                     navBarItems.push({
                         title: title,
@@ -1540,14 +1540,14 @@ define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/plugins',
 
             var title = v.title;
             if (typeof(title) === "string" && title.startsWith("i18n:")) title = loc.get(title.substring(5));
-            if (window.isArray(title)) title = loc.get(title[0], title.slice(1));
+            if (utils.isArray(title)) title = loc.get(title[0], title.slice(1));
 
             if (v.model) {
                 var model = v.model;
                 var p = {
                     settings: that._settings
                 };
-                if (window.isArray(model)) {
+                if (utils.isArray(model)) {
                     p = model[1];
                     model = model[0];
                 }

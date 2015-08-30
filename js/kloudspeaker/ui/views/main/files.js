@@ -497,7 +497,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             var res = hcb(that._currentFolderData.data);
             if (!res) return;
             if (res === true) that._updateUI();
-            else if (window.isArray(res)) {
+            else if (utils.isArray(res)) {
                 that.itemWidget.updateItems(res, that._currentFolderData.data);
             } else {
                 if (res.id && res.id == that._currentFolder.id) that._updateUI();
@@ -671,7 +671,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
 
         that.dropType = function(to, i) {
             var single = false;
-            if (!window.isArray(i)) single = i;
+            if (!utils.isArray(i)) single = i;
             else if (i.length == 1) single = i[0];
 
             if (settings["file-view"] && settings["file-view"]["drop-type"]) {
@@ -690,7 +690,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
 
         that.canDragAndDrop = function(to, itm) {
             var single = false;
-            if (!window.isArray(itm)) single = itm;
+            if (!utils.isArray(itm)) single = itm;
             else if (itm.length == 1) single = itm[0];
 
             var droptype = that.dropType(to, itm);

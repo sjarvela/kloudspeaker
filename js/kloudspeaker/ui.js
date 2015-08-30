@@ -86,7 +86,7 @@ define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins'
                 if (view.startsWith("#"))
                     $v = dom.template(view.substring(1));
                 //otherwise considered view id resolved via composition & requirejs
-            } else if (window.isArray(view)) {
+            } else if (utils.isArray(view)) {
                 var tmpl = view[0],
                     d = (view.length > 1) ? view[1] : null;
                 $v = dom.template(tmpl, d);
@@ -96,13 +96,13 @@ define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins'
         }
         if ($target && $v) $target.append($v);
 
-        if (typeof(model) == "string" || window.isArray(model)) {
+        if (typeof(model) == "string" || utils.isArray(model)) {
             var _view = false;
-            var _model = window.isArray(model) ? model[0] : model;
+            var _model = utils.isArray(model) ? model[0] : model;
             if (!view) _view = _model; //TODO platform
             else if (typeof(view) == "string") _view = view; //TODO platform
 
-            var ctx = (window.isArray(model) && model.length > 1) ? model[1] : {};
+            var ctx = (utils.isArray(model) && model.length > 1) ? model[1] : {};
             if (!$v) {
                 var c = {
                     model: _model,
@@ -218,7 +218,7 @@ define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins'
             var df = $.Deferred();
             var handlers = [];
             var findItem = function(id) {
-                if (!window.isArray(data.target)) return data.target;
+                if (!utils.isArray(data.target)) return data.target;
 
                 for (var i = 0, j = data.target.length; i < j; i++) {
                     if (data.target[i].id == id) return data.target[i];

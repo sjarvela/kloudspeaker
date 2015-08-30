@@ -125,7 +125,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/dom', 'kloudspeaker/localization'
 
     pl.getItemCollectionPlugins = function(items, ctx) {
         var data = {};
-        if (!items || !window.isArray(items) || items.length < 1) return data;
+        if (!items || !utils.isArray(items) || items.length < 1) return data;
 
         for (var id in pl._list) {
             var plugin = pl._list[id];

@@ -3,6 +3,10 @@ define([], function() {
 
     var _time = new Date().getTime();
     var utils = {
+        isArray: function(o) {
+            return Object.prototype.toString.call(o) === '[object Array]';
+        },
+        
         generatePassword: function(l) {
             var length = l || 8;
             var password = '';
@@ -246,7 +250,7 @@ define([], function() {
 
         arrayize: function(i) {
             var a = [];
-            if (!window.isArray(i)) {
+            if (!utils.isArray(i)) {
                 a.push(i);
             } else {
                 return i;
@@ -275,7 +279,7 @@ define([], function() {
         },
 
         //TODO remove global base64
-        base64 : window.Base64
+        base64: window.Base64
     };
     return utils;
 });

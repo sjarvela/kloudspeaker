@@ -11,9 +11,7 @@
 
     "use strict";
 
-    window.isArray = function(o) {
-        return Object.prototype.toString.call(o) === '[object Array]';
-    }
+    //TODO remove all global utils
 
     if (typeof String.prototype.trim !== 'function') {
         String.prototype.trim = function() {
@@ -257,14 +255,12 @@
         }
     }
 
-    var df = $.Deferred();
-
     //TODO remove global kloudspeaker
     //TODO warn deprecated "kloudspeaker.App.init"
     var kloudspeaker = {
         App: {
             init: function(s, p) {
-                df.done(function(app) {
+                require(['kloudspeaker/app'], function(app) {
                     app.init(s, p);
                 });
             }
@@ -280,8 +276,4 @@
         templates: {}
     };
     window.kloudspeaker = kloudspeaker;
-
-    require(['kloudspeaker/app'], function(app) {
-        df.resolve(app);
-    });
 }(window.jQuery);

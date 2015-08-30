@@ -1,9 +1,9 @@
-define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/permissions', 'kloudspeaker/filesystem', 'kloudspeaker/ui/dialogs', 'kloudspeaker/localization', 'kloudspeaker/ui'], function(settings, plugins, permissions, filesystem, dialogs, loc, ui) {
+define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/permissions', 'kloudspeaker/filesystem', 'kloudspeaker/ui/dialogs', 'kloudspeaker/localization', 'kloudspeaker/ui', 'kloudspeaker/utils'], function(settings, plugins, permissions, filesystem, dialogs, loc, ui, utils) {
     var that = {};
 
     var doDelete = function(items) {
-        var many = (window.isArray(items) && items.length > 1);
-        var single = many ? null : (window.isArray(items) ? items[0] : items);
+        var many = (utils.isArray(items) && items.length > 1);
+        var single = many ? null : (utils.isArray(items) ? items[0] : items);
 
         var title = many ? loc.get("deleteManyConfirmationDialogTitle") : (single.is_file ? loc.get("deleteFileConfirmationDialogTitle") : loc.get("deleteFolderConfirmationDialogTitle"));
         var msg = many ? loc.get("confirmDeleteManyMessage", items.length) : loc.get(single.is_file ? "confirmFileDeleteMessage" : "confirmFolderDeleteMessage", [single.name]);
