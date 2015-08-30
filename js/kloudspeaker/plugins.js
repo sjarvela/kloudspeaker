@@ -56,7 +56,10 @@ define(['kloudspeaker/settings', 'kloudspeaker/dom', 'kloudspeaker/localization'
             var p = list[k];
             if (p.client_plugin) l.push(dom.importScript(p.client_plugin));
         });
-        if (l.length === 0) return df.resolve();
+        if (l.length === 0) {
+            pl.initialize().done(df.resolve);
+            return df;
+        }
 
         $.when.apply($, l).done(function() {
             pl.initialize().done(df.resolve);

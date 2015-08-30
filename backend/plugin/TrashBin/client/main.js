@@ -1,6 +1,6 @@
-define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', 'kloudspeaker/ui/views', 'kloudspeaker/trashbin/fileview'], function(settings, plugins, events, session, views, TrashBinFileView) {
+define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/session', 'kloudspeaker/dom', 'kloudspeaker/ui/views', 'kloudspeaker/trashbin/fileview'], function(settings, plugins, events, session, dom, views, TrashBinFileView) {
     var that = this;
-    var softDelete = false;
+    var _softDelete = false;
     var initialized = false;
     var initialize = function() {
         if (initialized) return;
@@ -9,7 +9,8 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 
         var s = session.get();
         _softDelete = (s && s.plugins["TrashBin"] && s.data.plugins["TrashBin"]["soft_delete"]);
     };
-    events.addEventHandler(initialize, "session/start");
+    if (session.get()) initialize();
+    events.on("session/start", initialize);
 
     views.registerFileViewHandler(new TrashBinFileView({
         isSoftDelete: function() {
@@ -25,12 +26,12 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 
             admin: true
         });
 
+    //dom.importCss(plugins.url('TrashBin', 'style.css'));
+
     plugins.register({
         id: "plugin-trashbin",
         backendPluginId: "TrashBin",
-        initialize: function() {
-            if (session.get()) initialize();
-        },
+
         resources: {
             texts: true,
             css: true
