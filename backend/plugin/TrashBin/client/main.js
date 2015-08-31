@@ -2,6 +2,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 
     var that = this;
     var _softDelete = false;
     var initialized = false;
+    
     var initialize = function() {
         if (initialized) return;
         initialized = true;
@@ -25,8 +26,6 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 
             model: 'kloudspeaker/trashbin/manage',
             admin: true
         });
-
-    //dom.importCss(plugins.url('TrashBin', 'style.css'));
 
     plugins.register({
         id: "plugin-trashbin",
