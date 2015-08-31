@@ -1130,7 +1130,7 @@ class FilesystemController {
 
 		$name = $file->name();
 		$size = $file->size();
-		$range = $this->getDownloadRangeInfo($range);
+		$range = $this->getDownloadRangeInfo($range, $size);
 
 		if ($range) {
 			Logging::logDebug("Download range " . $range[0] . "-" . $range[1]);
@@ -1142,7 +1142,7 @@ class FilesystemController {
 	}
 
 	// TODO somewhere else
-	public function getDownloadRangeInfo($range) {
+	public function getDownloadRangeInfo($range, $size) {
 		if ($range == NULL) {
 			return NULL;
 		}

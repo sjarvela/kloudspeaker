@@ -110,7 +110,7 @@ class KloudspeakerExternalInterface {
 	}
 
 	public function addUserToGroup($userId, $gr) {
-		$g = is_array($gr) ? array($gr) : $gr;
+		$g = !is_array($gr) ? array($gr) : $gr;
 		return $this->configuration->addUsersGroups($userId, $g);
 	}
 

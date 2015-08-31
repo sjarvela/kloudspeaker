@@ -1,4 +1,4 @@
-define(['kloudspeaker/share', 'kloudspeaker/app', 'kloudspeaker/service', 'kloudspeaker/ui', 'kloudspeaker/ui/texts', 'kloudspeaker/ui/dialogs', 'knockout'], function(share, app, service, ui, texts, dialogs, ko) {
+define(['kloudspeaker/share', 'kloudspeaker/instance', 'kloudspeaker/service', 'kloudspeaker/ui', 'kloudspeaker/ui/texts', 'kloudspeaker/ui/dialogs', 'kloudspeaker/utils', 'knockout'], function(share, app, service, ui, texts, dialogs, utils, ko) {
     return function() {
         var that = this;
         var model = {
@@ -23,7 +23,7 @@ define(['kloudspeaker/share', 'kloudspeaker/app', 'kloudspeaker/service', 'kloud
                     model.password.valueHasMutated();
                     return;
                 }
-                var key = window.Base64.encode(model.password());
+                var key = utils.Base64.encode(model.password());
 
                 service.post("public/" + that.shareId + "/key/", {
                     key: key
