@@ -3,7 +3,10 @@ define(['kloudspeaker/localization', 'kloudspeaker/utils', 'durandal/composition
 
     ctor.prototype.activate = function(settings) {
         var that = this;
+
         this.settings = settings;
+        if (settings.config) this.settings = settings.config;
+
         this.settings.loading = ko.observable(false);
         this.settings.paging = ko.observable(null);
 
@@ -27,11 +30,15 @@ define(['kloudspeaker/localization', 'kloudspeaker/utils', 'durandal/composition
             }
         }
 
+        if (settings.refresh) settings.refresh.listen(function() {
+            that.reload();
+        });
+
         if (this.settings.cols.subscribe)
             this.settings.cols.subscribe(function(v) {
                 that._updateCols();
             });
-        if (this.settings.values.subscribe)
+        if (settings.values && this.settings.values.subscribe)
             this.settings.values.subscribe(function(v) {
                 that._updateContent(v);
                 that._onSelectionChanged(true);
@@ -191,7 +198,7 @@ define(['kloudspeaker/localization', 'kloudspeaker/utils', 'durandal/composition
                 //if (col.renderer) col.renderer(item, v, $cell);
                 if (col.content) $cell.html((typeof(col.content) === 'function') ? col.content(row, v) : col.content);
                 else if (col.formatter) {
-                    if (typeof(col.formatter) === 'function') $cell.html(col.formatter(item, v));
+                    if (typeof(col.formatter) === 'function') $cell.html(col.formatter(row, v));
                     else $cell.html(col.formatter.format(v));
                 } else $cell.html(v);
             }
@@ -224,8 +231,10 @@ define(['kloudspeaker/localization', 'kloudspeaker/utils', 'durandal/composition
 
         this._updateTools();
     };
-    ctor.prototype._updateContent = function(newRows) {
+    ctor.prototype._updateContent = function(newRows) {        
         var that = this;
+        if (!that.$tbody) return;
+
         that.$tbody.empty();
 
         var rows = newRows || ((typeof(this.settings.rows) === 'function') ? this.settings.rows() : this.settings.rows);
@@ -344,7 +353,12 @@ define(['kloudspeaker/localization', 'kloudspeaker/utils', 'durandal/composition
     };
     ctor.prototype.reload = function() {
         var df = $.Deferred();
-        if (!this.settings.remote || !this.settings.remote.handler) return df.reject();
+
+        if (!this.settings.remote || !this.settings.remote.handler) {
+            this._updateContent(this.settings.values());
+            this._onSelectionChanged(true);
+            return df.resolve();
+        }
 
         var p = this.settings.paging();
 
