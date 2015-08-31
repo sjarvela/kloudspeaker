@@ -48,7 +48,7 @@ define(['kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/utils'], fu
         authenticate: function(username, password, remember) {
             return service.post("session/authenticate/", {
                 username: username,
-                password: utils.base64.encode(password),
+                password: utils.Base64.encode(password),
                 remember: remember
             }).done(function(s) {
                 onStart(s);
