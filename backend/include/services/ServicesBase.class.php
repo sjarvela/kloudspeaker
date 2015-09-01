@@ -59,6 +59,7 @@ abstract class ServicesBase {
 	public function processRequest() {
 		switch ($this->request->method()) {
 			case Request::METHOD_GET:
+			case Request::METHOD_HEAD:
 				$this->processGet();
 				break;
 			case Request::METHOD_PUT:

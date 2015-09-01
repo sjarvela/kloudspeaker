@@ -11,6 +11,7 @@
 
 class Request {
 	const METHOD_GET = 'get';
+	const METHOD_HEAD = 'head';
 	const METHOD_PUT = 'put';
 	const METHOD_POST = 'post';
 	const METHOD_DELETE = 'delete';
@@ -80,6 +81,7 @@ class Request {
 
 		switch ($method) {
 			case self::METHOD_GET:
+			case self::METHOD_HEAD:
 				return $_GET;
 
 			case self::METHOD_POST:
@@ -106,6 +108,7 @@ class Request {
 		
 		switch ($method) {
 			case self::METHOD_GET:
+			case self::METHOD_HEAD:
 				break;
 
 			case self::METHOD_POST:
