@@ -1,8 +1,8 @@
-define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/share/repository', 'kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/texts', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/permissions'], function(settings, plugins, events, repository, service, fs, views, formatters, dialogs, texts, utils, dom, permissions) {
+define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/share/repository', 'kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/dialogs', 'kloudspeaker/localization', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/permissions'], function (settings, plugins, events, repository, service, fs, views, formatters, dialogs, loc, utils, dom, permissions) {
     var that = {};
 
     events.on('localization/init', function() {
-        that._timestampFormatter = new formatters.Timestamp(texts.get('shortDateTimeFormat'));
+        that._timestampFormatter = new formatters.Timestamp(loc.get('shortDateTimeFormat'));
     });
 
     views.registerView("share", function(rqParts, urlParams) {
@@ -12,7 +12,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 
         var shareId = rqParts[1];
         service.get("public/" + shareId + "/info/").done(function(result) {
             if (!result || !result.type || (["download", "upload", "prepared_download"].indexOf(result.type) < 0)) {
-                df.resolve(new kloudspeaker.ui.FullErrorView(texts.get('shareViewInvalidRequest')));
+                df.resolve(new kloudspeaker.ui.FullErrorView(loc.get('shareViewInvalidRequest')));
                 return;
             }
 
@@ -34,7 +34,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 
 
             df.resolve(that._getShareView(shareId, result));
         }).fail(function() {
-            df.resolve(new kloudspeaker.ui.FullErrorView(texts.get('shareViewInvalidRequest')));
+            df.resolve(new kloudspeaker.ui.FullErrorView(loc.get('shareViewInvalidRequest')));
         });
         return df.promise();
     });
@@ -75,7 +75,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 
                 }]
             };
         }
-        return new kloudspeaker.ui.FullErrorView(texts.get('shareViewInvalidRequest'));
+        return new kloudspeaker.ui.FullErrorView(loc.get('shareViewInvalidRequest'));
     };
 
     that.onOpenItemShares = function(item) {
@@ -87,7 +87,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 
             }],
             buttons: [{
                 id: "no",
-                "title": texts.get('dialogCancel')
+                "title": loc.get('dialogCancel')
             }],
         });
     };
@@ -163,8 +163,8 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 
         var messages = [];
         $.each(items, function(i, itm) {
             var msg;
-            if (itm.reason == 'item_shared') msg = texts.get("pluginShareActionValidationDeleteShared", itm.item.name);
-            else if (itm.reason == 'item_shared_others') msg = texts.get("pluginShareActionValidationDeleteSharedOthers", itm.item.name);
+            if (itm.reason == 'item_shared') msg = loc.get("pluginShareActionValidationDeleteShared", itm.item.name);
+            else if (itm.reason == 'item_shared_others') msg = loc.get("pluginShareActionValidationDeleteSharedOthers", itm.item.name);
             else return;
 
             messages.push({
@@ -191,7 +191,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 
 
                     if (itemData.own > 0)
                         return "<div class='filelist-item-share-info'><i class='fa fa-external-link'></i>&nbsp;" + itemData.own + "</div>";
-                    return "<div class='filelist-item-share-info others' title='" + texts.get("pluginShareFilelistColOtherShared") + "'><i class='fa fa-external-link'></i></div>";
+                    return "<div class='filelist-item-share-info others' title='" + loc.get("pluginShareFilelistColOtherShared") + "'><i class='fa fa-external-link'></i></div>";
                 },
 
                 dataRequest: 'plugin-share/item-info',
@@ -245,7 +245,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 
             }
         },
 
-        openShares: that.onOpenItemShares,
+        openShares: that.onOpenItemShares
     });
 
     return {
