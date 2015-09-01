@@ -96,7 +96,7 @@ class ItemIdProvider {
 		$query = "select id from " . $db->table("item_id") . " where id=" . $db->string($id, TRUE);
 		$result = $db->query($query);    
     		if ($result->count() === 1) {
-			return 0;
+			return $result->value(0, "id");
 		}
 		$db->update(sprintf("INSERT INTO " . $db->table("item_id") . " (id, path) VALUES (%s,%s)", $db->string($id, TRUE), $db->string($p, TRUE)));
 		return $id;
