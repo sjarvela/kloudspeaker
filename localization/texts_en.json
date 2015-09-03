@@ -379,6 +379,9 @@
 		"pluginShareConfigViewActiveTitle": "Active",
 		"pluginShareConfigRemoveShareTitle": "Remove shares",
 		"pluginShareConfigRemoveShareMessage": "Are you sure you want to remove selected shares?",
+		"shareViewConfirmDownloadTitle": "You are about to download \"{0}\"",
+		"shareViewConfirmDownloadSubtitle": "Are you sure want to proceed?",
+		"shareViewConfirmDownloadAction": "Yes",
 
 		"pluginItemCollectionsNavTitle": "Stored",
 		"pluginItemCollectionStore": "Store...",

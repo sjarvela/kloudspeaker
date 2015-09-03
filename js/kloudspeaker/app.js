@@ -52,10 +52,9 @@ define([], function() {
                 if (app._initDf.state() == "pending") app._initDf.reject();
             };
 
-            //TODO move to request?
-            app.baseUrl = request.getBaseUrl(window.location.href);
-            app.pageUrl = request.getPageUrl(window.location.href);
-            app.pageParams = request.getParams(window.location.href);
+            app.baseUrl = request.getBaseUrl();
+            app.pageUrl = request.getPageUrl();
+            app.pageParams = request.getParams();
             app.mobile = (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
 
             service.initialize(app.baseUrl);

@@ -1,4 +1,4 @@
-define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/share/repository', 'kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/dialogs', 'kloudspeaker/localization', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/permissions'], function (settings, plugins, events, repository, service, fs, views, formatters, dialogs, loc, utils, dom, permissions) {
+define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/share/repository', 'kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/dialogs', 'kloudspeaker/localization', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/permissions', 'kloudspeaker/request'], function(settings, plugins, events, repository, service, fs, views, formatters, dialogs, loc, utils, dom, permissions, rq) {
     var that = {};
 
     events.on('localization/init', function() {
@@ -53,6 +53,16 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 
     });
 
     that._getShareView = function(id, info) {
+        if (info.type == "download" || info.type == "prepared_download") {
+            var confirmed = !!rq.getParam('c');
+            if (!confirmed) return {
+                model: ["kloudspeaker/share/views/public/confirm_download", {
+                    id: id,
+                    name: info.name
+                }]
+            };
+        }
+
         if (info.type == "download") {
             return {
                 model: ["kloudspeaker/share/views/public/download", {

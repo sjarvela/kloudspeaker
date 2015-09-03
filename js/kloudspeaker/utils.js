@@ -270,8 +270,12 @@ define([], function() {
         },
 
         getUrlParams: function(u) {
+            var url = u;
+            var p = url.lastIndexOf('?');
+            if (p >= 0) url = url.substring(p+1);
+
             var params = {};
-            $.each(u.substring(1).split("&"), function(i, p) {
+            $.each(url.split("&"), function(i, p) {
                 var pp = p.split("=");
                 if (!pp || pp.length < 2) return;
                 params[decodeURIComponent(pp[0])] = decodeURIComponent(pp[1]);
