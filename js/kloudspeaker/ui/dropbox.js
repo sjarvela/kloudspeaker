@@ -122,7 +122,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/ui/views'
     this.onAddItem = function(i) {
         that.openDropbox(true);
         var list = i;
-        if (!window.isArray(i))
+        if (!utils.isArray(i))
             list = [i];
         $.each(list, function(ind, item) {
             if (that.items.indexOf(item) >= 0) return;
