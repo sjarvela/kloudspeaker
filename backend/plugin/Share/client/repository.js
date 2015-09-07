@@ -1,6 +1,7 @@
 define(['kloudspeaker/service', 'kloudspeaker/utils'], function(service, utils) {
     var processShare = function(s) {
-        //TODO
+        if (typeof(s.active) == 'string')
+            s.active = (s.active == '1');
         if (s.expiration) s.expiration = utils.parseInternalTime(s.expiration);
     };
 

@@ -21,9 +21,12 @@ class ShareDao {
 		return $db->query("select count('id') from " . $db->table("share") . " where item_id = " . $db->string($item->id(), TRUE) . " and user_id = " . $db->string($userId, TRUE))->value(0);
 	}
 
-	public function getShare($id, $mustBeValidAfter = NULL) {
+	public function getShare($id, $mustBeValidAfter = NULL, $onlyActive = TRUE) {
 		$db = $this->env->db();
-		$query = "select id, user_id, name, item_id, type, active, restriction, expiration from " . $db->table("share") . " where active=1 and id = " . $db->string($id, TRUE);
+		$activeCriteria = "";
+		if ($onlyActive) $activeCriteria = "active=1 and ";
+		
+		$query = "select id, user_id, name, item_id, type, active, restriction, expiration from " . $db->table("share") . " where " .$activeCriteria . "id = " . $db->string($id, TRUE);
 		if ($mustBeValidAfter) {
 			$query .= ' and (expiration is null or expiration >= ' . $db->string($mustBeValidAfter) . ')';
 		}

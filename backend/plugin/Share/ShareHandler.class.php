@@ -99,9 +99,9 @@ class ShareHandler {
 	}
 
 	public function getShareInfo($id) {
-		$share = $this->dao()->getShare($id);
+		$share = $this->dao()->getShare($id, NULL, FALSE);
 		if (!$share) return NULL;
-		if ($share["user_id"] != $this->env->session()->userId()) return NULL;
+		if (!$this->env->authentication()->isAdmin() and $share["user_id"] != $this->env->session()->userId()) return NULL;
 
 		$itemId = $share["item_id"];
 		$item = $this->getShareItem($itemId);
@@ -190,7 +190,7 @@ class ShareHandler {
 	}
 
 	public function editShare($id, $name, $type, $expirationTs, $active, $restriction) {
-		$share = $this->dao()->getShare($id);
+		$share = $this->dao()->getShare($id, NULL, FALSE);
 		if ($share == NULL) {
 			return;
 		}
