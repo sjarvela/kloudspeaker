@@ -271,6 +271,20 @@ define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins'
         });
     };
 
+    ui.showError = function() {
+        if (typeof(e) == 'string') {
+            if (app._initialized)
+                dom.template("kloudspeaker-tmpl-fullpage-error", {
+                    title: title,
+                    message: msg
+                }).appendTo($c.empty());
+            else {
+                var err = '<h1>' + title + '</h1><p>' + msg + '</p>';
+                $c.html(err);
+            }
+        }
+    };
+
     //TODO move & rewrite
     ui.FullErrorView = function(title, msg) {
         this.show = function() {
