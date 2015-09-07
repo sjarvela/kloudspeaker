@@ -1,5 +1,5 @@
 define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/ui/views', 'kloudspeaker/events', 'kloudspeaker/ui', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/controls', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/ui/files/itemcontext'], function(app, plugins, views, events, ui, dnd, formatters, controls, utils, dom, ItemContext) {
-    var that = this;
+    var that = {};
     that.w = 0;
     that.$dbE = false;
     that.items = [];
@@ -13,7 +13,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/ui/views'
     that._pathFormatter = new formatters.FilesystemItemPath();
     that.itemContext = new ItemContext();
 
-    this.onFileViewActivate = function($container) {
+    that.onFileViewActivate = function($container) {
         dom.template("kloudspeaker-tmpl-mainview-dropbox").appendTo($container);
         $("#kloudspeaker-dropbox-handle").click(function() {
             that.openDropbox();
@@ -76,11 +76,11 @@ define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/ui/views'
         that.openDropbox(false);
     };
 
-    this.onFileViewDeactivate = function() {
+    that.onFileViewDeactivate = function() {
         $("#kloudspeaker-dropbox").remove();
     };
 
-    this.getActions = function(cb) {
+    that.getActions = function(cb) {
         if (that.items.length === 0) {
             cb([]);
             return;
@@ -97,7 +97,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/ui/views'
         cb(utils.cleanupActions(actions));
     };
 
-    this.openDropbox = function(o) {
+    that.openDropbox = function(o) {
         var open = that.$dbE.hasClass("opened");
         if (utils.isDefined(o)) {
             if (o == open) return;
@@ -113,13 +113,13 @@ define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/ui/views'
         }, 300);
     };
 
-    this.emptyDropbox = function() {
+    that.emptyDropbox = function() {
         that.items = [];
         that.itemsByKey = {};
         that.refreshList();
     };
 
-    this.onAddItem = function(i) {
+    that.onAddItem = function(i) {
         that.openDropbox(true);
         var list = i;
         if (!utils.isArray(i))
@@ -133,14 +133,14 @@ define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/ui/views'
         that._updateButton();
     };
 
-    this.onRemoveItem = function(item) {
+    that.onRemoveItem = function(item) {
         that.items.remove(item);
         delete that.itemsByKey[item.id];
         that.refreshList();
         that._updateButton();
     };
 
-    this.onRemoveItems = function(ids) {
+    that.onRemoveItems = function(ids) {
         var count = 0;
         $.each(ids, function(i, id) {
             var item = that.itemsByKey[id];
@@ -156,7 +156,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/ui/views'
         }
     };
 
-    this.refreshList = function() {
+    that.refreshList = function() {
         $("#kloudspeaker-dropbox-list").empty().append(dom.template("kloudspeaker-tmpl-mainview-dropbox-item", that.items));
         var $items = $("#kloudspeaker-dropbox-list .kloudspeaker-dropbox-list-item");
         $items.click(function(e) {
@@ -200,7 +200,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/ui/views'
         });
     };
 
-    this._updateButton = function() {
+    that._updateButton = function() {
         var $btn = $("#kloudspeaker-dropbox-actions > button");
         if (that.items.length > 0)
             $btn.removeClass("disabled");
