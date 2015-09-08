@@ -1,8 +1,8 @@
-define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'kloudspeaker/ui', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/dom', 'kloudspeaker/localization', 'kloudspeaker/ui/views'], function(session, service, utils, ui, controls, dialogs, dom, loc, views) {
+define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'kloudspeaker/ui', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/dom', 'kloudspeaker/localization', 'kloudspeaker/ui/views', 'kloudspeaker/ui/config/listview'], function(session, service, utils, ui, controls, dialogs, dom, loc, views, ConfigListView) {
     return function(ctx) {
         var that = this;
         that._settings = ctx.settings;
-        
+
         that.init = function($c) {
             var folders = false;
             var listView = false;
@@ -20,7 +20,7 @@ define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'k
                 });
             };
 
-            listView = new kloudspeaker.view.ConfigListView($c, {
+            listView = new ConfigListView($c, {
                 actions: [{
                     id: "action-add",
                     content: '<i class="fa fa-plus"></i>',
@@ -173,7 +173,7 @@ define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'k
                 });
             }
 
-            usersAndGroupsView = new kloudspeaker.view.ConfigListView($usersAndGroups, {
+            usersAndGroupsView = new ConfigListView($usersAndGroups, {
                 title: loc.get('configAdminFolderUsersTitle'),
                 actions: [{
                     id: "action-add",

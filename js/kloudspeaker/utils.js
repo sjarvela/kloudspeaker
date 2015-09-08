@@ -405,6 +405,12 @@ define([], function() {
             setTimeout(f, to || 0);
         },
 
+        all: function(list) {
+            var df = $.Deferred();
+            $.when.apply($, list).done(function() { df.resolve(); });
+            return df;
+        },
+
         Base64: Base64,
 
         strpos: function(haystack, needle, offset) {

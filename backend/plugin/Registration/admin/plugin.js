@@ -154,7 +154,7 @@
 
                             kloudspeaker.service.post("registration/create", {
                                 name: username,
-                                password: window.Base64.encode(password),
+                                password: kloudspeaker.helpers.Base64.encode(password),
                                 email: email
                             }).done(d.close).done(cb).fail(function(er) {
                                 if (er.code == 301) {

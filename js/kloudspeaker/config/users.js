@@ -1,4 +1,4 @@
-define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'kloudspeaker/ui', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/dom', 'kloudspeaker/localization', 'kloudspeaker/ui/views'], function(session, service, utils, ui, controls, dialogs, dom, loc, views) {
+define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'kloudspeaker/ui', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/dom', 'kloudspeaker/localization', 'kloudspeaker/ui/views', 'kloudspeaker/ui/config/listview'], function(session, service, utils, ui, controls, dialogs, dom, loc, views, ConfigListView) {
     return function(ctx) {
         var that = this;
 
@@ -44,7 +44,7 @@ define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'k
                 refresh();
             };
 
-            listView = new kloudspeaker.view.ConfigListView($c, {
+            listView = new ConfigListView($c, {
                 actions: [{
                     id: "action-add",
                     content: '<i class="fa fa-plus"></i>',
@@ -334,7 +334,7 @@ define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'k
                 });
             };
 
-            foldersView = new kloudspeaker.view.ConfigListView($e.find(".kloudspeaker-config-admin-userdetails-folders"), {
+            foldersView = new ConfigListView($e.find(".kloudspeaker-config-admin-userdetails-folders"), {
                 title: loc.get('configAdminUsersFoldersTitle'),
                 actions: [{
                     id: "action-add",
@@ -390,7 +390,7 @@ define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'k
                 }
             });
 
-            groupsView = new kloudspeaker.view.ConfigListView($e.find(".kloudspeaker-config-admin-userdetails-groups"), {
+            groupsView = new ConfigListView($e.find(".kloudspeaker-config-admin-userdetails-groups"), {
                 title: loc.get('configAdminUsersGroupsTitle'),
                 actions: [{
                     id: "action-add",

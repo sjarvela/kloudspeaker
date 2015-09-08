@@ -1,60 +1,12 @@
-define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/plugins', 'kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/permissions', 'kloudspeaker/dom', 'kloudspeaker/templates', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/views', 'kloudspeaker/localization', 'kloudspeaker/utils'], function(app, settings, session, plugins, service, fs, permissions, dom, templates, controls, dialogs, views, loc, utils) {
-    //TODO split subviews etc into modules
-
-    kloudspeaker.view.ConfigListView = function($e, o) {
-        dom.template("kloudspeaker-tmpl-configlistview", {
-            title: o.title,
-            actions: o.actions || false
-        }).appendTo($e);
-        var $table = $e.find(".kloudspeaker-configlistview-table");
-        var table = controls.table($table, o.table);
-        var enableAction = function(id, e) {
-            if (e)
-                $e.find("#kloudspeaker-configlistview-action-" + id).removeClass("disabled");
-            else
-                $e.find("#kloudspeaker-configlistview-action-" + id).addClass("disabled");
-        };
-        if (o.actions) {
-            $.each(o.actions, function(i, a) {
-                if (a.depends) enableAction(a.id, false);
-                if (a.tooltip) controls.tooltip($("#kloudspeaker-configlistview-action-" + a.id), {
-                    title: a.tooltip
-                });
-            });
-
-            table.onSelectionChanged(function() {
-                var sel = table.getSelected();
-                var any = sel.length > 0;
-                var one = sel.length == 1;
-                var many = sel.length > 1;
-                $.each(o.actions, function(i, a) {
-                    if (!a.depends) return;
-                    if (a.depends == "table-selection") enableAction(a.id, any);
-                    else if (a.depends == "table-selection-one") enableAction(a.id, one);
-                    else if (a.depends == "table-selection-many") enableAction(a.id, many);
-                });
-            });
-            $e.find(".kloudspeaker-configlistview-actions > .kloudspeaker-configlistview-action").click(function() {
-                if ($(this).hasClass("disabled")) return;
-                var action = $(this).tmplItem().data;
-                if (!action.callback) return;
-
-                var p;
-                if (action.depends && action.depends.startsWith("table-selection")) p = table.getSelected();
-                action.callback(p);
-            });
-        }
-
-        return {
-            table: table,
-            enableAction: enableAction
-        };
-    }
-
+define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/plugins', 'kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/permissions', 'kloudspeaker/dom', 'kloudspeaker/templates', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/views', 'kloudspeaker/localization', 'kloudspeaker/utils', 'kloudspeaker/ui/config/listview'], function(app, settings, session, plugins, service, fs, permissions, dom, templates, controls, dialogs, views, loc, utils, ConfigListView) {
+    //TODO remove
     kloudspeaker.view.config = {
         user: {},
         admin: {}
     };
+
+    //TODO remove
+    kloudspeaker.view.ConfigListView = ConfigListView;
 
     /* Account */
     views.registerConfigView({
