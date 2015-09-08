@@ -18,10 +18,6 @@ class Registration extends PluginBase {
 		$this->env->permissions()->registerPermission("manage_user_registrations");
 	}
 
-	public function hasAdminView() {
-		return TRUE;
-	}
-
 	public function version() {
 		return "1_2";
 	}

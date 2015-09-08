@@ -30,6 +30,15 @@ define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/session',
         return false;
     });
 
+    views.registerConfigView({
+        viewId: 'registration',
+        title: 'i18n:pluginRegistrationAdminNavTitle',
+        model: 'kloudspeaker/registration/views/config/admin',
+        view: '#kloudspeaker-tmpl-empty',
+        admin: true,
+        requiresPermission: "manage_user_registrations"
+    });
+
     plugins.register({
         id: "plugin-registration",
         backendPluginId: "Registration",
