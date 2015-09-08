@@ -8,47 +8,6 @@ define(['kloudspeaker/settings', 'kloudspeaker/dom', 'kloudspeaker/ui', 'kloudsp
         return false;
     });
 
-    /*t.open = function(folder) {
-			var $d = kloudspeaker.dom.template("kloudspeaker-tmpl-uploader-dlg");
-			kloudspeaker.ui.dialogs.custom({
-				element: $d,
-				"title-key": 'fileUploadDialogTitle',
-				buttons: [
-					{ id:0, "title-key": "upload" },
-					{ id:1, "title-key": "cancel" }
-				],
-				"on-button": function(btn, dlg) {
-					if (btn.id == 1)
-						dlg.close();
-					else t.onUpload($d, dlg,folder);
-				},
-				"on-show": function(dlg) { t.onOpen($d, dlg, folder); }
-			});
-		};*/
-
-    /*t.onOpen = function($d, dlg, folder) {
-			//var $form = $d.find(".kloudspeaker-uploader-form");//.attr("action", );
-			var $input = $d.find("input").on('change', function() {
-				//if (!t.files || t.files.length == 0) return;
-				//if (t.files.length == 1) alert(t.files[0].name);
-				//else alert(t.files.length);
-			}).fileupload({
-				url: kloudspeaker.service.url("filesystem/"+folder.id+'/files/'),
-				dataType: 'json',
-				dropZone: $d.find(".kloudspeaker-uploader").bind("dragover", function(e) { e.stopPropagation(); }),
-				drop: function (e, data) {
-					alert('Dropped: ' + data.files.length);	//TODO
-				},
-				progressall: function (e, data) {
-					var progress = parseInt(data.loaded / data.total * 100, 10);
-					console.log(progress);	//TODO
-				},
-				done: function(e, data) {
-	
-				}
-			});	
-		};*/
-
     t._getUploaderSettings = function() {
         return settings["html5-uploader"] || {};
     };
