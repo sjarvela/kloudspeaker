@@ -1,21 +1,18 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/permissions'], function(app, settings, plugins, permissions) {
-    //TODO remove reference to global "kloudspeaker"
+define(['kloudspeaker/settings', 'kloudspeaker/filesystem', 'kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/permissions', 'kloudspeaker/localization', 'kloudspeaker/ui/dialogs', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/ui'], function(settings, fs, plugins, events, permissions, loc, dialogs, utils, dom, ui) {
     var that = {};
 
-    that.initialize = function() {};
-
     that.onEdit = function(item, spec) {
-        kloudspeaker.ui.dialogs.custom({
+        dialogs.custom({
             resizable: true,
             initSize: [600, 400],
-            title: kloudspeaker.ui.texts.get('fileViewerEditorViewEditDialogTitle'),
+            title: loc.get('fileViewerEditorViewEditDialogTitle'),
             content: '<div class="fileviewereditor-editor-content"></div>',
             buttons: [{
                 id: "yes",
-                "title": kloudspeaker.ui.texts.get('dialogSave')
+                "title": loc.get('dialogSave')
             }, {
                 id: "no",
-                "title": kloudspeaker.ui.texts.get('dialogCancel')
+                "title": loc.get('dialogCancel')
             }],
             "on-button": function(btn, d) {
                 if (btn.id == 'no') {
@@ -24,7 +21,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
                 }
                 document.getElementById('editor-frame').contentWindow.onEditorSave(function() {
                     d.close();
-                    kloudspeaker.events.dispatch("filesystem/edit", item);
+                    events.dispatch("filesystem/edit", item);
                 }, function(c, er) {
                     d.close();
                     return true;
@@ -45,7 +42,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
             that.onView(item, [], d.plugins['plugin-fileviewereditor']);
         }
 
-        kloudspeaker.filesystem.itemDetails(item, kloudspeaker.plugins.getItemContextRequestData(item)).done(function(d) {
+        fs.itemDetails(item, plugins.getItemContextRequestData(item)).done(function(d) {
             doView(d);
         });
     };
@@ -96,7 +93,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
             if (loaded[id]) return;
             $.ajax({
                 type: 'GET',
-                url: kloudspeaker.helpers.noncachedUrl(itm.embedded)
+                url: utils.noncachedUrl(itm.embedded)
             }).done(function(data) {
                 loaded[id] = true;
 
@@ -139,7 +136,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
             });
         };
 
-        var $v = kloudspeaker.dom.template("kloudspeaker-tmpl-fileviewereditor-popup", {
+        var $v = dom.template("kloudspeaker-tmpl-fileviewereditor-popup", {
             items: list
         }, {
             content: function(i) {
@@ -157,7 +154,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
             show: false,
             onHide: onHide
         });
-        kloudspeaker.ui.process($lb, ["localize"]);
+        ui.process($lb, ["localize"]);
 
         $lb.find("button.close").click(function() {
             $lb.lightbox('hide');
@@ -177,7 +174,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
         var $tools = $c.find(".kloudspeaker-fileviewereditor-viewer-tools");
         $tools.find(".kloudspeaker-fileviewereditor-viewer-item-viewinnewwindow").click(function() {
             $lb.lightbox('hide');
-            kloudspeaker.ui.window.open(activeItem.full);
+            ui.window.open(activeItem.full);
         });
         $tools.find(".kloudspeaker-fileviewereditor-viewer-item-edit").click(function() {
             $lb.lightbox('hide');
@@ -188,12 +185,11 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kl
 
     plugins.register({
         id: "plugin-fileviewereditor",
-        initialize: that.initialize,
         view: that.view,
         canView: function(itemDetails) {
             if (!itemDetails) {
                 var df = $.Deferred();
-                kloudspeaker.filesystem.itemDetails(item, kloudspeaker.plugins.getItemContextRequestData(item)).done(function(d) {
+                fs.itemDetails(item, plugins.getItemContextRequestData(item)).done(function(d) {
                     df.resolve(!!(d.plugins && d.plugins["plugin-fileviewereditor"] && d.plugins["plugin-fileviewereditor"].view));
                 });
                 return df;

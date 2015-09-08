@@ -1,17 +1,10 @@
-define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localization', 'kloudspeaker/events', 'kloudspeaker/ui/formatters'], function(settings, plugins, loc, events, formatters) {
-    //TODO remove reference to global "kloudspeaker"
-
+define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localization', 'kloudspeaker/events', 'kloudspeaker/ui/formatters', 'kloudspeaker/templates', 'kloudspeaker/dom', 'kloudspeaker/utils'], function(settings, plugins, loc, events, formatters, templates, dom, utils) {
     var that = {};
     that.formatters = {};
     that.typeConfs = false;
 
     that.initialize = function() {
-        /*if (sp) {
-            for (var i=0; i<sp.length;i++)
-                that.addDetailsSpec(sp[i]);
-        }*/
         var conf = (settings.plugins && settings.plugins.itemdetails) ? settings.plugins.itemdetails : false;
-        if (!conf) conf = kloudspeaker.plugin.conf.itemdetails; //legacy
 
         if (conf) {
             that.typeConfs = {};
@@ -33,11 +26,6 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
         });
     };
 
-    /*this.addDetailsSpec = function(s) {
-        if (!s || !s.key) return;
-        that.specs[s.key] = s;
-    }*/
-
     that.getApplicableSpec = function(item) {
         var ext = (item.is_file && item.extension) ? item.extension.toLowerCase().trim() : "";
         if (ext.length === 0 || !that.typeConfs[ext]) {
@@ -50,7 +38,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
 
     that.renderItemContextDetails = function(el, item, $content, data) {
         $content.addClass("loading");
-        kloudspeaker.templates.load("itemdetails-content", kloudspeaker.helpers.noncachedUrl(kloudspeaker.plugins.url("ItemDetails", "content.html"))).done(function() {
+        templates.load("itemdetails-content", utils.noncachedUrl(plugins.url("ItemDetails", "content.html"))).done(function() {
             $content.removeClass("loading");
             that.renderItemDetails(el, item, {
                 element: $content.empty(),
@@ -81,7 +69,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
             
             data.push({key:k, title:that.getTitle(k, rowSpec), value: that.formatData(k, rowData)});
         }*/
-        kloudspeaker.dom.template("itemdetails-template", {
+        dom.template("itemdetails-template", {
             groups: result
         }).appendTo(o.element);
     };
@@ -106,10 +94,10 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
         if (that.formatters[g]) {
             var f = that.formatters[g];
             if (f.groupTitle) return f.groupTitle;
-            if (f["group-title-key"]) return kloudspeaker.ui.texts.get(f["group-title-key"]);
+            if (f["group-title-key"]) return loc.get(f["group-title-key"]);
         }
-        if (g == 'file') return kloudspeaker.ui.texts.get('fileItemDetailsGroupFile');
-        if (g == 'exif') return kloudspeaker.ui.texts.get('fileItemDetailsGroupExif');
+        if (g == 'file') return loc.get('fileItemDetailsGroupFile');
+        if (g == 'exif') return loc.get('fileItemDetailsGroupExif');
         return '';
     };
 
@@ -142,31 +130,31 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
 
     that.getFileRowTitle = function(dataKey, rowSpec) {
         if (rowSpec.title) return rowSpec.title;
-        if (rowSpec["title-key"]) return kloudspeaker.ui.texts.get(rowSpec["title-key"]);
+        if (rowSpec["title-key"]) return loc.get(rowSpec["title-key"]);
 
-        if (dataKey == 'name') return kloudspeaker.ui.texts.get('fileItemContextDataName');
-        if (dataKey == 'size') return kloudspeaker.ui.texts.get('fileItemContextDataSize');
-        if (dataKey == 'path') return kloudspeaker.ui.texts.get('fileItemContextDataPath');
-        if (dataKey == 'extension') return kloudspeaker.ui.texts.get('fileItemContextDataExtension');
-        if (dataKey == 'last-modified') return kloudspeaker.ui.texts.get('fileItemContextDataLastModified');
-        if (dataKey == 'image-size') return kloudspeaker.ui.texts.get('fileItemContextDataImageSize');
-        if (dataKey == 'metadata-created') return kloudspeaker.ui.texts.get('fileItemContextDataCreated');
-        if (dataKey == 'metadata-modified') return kloudspeaker.ui.texts.get('fileItemContextDataLastModified');
+        if (dataKey == 'name') return loc.get('fileItemContextDataName');
+        if (dataKey == 'size') return loc.get('fileItemContextDataSize');
+        if (dataKey == 'path') return loc.get('fileItemContextDataPath');
+        if (dataKey == 'extension') return loc.get('fileItemContextDataExtension');
+        if (dataKey == 'last-modified') return loc.get('fileItemContextDataLastModified');
+        if (dataKey == 'image-size') return loc.get('fileItemContextDataImageSize');
+        if (dataKey == 'metadata-created') return loc.get('fileItemContextDataCreated');
+        if (dataKey == 'metadata-modified') return loc.get('fileItemContextDataLastModified');
 
         /*if (that.specs[dataKey]) {
             var spec = that.specs[dataKey];
             if (spec.title) return spec.title;
-            if (spec["title-key"]) return kloudspeaker.ui.texts.get(spec["title-key"]);
+            if (spec["title-key"]) return loc.get(spec["title-key"]);
         }*/
         return dataKey;
     };
 
     that.formatFileData = function(key, data) {
         if (key == 'size') return that.fileSizeFormatter.format(data);
-        if (key == 'last-modified') return that.timestampFormatter.format(kloudspeaker.helpers.parseInternalTime(data));
-        if (key == 'image-size') return kloudspeaker.ui.texts.get('fileItemContextDataImageSizePixels', [data]);
-        if (key == 'metadata-created') return that.timestampFormatter.format(kloudspeaker.helpers.parseInternalTime(data.at)) + "&nbsp;<i class='fa fa-user'/>&nbsp;" + (data.by ? data.by.name : "-");
-        if (key == 'metadata-modified') return that.timestampFormatter.format(kloudspeaker.helpers.parseInternalTime(data.at)) + "&nbsp;<i class='fa fa-user'/>&nbsp;" + (data.by ? data.by.name : "-");
+        if (key == 'last-modified') return that.timestampFormatter.format(utils.parseInternalTime(data));
+        if (key == 'image-size') return loc.get('fileItemContextDataImageSizePixels', [data]);
+        if (key == 'metadata-created') return that.timestampFormatter.format(utils.parseInternalTime(data.at)) + "&nbsp;<i class='fa fa-user'/>&nbsp;" + (data.by ? data.by.name : "-");
+        if (key == 'metadata-modified') return that.timestampFormatter.format(utils.parseInternalTime(data.at)) + "&nbsp;<i class='fa fa-user'/>&nbsp;" + (data.by ? data.by.name : "-");
 
         if (that.specs[key]) {
             var spec = that.specs[key];
