@@ -8,3 +8,11 @@ backend/configuration.php
 out/modules.js
 
 release.sh
+
+out/app-modules.js
+
+out/app.js
+
+out/lib-modules.js
+
+out/libs.js
