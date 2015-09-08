@@ -1,4 +1,4 @@
-define(['kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/utils'], function(service, events, utils) {
+define(['kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/permissions', 'kloudspeaker/utils'], function(service, events, permissions, utils) {
     //TODO remove global session
 
     var session = false;
@@ -23,9 +23,7 @@ define(['kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/utils'], fu
             admin: s.user_type == 'a',
             permissions: s.permissions,
             auth: s.user_auth,
-            /*hasPermission: function(name, required) {
-                return utils.hasPermission(s.permissions, name, required);
-            }*/
+            hasPermission: permissions.hasPermission    //shortcut
         } : null;
 
         session = {

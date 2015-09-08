@@ -1,3 +1,5 @@
+<script id="kloudspeaker-tmpl-empty" type="text/x-jquery-tmpl">
+</script>
 <script id="kloudspeaker-tmpl-configview" type="text/x-jquery-tmpl">
 	<div id="kloudspeaker-configview">
 		<h2 id="kloudspeaker-configview-header"></h2>
@@ -38,7 +40,7 @@
 				</div>
 			</div>
 			
-			{{if features['change_password'] && user.auth == 'pw' && user.hasPermission("change_password")}}
+			{{if features.change_password && user.auth == 'pw' && user.hasPermission("change_password")}}
 			<div class="control-group">
 				<label class="control-label localized" text-key="configUserAccountPasswordTitle"></label>
 				<div class="controls">

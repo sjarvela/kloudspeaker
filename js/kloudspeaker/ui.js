@@ -118,13 +118,15 @@ define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins'
                 platform.composition.compose($target[0], c, {}); //TODO
             } else {
                 require([_model], function(m) {
-                    if (typeof(m) == 'function') m = m();
+                    if (typeof(m) == 'function') m = m(ctx);
                     dom.bind(m, ctx, $v);
+                    if (m.attached) m.attached($v, $target);
                     df.resolve(m, $v);
                 });
             }
         } else {
             dom.bind(model, null, $v);
+            if (model.attached) model.attached($v, $target);
             df.resolve(model, $v);
         }
         return df;

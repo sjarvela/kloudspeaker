@@ -315,6 +315,11 @@ define([], function() {
                     if (!mv || mv.viewId != 'files') return false;
                     return mv;
                 },
+                getActiveConfigView: function() {
+                    var mv = this.getActiveMainView();
+                    if (!mv || mv.viewId != 'config') return false;
+                    return mv;
+                },
                 registerView: function(id, v) {
                     app.registerView(id, v);
                 },

@@ -374,6 +374,7 @@ define(['kloudspeaker/localization', 'kloudspeaker/utils', 'durandal/composition
             s.loading(false);
             s.values(r.data);
             var count = r.data.length;
+            if (typeof(r.total) == 'string') r.total = parseInt(r.total, 10);
 
             s.paging({
                 count: count,

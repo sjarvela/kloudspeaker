@@ -38,7 +38,7 @@
             <li class="page-btn page-prev" data-bind="attr: { class: 'page-btn page-prev ' + ((settings.paging().page < 2) ? 'disabled' : '')}"><a data-bind="click: gotoPrev" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
             <!-- ko if: settings.paging().pages < 10 -->
             <!-- ko foreach: new Array(settings.paging().pages) -->
-            <li class="page-btn page-nr" data-bind="attr: { class: 'page-btn page-nr ' + ($parent.settings.paging().page == ($index()+1)) ? 'active' : ''}">
+            <li class="page-btn page-nr" data-bind="attr: { class: 'page-btn page-nr ' + (($parent.settings.paging().page == ($index()+1)) ? 'active' : '')}">
                 <a data-bind="text: ($index()+1), click: function(){ $parent.goto($index()+1) }"></a>
             </li>
             <!-- /ko -->
