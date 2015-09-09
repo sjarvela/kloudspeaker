@@ -1,5 +1,49 @@
-define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/permissions', 'kloudspeaker/filesystem', 'kloudspeaker/ui/dialogs', 'kloudspeaker/localization', 'kloudspeaker/ui', 'kloudspeaker/utils'], function(settings, plugins, permissions, filesystem, dialogs, loc, ui, utils) {
+define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/permissions', 'kloudspeaker/filesystem', 'kloudspeaker/ui/dialogs', 'kloudspeaker/localization', 'kloudspeaker/ui', 'kloudspeaker/ui/views', 'kloudspeaker/utils'], function(settings, plugins, permissions, filesystem, dialogs, loc, ui, views, utils) {
     var that = {};
+
+    /* Account */
+    views.registerConfigView({
+        id: 'account',
+        title: 'i18n:configUserAccountNavTitle',
+        model: 'kloudspeaker/config/account',
+        view: '#kloudspeaker-tmpl-empty'
+    });
+
+    /* System */
+    views.registerConfigView({
+        id: 'system',
+        title: 'i18n:configSystemNavTitle',
+        model: 'kloudspeaker/config/system',
+        view: '#kloudspeaker-tmpl-config-systemview',
+        admin: true
+    });
+
+    /* Users */
+    views.registerConfigView({
+        id: 'users',
+        title: 'i18n:configAdminUsersNavTitle',
+        model: 'kloudspeaker/config/users',
+        view: '#kloudspeaker-tmpl-empty',
+        admin: true
+    });
+
+    /* Groups */
+    views.registerConfigView({
+        id: 'groups',
+        title: 'i18n:configAdminGroupsNavTitle',
+        model: 'kloudspeaker/config/groups',
+        view: '#kloudspeaker-tmpl-empty',
+        admin: true
+    });
+
+    /* Folders */
+    views.registerConfigView({
+        id: 'folders',
+        title: 'i18n:configAdminFoldersNavTitle',
+        model: 'kloudspeaker/config/folders',
+        view: '#kloudspeaker-tmpl-empty',
+        admin: true
+    });
 
     var doDelete = function(items) {
         var many = (utils.isArray(items) && items.length > 1);

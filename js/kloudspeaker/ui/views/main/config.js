@@ -1,63 +1,9 @@
-define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/plugins', 'kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/permissions', 'kloudspeaker/dom', 'kloudspeaker/templates', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/views', 'kloudspeaker/localization', 'kloudspeaker/utils', 'kloudspeaker/ui/config/listview'], function(app, settings, session, plugins, service, fs, permissions, dom, templates, controls, dialogs, views, loc, utils, ConfigListView) {
-    //TODO remove
-    kloudspeaker.view.config = {
-        user: {},
-        admin: {}
-    };
-
-    //TODO remove
-    kloudspeaker.view.ConfigListView = ConfigListView;
-
-    /* Account */
-    views.registerConfigView({
-        id: 'account',
-        title: 'i18n:configUserAccountNavTitle',
-        model: 'kloudspeaker/config/account',
-        view: '#kloudspeaker-tmpl-empty'
-    });
-
-    /* System */
-    views.registerConfigView({
-        id: 'system',
-        title: 'i18n:configSystemNavTitle',
-        model: 'kloudspeaker/config/system',
-        view: '#kloudspeaker-tmpl-config-systemview',
-        admin: true
-    });
-
-    /* Users */
-    views.registerConfigView({
-        id: 'users',
-        title: 'i18n:configAdminUsersNavTitle',
-        model: 'kloudspeaker/config/users',
-        view: '#kloudspeaker-tmpl-empty',
-        admin: true
-    });
-
-    /* Groups */
-    views.registerConfigView({
-        id: 'groups',
-        title: 'i18n:configAdminGroupsNavTitle',
-        model: 'kloudspeaker/config/groups',
-        view: '#kloudspeaker-tmpl-empty',
-        admin: true
-    });
-
-    /* Folders */
-    views.registerConfigView({
-        id: 'folders',
-        title: 'i18n:configAdminFoldersNavTitle',
-        model: 'kloudspeaker/config/folders',
-        view: '#kloudspeaker-tmpl-empty',
-        admin: true
-    });
-
-    // config view
-
+define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/plugins', 'kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/permissions', 'kloudspeaker/dom', 'kloudspeaker/templates', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/ui/views', 'kloudspeaker/localization', 'kloudspeaker/utils', 'kloudspeaker/ui'], function(app, settings, session, plugins, service, fs, permissions, dom, templates, controls, dialogs, views, loc, utils, ui) {
     return function() {
         var that = this;
         this.viewId = "config";
 
+        this._settings = false;
         this._views = [];
         this._adminViews = [];
         this._adminViewsLoaded = false;
@@ -67,6 +13,8 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             that.icon = "fa fa-cogs";
 
             var s = session.get();
+
+            // legacy
             $.each(plugins.getConfigViewPlugins(), function(i, p) {
                 if (!p.configViewHandler.views) return;
 
@@ -81,7 +29,8 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                         that._views.push(v);
                 });
             });
-            _.each(kloudspeaker.ui._configViews, function(v) {
+            // new
+            _.each(ui._configViews, function(v) {
                 if (v.admin) {
                     if (s.user.admin || (v.requiresPermission && permissions.hasPermission(v.requiresPermission)))
                         that._adminViews.push(v);
@@ -121,67 +70,16 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
 
                 that.onResize();
 
-                if (that._adminViewsLoaded) {
-                    that._initAdminViews(h);
-                } else {
-                    that._adminViewsLoaded = true;
-
-                    var s = session.get();
-
-                    var plugins = [];
-                    for (var k in s.plugins) {
-                        if (!s.plugins[k] || !s.plugins[k].admin) continue;
-                        plugins.push(k);
-                    }
-                    kloudspeaker.admin = {
-                        plugins: []
-                    };
-                    that._loadAdminPlugins(plugins).done(function() {
+                var s = session.get();
+                if (s.user.admin && !that._settings)
+                    service.get("configuration/settings").done(function(s) {
+                        that._settings = s;
                         that._initAdminViews(h);
                     });
-                }
+                else
+                    that._initAdminViews(h);
             });
         }
-
-        this._loadAdminPlugins = function(ids) {
-            var df = $.Deferred();
-            var l = [];
-            var s = session.get();
-
-            if (s.user.admin)
-                l.push(service.get("configuration/settings").done(function(s) {
-                    that._settings = s;
-                }));
-            for (var i = 0, j = ids.length; i < j; i++) {
-                l.push(dom.importScript(plugins.url(ids[i], "plugin.js", true)));
-            }
-
-            $.when.apply($, l).done(function() {
-                var o = [];
-
-                var addView = function(i, v) {
-                    if (v.requiresPermission) {
-                        if (!s.user.admin && !permissions.hasPermission(v.requiresPermission)) return;
-                    } else {
-                        if (!s.user.admin) return;
-                    }
-                    that._adminViews.push(v);
-                };
-                for (var pk in kloudspeaker.admin.plugins) {
-                    var p = kloudspeaker.admin.plugins[pk];
-                    if (!p || !p.views) continue;
-
-                    if (p.resources && p.resources.texts)
-                        o.push(loc.loadPlugin(pk));
-                    if (p.resources && p.resources.css)
-                        o.push(dom.importCss(plugins.url(pk, "plugin.css", true)));
-                    $.each(p.views, addView);
-                }
-
-                $.when.apply($, o).done(df.resolve);
-            });
-            return df;
-        };
 
         this._initAdminViews = function(h) {
             if (that._adminViews && that._adminViews.length > 0) {
@@ -276,7 +174,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                     model = model[0];
                 }
                 $("#kloudspeaker-configview-header").html("").hide();
-                kloudspeaker.ui.viewmodel(v.view, [model, p], that._getContentElement().empty()).done(function(m) {
+                ui.viewmodel(v.view, [model, p], that._getContentElement().empty()).done(function(m) {
                     that._activeView = m;
 
                     if (!noStore && (v.id || v.viewId)) app.storeView("config/" + (v.id || v.viewId));

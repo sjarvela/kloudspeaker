@@ -1,4 +1,4 @@
-define(['kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/permissions', 'kloudspeaker/utils'], function(service, events, permissions, utils) {
+define(['kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/permissions', 'kloudspeaker/utils', 'kloudspeaker/ui'], function(service, events, permissions, utils, ui) {
     //TODO remove global session
 
     var session = false;
@@ -8,8 +8,7 @@ define(['kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/permissions
     }
     var init = function() {
         service.get("session/info/").fail(function() {
-            //TODO rewrite
-            new kloudspeaker.ui.FullErrorView('Failed to initialize Kloudspeaker').show();
+            ui.showError();
         }).done(function(s) {
             onStart(s);
         });

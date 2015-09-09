@@ -118,7 +118,7 @@ define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'k
             dom.template("kloudspeaker-tmpl-config-admin-groupdetails", {
                 group: g
             }).appendTo($e);
-            kloudspeaker.ui.process($e, ["localize"]);
+            ui.process($e, ["localize"]);
             var $users = $e.find(".kloudspeaker-config-admin-groupdetails-users");
             var $folders = $e.find(".kloudspeaker-config-admin-groupdetails-folders");
             var foldersView = false;

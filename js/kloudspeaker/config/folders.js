@@ -123,7 +123,7 @@ define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'k
             dom.template("kloudspeaker-tmpl-config-admin-folderdetails", {
                 folder: f
             }).appendTo($e);
-            kloudspeaker.ui.process($e, ["localize"]);
+            ui.process($e, ["localize"]);
             var $usersAndGroups = $e.find(".kloudspeaker-config-admin-folderdetails-usersandgroups");
             var usersAndGroupsView = false;
             var usersAndGroups = false;

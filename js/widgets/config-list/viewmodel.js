@@ -176,7 +176,7 @@ define(['kloudspeaker/localization', 'kloudspeaker/utils', 'durandal/composition
                             };
                         }
 
-                        $sl = kloudspeaker.ui.controls.select($("<select></select>").appendTo($cell), {
+                        $sl = controls.select($("<select></select>").appendTo($cell), {
                             values: selOptions,
                             title: col.title,
                             none: noneOption,

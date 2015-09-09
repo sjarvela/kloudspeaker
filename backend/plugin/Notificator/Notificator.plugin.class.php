@@ -10,9 +10,6 @@
 	 */
 	
 	class Notificator extends PluginBase {
-		public function hasAdminView() {
-			return TRUE;
-		}
 
 		public function version() {
 			return "1_1";
@@ -28,7 +25,11 @@
 			require_once("NotificatorHandler.class.php");
 			$this->env->events()->register("*", new NotificatorHandler($this->env));
 		}
-		
+
+		public function getClientModuleId() {
+			return "kloudspeaker/notificator";
+		}
+
 		public function __toString() {
 			return "NotificatorPlugin";
 		}

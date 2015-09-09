@@ -1,6 +1,4 @@
-define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/localization', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/dom', 'kloudspeaker/utils', 'kloudspeaker/ui', 'kloudspeaker/ui/views'], function(settings, plugins, session, service, events, loc, formatters, controls, dialogs, dom, utils, ui, views) {
-    //TODO remove reference to global "kloudspeaker"
-
+define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/localization', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/dom', 'kloudspeaker/utils', 'kloudspeaker/ui', 'kloudspeaker/ui/views', 'kloudspeaker/ui/config/listview'], function(settings, plugins, session, service, events, loc, formatters, controls, dialogs, dom, utils, ui, views, ConfigListView) {
     var that = {};
     that._permissionTypes = false;
 
@@ -686,7 +684,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/session',
             });
         };
 
-        permissionsView = new kloudspeaker.view.ConfigListView($c, {
+        permissionsView = new ConfigListView($c, {
             title: title,
             actions: [{
                 id: "action-edit",

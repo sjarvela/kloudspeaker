@@ -1,4 +1,4 @@
-define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/share/repository', 'kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/dialogs', 'kloudspeaker/localization', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/permissions', 'kloudspeaker/request'], function(settings, plugins, events, repository, service, fs, views, formatters, dialogs, loc, utils, dom, permissions, rq) {
+define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/share/repository', 'kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/dialogs', 'kloudspeaker/localization', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/permissions', 'kloudspeaker/request', 'kloudspeaker/ui'], function(settings, plugins, events, repository, service, fs, views, formatters, dialogs, loc, utils, dom, permissions, rq, ui) {
     var that = {};
 
     events.on('localization/init', function() {
@@ -12,7 +12,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 
         var shareId = rqParts[1];
         service.get("public/" + shareId + "/info/").done(function(result) {
             if (!result || !result.type || (["download", "upload", "prepared_download"].indexOf(result.type) < 0)) {
-                df.resolve(new kloudspeaker.ui.FullErrorView(loc.get('shareViewInvalidRequest')));
+                ui.showError(loc.get('shareViewInvalidRequest'));
                 return;
             }
 
@@ -34,7 +34,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 
 
             df.resolve(that._getShareView(shareId, result));
         }).fail(function() {
-            df.resolve(new kloudspeaker.ui.FullErrorView(loc.get('shareViewInvalidRequest')));
+            ui.showError(loc.get('shareViewInvalidRequest'));
         });
         return df.promise();
     });
@@ -85,7 +85,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 
                 }]
             };
         }
-        return new kloudspeaker.ui.FullErrorView(loc.get('shareViewInvalidRequest'));
+        ui.showError(loc.get('shareViewInvalidRequest'));
     };
 
     that.onOpenItemShares = function(item) {

@@ -47,8 +47,7 @@ define([], function() {
 
         app.init = function(p) {
             var onError = function() {
-                //TODO rewrite
-                new kloudspeaker.ui.FullErrorView('Failed to initialize Kloudspeaker').show();
+                ui.showError();
                 if (app._initDf.state() == "pending") app._initDf.reject();
             };
 
@@ -105,8 +104,7 @@ define([], function() {
             var lang = (s.user && s.user.lang) ? s.user.lang : (settings.language["default"] || 'en');
 
             var onError = function() {
-                //TODO rewrite
-                new kloudspeaker.ui.FullErrorView('Failed to initialize Kloudspeaker').show();
+                ui.showError();
             };
 
             if (!app._modulesInitialized) {
@@ -254,7 +252,6 @@ define([], function() {
             var s = session.get();
             if (!o || !o.user_id || !s.user || s.user.id != o.user_id) return;
 
-            //baseUrl = kloudspeaker.request.getBaseUrl(url);
             var params = request.getParams(url);
             if (!params.v || params.v.length < 1) return;
             app.openView(params.v);
@@ -339,6 +336,7 @@ define([], function() {
         init: function(s, p) {
             var df = $.Deferred();
             var settings = $.extend(true, {}, kloudspeaker_defaults, s);
+
             // don't merge file list columns
             if (s["file-view"]["file-list-columns"]) settings["file-view"]["file-list-columns"] = s["file-view"]["file-list-columns"];
             define('kloudspeaker/settings', [], settings);

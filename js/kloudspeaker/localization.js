@@ -1,6 +1,4 @@
-define(['kloudspeaker/resources', 'kloudspeaker/events', 'kloudspeaker/utils'], function(resources, events, utils) {
-    //TODO rewrite error views
-
+define(['kloudspeaker/resources', 'kloudspeaker/events', 'kloudspeaker/utils', 'kloudspeaker/ui'], function(resources, events, utils, ui) {
     var tt = {};
     var plugins = null;
     var app = null; //remove
@@ -91,8 +89,7 @@ define(['kloudspeaker/resources', 'kloudspeaker/events', 'kloudspeaker/utils'], 
             try {
                 t = JSON.parse(r);
             } catch (e) {
-                //TODO rewrite
-                new kloudspeaker.ui.FullErrorView('<b>Localization file syntax error</b> (<code>' + url + '</code>)', '<code>' + e.message + '</code>').show();
+                new ui.showError('<b>Localization file syntax error</b> (<code>' + url + '</code>)', '<code>' + e.message + '</code>');
                 return;
             }
             if (!tt.locale)
@@ -106,8 +103,7 @@ define(['kloudspeaker/resources', 'kloudspeaker/events', 'kloudspeaker/utils'], 
             df.resolve(t.locale);
         }).fail(function(e) {
             if (e.status == 404) {
-                //TODO rewrite
-                new kloudspeaker.ui.FullErrorView('Localization file missing: <code>' + url + '</code>', 'Either create the file or use <a href="https://code.google.com/p/kloudspeaker/wiki/ClientResourceMap">client resource map</a> to load it from different location, or to ignore it').show();
+                ui.showError('Localization file missing: <code>' + url + '</code>', 'Either create the file or use <a href="https://code.google.com/p/kloudspeaker/wiki/ClientResourceMap">client resource map</a> to load it from different location, or to ignore it');
                 return;
             }
             df.reject();

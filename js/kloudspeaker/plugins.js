@@ -1,12 +1,13 @@
-define(['kloudspeaker/settings', 'kloudspeaker/dom', 'kloudspeaker/localization', 'kloudspeaker/utils'], function(settings, dom, loc, utils) {
+define(['kloudspeaker/settings', 'kloudspeaker/dom', 'kloudspeaker/utils'], function(settings, dom, utils) {
     var pl = {};
     var session = null;
+    var loc = null;
 
     pl._list = {};
 
-    //remove session?
     pl.setup = function() {
         session = require('kloudspeaker/session');
+        loc = require('kloudspeaker/localization');
     }
 
     pl.register = function(p) {

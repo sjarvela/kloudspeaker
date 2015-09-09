@@ -1,6 +1,7 @@
-define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/templates', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/localization'], function(platform, settings, plugins, templates, utils, dom, loc) {
+define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/templates', 'kloudspeaker/utils', 'kloudspeaker/dom'], function(platform, settings, plugins, templates, utils, dom) {
     var app = null;
     var session = null; //TODO remove session (move data to params)
+    var loc = null;
     var ui = {};
 
     ui._activePopup = false;
@@ -8,6 +9,7 @@ define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins'
     ui.setup = function() {
         app = require('kloudspeaker/instance');
         session = require('kloudspeaker/session');
+        loc = require('kloudspeaker/localization');
 
         require(['kloudspeaker/ui/formatters', 'kloudspeaker/ui/parsers', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs'], function(formatters, parsers, controls, dialogs) {
             ui.controls = controls; //TODO remove
@@ -15,9 +17,6 @@ define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins'
             ui.formatters = formatters; //TODO remove
             ui.parsers = parsers; //TODO remove
         });
-
-        //TODO remove deprecated ui.texts
-        ui.texts = loc;
     };
 
     ui.initialize = function() {
@@ -152,19 +151,19 @@ define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins'
                 var $t = $(this);
                 var key = $t.attr('title-key');
                 if (key) {
-                    $t.attr("title", ui.texts.get(key));
+                    $t.attr("title", loc.get(key));
                     $t.removeAttr('title-key');
                 }
 
                 key = $t.attr('text-key');
                 if (key) {
-                    $t.prepend(ui.texts.get(key));
+                    $t.prepend(loc.get(key));
                     $t.removeAttr('text-key');
                 }
             });
             p.find("input.hintbox").each(function() {
                 var $this = $(this);
-                var hint = ui.texts.get($this.attr('hint-key'));
+                var hint = loc.get($this.attr('hint-key'));
                 $this.attr("placeholder", hint).removeAttr("hint-key");
             }); //.placeholder();
         },
@@ -273,37 +272,35 @@ define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins'
         });
     };
 
-    ui.showError = function() {
-        if (typeof(e) == 'string') {
-            if (app._initialized)
-                dom.template("kloudspeaker-tmpl-fullpage-error", {
-                    title: title,
-                    message: msg
-                }).appendTo($c.empty());
-            else {
-                var err = '<h1>' + title + '</h1><p>' + msg + '</p>';
-                $c.html(err);
+    ui.showError = function(e) {
+        var args = Array.prototype.slice.call(arguments);
+        if (!args || args.length == 0) return;
+
+        var title = 'Failed to initialize Kloudspeaker';
+        var msg = '';
+        var $c = app._initialized ? app.getElement() : $("body");
+
+        if (args.length == 1) {
+            if (typeof(args[0]) == "string") title = args[0];
+            if (typeof(args[0]) == "object") {
+                var e = args[0];
+                msg = e.msg;
+                if (e.title) title = e.title;
             }
+        } else if (args.length >= 2 && (typeof(args[0]) == "string") && (typeof(args[1]) == "string")) {
+            title = args[0];
+            msg = args[0];
         }
-    };
 
-    //TODO move & rewrite
-    ui.FullErrorView = function(title, msg) {
-        this.show = function() {
-            this.init(app.getElement());
-        };
-
-        this.init = function($c) {
-            if (app._initialized)
-                dom.template("kloudspeaker-tmpl-fullpage-error", {
-                    title: title,
-                    message: msg
-                }).appendTo($c.empty());
-            else {
-                var err = '<h1>' + title + '</h1><p>' + msg + '</p>';
-                $c.html(err);
-            }
-        };
+        if (app._initialized)
+            dom.template("kloudspeaker-tmpl-fullpage-error", {
+                title: title,
+                message: msg
+            }).appendTo($c.empty());
+        else {
+            var err = '<h1>' + title + '</h1><p>' + msg + '</p>';
+            $c.html(err);
+        }
     };
 
     return ui;
