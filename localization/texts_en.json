@@ -515,7 +515,7 @@
 		"pluginNotificatorNotificationAddUserTitle": "Add receiver",
 		"pluginNotificatorNotificationAddUserMessage": "Select user(s) to be added as notification receiver:",
 		"pluginNotificatorNotificationEditMessageVariablesTitle": "Variables",
-		"pluginNotificatorNotificationEditMessageVariablesTxt": "For list of variables, see https://code.google.com/p/kloudspeaker/wiki/NotificatorPlugin",
+		"pluginNotificatorNotificationEditMessageVariablesTxt": "For list of variables, see https://github.com/sjarvela/kloudspeaker/wiki/Notificator-plugin#variables",
 		"pluginNotificatorNotificationEventUsersTitle": "Users that trigger the notification",
 		"pluginNotificatorNotificationAddEventUserTitle": "Add event users",
 		"pluginNotificatorNotificationAddEventUserMessage": "Select user(s) to be added as notification trigger:",
