@@ -240,7 +240,7 @@ module.exports = function(grunt) {
         copy: {
             css: {
                 expand: true,
-                src: ['css/images/**'],
+                src: ['css/images/**', 'css/img/**'],
                 dest: 'dist/'
             },
             fonts: {
