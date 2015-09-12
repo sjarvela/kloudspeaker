@@ -16,3 +16,5 @@ css/kloudspeaker.css
 update_test.sh
 
 css/kloudspeaker.css.map
+
+.sass-cache/*
