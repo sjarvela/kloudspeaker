@@ -111,14 +111,14 @@ module.exports = function(grunt) {
             },
             css: {
                 src: [
-                    'css/libs.css',
-                    'css/bootstrap.css',
-                    'css/bootstrap-responsive.css',
-                    'css/font-awesome3.css',
-                    'css/bootstrap-lightbox.css',
-                    'css/bootstrap-datetimepicker.min.css',
+                    'css/lib/libs.css',
+                    'css/lib/bootstrap.css',
+                    'css/lib/bootstrap-responsive.css',
+                    //'css/font-awesome3.css',
+                    'css/lib/bootstrap-lightbox.css',
+                    'css/lib/bootstrap-datetimepicker.min.css',
                     'bower_components/font-awesome/css/font-awesome.css',
-                    'css/style.css'
+                    'css/kloudspeaker.css'
                 ],
                 dest: 'dist/css/<%= pkg.name %>.css'
             }
@@ -179,6 +179,18 @@ module.exports = function(grunt) {
             }
         },
 
+
+        sass: { // Task
+            dist: { // Target
+                options: { // Target options
+                    style: 'expanded'
+                },
+                files: { // Dictionary of files
+                    'css/kloudspeaker.css': 'css/main.scss'
+                }
+            }
+        },
+
         requirejs: {
             libs: {
                 options: {
@@ -204,10 +216,10 @@ module.exports = function(grunt) {
                         'kloudspeaker/app', 'kloudspeaker/request', 'kloudspeaker/session', 'kloudspeaker/filesystem', 'kloudspeaker/events', 'kloudspeaker/service', 'kloudspeaker/plugins', 'kloudspeaker/features', //ks
                         'kloudspeaker/ui/parsers', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/views/login', 'kloudspeaker/ui/views/main',
                         'widgets/time-picker/viewmodel', 'text!widgets/time-picker/view.html', 'widgets/config-list/viewmodel', 'text!widgets/config-list/view.html', //widgets
-                        'kloudspeaker/config/system', 'kloudspeaker/config/user/addedit',
-                        'kloudspeaker/ui/uploader', 'kloudspeaker/ui/dropbox', 'kloudspeaker/ui/clipboard', 'kloudspeaker/plugins/core', 'kloudspeaker/plugins/permissions' //kloudspeaker plugins
+                        'kloudspeaker/config/system', 'kloudspeaker/config/account', 'kloudspeaker/config/user/addedit', 'kloudspeaker/config/users', 'kloudspeaker/config/groups', 'kloudspeaker/config/folders',
+                        'kloudspeaker/ui/uploader', 'kloudspeaker/ui/dropbox', 'kloudspeaker/ui/clipboard', 'kloudspeaker/plugins/core', 'kloudspeaker/plugins/permissions', 'kloudspeaker/plugins/permissions/config' //kloudspeaker plugins
                     ],
-                    exclude: ["durandal","text"],
+                    exclude: ["durandal", "text"],
                     out: "out/app-modules.js",
                     paths: {
                         'text': 'requirejs-text/text',
@@ -245,7 +257,7 @@ module.exports = function(grunt) {
             },
             js: {
                 expand: true,
-                src: ['templates/**', 'localization/**'],
+                src: ['templates/**', 'localization/**', 'js/lib/ZeroClipboard.swf'],
                 dest: 'dist/'
             },
             backend: {
@@ -351,7 +363,7 @@ module.exports = function(grunt) {
     grunt.registerTask('dist-js', ['jshint', 'concat', 'uglify', 'copy:js']);
 
     // CSS distribution task.
-    grunt.registerTask('dist-css', ['concat:css', 'cssmin', 'usebanner', 'copy:css', 'copy:fonts', 'copy:fa']);
+    grunt.registerTask('dist-css', ['sass', 'concat:css', 'cssmin', 'usebanner', 'copy:css', 'copy:fonts', 'copy:fa']);
 
     // JS distribution task.
     grunt.registerTask('dist-backend', ['copy:backend']);

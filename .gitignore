@@ -9,10 +9,10 @@ out/modules.js
 
 release.sh
 
-out/app-modules.js
+out/*
 
-out/app.js
+css/kloudspeaker.css
 
-out/lib-modules.js
+update_test.sh
 
-out/libs.js
+css/kloudspeaker.css.map

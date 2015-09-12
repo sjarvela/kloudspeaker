@@ -36,7 +36,7 @@
 
 .btn-flat,
 .btn-group > .btn-flat + .dropdown-toggle {
-    filter: progid: DXImageTransform.Microsoft.Gradient(enabled='false');
+    /*filter: progid: DXImageTransform.Microsoft.Gradient(enabled='false');*/
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
     box-shadow: none;
@@ -162,7 +162,7 @@ input[type="color"],
     background: linear-gradient(top, #ffffff 0%, #e5e5e5 100%);
     /* W3C */
     
-    filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5', GradientType=0);
+    /*filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5', GradientType=0);*/
     /* IE6-9 */
 }
 
