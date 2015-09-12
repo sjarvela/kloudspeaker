@@ -866,3 +866,175 @@ html.touch .kloudspeaker-filelist-col-go-into-folder {
     font-style: italic;
     color: #dfdfdf;
 }
+
+#kloudspeaker-itemcontext-details {
+    position: relative;
+    min-height: 300px;
+}
+
+#kloudspeaker-itemcontext-details-content,
+.kloudspeaker-itemcontext-details-selector.active {
+    background-color: #ffffff;
+}
+
+#kloudspeaker-itemcontext-details-selectors {
+    margin-bottom: 0;
+}
+
+#kloudspeaker-itemcontext-details-content {
+    height: 240px;
+    border-left: 1px solid #DDD;
+    border-bottom: 1px solid #DDD;
+    border-right: 1px solid #DDD;
+    padding: 4px;
+    overflow-y: scroll;
+}
+
+#kloudspeaker-mainview-createfolder-title {
+    float: left;
+    padding-bottom: 8px;
+}
+
+#kloudspeaker-mainview-createfolder-name {
+    margin: 0;
+}
+
+.kloudspeaker-uploader-add {
+    position: relative;
+    overflow: hidden;
+    float: left;
+    margin-right: 4px;
+}
+
+.kloudspeaker-uploader-input {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    transform: translate(-300px, 0) scale(4);
+    font-size: 23px;
+    direction: ltr;
+    cursor: pointer;
+}
+
+.kloudspeaker-mainview-navbar-item {
+    position: relative;
+}
+
+.kloudspeaker-mainview-navbar-item .kloudspeaker-mainview-navbar-dropdown {
+    position: absolute;
+    right: 0;
+    top: 4px;
+    cursor: pointer;
+    visibility: hidden;
+}
+
+.kloudspeaker-mainview-navbar-item:hover .kloudspeaker-mainview-navbar-dropdown,
+.kloudspeaker-mainview-navbar-dropdown.open {
+    visibility: visible;
+}
+
+@media (min-width: 980px) {
+    body {
+        padding-top: 90px;
+    }
+    #kloudspeaker-mainview-menu {
+        margin: 15px 0 0 8px;
+    }
+    #kloudspeaker-mainview-viewtools {
+        margin: 15px 0 0 0;
+    }
+    #kloudspeaker-mainview-user {
+        margin: 15px 0 0 0;
+    }
+    #kloudspeaker-folderview.detached #kloudspeaker-folderview-header {
+        position: fixed;
+        background-color: #ffffff;
+        margin-top: -20px;
+        padding-top: 20px;
+        z-index: 10;
+    }
+    #kloudspeaker-folderview.detached .kloudspeaker-iconview-header {
+        display: block;
+    }
+    #kloudspeaker-folderview.detached #kloudspeaker-folderview-detachholder {
+        width: 100%;
+        display: block;
+    }
+    #kloudspeaker-folderview.detached .no-detached {
+        display: none;
+    }
+    /*#kloudspeaker-folderview-header {
+        position: fixed;
+        top: 60px;
+        background-color: #ffffff;
+        padding-top: 30px;
+    }
+    
+    #kloudspeaker-folderview-items {
+        padding-top: 125px;
+    }*/
+}
+
+@media (max-width: 979px) {
+    body {
+        padding-top: 0;
+    }
+    .navbar .btn-navbar {
+        margin: 25px 0 0 0;
+    }
+}
+
+#kloudspeaker-mainview-navlist-parent {
+    width: 16.92817679558011%;
+}
+
+
+/* Large desktop */
+
+@media (min-width: 1200px) {
+    #kloudspeaker-mainview-navlist-parent {
+        width: 18.404255319148934%;
+    }
+}
+
+
+/* Portrait tablet to landscape and desktop */
+
+@media (min-width: 768px) and (max-width: 979px) {
+    #kloudspeaker-mainview-navlist-parent {
+        position: relative;
+        width: 70%;
+    }
+}
+
+
+/* Landscape phone to portrait tablet */
+
+@media (max-width: 767px) {
+    .navbar-fixed-top,
+    .navbar-fixed-bottom,
+    .navbar-static-top {
+        margin: 0;
+    }
+    #kloudspeaker-mainview-navlist-parent {
+        position: relative;
+        width: 87%;
+        margin-right: 0;
+    }
+    #kloudspeaker-mainview-viewcontent {
+        float: left;
+        padding: 8px 16px 0 16px;
+        min-height: 600px;
+    }
+    #kloudspeaker-folderview-header {
+        padding-top: 0;
+    }
+}
+
+
+/* Landscape phones and down */
+
+@media (max-width: 480px) {}

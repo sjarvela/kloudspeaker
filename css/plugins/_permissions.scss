@@ -1,0 +1,21 @@
+.kloudspeaker-pluginpermissions-editor-permission-selector,
+.kloudspeaker-pluginpermissions-editor-user-selector {
+    float: left;
+    padding-bottom: 8px;
+    width: 100%;
+}
+
+.kloudspeaker-pluginpermissions-editor-permission-selector > *,
+.kloudspeaker-pluginpermissions-editor-user-selector > * {
+    float: left;
+    padding-right: 8px;
+}
+
+.kloudspeaker-pluginpermissions-editor-permission-selector > select,
+.kloudspeaker-pluginpermissions-editor-user-selector > select {
+    margin-top: 6px;
+}
+
+#kloudspeaker-pluginpermissions-editor-tab {
+    margin-bottom: 8px;
+}

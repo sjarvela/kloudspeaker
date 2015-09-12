@@ -1,0 +1,159 @@
+.kloudspeaker-configview-content {
+    float: left;
+}
+
+.kloudspeaker-configlistview {
+    float: left;
+    width: 100%;
+    min-height: 200px;
+}
+
+.kloudspeaker-configlistview-header {
+    float: left;
+    clear: both;
+}
+
+.kloudspeaker-configlistview-title {
+    float: left;
+    font-size: 18px;
+    line-height: 32px;
+    margin-right: 8px;
+}
+
+.kloudspeaker-configlistview-actions {
+    float: left;
+}
+
+.kloudspeaker-configlistview-options {
+    float: left;
+}
+
+.kloudspeaker-configlistview-options .accordion-heading {
+    line-height: 12px;
+}
+
+.kloudspeaker-configlistview-options .accordion-body label,
+.kloudspeaker-configlistview-options .accordion-body input,
+.kloudspeaker-configlistview-options .accordion-body button,
+.kloudspeaker-configlistview-options .accordion-body select,
+.kloudspeaker-configlistview-options .accordion-body textarea {
+    font-size: 12px;
+}
+
+.kloudspeaker-configlistview-action {
+    margin-right: 4px;
+}
+
+.kloudspeaker-configlistview-table {
+    cursor: default;
+    float: left;
+}
+
+.kloudspeaker-configlistview-table tr.inactive {
+    color: #949494;
+}
+
+.kloudspeaker-configlistview-table th.sortable {
+    cursor: pointer;
+}
+
+.kloudspeaker-config-admin-userdetails-section,
+.kloudspeaker-notificator-notificationdetails-section,
+.kloudspeaker-config-admin-groupdetails-section {
+    float: left;
+    width: 45%;
+    overflow: hidden;
+    min-width: 350px;
+    min-height: 200px;
+    margin-left: 10px;
+}
+
+.config-list .header,
+.config-list .header-title {
+    float: left;
+}
+
+.config-list .header-title {
+    margin-right: 20px;
+}
+
+.config-list .tools {
+    float: left;
+    margin-top: 15px;
+}
+
+.config-list .config-options {
+    float: left;
+    clear: both;
+    width: 100%;
+}
+
+.config-list .config-options .accordion-group {
+    position: relative;
+}
+
+.config-list .config-options .accordion-group .accordion-heading {
+    position: absolute;
+    right: 0;
+    top: -20px;
+}
+
+.config-list .config-options .accordion-group .accordion-toggle {
+    padding: 0;
+}
+
+.config-list .config-options .accordion-group a.accordion-toggle:hover,
+.config-list .config-options .accordion-group a.accordion-toggle:visited,
+.config-list .config-options .accordion-group a.accordion-toggle:hover,
+.config-list .config-options .accordion-group a.accordion-toggle:active {
+    text-decoration: none;
+}
+
+.config-list .config-options .accordion-inner {
+    border: none;
+}
+
+.config-list .config-options .accordion-inner form {
+    margin: 0;
+}
+
+.config-list .config-options .accordion-inner form.form-horizontal .control-group:last-child {
+    margin-bottom: 0;
+}
+
+.config-list .table-responsive {
+    min-height: 200px;
+    float: left;
+    width: 100%;
+}
+
+.config-list.restricted .table-responsive {
+    max-height: 200px;
+    overflow: scroll;
+}
+
+.config-list th {
+    border-top: none;
+}
+
+.config-list th.sortable {
+    cursor: pointer;
+}
+
+.config-list .config-list-pager {
+    float: left;
+}
+
+.config-list tr.hilight td {
+    background-color: #d9edf7!important;
+}
+
+.config-list td.action,
+.config-list .config-list-pager a {
+    cursor: pointer;
+}
+
+.config-list .share-option-expiration-field {
+    float: left;
+    margin-right: 20px;
+}
