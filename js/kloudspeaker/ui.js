@@ -274,7 +274,7 @@ define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins'
 
     ui.showError = function(e) {
         var args = Array.prototype.slice.call(arguments);
-        if (!args || args.length == 0) return;
+        if (!args || args.length === 0) return;
 
         var title = 'Failed to initialize Kloudspeaker';
         var msg = '';
@@ -283,9 +283,9 @@ define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins'
         if (args.length == 1) {
             if (typeof(args[0]) == "string") title = args[0];
             if (typeof(args[0]) == "object") {
-                var e = args[0];
-                msg = e.msg;
-                if (e.title) title = e.title;
+                var o = args[0];
+                msg = o.msg;
+                if (o.title) title = o.title;
             }
         } else if (args.length >= 2 && (typeof(args[0]) == "string") && (typeof(args[1]) == "string")) {
             title = args[0];
