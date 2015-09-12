@@ -1,0 +1,28 @@
+@font-face {
+    font-family: 'KloudspeakerPlainText';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Open Sans'), local('OpenSans'), url('../fonts/OpenSans.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'KloudspeakerPlainText';
+    font-style: normal;
+    font-weight: 600;
+    src: local('Open Sans Semibold'), local('OpenSans-Semibold'), url('../fonts/OpenSans_Semibold.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'KloudspeakerPlainText';
+    font-style: normal;
+    font-weight: 700;
+    src: local('Open Sans Bold'), local('OpenSans-Bold'), url('../fonts/OpenSans_Bold.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'proxima-nova';
+    src: url('../fonts/proximanova-webfont.eot');
+    src: url('../fonts/proximanova-webfont.eot?#iefix') format('embedded-opentype'), url('../fonts/proximanova-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
