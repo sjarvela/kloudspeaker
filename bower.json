@@ -4,6 +4,7 @@
     "main": [],
     "dependencies": {
         "font-awesome": "4.4",
-        "bootstrap": "3.3.5"
+        "bootstrap": "3.3.5",
+        "bootstrap-sass": "*"
     }
 }
