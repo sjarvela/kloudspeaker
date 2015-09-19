@@ -209,6 +209,33 @@ class ShareHandler {
 		$this->dao()->editShare($id, $name, $type, $expirationTs, $active, $restriction);
 	}
 
+	public function getQuickShare($itemId) {
+		$item = $this->getShareItem($itemId, FALSE);
+		if (!is_array($item)) {
+			if (!$this->env->permissions()->hasFilesystemPermission("share_item", $item)) {
+				throw new ServiceException("INSUFFICIENT_PERMISSIONS");
+			}
+		}
+		$created = FALSE;
+		$qs = $this->dao()->getItemQuickShare($itemId, $this->env->session()->userId());
+		if ($qs == NULL) {
+			$this->addQuickShare($itemId, $item);
+			$qs = $this->dao()->getItemQuickShare($itemId, $this->env->session()->userId());
+			$created = TRUE;
+		}
+		return array("created" => $created, "share" => $qs);
+	}
+
+	private function addQuickShare($itemId, $item) {
+		$id = $this->GUID();
+		$name = "";
+		$created = $this->env->configuration()->formatTimestampInternal(time());
+		$possibleTypes = $this->getShareTypes($item);
+		$type = $possibleTypes[0];
+
+		$this->dao()->addShare($id, $itemId, $name, $type, $this->env->session()->userId(), NULL, $created, TRUE, FALSE, TRUE);
+	}
+
 	public function updateShares($ids, $update) {
 		$this->dao()->updateShares($ids, $update);
 	}

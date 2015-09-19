@@ -7,6 +7,7 @@ CREATE TABLE share (
   user_id INTEGER NOT NULL,
   expiration bigint(11) NULL,
   created bigint(11) NOT NULL,
+  quick TINYINT(1) NOT NULL,
   active TINYINT(1) NOT NULL
 );
 CREATE TABLE share_auth (
@@ -14,4 +15,4 @@ CREATE TABLE share_auth (
   salt char(128) NOT NULL,
   hash char(128) NOT NULL
 );
-INSERT INTO parameter (name, value) VALUES ('plugin_Share_version', '1_3');
+INSERT INTO parameter (name, value) VALUES ('plugin_Share_version', '1_4');

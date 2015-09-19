@@ -37,6 +37,10 @@ define(['kloudspeaker/service', 'kloudspeaker/utils'], function(service, utils) 
             });
         },
 
+        quickShare: function(item) {
+            return service.get("share/items/"+item.id+"/quick");
+        },
+
         addItemShare: function(item, share) {
             return service.post("share/", {
                 item: item.id,

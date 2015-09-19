@@ -6,9 +6,12 @@
 
         <!-- ko if: (model.items() != null && model.items().length > 0) -->
         <div class="share-items" data-bind="foreach: model.items">
-            <div data-bind="attr:{ class: 'item-share' + (active ? ' active' : ' inactive') + (name ? '' : ' unnamed') }, dom-effect: 'hover'">
+            <div data-bind="attr:{ class: 'item-share' + (active ? ' active' : ' inactive') + (name ? '' : ' unnamed') + (quick ? ' quick' : '') }, dom-effect: 'hover'">
                 <div class="share-info">
                     <div class="share-icon">
+                        <!-- ko if: quick -->
+                        <i class="fa fa-flash"></i>
+                        <!-- /ko -->
                         <!-- ko if: restriction == 'private' -->
                         <i class="fa fa-user"></i>
                         <!-- /ko -->
@@ -22,7 +25,10 @@
                     <!-- ko if: name -->
                     <div class="share-name" data-bind="text: name"></div>
                     <!-- /ko -->
-                    <!-- ko ifnot: name -->
+                    <!-- ko if: (!name && quick) -->
+                    <div class="share-name" data-i18n="shareDialogUnnamedQuickShareTitle"></div>
+                    <!-- /ko -->
+                    <!-- ko if: (!name && !quick) -->
                     <div class="share-name" data-i18n="shareDialogUnnamedShareTitle"></div>
                     <!-- /ko -->
                 </div>
@@ -65,5 +71,6 @@
         </div>
         <!-- /ko -->
         <a class="add-share btn btn-primary" data-bind="click: onAddShare"><i class="fa fa-plus"></i>&nbsp;<span data-i18n="shareDialogShareAddTitle"></span></a>
+        <a class="quick-share btn" data-bind="click: onQuickShare"><i class="fa fa-flash"></i>&nbsp;<span data-i18n="shareDialogQuickShareTitle"></span></a>
     </div>
 </div>
