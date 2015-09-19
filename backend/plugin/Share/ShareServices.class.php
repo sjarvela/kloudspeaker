@@ -110,6 +110,14 @@ class ShareServices extends ServicesBase {
 			$this->response()->success($this->handler()->getShareOptions($itemId));
 			return;
 		}
+
+		//share/items/xxx/quick : quick share
+
+		if (count($this->path) == 3 and strcmp($this->path[2], 'quick') == 0) {
+			$itemId = $this->path[1];
+			$this->response()->success($this->handler()->getQuickShare($itemId));
+			return;
+		}
 		throw $this->invalidRequestException();
 	}
 

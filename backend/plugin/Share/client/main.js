@@ -114,6 +114,21 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 
             d["plugin-share/item-info"][item.id] = {};
         d["plugin-share/item-info"][item.id].own = own;
     };
+    var increaseShareCount = function(item) {
+        var fv = views.getActiveFileView();
+        if (fv) fv.updateData(function(d) {
+            var itemData = getDataObj(d, item);
+            if (!itemData)
+                createDataWithOwn(d, item, 1);
+            else {
+                if (typeof(itemData.own) === 'string') itemData.own = (parseInt(itemData.own, 10));
+                itemData.own += 1; // add one
+            }
+
+            // refresh this item
+            return [item];
+        });
+    };
 
     that.onAddShare = function(item) {
         return dialogs.custom({
@@ -123,19 +138,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 
                 item: item
             }]
         }).done(function() {
-            var fv = views.getActiveFileView();
-            if (fv) fv.updateData(function(d) {
-                var itemData = getDataObj(d, item);
-                if (!itemData)
-                    createDataWithOwn(d, item, 1);
-                else {
-                    if (typeof(itemData.own) === 'string') itemData.own = (parseInt(itemData.own, 10));
-                    itemData.own += 1; // add one
-                }
-
-                // refresh this item
-                return [item];
-            });
+            increaseShareCount(item);
         });
     };
 
@@ -146,6 +149,19 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 
             model: ['kloudspeaker/share/views/addedit', {
                 share: share
             }]
+        });
+    };
+
+    that.onQuickShare = function(item) {
+        repository.quickShare(item).done(function(s) {
+            if (s.created) increaseShareCount(item);
+            
+            dialogs.custom({
+                model: ['kloudspeaker/share/views/quick', {
+                    item: item,
+                    share: s.share
+                }]
+            });
         });
     };
 
@@ -245,6 +261,13 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 
                     callback: function() {
                         that.onOpenItemShares(item);
                     }
+                }, {
+                    id: 'pluginShareQuick',
+                    'title-key': 'itemContextQuickShareMenuTitle',
+                    icon: 'external-link',
+                    callback: function() {
+                        that.onQuickShare(item);
+                    }
                 }]
             };
         },
@@ -267,6 +290,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 
         },
         getShareView: that._getShareView,
         openItemShares: that.onOpenItemShares,
+        quickShare: that.onQuickShare,
         addShare: that.onAddShare,
         editShare: that.onEditShare,
         removeShare: that.onRemoveShare

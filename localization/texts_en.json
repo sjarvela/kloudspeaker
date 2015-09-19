@@ -382,6 +382,10 @@
 		"shareViewConfirmDownloadTitle": "You are about to download \"{0}\"",
 		"shareViewConfirmDownloadSubtitle": "Are you sure want to proceed?",
 		"shareViewConfirmDownloadAction": "Yes",
+		"shareDialogQuickShareTitle": "Quick share",
+		"itemContextQuickShareMenuTitle": "Quick share...",
+		"shareDialogShareUrlTitle": "Share link",
+		"shareDialogUnnamedQuickShareTitle": "Quick",
 
 		"pluginItemCollectionsNavTitle": "Stored",
 		"pluginItemCollectionStore": "Store...",

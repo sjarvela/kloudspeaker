@@ -49,6 +49,10 @@ define(['kloudspeaker/instance', 'kloudspeaker/share', 'kloudspeaker/share/repos
                 that._container.close();
                 share.addShare(model.item);
             },
+            onQuickShare: function() {
+                that._container.close();
+                share.quickShare(model.item);
+            },
             onEditShare: function(s) {
                 that._container.close();
                 share.editShare(s);
