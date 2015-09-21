@@ -3,12 +3,25 @@
 		protected function getHtml($item, $full) {
 			$resourceUrl = $this->getResourceUrl();
 			
-			$head = '<script type="text/javascript" src="'.$resourceUrl.'flowplayer-3.1.4.min.js"></script>';					
-			$html =
-				'<a href="'.$this->getContentUrl($item).'" style="display:block;width:580px;height:380px" id="player"></a>'.
-				'<script>flowplayer("player", "'.$resourceUrl.'flowplayer-3.1.5.swf");</script>';
+			$head = '<link rel="stylesheet" href="'.$resourceUrl.'/flowplayer-6.0.3/skin/functional.css"><script src="'.$resourceUrl.'/jquery-1.11.2.min.js"></script><script type="text/javascript" src="'.$resourceUrl.'/flowplayer-6.0.3/flowplayer.min.js"></script>
+<style>
+	.flowplayer .fp-embed { display: none; }
+</style>';
 
-			return "<html><head><title>".$item->name()."</title>".$head."</head><body>".$html."</body></html>";
+			$html = '
+<div class="player" style="display:block;width:580px;height:380px">
+   <video>
+      <source type="video/webm" src="'.$this->getContentUrl($item).'">
+   </video>
+</div>
+ 
+<script>
+$(function () {
+   $(".player").flowplayer();
+});
+</script>';
+
+			return "<!DOCTYPE html><html><head><title>".$item->name()."</title>".$head."</head><body>".$html."</body></html>";
 		}
 	}
 ?>
