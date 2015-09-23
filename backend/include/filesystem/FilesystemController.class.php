@@ -1168,11 +1168,22 @@ class FilesystemController {
 		return array($start, $end, $size);
 	}
 
-	public function view($file) {
-		Logging::logDebug('view [' . $file->id() . ']');
+	public function view($file, $range = NULL) {
+		if (!$range) {
+			Logging::logDebug('view [' . $file->id() . ']');
+		}
 		$this->assertRights($file, self::PERMISSION_LEVEL_READ, "view");
-		$this->env->events()->onEvent(FileEvent::view($file));
-		$this->env->response()->send($file->name(), $file->extension(), $file->read(), $file->size());
+
+		$size = $file->size();
+		$range = $this->getDownloadRangeInfo($range, $size);
+
+		if ($range or $range[0] == 0) {
+			Logging::logDebug("View range " . $range[0] . "-" . $range[1]);
+		} else {
+			$this->env->events()->onEvent(FileEvent::view($file));
+		}
+		
+		$this->env->response()->send($file->name(), $file->extension(), $file->read($range), $size, $range);
 	}
 
 	public function read($file) {
