@@ -52,6 +52,11 @@ define(['kloudspeaker/utils', 'kloudspeaker/events', 'kloudspeaker/service'], fu
             updatePermissions(_filesystemPermissions[id], permissions);
         },
         hasFilesystemPermission: function(item, name, required, dontFetch) {
+            if (item.type) {
+                //TODO handle custom type permissions
+                if (dontFetch) return false;
+                return df.resolve(false);
+            }
             var df = $.Deferred();
             if (_types.keys.all.indexOf(name) < 0) {
                 if (dontFetch) return false;
