@@ -186,17 +186,12 @@
 			//if ($this->supportOutputBuffer) ob_start();
 			$chunk = 1024;
 			$count = 0;
-			$end = FALSE;
-			while (!$end and !feof($stream)) {
+
+			while (!feof($stream)) {
 				$count = $count + 1;
 				$read = $chunk;
-				if ($size != NULL) {
-					$r = ($count * $chunk);
-					if ($r + $read > $size) {
-						$read = $size - $r;
-						$end = TRUE;
-					}
-				}
+				//TODO if size, make sure only up to size is read
+
 				set_time_limit(0);
 				echo fread($stream, $read);
 				if ($this->supportOutputBuffer and ob_get_length() != FALSE) @ob_flush();
