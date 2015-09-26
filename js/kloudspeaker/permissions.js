@@ -2,6 +2,7 @@ define(['kloudspeaker/utils', 'kloudspeaker/events', 'kloudspeaker/service'], fu
     var _types = null;
     var _filesystemPermissions = {};
     var _permissions = {};
+    var _customTypes = {};
     var session = null;
 
     var updatePermissions = function(list, permissions) {
@@ -44,6 +45,9 @@ define(['kloudspeaker/utils', 'kloudspeaker/events', 'kloudspeaker/service'], fu
         setup: function() {
             session = require('kloudspeaker/session');
         },
+        registerCustomFolderTypePermissionHandler: function(type, h) {
+            _customTypes[type] = h;
+        },
         getTypes: function() {
             return _types;
         },
@@ -53,7 +57,14 @@ define(['kloudspeaker/utils', 'kloudspeaker/events', 'kloudspeaker/service'], fu
         },
         hasFilesystemPermission: function(item, name, required, dontFetch) {
             if (item.type) {
-                //TODO handle custom type permissions
+                if (_customTypes[item.type]) {
+                    var list = {};
+                    list[name] = _customTypes[item.type](item, name);
+                    var p = hasPermission(list, name, required);
+                    if (dontFetch) return p;
+                    return df.resolve(p);
+                }
+
                 if (dontFetch) return false;
                 return df.resolve(false);
             }

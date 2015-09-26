@@ -134,6 +134,12 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             }
         });
 
+        //TODO move to search module
+        permissions.registerCustomFolderTypePermissionHandler('search', function(item, name) {
+            if (name == 'filesystem_item_access')
+                return 'ro';    //search view always read-only
+        });
+
         that.init = function(mainview) {
             that.title = loc.get('mainviewMenuTitle');
             that.icon = "fa fa-file-o";
@@ -143,6 +149,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
 
             events.addEventHandler(that.onEvent, false, 'fileview');
 
+            // TODO add module registration
             that.addCustomFolderType("search", {
                 onSelectFolder: function(f) {
                     var df = $.Deferred();
