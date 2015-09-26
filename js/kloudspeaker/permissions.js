@@ -69,10 +69,6 @@ define(['kloudspeaker/utils', 'kloudspeaker/events', 'kloudspeaker/service'], fu
                 return df.resolve(false);
             }
 
-            if (user.admin) {
-                if (dontFetch) return true;
-                return df.resolve(true);
-            }
             var itemId = ((typeof(item) === "string") ? item : item.id);
             var list = _filesystemPermissions[itemId];
             if (!list) {

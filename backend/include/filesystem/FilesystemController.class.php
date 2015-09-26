@@ -15,6 +15,7 @@ class FilesystemController {
 
 	const EVENT_TYPE_FILE = "filesystem";
 
+	const FILESYSTEM_ITEM_ACCESS_PERMISSION = "filesystem_item_access";
 	const PERMISSION_LEVEL_NONE = "n";
 	const PERMISSION_LEVEL_READ = "r";
 	const PERMISSION_LEVEL_READWRITE = "rw";
@@ -68,7 +69,7 @@ class FilesystemController {
 		$coreData = new CoreFileDataProvider($this->env);
 		$coreData->init($this);
 
-		$this->env->permissions()->registerFilesystemPermission("filesystem_item_access", array(
+		$this->env->permissions()->registerFilesystemPermission(self::FILESYSTEM_ITEM_ACCESS_PERMISSION, array(
 			self::PERMISSION_LEVEL_NONE,
 			self::PERMISSION_LEVEL_READ,
 			self::PERMISSION_LEVEL_READWRITE,
@@ -406,7 +407,7 @@ class FilesystemController {
 			// if not admin, folder must be assigned
 			if (!$item->filesystem()->allowUnassigned() and !in_array($item->filesystem()->id(), $this->getUserFilesystemIds())) return FALSE;
 		}
-		return $this->env->permissions()->hasFilesystemPermission("filesystem_item_access", $item, $required);
+		return $this->env->permissions()->hasFilesystemPermission(self::FILESYSTEM_ITEM_ACCESS_PERMISSION, $item, $required);
 	}
 
 	public function assertRights($item, $required, $desc = "Unknown action") {
@@ -443,13 +444,6 @@ class FilesystemController {
 				throw new ServiceException("INVALID_CONFIGURATION", "Invalid root folder definition (" . $id . "), type unknown [" . $type . "]");
 			}
 
-
-			//TODO this is hack, support real filesystem types
-			/*if (array_key_exists("S3FS", $this->filesystems)) {
-			$factory = $this->filesystems["S3FS"];
-			return $factory->createFilesystem($id, $folderDef, $this);
-			}*/
-
 			$factory = $this->filesystems[$type];
 		}
 
@@ -480,7 +474,7 @@ class FilesystemController {
 				"group" => implode("/", $nameParts),
 				"parent_id" => NULL,
 				"root_id" => $folder->id(),
-				"path" => "",
+				"path" => ""
 			);
 		}
 
@@ -596,7 +590,7 @@ class FilesystemController {
 	}
 
 	public function items($folder) {
-		$this->env->permissions()->prefetchFilesystemChildrenPermissions("filesystem_item_access", $folder);
+		$this->env->permissions()->prefetchFilesystemChildrenPermissions(self::FILESYSTEM_ITEM_ACCESS_PERMISSION, $folder);
 		$this->assertRights($folder, self::PERMISSION_LEVEL_READ, "items");
 		$this->itemIdProvider()->load($folder);
 

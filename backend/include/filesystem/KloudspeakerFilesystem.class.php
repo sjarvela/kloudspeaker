@@ -23,6 +23,18 @@
 		public function allowUnassigned() {
 			return FALSE;
 		}
+
+		public function isWritable() {
+			return TRUE;
+		}
+
+		public function getOverriddenItemPermission($item, $name) {
+			return FALSE;
+		}
+
+		public function getOverriddenChildrenPermissions($name, $parent) {
+			return FALSE;
+		}
 		
 		abstract function type();
 		
