@@ -19,4 +19,4 @@ CREATE TABLE `{TABLE_PREFIX}share_auth` (
   PRIMARY KEY (`id`)
 ) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Share auth';
 
-INSERT INTO `{TABLE_PREFIX}parameter` (name, value) VALUES ('plugin_Share_version', '1_4');
+INSERT INTO `{TABLE_PREFIX}parameter` (name, value) VALUES ('plugin_Share_version', '1_5');
