@@ -130,7 +130,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/dom', 'kloudspeaker/ui', 'kloudsp
         },
         initDragAndDropUploader: function(h) {
             var $p = h.container;
-            var $container = $('<div style="width: 0px; height: 0px; overflow: hidden;"></div>').appendTo($p);
+            var $container = $('<div class="uploader-container" style="width: 0px; height: 0px; overflow: hidden;"></div>').appendTo($p);
             var $form = $('<form enctype="multipart/form-data"></form>').appendTo($container);
             var started = false;
             var rejected = false;
@@ -213,7 +213,10 @@ define(['kloudspeaker/settings', 'kloudspeaker/dom', 'kloudspeaker/ui', 'kloudsp
 
             return {
                 destroy: function() {
-                    if ($dndUploader) $dndUploader.fileupload("destroy");
+                    if (!$dndUploader) return;
+                    var $container = $dndUploader.closest(".uploader-container");
+                    $dndUploader.fileupload("destroy");
+                    $container.remove();
                     $dndUploader = false;
                 },
                 setUrl: function(url) {

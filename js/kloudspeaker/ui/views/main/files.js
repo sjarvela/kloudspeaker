@@ -727,6 +727,10 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             var $h = $("#kloudspeaker-folderview-header-content").empty();
 
             if (that._currentFolder && that._currentFolder.type) {
+                // prevent custom folder upload (custom folders need to handle it explicitly)
+                if (that._dndUploader)
+                    that._dndUploader.setUrl(false);
+
                 if (that._customFolderTypes[that._currentFolder.type]) {
                     that._customFolderTypes[that._currentFolder.type].onRenderFolderView(that._currentFolder, that._currentFolderData, $h, $tb);
                 }
