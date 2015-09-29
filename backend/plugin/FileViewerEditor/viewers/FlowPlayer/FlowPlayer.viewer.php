@@ -9,7 +9,7 @@
 </style>';
 
 			$html = '
-<div class="player" style="display:block;width:580px;height:380px">
+<div class="player" style="display:block;">
    <video>
       <source type="video/webm" src="'.$this->getContentUrl($item).'">
    </video>
