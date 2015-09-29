@@ -208,7 +208,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/session',
                     });
 
                     $("#kloudspeaker-pluginpermissions-editor-tab > li").click(function() {
-                        var i = $(that).addClass("active").index();
+                        var i = $(this).index();
                         activateTab(i);
                     });
 
