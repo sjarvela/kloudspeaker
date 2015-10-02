@@ -1,4 +1,4 @@
-define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'kloudspeaker/ui', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/dom', 'kloudspeaker/localization', 'kloudspeaker/ui/views', 'kloudspeaker/ui/config/listview'], function(session, service, utils, ui, controls, dialogs, dom, loc, views, ConfigListView) {
+define(['kloudspeaker/session', 'kloudspeaker/plugins', 'kloudspeaker/service', 'kloudspeaker/utils', 'kloudspeaker/ui', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/dom', 'kloudspeaker/localization', 'kloudspeaker/ui/views', 'kloudspeaker/ui/config/listview'], function(session, plugins, service, utils, ui, controls, dialogs, dom, loc, views, ConfigListView) {
     return function(ctx) {
         var that = this;
 
