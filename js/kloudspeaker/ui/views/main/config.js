@@ -10,7 +10,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
 
         this.init = function(mv) {
             that.title = loc.get('configviewMenuTitle');
-            that.icon = "fa fa-cogs";
+            that.icon = "cogs";
 
             var s = session.get();
 

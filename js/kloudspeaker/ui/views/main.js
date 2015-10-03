@@ -1,7 +1,7 @@
-define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/features', 'kloudspeaker/permissions', 'kloudspeaker/plugins', 'kloudspeaker/dom', 'kloudspeaker/templates', 'kloudspeaker/ui', 'kloudspeaker/ui/dialogs', 'kloudspeaker/localization', 'kloudspeaker/ui/views/main/files', 'kloudspeaker/ui/views/main/config', 'kloudspeaker/utils'], function(settings, session, service, features, permissions, plugins, dom, templates, ui, dialogs, loc, FilesView, ConfigView, utils) {
+define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/features', 'kloudspeaker/permissions', 'kloudspeaker/plugins', 'kloudspeaker/dom', 'kloudspeaker/templates', 'kloudspeaker/ui', 'kloudspeaker/ui/dialogs', 'kloudspeaker/localization', 'kloudspeaker/ui/views/main/files', 'kloudspeaker/ui/views/main/config', 'kloudspeaker/utils'], function(app, settings, session, service, features, permissions, plugins, dom, templates, ui, dialogs, loc, FilesView, ConfigView, utils) {
     return function() {
         var that = this;
-        
+
         that._mainFileView = false;
         that._mainConfigView = false;
         that._views = [];
@@ -18,7 +18,10 @@ define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/service',
                 that._views.push(view);
             });
 
-            //that.itemContext = new ItemContext();
+            _.each(utils.getKeys(ui._mainViews), function(id) {
+                that._views.push(ui._mainViews[id]);
+            });
+
             return dom.loadContentInto($c, templates.url("mainview.html"), function() {
                 that.onLoad(viewId);
             }, ['localize']);
@@ -46,10 +49,15 @@ define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/service',
 
             var menuitems = [];
             $.each(that._views, function(i, v) {
-                v.init(that);
+                if (v.init) v.init(that);
+
+                var title = v.title;
+                if (typeof(title) === "string" && title.startsWith("i18n:")) title = loc.get(title.substring(5));
+                if (utils.isArray(title)) title = loc.get(title[0], title.slice(1));
+
                 menuitems.push({
                     icon: v.icon,
-                    title: v.title
+                    title: title
                 });
             });
 
@@ -78,7 +86,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/service',
         that._findView = function(id) {
             var found = false;
             $.each(that._views, function(i, v) {
-                if (v.viewId == id) {
+                if (v.id == id || v.viewId == id) {
                     found = v;
                     return false;
                 }
@@ -108,14 +116,39 @@ define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/service',
             that._currentView = v;
 
             $("#kloudspeaker-mainview-navbar").empty();
-            v.onActivate({
-                id: id,
-                content: $("#kloudspeaker-mainview-viewcontent").empty(),
-                tools: $("#kloudspeaker-mainview-viewtools").empty(),
-                addNavBar: that.addNavBar,
-                mainview: that,
-                fileview: that._mainFileView
-            });
+            var $content = $("#kloudspeaker-mainview-viewcontent").empty();
+            var $tools = $("#kloudspeaker-mainview-viewtools").empty();
+
+            if (v.model) {
+                var model = v.model;
+                var p = {
+                };
+                if (utils.isArray(model)) {
+                    p = model[1];
+                    model = model[0];
+                }
+
+                ui.viewmodel(v.view, [model, p], $content).done(function(m) {
+                    if (v.id || v.viewId) app.storeView(v.id || v.viewId);
+                });
+            } else {
+                if (v.onActivate)
+                    v.onActivate({
+                        id: id,
+                        content: $content,
+                        tools: $tools,
+                        addNavBar: that.addNavBar,
+                        mainview: that,
+                        fileview: that._mainFileView
+                    });
+                else if (v.view) {
+                    if (v.id || v.viewId) app.storeView(v.id || v.viewId);
+
+                    require(['text!'+v.view], function(html){
+                        $content.html(html);
+                    });
+                }
+            }
             var $mnu = $("#kloudspeaker-mainview-menu");
             var $items = $mnu.find(".kloudspeaker-mainview-menubar-item").removeClass("active");
             var i = that._views.indexOf(v);

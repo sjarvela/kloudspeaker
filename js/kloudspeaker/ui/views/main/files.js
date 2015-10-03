@@ -136,7 +136,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
 
         that.init = function(mainview) {
             that.title = loc.get('mainviewMenuTitle');
-            that.icon = "fa fa-file-o";
+            that.icon = "file-o";
             that._viewStyle = 0;
             if (settings["file-view"]["default-view-mode"] == "small-icon") that._viewStyle = 1;
             if (settings["file-view"]["default-view-mode"] == "large-icon") that._viewStyle = 2;

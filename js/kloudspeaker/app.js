@@ -298,6 +298,7 @@ define([], function() {
 
             //TODO rewrite
             ui._configViews = {};
+            ui._mainViews = {};
             ui._fileViewHandlers = [];
             define('kloudspeaker/ui/views', [], {
                 getActiveView: function() {
@@ -319,6 +320,9 @@ define([], function() {
                 },
                 registerView: function(id, v) {
                     app.registerView(id, v);
+                },
+                registerMainView: function(v) {
+                    ui._mainViews[v.id] = v;
                 },
                 registerConfigView: function(v) {
                     ui._configViews[v.id || v.viewId] = v;
