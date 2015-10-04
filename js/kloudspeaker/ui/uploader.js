@@ -67,6 +67,8 @@ define(['kloudspeaker/settings', 'kloudspeaker/dom', 'kloudspeaker/ui', 'kloudsp
                 //console.log(data);
 
                 if (!started) {
+                    e.stopPropagation();
+
                     started = true;
                     failed = false;
                     rejected = false;
