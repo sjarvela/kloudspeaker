@@ -7,6 +7,9 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
         that._views = [];
         that._currentView = false;
 
+        that._subviews = {};
+        that._subviewsById = {};
+
         that.init = function($c, viewId) {
             that._mainFileView = new FilesView();
             that._mainConfigView = new ConfigView();
@@ -21,7 +24,16 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
 
             // new
             _.each(utils.getKeys(ui._mainViews), function(id) {
-                that._views.push(ui._mainViews[id]);
+                var view = ui._mainViews[id];
+                that._views.push(view);
+
+                if (view.subviews) {
+                    that._subviews[id] = [];
+                    _.each(view.subviews, function(sv) {
+                        that._subviews[id].push(sv);
+                        that._subviewsById[id+"/"+sv.id] = sv;
+                    });
+                }
             });
 
             return dom.loadContentInto($c, templates.url("mainview.html"), function() {
@@ -134,36 +146,38 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 var activateSubView = function(view, subview) {
                     that._doActivate(subview, view);
                 };
-                var activateSubview = false;
-                var activateSubviewId = id ? (utils.isArray(id) ? id[0] : id) : false;
-                if (v.subviews) {
+                if (v.nav) {
                     var navBar = false;
                     var navBarItems = {};
-                    _.each(v.subviews, function(sv) {
-                        if (!sv.id) {
+
+                    _.each(v.nav, function(navItem) {
+                        if (navItem.type == 'heading') {
                             if (navBar) that.addNavBar(navBar);
                             navBar = {
-                                title: sv.title,
+                                title: navItem.title,
                                 items: []
                             };
-                            return;
-                        };
-
-                        if (activateSubviewId == sv.id) activateSubview = sv;
-
-                        navBar.items.push({
-                            title: sv.title,
-                            obj: sv,
-                            callback: function() {
-                                activateSubView(v, sv);
-                            }
-                        });
+                        } else if (navItem.type == 'link') {
+                            navBar.items.push({
+                                title: navItem.title,
+                                callback: function() {
+                                    window.location.href = navItem.url;
+                                }
+                            });
+                        } else {
+                            var sv = that._subviewsById[v.id + "/" + navItem.id];
+                            navBar.items.push({
+                                title: navItem.title || sv.title,
+                                callback: function() {
+                                    activateSubView(v, sv);
+                                }
+                            });
+                        }
                     });
-
                     if (navBar) that.addNavBar(navBar);
                 }
 
-                if (activateSubview) that._doActivate(activateSubview, v);
+                if (id && that._subviewsById[v.id + "/" + id]) that._doActivate(that._subviewsById[v.id + "/" + id], v);
                 else that._doActivate(v);
             }
             var $mnu = $("#kloudspeaker-mainview-menu");
