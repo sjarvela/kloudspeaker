@@ -134,6 +134,8 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 var activateSubView = function(view, subview) {
                     that._doActivate(subview, view);
                 };
+                var activateSubview = false;
+                var activateSubviewId = id ? (utils.isArray(id) ? id[0] : id) : false;
                 if (v.subviews) {
                     var navBar = false;
                     var navBarItems = {};
@@ -147,6 +149,8 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                             return;
                         };
 
+                        if (activateSubviewId == sv.id) activateSubview = sv;
+
                         navBar.items.push({
                             title: sv.title,
                             obj: sv,
@@ -159,7 +163,8 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                     if (navBar) that.addNavBar(navBar);
                 }
 
-                that._doActivate(v);
+                if (activateSubview) that._doActivate(activateSubview, v);
+                else that._doActivate(v);
             }
             var $mnu = $("#kloudspeaker-mainview-menu");
             var $items = $mnu.find(".kloudspeaker-mainview-menubar-item").removeClass("active");
