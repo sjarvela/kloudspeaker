@@ -270,7 +270,7 @@ define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'k
                     $content.find(".control-group").removeClass("error");
 
                     var name = $name.val();
-                    var invalidName = !name || name.startsWith('/') || name.startsWith('\\') || name.endsWith('/') || name.endsWith('\\');
+                    var invalidName = !name || name.contains('/') || name.contains('\\');
                     if (invalidName) $name.closest(".control-group").addClass("error");
 
                     var path = $path.val();

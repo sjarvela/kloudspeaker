@@ -18,6 +18,13 @@ if (typeof String.prototype.endsWith !== 'function') {
     }
 }
 
+if (typeof String.prototype.contains !== 'function') {
+    String.prototype.contains = function(s) {
+        if (!s || s.length === 0) return false;
+        return this.indexOf(s) >= 0;
+    }
+}
+
 if (typeof String.prototype.count !== 'function') {
     String.prototype.count = function(search) {
         var m = this.match(new RegExp(search.toString().replace(/(?=[.\\+*?\[\^\]$(){}\|])/g, "\\"), "g"));
