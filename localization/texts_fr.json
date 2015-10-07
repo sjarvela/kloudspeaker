@@ -242,7 +242,7 @@
 		"configAdminPermissionsRemoveConfirmationMessage": "Etes-vous certain de vouloir retirer les permissions sélectionnées ?",
 		"configAdminPermissionsEditItemPermissionsTooltip": "Editer les permissions de l'item",
 		"configAdminPermissionsEditItemPermissionsTitle": "Sélectionner un item",
-		"configAdminPermissionsEditItemPermissionsMessage": "Sélectionnez l'item dont vous souhaitez éditer les permissions :"
+		"configAdminPermissionsEditItemPermissionsMessage": "Sélectionnez l'item dont vous souhaitez éditer les permissions :",
 
 		"pluginPermissionsEditColUser": "Utilisateur",
 		"pluginPermissionsPermissionName": "Nom",
@@ -525,9 +525,9 @@
 		"pluginNotificatorNotificationEditEventFiltersType": "Type",
 		"pluginNotificatorNotificationEditEventFiltersValue": "Valeur",
 		"pluginNotificatorNotificationEventFilterFolderEditorSelectTitle": "Sélectionner un dossier",
-		"pluginNotificatorNotificationEventFilterFolderEditorSelectMsg": "Sélectionner un dossier pour le filtre d'événement"
+		"pluginNotificatorNotificationEventFilterFolderEditorSelectMsg": "Sélectionner un dossier pour le filtre d'événement",
 		
-		"validationError-required" : "Ce champ est requis",
-		"validationError-email" : "Une adresse email valide est requise"
+		"validationError-required": "Ce champ est requis",
+		"validationError-email": "Une adresse email valide est requise"
 	}
 }
