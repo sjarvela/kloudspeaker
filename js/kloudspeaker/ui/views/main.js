@@ -31,7 +31,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                     that._subviews[id] = [];
                     _.each(view.subviews, function(sv) {
                         that._subviews[id].push(sv);
-                        that._subviewsById[id+"/"+sv.id] = sv;
+                        that._subviewsById[id + "/" + sv.id] = sv;
                     });
                 }
             });
@@ -166,8 +166,12 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                             });
                         } else {
                             var sv = that._subviewsById[v.id + "/" + navItem.id];
+                            var title = navItem.title || sv.title;
+                            if (typeof(title) === "string" && title.startsWith("i18n:")) title = loc.get(title.substring(5));
+                            if (utils.isArray(title)) title = loc.get(title[0], title.slice(1));
+
                             navBar.items.push({
-                                title: navItem.title || sv.title,
+                                title: title,
                                 callback: function() {
                                     activateSubView(v, sv);
                                 }
