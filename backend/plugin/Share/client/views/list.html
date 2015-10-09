@@ -70,7 +70,9 @@
             </div>
         </div>
         <!-- /ko -->
+        <!-- ko if: model.canAdd -->
         <a class="add-share btn btn-primary" data-bind="click: onAddShare"><i class="fa fa-plus"></i>&nbsp;<span data-i18n="shareDialogShareAddTitle"></span></a>
         <a class="quick-share btn" data-bind="click: onQuickShare"><i class="fa fa-flash"></i>&nbsp;<span data-i18n="shareDialogQuickShareTitle"></span></a>
+        <!-- /ko -->
     </div>
 </div>

@@ -99,7 +99,10 @@ class ShareServices extends ServicesBase {
 				$this->item($itemId);
 			}
 
-			$this->response()->success($this->handler()->getShares($itemId));
+			$result = array("shares" => $this->handler()->getShares($itemId));
+			if ($this->request->hasParam("canAdd"))
+				$result["canAdd"] = (count($this->handler()->getShareTypes($itemId)) > 0);
+			$this->response()->success($result);
 			return;
 		}
 
