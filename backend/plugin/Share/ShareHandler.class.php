@@ -138,27 +138,27 @@ class ShareHandler {
 		return array("item" => (is_array($item) ? $item : $item->data()), "share_types" => $this->getShareTypes($item));
 	}
 
-	public function getShareTypes($itm) {
+	public function getShareTypes($itm, $all = FALSE) {
 		$item = $itm;
 		if (is_string($itm)) $item = $this->getShareItem($itm);
 
 		if (is_array($item)) {
 			return $this->getCustomShareTypes($item["type"], $item["item_id"]);
 		}
-		return $this->getFileShareTypes($item);
+		return $this->getFileShareTypes($item, $all);
 	}
 
-	private function getFileShareTypes($item) {
+	private function getFileShareTypes($item, $all) {
 		// file
 		if ($item->isFile()) return array("download");
 
 		// folder
 		$types = array();
-		if ($this->env->permissions()->hasFilesystemPermission(FilesystemController::FILESYSTEM_ITEM_ACCESS_PERMISSION, $item, FilesystemController::PERMISSION_LEVEL_READWRITE)) {
+		if ($all or $this->env->permissions()->hasFilesystemPermission(FilesystemController::FILESYSTEM_ITEM_ACCESS_PERMISSION, $item, FilesystemController::PERMISSION_LEVEL_READWRITE)) {
 			$types[] = "upload";
 		}
 
-		if ($this->env->permissions()->hasFilesystemPermission(FilesystemController::FILESYSTEM_ITEM_ACCESS_PERMISSION, $item, FilesystemController::PERMISSION_LEVEL_READ) and $this->env->plugins()->exists("Archiver")) {
+		if ($all or $this->env->permissions()->hasFilesystemPermission(FilesystemController::FILESYSTEM_ITEM_ACCESS_PERMISSION, $item, FilesystemController::PERMISSION_LEVEL_READ) and $this->env->plugins()->exists("Archiver")) {
 			$types[] = "prepared_download";
 		}
 		return $types;
@@ -323,7 +323,7 @@ class ShareHandler {
 		if (is_array($item)) $name = $item["name"];
 		else $name = $item->name();
 
-		$possibleTypes = $this->getShareTypes($item);
+		$possibleTypes = $this->getShareTypes($item, TRUE);
 		if ($share["type"] == NULL) {
 			$share["type"] = $possibleTypes[0];
 		} else {
