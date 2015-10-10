@@ -429,12 +429,7 @@ class FilesystemServices extends ServicesBase {
 					throw $this->invalidRequestException();
 				}
 
-				$folder = $this->item($data['folder']);
-				$to = $folder->folderWithName($item->name());
-				Logging::logDebug("COPY TO " . $to->internalPath());
-				if ($to->exists()) {
-					throw new ServiceException("DIR_ALREADY_EXISTS");
-				}
+				$to = $this->item($data['folder']);
 
 				$this->env->filesystem()->copy($item, $to);
 				break;
