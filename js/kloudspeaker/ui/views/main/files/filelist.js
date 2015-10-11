@@ -1,4 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'kloudspeaker/dom', 'kloudspeaker/localization', 'jquery'], function(app, settings, dnd, dom, loc, $) {
+define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'kloudspeaker/dom', 'kloudspeaker/localization', 'kloudspeaker/utils', 'jquery'], function(app, settings, dnd, dom, loc, utils, $) {
     return function(container, $headerContainer, id, filelistSpec, columns) {
         var t = this;
         t.minColWidth = 25;
@@ -107,7 +107,9 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'klo
                 t.sortOrderAsc = !t.sortOrderAsc;
             }
             t.refreshSortIndicator();
-            t.content(t.items, t.data);
+            utils.invokeLater(function() {
+                t.content(t.items, t.data);    
+            });
         };
 
         this.sortItems = function() {
