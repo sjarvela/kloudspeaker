@@ -354,6 +354,7 @@ define(['kloudspeaker/session', 'kloudspeaker/localization', 'kloudspeaker/ui/co
         }
 
         var _onDialogReady = function() {
+                if (spec.cls) $dlg.addClass(spec.cls);
                 if (spec.html || spec.content) ui.handlers.localize($dlg);
                 if (!spec.buttons && _model && _model.getDialogButtons) {
                     spec.buttons = _model.getDialogButtons();
