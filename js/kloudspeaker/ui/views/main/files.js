@@ -425,6 +425,19 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                             type: "error"
                         });
                     }
+                },
+                fileStatus: function(name, size) {
+                    if (!settings["resume-upload"] || !name || !that._currentFolder || that._currentFolder.type) return;
+
+                    var df = $.Deferred();
+                    service.post('filesystem/' + that._currentFolder.id + "/fileinfo", {
+                        files: [name]
+                    }).done(function(r) {
+                        if (!r || !r[name]) df.resolve(false);  //don't resume
+                        if (r[name].size >= size) df.resolve(false); //file is already bigger, don'r resume
+                        df.resolve(r[name].size);
+                    });
+                    return df;
                 }
             };
         };

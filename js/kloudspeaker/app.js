@@ -3,6 +3,7 @@ define([], function() {
 
     var kloudspeaker_defaults = {
         "version-check-url": "http://www.kloudspeaker.com/version.php",
+        "resume-upload": false,   // beta feature
         "modules": false,
         "language": {
             "default": "en",
