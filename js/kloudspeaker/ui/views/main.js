@@ -294,7 +294,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
         }
 
         that.onResize = function() {
-            if (that._currentView) that._currentView.onResize();
+            if (that._currentView && that._currentView.onResize) that._currentView.onResize();
         }
 
         that.getSessionActions = function() {
