@@ -202,7 +202,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                     model = model[0];
                 }
 
-                ui.viewmodel(v.view, [model, p], $content).done(function(m) {
+                ui.viewmodel(v.view || model, [model, p], $content).done(function(m) {
                     if (v.id || v.viewId) app.storeView((parent ? parent.id + "/" : '') + (v.id || v.viewId));
                 });
             } else if (v.view) {
