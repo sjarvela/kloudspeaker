@@ -653,7 +653,7 @@ class ConfigurationServices extends ServicesBase {
 
 			$name = $folder['name'];
 			//TODO assert valid chars
-			if (substr($name, 0, 1) == "/" or substr($name, -1) == "/" or strpos($name, "\\") >= 0) throw $this->invalidRequestException("Invalid name");
+			if (substr($name, 0, 1) == "/" or substr($name, -1) == "/" or strpos($name, "\\") !== FALSE) throw $this->invalidRequestException("Invalid name");
 
 			$createNonExisting = (isset($folder['create']) and ($folder['create'] == "1" or strcasecmp("true", $folder['create']) == 0));
 
