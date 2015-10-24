@@ -51,70 +51,46 @@
     </script>
 
     <script type="text/javascript">
-    $(document).ready(function() {
-        kloudspeaker.App.init({
-            debug: true,
-            dev: true,
-            "resume-upload": true,
-            
-            "modules": {
-                load: ['kloudspeaker/ui/dropbox'],
-                paths: {
-
-                }
-            },
-            "language": {
-                "default": "en",
-                options: ["en", "fr", "es"]
-            },
-            "resource-map": {
-
-            },
-            "html5-uploader": {
-                maxChunkSize: 1000000
-            },
-
-            "view-url": true,
-            "file-view": {
-                "create-empty-file-action": true,
-
-                "list-view-columns": {
-                    "name": {
-                        width: 250
+        $(document).ready(function() {
+            require(['kloudspeaker/app'], function(app) {
+                app.init({
+                    "language": {
+                        "default": "en"
                     },
-                    "size": {},
-                    "file-modified": {
-                        width: 150
+                    "file-view": {
+                        "list-view-columns": {
+                            "name": {
+                                width: 250
+                            },
+                            "size": {},
+                            "file-modified": {
+                                width: 150
+                            }
+                        }
                     },
-                    "comment-count": {},
-                    "share-info": {},
-                    "history-info": {},
-                    "item-description": {},
-                },
-                actions: {
-                }
-            },
-            plugins: {
-                "itemdetails": {
-                    filetypes: {
-                        "jpg,tiff": {
-                            "metadata-created": {},
-                            "metadata-modified": {},
-                            "size": {},
-                            "image-size": {},
-                            "exif": {},
-                        },
-                        "*": {
-                            "metadata-created": {},
-                            "metadata-modified": {},
-                            "size": {},
+                    "modules": {
+                        load: ['kloudspeaker/ui/dropbox']
+                    },
+                    plugins: {
+                        "itemdetails": {
+                            filetypes: {
+                                "jpg,tiff": {
+                                    "metadata-created": {},
+                                    "last-modified": {},
+                                    "size": {},
+                                    "exif": {},
+                                },
+                                "*": {
+                                    "metadata-created": {},
+                                    "last-modified": {},
+                                    "size": {}
+                                }
+                            }
                         }
                     }
-                }
-            }
-        }, [
-        ]);
-    });
+                });
+            });
+        });
     </script>
 </head>
 
