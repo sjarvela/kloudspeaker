@@ -415,10 +415,17 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 			throw new ServiceException("DIR_ALREADY_EXISTS", $folder->id() . "/" . $name);
 		}
 
-		if (!mkdir($nativePath, $this->filesystemInfo->setting("new_folder_permission_mask"))) {
-			throw new ServiceException("CANNOT_CREATE_FOLDER", $folder->id() . "/" . $name);
+		$mask = $this->filesystemInfo->setting("new_folder_permission_mask");
+		if ($mask === FALSE) {
+			if (!mkdir($nativePath)) {
+				throw new ServiceException("CANNOT_CREATE_FOLDER", $folder->id() . "/" . $name);
+			}
 		} else {
-			chmod($nativePath, $this->filesystemInfo->setting("new_folder_permission_mask"));
+			if (!mkdir($nativePath, $mask)) {
+				throw new ServiceException("CANNOT_CREATE_FOLDER", $folder->id() . "/" . $name);
+			} else {
+				chmod($nativePath, $mask);
+			}
 		}
 		return $this->itemWithPath($this->publicPath($path));
 	}
