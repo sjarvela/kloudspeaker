@@ -122,6 +122,10 @@ define(['kloudspeaker/settings', 'kloudspeaker/service', 'kloudspeaker/ui/dnd', 
             return t.$l.find("#kloudspeaker-iconview-item-"+item.id);
         };*/
 
+        this.getItemElement = function(item) {
+            return t.$l.find("#kloudspeaker-iconview-item-" + item.id);
+        };
+
         this.getItemContextElement = function(item) {
             return t.$l.find("#kloudspeaker-iconview-item-" + item.id);
         };

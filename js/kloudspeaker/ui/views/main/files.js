@@ -1,4 +1,4 @@
-define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/localization', 'kloudspeaker/service', 'kloudspeaker/request', 'kloudspeaker/features', 'kloudspeaker/events', 'kloudspeaker/permissions', 'kloudspeaker/plugins', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views/main/files/filelist', 'kloudspeaker/ui/views/main/files/iconview', 'kloudspeaker/ui/uploader', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/dom', 'kloudspeaker/ui/files/itemcontext', 'kloudspeaker/utils', 'kloudspeaker/ui'], function(app, settings, session, loc, service, request, features, events, permissions, plugins, fs, FileList, IconView, uploader, dnd, formatters, controls, dialogs, dom, ItemContext, utils, ui) {
+define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/localization', 'kloudspeaker/service', 'kloudspeaker/request', 'kloudspeaker/features', 'kloudspeaker/events', 'kloudspeaker/permissions', 'kloudspeaker/plugins', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views/main/files/filelist', 'kloudspeaker/ui/views/main/files/iconview', 'kloudspeaker/ui/uploader', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/dom', 'kloudspeaker/utils', 'kloudspeaker/ui'], function(app, settings, session, loc, service, request, features, events, permissions, plugins, fs, FileList, IconView, uploader, dnd, formatters, controls, dialogs, dom, utils, ui) {
     return function() {
         var that = this;
         that.viewId = "files";
@@ -238,7 +238,10 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                     that._filelist.addColumn(cols[j]);
             });
 
-            that.itemContext = new ItemContext();
+            var itemContextDef = settings['file-view']['item-context'];
+            require([itemContextDef.module], function(ic) {
+                that.itemContext = new ic(itemContextDef);    
+            });
         }
 
         that.deinit = function() {
@@ -1090,6 +1093,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 viewtype: that.isListView() ? "list" : "icon",
                 target: target,
                 element: that.itemWidget.getItemContextElement(item),
+                itemElement: that.itemWidget.getItemElement(item),
                 viewport: that.itemWidget.getContainerElement(),
                 container: $("#kloudspeaker-folderview-items"),
                 folder: that._currentFolder,

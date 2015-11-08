@@ -14,6 +14,7 @@ define([], function() {
         "service-path": "backend/",
         "service-param": false,
         "file-view": {
+            "item-context" : { module: 'kloudspeaker/ui/files/itemcontext' },
             "create-empty-file-action": false,
             "default-view-mode": false,
             "list-view-columns": {

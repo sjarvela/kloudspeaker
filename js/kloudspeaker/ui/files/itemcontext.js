@@ -65,23 +65,16 @@ define(['kloudspeaker/filesystem', 'kloudspeaker/plugins', 'kloudspeaker/service
 
                 fs.itemDetails(item, plugins.getItemContextRequestData(item)).done(function(d) {
                     if (!d) {
-                        $t.hide();
+                        api.hide();
                         return;
                     }
 
                     var ctx = {
                         details: d,
-                        /*hasPermission: function(name, required) {
-                            return permissions.hasPermission(d.permissions, name, required);
-                        },
-                        hasParentPermission: function(name, required) {
-                            return utils.hasPermission(d.parent_permissions, name, required);
-                        },*/
                         folder: spec.folder,
                         folder_writable: spec.folder_writable
                     };
                     ict.renderItemContext(api, $content, item, ctx);
-                    //$e[0].scrollIntoView();
                 });
             }).bind("hidden", function() {
                 $e.unbind("shown").unbind("hidden");

@@ -261,6 +261,7 @@
 		{{each(c,col) $item.cols}}
 			<div class="kloudspeaker-filelist-col kloudspeaker-filelist-col-${col.id}" style="${$item.itemColStyle($data, col)}" title="${$item.itemColTitle($data, col)}">{{html $item.col($data, col)}}</div>
 		{{/each}}
+		<div class="kloudspeaker-filelist-item-panel-placeholder"></div>
 	</div>
 </script>
 

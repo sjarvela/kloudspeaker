@@ -281,6 +281,10 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'klo
                 t.p.onRightClick(itm, colId, $item, $col);
         };
 
+        this.getItemElement = function(item) {
+            return t.$i.find("#kloudspeaker-filelist-item-" + item.id);
+        };
+
         this.getItemContextElement = function(item) {
             var $i = t.$i.find("#kloudspeaker-filelist-item-" + item.id);
             return $i.find(".kloudspeaker-filelist-col-name") || $i;
