@@ -108,7 +108,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'klo
             }
             t.refreshSortIndicator();
             utils.invokeLater(function() {
-                t.content(t.items, t.data);    
+                t.content(t.items, t.data);
             });
         };
 
@@ -283,6 +283,20 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'klo
 
         this.getItemElement = function(item) {
             return t.$i.find("#kloudspeaker-filelist-item-" + item.id);
+        };
+
+        this.getPanelContainer = function(item) {
+            var $i = t.$i.find("#kloudspeaker-filelist-item-" + item.id);
+            var $c = false;
+            return {
+                get: function() {
+                    if (!$c) $c = $("<div class='kloudspeaker-filelist-item-panel-placeholder'></div>").insertAfter($i);
+                    return $c;
+                },
+                close: function() {
+                    if ($c) $c.remove();
+                }
+            }
         };
 
         this.getItemContextElement = function(item) {

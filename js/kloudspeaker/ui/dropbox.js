@@ -1,4 +1,4 @@
-define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/ui/views', 'kloudspeaker/events', 'kloudspeaker/ui', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/controls', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/ui/files/itemcontext'], function(app, plugins, views, events, ui, dnd, formatters, controls, utils, dom, ItemContext) {
+define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/ui/views', 'kloudspeaker/events', 'kloudspeaker/ui', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/controls', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/ui/files/itemcontext'], function(app, plugins, views, events, ui, dnd, formatters, controls, utils, dom, ic) {
     var that = {};
     that.w = 0;
     that.$dbE = false;
@@ -11,7 +11,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/ui/views'
     });
 
     that._pathFormatter = new formatters.FilesystemItemPath();
-    that.itemContext = new ItemContext();
+    that.itemContext = ic;
 
     that.onFileViewActivate = function($container) {
         dom.template("kloudspeaker-tmpl-mainview-dropbox").appendTo($container);

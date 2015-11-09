@@ -238,9 +238,8 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                     that._filelist.addColumn(cols[j]);
             });
 
-            var itemContextDef = settings['file-view']['item-context'];
-            require([itemContextDef.module], function(ic) {
-                that.itemContext = new ic(itemContextDef);    
+            require([settings['file-view']['item-context-module']], function(ic) {
+                that.itemContext = ic;
             });
         }
 
@@ -1094,6 +1093,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 target: target,
                 element: that.itemWidget.getItemContextElement(item),
                 itemElement: that.itemWidget.getItemElement(item),
+                panelContainer: that.itemWidget.getPanelContainer(item),
                 viewport: that.itemWidget.getContainerElement(),
                 container: $("#kloudspeaker-folderview-items"),
                 folder: that._currentFolder,

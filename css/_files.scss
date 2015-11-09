@@ -30,19 +30,18 @@
     -webkit-user-select: none;
     user-select: none;
     clear: both;
+}
 
-    .kloudspeaker-filelist-item-panel-placeholder {
-    	display: none;
-    	width: 100%;
+.kloudspeaker-filelist-item-panel-placeholder {
+    clear: both;
+    width: 100%;
+    background: #454545;
+    padding: 20px 10px 10px 10px;
+
+    .kloudspeaker-itemcontext {
+    	padding: 10px;
+    	background-color: #fff;
     }
-
-    &.with-panel {
-    	height: auto;
-
-    	.kloudspeaker-filelist-item-panel-placeholder {
-    		display: block;
-    	}
-	}
 }
 
 .kloudspeaker-filelist-item.dragged {
@@ -310,6 +309,15 @@ html.touch .kloudspeaker-filelist-col-go-into-folder {
 .kloudspeaker-iconview.iconview-small .kloudspeaker-iconview-item {
     width: 100px;
     height: 100px;
+}
+
+.kloudspeaker-iconview {
+    .kloudspeaker-filelist-item-panel-placeholder {
+        position: relative;
+        clear: both;
+        display: block;
+        float: left;
+    }
 }
 
 .kloudspeaker-iconview-item-icon,
