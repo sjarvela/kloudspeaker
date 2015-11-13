@@ -57,7 +57,7 @@
 		"loginDialogLoginButton": "Se connecter",
 		"loginDialogLoginFailedMessage": "Identification incorrecte, nom ou mot de passe incorrect",
 		"resetPasswordPopupMessage": "Entrez votre addresse mail",
-		"resetPasswordPopupButton": "Effacer",
+		"resetPasswordPopupButton": "Réinitialiser",
 		"resetPasswordPopupResetSuccess": "Votre mot de passe a été réinitialisé et un mail vous a été envoyé",
 		"resetPasswordPopupResetFailed": "La réinitialisation du mot de passe a échoué",
 		"sendPasswordHintPopupButton": "Envoyer l'indice",
