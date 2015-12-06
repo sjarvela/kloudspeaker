@@ -162,6 +162,16 @@
     z-index: 1;
 }
 
+#kloudspeaker-mainview-navlist-content {
+    overflow-y: auto;
+}
+
+@media (max-width: 767px) {
+    #kloudspeaker-mainview-navlist-content {
+        max-height: 300px;
+    }
+}
+
 .navlist-sep {
     margin-top: 8px;
 }

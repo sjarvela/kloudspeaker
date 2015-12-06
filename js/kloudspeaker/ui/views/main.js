@@ -125,7 +125,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
         that.activateView = function(v, id) {
             ui.hideActivePopup();
             if (that._currentView && that._currentView.onDeactivate) that._currentView.onDeactivate();
-            $("#kloudspeaker-mainview-navlist-parent").empty();
+            $("#kloudspeaker-mainview-navlist-content").empty();
 
             that._currentView = v;
 
@@ -234,7 +234,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
         };
 
         that.addNavBar = function(nb) {
-            var $nb = dom.template("kloudspeaker-tmpl-main-navbar", nb).appendTo($("#kloudspeaker-mainview-navlist-parent"));
+            var $nb = dom.template("kloudspeaker-tmpl-main-navbar", nb).appendTo($("#kloudspeaker-mainview-navlist-content"));
             var items = nb.items;
             var initItems = function() {
                 var $items = $nb.find(".kloudspeaker-mainview-navbar-item");
@@ -295,6 +295,25 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
 
         that.onResize = function() {
             if (that._currentView && that._currentView.onResize) that._currentView.onResize();
+
+            var w = $(window).width();
+            var h = $(window).height();
+            var top = $("#kloudspeaker-mainview-navlist-parent").position().top;
+            var maxH = (h - top - 60); //60?
+
+            // simulate responsive classes
+            var cls = "kloudspeaker-size-xl";
+            if (w < 980) cls = "kloudspeaker-size-m";
+            if (w < 768) {
+                cls = "kloudspeaker-size-s";
+                maxH = 0;
+            }
+
+            $("body").removeClass("kloudspeaker-size-xl kloudspeaker-size-m kloudspeaker-size-m").addClass(cls);
+
+            if (maxH > 0)
+                $("#kloudspeaker-mainview-navlist-content").css("max-height", maxH + "px");
+            else $("#kloudspeaker-mainview-navlist-content").css("max-height", false);
         }
 
         that.getSessionActions = function() {
