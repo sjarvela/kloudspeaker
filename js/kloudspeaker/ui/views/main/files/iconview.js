@@ -122,6 +122,39 @@ define(['kloudspeaker/settings', 'kloudspeaker/service', 'kloudspeaker/ui/dnd', 
             return t.$l.find("#kloudspeaker-iconview-item-"+item.id);
         };*/
 
+        this.getItemElement = function(item) {
+            return t.$l.find("#kloudspeaker-iconview-item-" + item.id);
+        };
+
+        this.getPanelContainer = function(item) {
+            var $i = t.$l.find("#kloudspeaker-iconview-item-" + item.id);
+            var $c = false;
+            return {
+                get: function() {
+                    if (!$c) {
+                        var ct = $i.position().top;
+                        var ind = $i.index();
+                        var $last = $i;
+                        $i.siblings().each(function() {
+                            var $ts = $(this);
+                            var top = $ts.position().top;
+                            if ($ts.index() < ind || top < ct)
+                                return;
+                            if (top > ct)
+                                return false;
+                            $last = $ts;
+                        });
+
+                        $c = $("<div class='kloudspeaker-filelist-item-panel-placeholder'></div>").insertAfter($last);
+                    }
+                    return $c;
+                },
+                close: function() {
+                    if ($c) $c.remove();
+                }
+            }
+        };
+
         this.getItemContextElement = function(item) {
             return t.$l.find("#kloudspeaker-iconview-item-" + item.id);
         };

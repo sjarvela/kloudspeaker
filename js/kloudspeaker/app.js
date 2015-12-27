@@ -3,6 +3,7 @@ define([], function() {
 
     var kloudspeaker_defaults = {
         "version-check-url": "http://www.kloudspeaker.com/version.php",
+        "resume-upload": false,   // beta feature
         "modules": false,
         "language": {
             "default": "en",
@@ -13,6 +14,7 @@ define([], function() {
         "service-path": "backend/",
         "service-param": false,
         "file-view": {
+            "item-context-module" : 'kloudspeaker/ui/files/itemcontext',
             "create-empty-file-action": false,
             "default-view-mode": false,
             "list-view-columns": {
@@ -298,6 +300,7 @@ define([], function() {
 
             //TODO rewrite
             ui._configViews = {};
+            ui._mainViews = {};
             ui._fileViewHandlers = [];
             define('kloudspeaker/ui/views', [], {
                 getActiveView: function() {
@@ -319,6 +322,9 @@ define([], function() {
                 },
                 registerView: function(id, v) {
                     app.registerView(id, v);
+                },
+                registerMainView: function(v) {
+                    ui._mainViews[v.id] = v;
                 },
                 registerConfigView: function(v) {
                     ui._configViews[v.id || v.viewId] = v;

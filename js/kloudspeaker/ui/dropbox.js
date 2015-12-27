@@ -1,4 +1,4 @@
-define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/ui/views', 'kloudspeaker/events', 'kloudspeaker/ui', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/controls', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/ui/files/itemcontext'], function(app, plugins, views, events, ui, dnd, formatters, controls, utils, dom, ItemContext) {
+define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/ui/views', 'kloudspeaker/events', 'kloudspeaker/ui', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/controls', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/ui/files/itemcontext'], function(app, plugins, views, events, ui, dnd, formatters, controls, utils, dom, ic) {
     var that = {};
     that.w = 0;
     that.$dbE = false;
@@ -11,7 +11,28 @@ define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/ui/views'
     });
 
     that._pathFormatter = new formatters.FilesystemItemPath();
-    that.itemContext = new ItemContext();
+    that.itemContext = ic;
+
+    var onContentResize = function() {
+        utils.invokeLater(function() {
+            var y = $("#kloudspeaker-mainview-header").height();
+            that.$dbE.css("top", y + "px");
+
+            var w = $(window).width();
+            var h = $(window).height() - y;
+            if (w < 980) h = $("body").height() - y;
+
+            console.log({
+                w: w,
+                h: h
+            });
+            that.$dbE.height(h);
+        });
+
+        //var w = $(window).width();
+        //if (w < 980) that.$dbE.css("position", "absolute");
+        //else that.$dbE.css("position", "fixed");
+    };
 
     that.onFileViewActivate = function($container) {
         dom.template("kloudspeaker-tmpl-mainview-dropbox").appendTo($container);
@@ -22,12 +43,8 @@ define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/ui/views'
         that.$dbE = $("#kloudspeaker-dropbox");
         that.w = $("#kloudspeaker-dropbox-content").outerWidth();
 
-        var onResize = function() {
-            var y = $("#kloudspeaker-mainview-header").height();
-            that.$dbE.css("top", y + "px").height($(window).height() - y);
-        };
-        $(window).resize(onResize);
-        onResize();
+        $(window).resize(onContentResize);
+        onContentResize();
 
         if (dnd) {
             var dndHandler = {
@@ -104,6 +121,8 @@ define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/ui/views'
         } else {
             o = !open;
         }
+
+        onContentResize();
 
         if (!o) that.$dbE.removeClass("opened").addClass("closed").animate({
             "width": "0"

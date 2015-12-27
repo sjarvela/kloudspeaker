@@ -256,9 +256,10 @@
 				
 
 				var sOffs = 40; // STYLE ?
+				var vOffs = 90; // STYLE ?
 				if(that.$element.find('.lightbox-header').length > 0) sOffs += 10;
 				$img.css('max-width', $(window).width() - sOffs);
-				$img.css('max-height', $(window).height() - sOffs);
+				$img.css('max-height', $(window).height() - vOffs);
 				
 				that.w = Math.max(that.w, $img.width());
 				that.h = Math.max(that.h, $img.height());

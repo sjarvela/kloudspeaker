@@ -1,24 +1,41 @@
-define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/features', 'kloudspeaker/permissions', 'kloudspeaker/plugins', 'kloudspeaker/dom', 'kloudspeaker/templates', 'kloudspeaker/ui', 'kloudspeaker/ui/dialogs', 'kloudspeaker/localization', 'kloudspeaker/ui/views/main/files', 'kloudspeaker/ui/views/main/config', 'kloudspeaker/utils'], function(settings, session, service, features, permissions, plugins, dom, templates, ui, dialogs, loc, FilesView, ConfigView, utils) {
+define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/features', 'kloudspeaker/permissions', 'kloudspeaker/plugins', 'kloudspeaker/dom', 'kloudspeaker/templates', 'kloudspeaker/ui', 'kloudspeaker/ui/dialogs', 'kloudspeaker/localization', 'kloudspeaker/ui/views/main/files', 'kloudspeaker/ui/views/main/config', 'kloudspeaker/utils'], function(app, settings, session, service, features, permissions, plugins, dom, templates, ui, dialogs, loc, FilesView, ConfigView, utils) {
     return function() {
         var that = this;
-        
+
         that._mainFileView = false;
         that._mainConfigView = false;
         that._views = [];
         that._currentView = false;
+
+        that._subviews = {};
+        that._subviewsById = {};
 
         that.init = function($c, viewId) {
             that._mainFileView = new FilesView();
             that._mainConfigView = new ConfigView();
             that._views = [that._mainFileView, that._mainConfigView];
 
+            // legacy
             $.each(plugins.getMainViewPlugins(), function(i, p) {
                 if (!p.mainViewHandler) return;
                 var view = p.mainViewHandler();
                 that._views.push(view);
             });
 
-            //that.itemContext = new ItemContext();
+            // new
+            _.each(utils.getKeys(ui._mainViews), function(id) {
+                var view = ui._mainViews[id];
+                that._views.push(view);
+
+                if (view.subviews) {
+                    that._subviews[id] = [];
+                    _.each(view.subviews, function(sv) {
+                        that._subviews[id].push(sv);
+                        that._subviewsById[id + "/" + sv.id] = sv;
+                    });
+                }
+            });
+
             return dom.loadContentInto($c, templates.url("mainview.html"), function() {
                 that.onLoad(viewId);
             }, ['localize']);
@@ -46,10 +63,15 @@ define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/service',
 
             var menuitems = [];
             $.each(that._views, function(i, v) {
-                v.init(that);
+                if (v.init) v.init(that);
+
+                var title = v.title;
+                if (typeof(title) === "string" && title.startsWith("i18n:")) title = loc.get(title.substring(5));
+                if (utils.isArray(title)) title = loc.get(title[0], title.slice(1));
+
                 menuitems.push({
                     icon: v.icon,
-                    title: v.title
+                    title: title
                 });
             });
 
@@ -78,7 +100,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/service',
         that._findView = function(id) {
             var found = false;
             $.each(that._views, function(i, v) {
-                if (v.viewId == id) {
+                if (v.id == id || v.viewId == id) {
                     found = v;
                     return false;
                 }
@@ -103,23 +125,93 @@ define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/service',
         that.activateView = function(v, id) {
             ui.hideActivePopup();
             if (that._currentView && that._currentView.onDeactivate) that._currentView.onDeactivate();
-            $("#kloudspeaker-mainview-navlist-parent").empty();
+            $("#kloudspeaker-mainview-navlist-content").empty();
 
             that._currentView = v;
 
             $("#kloudspeaker-mainview-navbar").empty();
-            v.onActivate({
-                id: id,
-                content: $("#kloudspeaker-mainview-viewcontent").empty(),
-                tools: $("#kloudspeaker-mainview-viewtools").empty(),
-                addNavBar: that.addNavBar,
-                mainview: that,
-                fileview: that._mainFileView
-            });
+            var $content = $("#kloudspeaker-mainview-viewcontent").empty();
+            var $tools = $("#kloudspeaker-mainview-viewtools").empty();
+
+            if (v.onActivate)
+                v.onActivate({
+                    id: id,
+                    content: $content,
+                    tools: $tools,
+                    addNavBar: that.addNavBar,
+                    mainview: that,
+                    fileview: that._mainFileView
+                });
+            else {
+                var activateSubView = function(view, subview) {
+                    that._doActivate(subview, view);
+                };
+                if (v.nav) {
+                    var navBar = false;
+                    var navBarItems = {};
+
+                    _.each(v.nav, function(navItem) {
+                        if (navItem.type == 'heading') {
+                            if (navBar) that.addNavBar(navBar);
+                            navBar = {
+                                title: navItem.title,
+                                items: []
+                            };
+                        } else if (navItem.type == 'link') {
+                            navBar.items.push({
+                                title: navItem.title,
+                                callback: function() {
+                                    window.location.href = navItem.url;
+                                }
+                            });
+                        } else {
+                            var sv = that._subviewsById[v.id + "/" + navItem.id];
+                            var title = navItem.title || sv.title;
+                            if (typeof(title) === "string" && title.startsWith("i18n:")) title = loc.get(title.substring(5));
+                            if (utils.isArray(title)) title = loc.get(title[0], title.slice(1));
+
+                            navBar.items.push({
+                                title: title,
+                                callback: function() {
+                                    activateSubView(v, sv);
+                                }
+                            });
+                        }
+                    });
+                    if (navBar) that.addNavBar(navBar);
+                }
+
+                if (id && that._subviewsById[v.id + "/" + id]) that._doActivate(that._subviewsById[v.id + "/" + id], v);
+                else that._doActivate(v);
+            }
             var $mnu = $("#kloudspeaker-mainview-menu");
             var $items = $mnu.find(".kloudspeaker-mainview-menubar-item").removeClass("active");
             var i = that._views.indexOf(v);
             $($items.get(i)).addClass("active");
+        };
+
+        that._doActivate = function(v, parent) {
+            var $content = $("#kloudspeaker-mainview-viewcontent").empty();
+            var $tools = $("#kloudspeaker-mainview-viewtools").empty();
+
+            if (v.model) {
+                var model = v.model;
+                var p = {};
+                if (utils.isArray(model)) {
+                    p = model[1];
+                    model = model[0];
+                }
+
+                ui.viewmodel(v.view || model, [model, p], $content).done(function(m) {
+                    if (v.id || v.viewId) app.storeView((parent ? parent.id + "/" : '') + (v.id || v.viewId));
+                });
+            } else if (v.view) {
+                if (v.id || v.viewId) app.storeView((parent ? parent.id + "/" : '') + (v.id || v.viewId));
+
+                require(['text!' + v.view], function(html) {
+                    $content.html(html);
+                });
+            }
         };
 
         that.onNotification = function(spec) {
@@ -142,7 +234,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/service',
         };
 
         that.addNavBar = function(nb) {
-            var $nb = dom.template("kloudspeaker-tmpl-main-navbar", nb).appendTo($("#kloudspeaker-mainview-navlist-parent"));
+            var $nb = dom.template("kloudspeaker-tmpl-main-navbar", nb).appendTo($("#kloudspeaker-mainview-navlist-content"));
             var items = nb.items;
             var initItems = function() {
                 var $items = $nb.find(".kloudspeaker-mainview-navbar-item");
@@ -202,7 +294,26 @@ define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/service',
         }
 
         that.onResize = function() {
-            if (that._currentView) that._currentView.onResize();
+            if (that._currentView && that._currentView.onResize) that._currentView.onResize();
+
+            var w = $(window).width();
+            var h = $(window).height();
+            var top = $("#kloudspeaker-mainview-navlist-parent").position().top;
+            var maxH = (h - top - 60); //60?
+
+            // simulate responsive classes
+            var cls = "kloudspeaker-size-xl";
+            if (w < 980) cls = "kloudspeaker-size-m";
+            if (w < 768) {
+                cls = "kloudspeaker-size-s";
+                maxH = 0;
+            }
+
+            $("body").removeClass("kloudspeaker-size-xl kloudspeaker-size-m kloudspeaker-size-m").addClass(cls);
+
+            if (maxH > 0)
+                $("#kloudspeaker-mainview-navlist-content").css("max-height", maxH + "px");
+            else $("#kloudspeaker-mainview-navlist-content").css("max-height", false);
         }
 
         that.getSessionActions = function() {

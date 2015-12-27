@@ -4,15 +4,17 @@ define(['kloudspeaker/instance', 'kloudspeaker/share', 'kloudspeaker/share/repos
         var model = {
             item: null,
 
+            canAdd: ko.observable(false),
             items: ko.observableArray(null)
         };
 
         var refresh = function() {
-            repository.getItemShares(model.item).done(function(list) {
-                list.forEach(function(s) {
+            repository.getItemShares(model.item, true).done(function(r) {
+                model.canAdd(r.canAdd);
+                r.shares.forEach(function(s) {
                     s._expanded = ko.observable(false);
                 });
-                model.items(list);
+                model.items(r.shares);
             });
         };
 

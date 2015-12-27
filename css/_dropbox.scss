@@ -8,6 +8,12 @@
     z-index: 15;
 }
 
+@media (max-width: 979px) {
+    #kloudspeaker-dropbox {
+        position: absolute;
+    }
+}
+
 #kloudspeaker-dropbox-handle {
     position: absolute;
     width: 30px;

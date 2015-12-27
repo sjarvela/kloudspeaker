@@ -1,4 +1,4 @@
-define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'kloudspeaker/ui', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/dom', 'kloudspeaker/localization', 'kloudspeaker/ui/views', 'kloudspeaker/ui/config/listview'], function(session, service, utils, ui, controls, dialogs, dom, loc, views, ConfigListView) {
+define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/utils', 'kloudspeaker/ui', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/dom', 'kloudspeaker/localization', 'kloudspeaker/ui/views', 'kloudspeaker/ui/config/listview'], function(session, service, fs, utils, ui, controls, dialogs, dom, loc, views, ConfigListView) {
     return function(ctx) {
         var that = this;
         that._settings = ctx.settings;
@@ -270,13 +270,14 @@ define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'k
                     $content.find(".control-group").removeClass("error");
 
                     var name = $name.val();
-                    if (!name) $name.closest(".control-group").addClass("error");
+                    var invalidName = !name || name.contains('/') || name.contains('\\');
+                    if (invalidName) $name.closest(".control-group").addClass("error");
 
                     var path = $path.val();
                     var pathValid = that._isValidPath(path);
                     if (!pathValid) $path.closest(".control-group").addClass("error");
 
-                    if (!name) {
+                    if (invalidName) {
                         $name.focus();
                         return;
                     }

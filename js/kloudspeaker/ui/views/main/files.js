@@ -1,4 +1,4 @@
-define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/localization', 'kloudspeaker/service', 'kloudspeaker/request', 'kloudspeaker/features', 'kloudspeaker/events', 'kloudspeaker/permissions', 'kloudspeaker/plugins', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views/main/files/filelist', 'kloudspeaker/ui/views/main/files/iconview', 'kloudspeaker/ui/uploader', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/dom', 'kloudspeaker/ui/files/itemcontext', 'kloudspeaker/utils', 'kloudspeaker/ui'], function(app, settings, session, loc, service, request, features, events, permissions, plugins, fs, FileList, IconView, uploader, dnd, formatters, controls, dialogs, dom, ItemContext, utils, ui) {
+define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/localization', 'kloudspeaker/service', 'kloudspeaker/request', 'kloudspeaker/features', 'kloudspeaker/events', 'kloudspeaker/permissions', 'kloudspeaker/plugins', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views/main/files/filelist', 'kloudspeaker/ui/views/main/files/iconview', 'kloudspeaker/ui/uploader', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/dom', 'kloudspeaker/utils', 'kloudspeaker/ui'], function(app, settings, session, loc, service, request, features, events, permissions, plugins, fs, FileList, IconView, uploader, dnd, formatters, controls, dialogs, dom, utils, ui) {
     return function() {
         var that = this;
         that.viewId = "files";
@@ -136,13 +136,14 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
 
         that.init = function(mainview) {
             that.title = loc.get('mainviewMenuTitle');
-            that.icon = "fa fa-file-o";
+            that.icon = "file-o";
             that._viewStyle = 0;
             if (settings["file-view"]["default-view-mode"] == "small-icon") that._viewStyle = 1;
             if (settings["file-view"]["default-view-mode"] == "large-icon") that._viewStyle = 2;
 
             events.addEventHandler(that.onEvent, false, 'fileview');
 
+            // TODO add module registration
             that.addCustomFolderType("search", {
                 onSelectFolder: function(f) {
                     var df = $.Deferred();
@@ -237,7 +238,9 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                     that._filelist.addColumn(cols[j]);
             });
 
-            that.itemContext = new ItemContext();
+            require([settings['file-view']['item-context-module']], function(ic) {
+                that.itemContext = ic;
+            });
         }
 
         that.deinit = function() {
@@ -424,6 +427,19 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                             type: "error"
                         });
                     }
+                },
+                fileStatus: function(name, size) {
+                    if (!settings["resume-upload"] || !name || !that._currentFolder || that._currentFolder.type) return;
+
+                    var df = $.Deferred();
+                    service.post('filesystem/' + that._currentFolder.id + "/fileinfo", {
+                        files: [name]
+                    }).done(function(r) {
+                        if (!r || !r[name]) df.resolve(false);  //don't resume
+                        if (r[name].size >= size) df.resolve(false); //file is already bigger, don'r resume
+                        df.resolve(r[name].size);
+                    });
+                    return df;
                 }
             };
         };
@@ -726,6 +742,10 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             var $h = $("#kloudspeaker-folderview-header-content").empty();
 
             if (that._currentFolder && that._currentFolder.type) {
+                // prevent custom folder upload (custom folders need to handle it explicitly)
+                if (that._dndUploader)
+                    that._dndUploader.setUrl(false);
+
                 if (that._customFolderTypes[that._currentFolder.type]) {
                     that._customFolderTypes[that._currentFolder.type].onRenderFolderView(that._currentFolder, that._currentFolderData, $h, $tb);
                 }
@@ -1072,6 +1092,8 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 viewtype: that.isListView() ? "list" : "icon",
                 target: target,
                 element: that.itemWidget.getItemContextElement(item),
+                itemElement: that.itemWidget.getItemElement(item),
+                panelContainer: that.itemWidget.getPanelContainer(item),
                 viewport: that.itemWidget.getContainerElement(),
                 container: $("#kloudspeaker-folderview-items"),
                 folder: that._currentFolder,

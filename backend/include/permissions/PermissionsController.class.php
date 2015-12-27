@@ -137,6 +137,19 @@ class Kloudspeaker_PermissionsController {
 		$queryResult = NULL;
 
 		foreach ($nameKeys as $nk) {
+			$overridden = $item->filesystem()->getOverriddenItemPermission($item, $nk);
+			if ($overridden !== FALSE) {
+				$result[$nk] = $overridden;
+				continue;
+			}
+
+			$permission = $this->getFromCache($nk, $id);
+			if ($permission !== FALSE) {
+				$result[$nk] = $permission;
+				continue;
+			}
+
+			// by default, admin has all permissions
 			if ($this->env->authentication()->isAdmin()) {
 				$values = $this->filesystemPermissions[$nk];
 
@@ -146,20 +159,6 @@ class Kloudspeaker_PermissionsController {
 					$result[$nk] = "1";
 				}
 
-				continue;
-			}
-
-			if (method_exists($item->filesystem(), "getOverriddenItemPermission")) {
-				$permission = $item->filesystem()->getOverriddenItemPermission($item, $nk);
-				if ($permission !== FALSE) {
-					$result[$nk] = $permission;
-					continue;
-				}
-			}
-
-			$permission = $this->getFromCache($nk, $id);
-			if ($permission !== FALSE) {
-				$result[$nk] = $permission;
 				continue;
 			}
 
@@ -188,17 +187,30 @@ class Kloudspeaker_PermissionsController {
 			if ($permission == NULL) {
 				$values = $this->filesystemPermissions[$nk];
 				if ($values != NULL) {
+					//fallback to first
 					$permission = $values[0];
 				}
-				//fallback to first
 			}
 			$this->putToCache($nk, $id, $permission);
 
 			$result[$nk] = $permission;
 		}
 
+		// special case for readonly filesystem, overrides system permissions
+		if (isset($result[FilesystemController::FILESYSTEM_ITEM_ACCESS_PERMISSION]) and !$item->filesystem()->isWritable()) {
+			$values = $this->filesystemPermissions[FilesystemController::FILESYSTEM_ITEM_ACCESS_PERMISSION];
+			$maxIndex = array_search(FilesystemController::PERMISSION_LEVEL_READ, $values);
+			$index = array_search($result[FilesystemController::FILESYSTEM_ITEM_ACCESS_PERMISSION], $values);
+
+			// make sure effective permission is max read-only
+			if ($index > $maxIndex) {
+				$result[FilesystemController::FILESYSTEM_ITEM_ACCESS_PERMISSION] = FilesystemController::PERMISSION_LEVEL_READ;
+				$this->putToCache(FilesystemController::FILESYSTEM_ITEM_ACCESS_PERMISSION, $id, FilesystemController::PERMISSION_LEVEL_READ);
+			}
+		}
+
 		if ($name != NULL) {
-			return $result[$nk];
+			return $result[$name];
 		}
 
 		return $result;
@@ -226,10 +238,6 @@ class Kloudspeaker_PermissionsController {
 			if ($requiredIndex === FALSE) {
 				throw new ServiceException("INVALID_CONFIGURATION", "Invalid permission value: " . $required);
 			}
-		}
-
-		if ($this->env->authentication()->isAdmin()) {
-			return TRUE;
 		}
 
 		$userValue = $this->getFilesystemPermission($name, $item);
@@ -292,11 +300,8 @@ class Kloudspeaker_PermissionsController {
 			return;
 		}
 
-		$permissions = FALSE;
-		if (method_exists($parent->filesystem(), "getOverriddenChildrenPermissions")) {
-			$permissions = $parent->filesystem()->getOverriddenChildrenPermissions($name, $parent);
-			if ($permissions == NULL) return;	//skip prefetch
-		}
+		$permissions = $parent->filesystem()->getOverriddenChildrenPermissions($name, $parent);
+		if ($permissions == NULL) return;	//skip prefetch
 
 		if ($permissions === FALSE)
 			$permissions = $this->dao->getFilesystemPermissionsForChildren($name, $parent, $this->env->session()->userId(), $this->getGroupIds());
@@ -319,7 +324,6 @@ class Kloudspeaker_PermissionsController {
 	}
 
 	public function getPermissions($name = NULL, $subject = NULL, $userId = NULL) {
-
 		if ($name != NULL) {
 			if (!array_key_exists($name, $this->genericPermissions) and !array_key_exists($name, $this->filesystemPermissions)) {
 				throw new ServiceException("INVALID_CONFIGURATION", "Invalid permission key: " . $name);

@@ -52,6 +52,11 @@ define(['kloudspeaker/utils', 'kloudspeaker/events', 'kloudspeaker/service'], fu
             updatePermissions(_filesystemPermissions[id], permissions);
         },
         hasFilesystemPermission: function(item, name, required, dontFetch) {
+            if (item.type) {
+                // custom folder types need own permission handling
+                if (dontFetch) return false;
+                return df.resolve(false);
+            }
             var df = $.Deferred();
             if (_types.keys.all.indexOf(name) < 0) {
                 if (dontFetch) return false;
@@ -64,10 +69,6 @@ define(['kloudspeaker/utils', 'kloudspeaker/events', 'kloudspeaker/service'], fu
                 return df.resolve(false);
             }
 
-            if (user.admin) {
-                if (dontFetch) return true;
-                return df.resolve(true);
-            }
             var itemId = ((typeof(item) === "string") ? item : item.id);
             var list = _filesystemPermissions[itemId];
             if (!list) {

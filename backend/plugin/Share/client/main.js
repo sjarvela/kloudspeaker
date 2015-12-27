@@ -155,7 +155,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 
     that.onQuickShare = function(item) {
         repository.quickShare(item).done(function(s) {
             if (s.created) increaseShareCount(item);
-            
+
             dialogs.custom({
                 model: ['kloudspeaker/share/views/quick', {
                     item: item,
@@ -253,22 +253,25 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 
         itemContextHandler: function(item, ctx, data) {
             if (!permissions.hasFilesystemPermission(item, "share_item")) return false;
 
+            var actions = [{
+                id: 'pluginShare',
+                'title-key': 'itemContextShareMenuTitle',
+                icon: 'external-link',
+                callback: function() {
+                    that.onOpenItemShares(item);
+                }
+            }];
+            if (data.can_add) actions.push({
+                id: 'pluginShareQuick',
+                'title-key': 'itemContextQuickShareMenuTitle',
+                icon: 'external-link',
+                callback: function() {
+                    that.onQuickShare(item);
+                }
+            });
+
             return {
-                actions: [{
-                    id: 'pluginShare',
-                    'title-key': 'itemContextShareMenuTitle',
-                    icon: 'external-link',
-                    callback: function() {
-                        that.onOpenItemShares(item);
-                    }
-                }, {
-                    id: 'pluginShareQuick',
-                    'title-key': 'itemContextQuickShareMenuTitle',
-                    icon: 'external-link',
-                    callback: function() {
-                        that.onQuickShare(item);
-                    }
-                }]
+                actions: actions
             };
         },
 

@@ -1,13 +1,19 @@
 define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/localization', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/dom', 'kloudspeaker/utils', 'kloudspeaker/ui', 'kloudspeaker/ui/views', 'kloudspeaker/ui/config/listview'], function(settings, plugins, session, service, events, loc, formatters, controls, dialogs, dom, utils, ui, views, ConfigListView) {
+    'use strict';
+
     var that = {};
     that._permissionTypes = false;
 
     that.initialize = function() {
-        if (that._init) return;
+        if (that._init) {
+            return;
+        }
 
         events.on('session/start', function(e) {
             var s = e.payload;
-            if (!that._permissionTypes && s.user) that._permissionTypes = s.data.permission_types;
+            if (!that._permissionTypes && s.user) {
+                that._permissionTypes = s.data.permission_types;
+            }
         });
         that._pathFormatter = new formatters.FilesystemItemPath();
         that._init = true;
@@ -15,15 +21,17 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/session',
 
     that._formatPermissionName = function(p) {
         var name = loc.get('permission_' + p.name);
-        if (p.subject == null && that._permissionTypes.filesystem[p.name])
+        if (p.subject == null && that._permissionTypes.filesystem[p.name]) {
             return loc.get('permission_default', name);
+        }
         return name;
     };
 
     that._formatPermissionValue = function(name, val) {
         var values = that._getPermissionValues(name);
-        if (values)
+        if (values) {
             return loc.get('permission_' + name + '_value_' + val);
+        }
         return loc.get('permission_value_' + val);
     };
 
@@ -208,7 +216,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/session',
                     });
 
                     $("#kloudspeaker-pluginpermissions-editor-tab > li").click(function() {
-                        var i = $(that).addClass("active").index();
+                        var i = $(this).index();
                         activateTab(i);
                     });
 
@@ -684,23 +692,28 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/session',
             });
         };
 
+        var actions = [];
+        var admin = (u.user_type == 'a');
+        if (!admin) actions.push({
+            id: "action-edit",
+            content: '<i class="fa fa-user"></i>',
+            tooltip: loc.get(u.is_group == '1' ? 'pluginPermissionsEditGroupPermissionsAction' : 'pluginPermissionsEditUserPermissionsAction'),
+            callback: function() {
+                that.editGenericPermissions(u, refresh);
+            }
+        });
+        actions.push({
+            id: "action-edit-defaults",
+            content: '<i class="fa fa-globe"></i>',
+            tooltip: loc.get('pluginPermissionsEditDefaultPermissionsAction'),
+            callback: function() {
+                that.editGenericPermissions(false, refresh);
+            }
+        });
+
         permissionsView = new ConfigListView($c, {
             title: title,
-            actions: [{
-                id: "action-edit",
-                content: '<i class="fa fa-user"></i>',
-                tooltip: loc.get(u.is_group == '1' ? 'pluginPermissionsEditGroupPermissionsAction' : 'pluginPermissionsEditUserPermissionsAction'),
-                callback: function() {
-                    that.editGenericPermissions(u, refresh);
-                }
-            }, {
-                id: "action-edit-defaults",
-                content: '<i class="fa fa-globe"></i>',
-                tooltip: loc.get('pluginPermissionsEditDefaultPermissionsAction'),
-                callback: function() {
-                    that.editGenericPermissions(false, refresh);
-                }
-            }],
+            actions: actions,
             table: {
                 id: "config-admin-userpermissions",
                 key: "id",
@@ -717,6 +730,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/session',
                     id: "value",
                     title: loc.get('pluginPermissionsPermissionValue'),
                     formatter: function(p, v) {
+                        if (admin) return "-";
                         if (v === undefined) return "";
                         return that._formatPermissionValue(p.name, v);
                     }

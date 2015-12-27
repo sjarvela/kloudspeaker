@@ -30,9 +30,9 @@ define(['kloudspeaker/service', 'kloudspeaker/utils'], function(service, utils) 
             });
         },
 
-        getItemShares: function(item) {
-            return service.get("share/items/" + item.id).pipe(function(result) {
-                _.each(result, processShare);
+        getItemShares: function(item, canAdd) {
+            return service.get("share/items/" + item.id + (canAdd ? "?canAdd=1" : "")).pipe(function(result) {
+                _.each(result.shares, processShare);
                 return result;
             });
         },

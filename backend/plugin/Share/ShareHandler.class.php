@@ -41,6 +41,7 @@ class ShareHandler {
 		return array(
 			"count" => $own ? $this->dao()->getShareCount($item, $this->env->session()->userId()) : 0,
 			"other_users" => $others,
+			"can_add" => (count($this->getShareTypes($item)) > 0)
 		);
 	}
 
@@ -137,21 +138,27 @@ class ShareHandler {
 		return array("item" => (is_array($item) ? $item : $item->data()), "share_types" => $this->getShareTypes($item));
 	}
 
-	private function getShareTypes($item) {
+	public function getShareTypes($itm, $all = FALSE) {
+		$item = $itm;
+		if (is_string($itm)) $item = $this->getShareItem($itm);
+
 		if (is_array($item)) {
 			return $this->getCustomShareTypes($item["type"], $item["item_id"]);
 		}
-		return $this->getFileShareTypes($item);
+		return $this->getFileShareTypes($item, $all);
 	}
 
-	private function getFileShareTypes($item) {
+	private function getFileShareTypes($item, $all) {
 		// file
 		if ($item->isFile()) return array("download");
 
 		// folder
 		$types = array();
-		$types[] = "upload";
-		if ($this->env->plugins()->exists("Archiver")) {
+		if ($all or $this->env->permissions()->hasFilesystemPermission(FilesystemController::FILESYSTEM_ITEM_ACCESS_PERMISSION, $item, FilesystemController::PERMISSION_LEVEL_READWRITE)) {
+			$types[] = "upload";
+		}
+
+		if ($all or $this->env->permissions()->hasFilesystemPermission(FilesystemController::FILESYSTEM_ITEM_ACCESS_PERMISSION, $item, FilesystemController::PERMISSION_LEVEL_READ) and $this->env->plugins()->exists("Archiver")) {
 			$types[] = "prepared_download";
 		}
 		return $types;
@@ -185,6 +192,8 @@ class ShareHandler {
 		if (!in_array($type, $possibleTypes))
 			throw new ServiceException("INVALID_REQUEST", "Invalid share type");
 
+		$this->assertRequiredCreatePermission($item, $type);
+
 		$created = $this->env->configuration()->formatTimestampInternal(time());
 		$this->dao()->addShare($this->GUID(), $itemId, $name, $type, $this->env->session()->userId(), $expirationTs, $created, $active, $restriction);
 	}
@@ -206,7 +215,22 @@ class ShareHandler {
 		if (!in_array($type, $possibleTypes))
 			throw new ServiceException("INVALID_REQUEST", "Invalid share type");
 
+		$this->assertRequiredCreatePermission($item, $type);
+
 		$this->dao()->editShare($id, $name, $type, $expirationTs, $active, $restriction);
+	}
+
+	private function assertRequiredCreatePermission($item, $type) {
+		if (!is_array($item)) {
+			//fs
+			$required = FilesystemController::PERMISSION_LEVEL_READ;
+			if ($type == "upload") $required = FilesystemController::PERMISSION_LEVEL_READWRITE;
+
+			if (!$this->env->permissions()->hasFilesystemPermission(FilesystemController::FILESYSTEM_ITEM_ACCESS_PERMISSION, $item, $required)) {
+				throw new ServiceException("INSUFFICIENT_PERMISSIONS");
+			}
+		}
+		// custom type permission assert?
 	}
 
 	public function getQuickShare($itemId) {
@@ -231,8 +255,9 @@ class ShareHandler {
 		$name = "";
 		$created = $this->env->configuration()->formatTimestampInternal(time());
 		$possibleTypes = $this->getShareTypes($item);
-		$type = $possibleTypes[0];
+		if (count($possibleTypes) == 0) throw new ServiceException("INSUFFICIENT_PERMISSIONS");
 
+		$type = $possibleTypes[0];
 		$this->dao()->addShare($id, $itemId, $name, $type, $this->env->session()->userId(), NULL, $created, TRUE, FALSE, TRUE);
 	}
 
@@ -298,7 +323,7 @@ class ShareHandler {
 		if (is_array($item)) $name = $item["name"];
 		else $name = $item->name();
 
-		$possibleTypes = $this->getShareTypes($item);
+		$possibleTypes = $this->getShareTypes($item, TRUE);
 		if ($share["type"] == NULL) {
 			$share["type"] = $possibleTypes[0];
 		} else {

@@ -1,21 +1,22 @@
-.kloudspeaker-fileviewereditor-viewer-item {}
+.kloudspeaker-fileviewereditor-popup {
+	.carousel {
+		margin: 0;
+	}
 
-.kloudspeaker-fileviewereditor-viewer-item-content {
-    overflow: auto;
-    min-width: 300px;
-    min-height: 200px;
-}
+	.carousel-caption {
+	    display: block;
+	    position: relative;
+	}
 
-.fileviewereditor-editor-content {
-    height: 100%;
-}
+	.kloudspeaker-fileviewereditor-viewer-item {
+		.kloudspeaker-fileviewereditor-viewer-item-content {
+		    overflow: auto;
+		    min-width: 300px;
+		    min-height: 200px;
+		}
+	}
 
-.kloudspeaker-fileviewereditor-viewer-item .carousel-caption {
-    display: none;
-    position: absolute;
-    bottom: 0;
-}
-
-.kloudspeaker-fileviewereditor-viewer-item:hover .carousel-caption {
-    display: block;
+	.fileviewereditor-editor-content {
+	    height: 100%;
+	}
 }

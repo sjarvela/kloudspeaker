@@ -114,7 +114,6 @@ module.exports = function(grunt) {
                     'css/lib/libs.css',
                     'css/lib/bootstrap.css',
                     'css/lib/bootstrap-responsive.css',
-                    //'css/font-awesome3.css',
                     'css/lib/bootstrap-lightbox.css',
                     'css/lib/bootstrap-datetimepicker.min.css',
                     'bower_components/font-awesome/css/font-awesome.css',

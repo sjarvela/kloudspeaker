@@ -7,6 +7,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/filesystem', 'kloudspeaker/plugin
             initSize: [600, 400],
             title: loc.get('fileViewerEditorViewEditDialogTitle'),
             content: '<div class="fileviewereditor-editor-content"></div>',
+            cls: 'kloudspeaker-fileviewereditor-popup',
             buttons: [{
                 id: "yes",
                 "title": loc.get('dialogSave')

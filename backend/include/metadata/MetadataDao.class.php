@@ -62,19 +62,6 @@ class Kloudspeaker_MetadataDao {
 		}
 	}
 
-	public function getItemDescriptions($items) {
-		$itemIds = array();
-		foreach ($items as $item) {
-			$itemIds[] = $item->id();
-		}
-		if (count($itemIds) == 0) {
-			return array();
-		}
-
-		$query = "SELECT item_id, description from " . $this->db->table("item_description") . " where item_id in (" . $this->db->arrayString($itemIds, TRUE) . ")";
-		return $this->db->query($query)->valueMap("item_id", "description");
-	}
-
 	public function removeItemMetadata($item, $key = NULL) {
 		if ($key == NULL) {
 			return $this->deleteMetadata($item);

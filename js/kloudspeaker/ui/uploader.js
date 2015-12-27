@@ -1,8 +1,8 @@
-define(['kloudspeaker/settings', 'kloudspeaker/dom', 'kloudspeaker/ui', 'kloudspeaker/templates'], function(settings, dom, ui, templates) {
-	//TODO make widget etc
+define(['kloudspeaker/settings', 'kloudspeaker/service', 'kloudspeaker/dom', 'kloudspeaker/ui', 'kloudspeaker/templates'], function(settings, service, dom, ui, templates) {
+    //TODO make widget etc
     var t = {};
 
-    // prevent default file drag&drop		
+    // prevent default file drag&drop       
     $(document).bind('drop dragover', function(e) {
         e.preventDefault();
         return false;
@@ -35,38 +35,42 @@ define(['kloudspeaker/settings', 'kloudspeaker/dom', 'kloudspeaker/ui', 'kloudsp
         });
     };
 
-    t.initWidget = function($e, o) {
-        var $d = dom.template("kloudspeaker-tmpl-uploader-widget").appendTo($e);
-        ui.handlers.localize($e);
-        var $dropZone = o.dropElement || $e;
+    t._initUploader = function($input, $dropZone, url, l, s) {
         var started = false;
         var rejected = false;
         var failed = false;
-        var l = o.handler;
 
-        var $input = $d.find("input");
-        if (t._getUploaderSettings()["allow-folders"]) $input.attr("directory webkitdirectory mozdirectory");
         $input.fileupload($.extend({
-            url: o.url,
+            url: url,
             dataType: 'json',
             dropZone: $dropZone,
-            /*add: function (e, data) {
-					if (l.isUploadAllowed && !l.isUploadAllowed(data.originalFiles)) return false;
-					
-					if (!started && l.start)
-						l.start(data.originalFiles, function() {
-							data.submit();
-						});
-					else
-						data.submit();
-					started = true;
-				},*/
+
+            add: function(e, data) {
+                var that = this;
+                var name = data.files[0].name;
+                var r = (l.fileStatus && l.fileStatus(name, data.files[0].size));
+                if (r) {
+                    r.done(function(resumeFrom) {
+                        if (resumeFrom && resumeFrom > 0) {
+                            console.log("Continue " + resumeFrom);
+                            data.uploadedBytes = resumeFrom;
+                        }
+
+                        $.blueimp.fileupload.prototype.options.add.call(that, e, data);
+                    });
+                } else {
+                    $.blueimp.fileupload.prototype.options.add.call(that, e, data);
+                }
+            },
+
             submit: function(e, data) {
                 if (started && rejected) return;
                 //console.log("submit");
                 //console.log(data);
 
                 if (!started) {
+                    e.stopPropagation();
+
                     started = true;
                     failed = false;
                     rejected = false;
@@ -122,6 +126,17 @@ define(['kloudspeaker/settings', 'kloudspeaker/dom', 'kloudspeaker/ui', 'kloudsp
         if ($dropZone) t._initDropZoneEffects($dropZone);
     };
 
+    t.initWidget = function($e, o) {
+        var $d = dom.template("kloudspeaker-tmpl-uploader-widget").appendTo($e);
+        ui.handlers.localize($e);
+        var $dropZone = o.dropElement || $e;
+
+        var $input = $d.find("input");
+        var s = t._getUploaderSettings();
+        if (s["allow-folders"]) $input.attr("directory webkitdirectory mozdirectory");
+        t._initUploader($input, $dropZone, o.url, o.handler, s);
+    };
+
     return {
         initUploadWidget: function($e, o) {
             templates.load("kloudspeaker-uploader", templates.url("uploader.html")).done(function() {
@@ -130,90 +145,22 @@ define(['kloudspeaker/settings', 'kloudspeaker/dom', 'kloudspeaker/ui', 'kloudsp
         },
         initDragAndDropUploader: function(h) {
             var $p = h.container;
-            var $container = $('<div style="width: 0px; height: 0px; overflow: hidden;"></div>').appendTo($p);
+            var $container = $('<div class="uploader-container" style="width: 0px; height: 0px; overflow: hidden;"></div>').appendTo($p);
             var $form = $('<form enctype="multipart/form-data"></form>').appendTo($container);
-            var started = false;
-            var rejected = false;
-            var failed = false;
+            var s = t._getUploaderSettings();
             var attributes = '';
-            if (t._getUploaderSettings()["allow-folders"]) attributes = "directory webkitdirectory mozdirectory";
-            var $dndUploader = $('<input type="file" class="kloudspeaker-mainview-uploader-input" name="uploader-html5[]" multiple="multiple"' + attributes + '></input>').appendTo($form).fileupload($.extend({
-                url: '',
-                dataType: 'json',
-                dropZone: h.dropElement,
-                /*add: function (e, data) {
-						if (h.handler.isUploadAllowed && !h.handler.isUploadAllowed(data.originalFiles)) return false;
-						
-						if (!started && h.handler.start)
-							h.handler.start(data.originalFiles, function() {
-								data.submit();
-							});
-						else
-							data.submit();
-						started = true;
-					},*/
-                submit: function(e, data) {
-                    if (started && rejected) return;
-                    //console.log("submit");
-                    //console.log(data);
+            if (s["allow-folders"]) attributes = "directory webkitdirectory mozdirectory";
 
-                    if (!started) {
-                        started = true;
-                        rejected = false;
-                        failed = false;
-
-                        if (h.handler.isUploadAllowed && !h.handler.isUploadAllowed(data.originalFiles)) {
-                            rejected = true;
-                            return false;
-                        }
-
-                        //$.each(data.originalFiles, function(i, f) { totalSize += f.size; });
-
-                        if (h.handler.start)
-                            h.handler.start(data.originalFiles, function() {}, function() {
-                                data.jqXHR.abort();
-                            });
-                    }
-                },
-                progressall: function(e, data) {
-                    if (!h.handler.progress) return;
-
-                    var progress = parseInt(data.loaded / data.total * 100, 10);
-                    //console.log(progress + "%");
-                    h.handler.progress(progress, data.bitrate || false);
-                },
-                done: function(e, data) {
-                    //console.log("done " + data.files.length);
-                    //console.log(data);						
-                },
-                stop: function() {
-                    //console.log("all done");
-                    started = false;
-                    rejected = false;
-                    var wasFailed = failed;
-                    failed = false;
-                    if (!wasFailed && h.handler.finished) h.handler.finished();
-                },
-                fail: function(e, data) {
-                    failed = true;
-                    if (data.errorThrown == 'abort') {
-                        if (h.handler.aborted) h.handler.aborted(data.files);
-                        return;
-                    }
-                    var r = data.response();
-                    var error = null;
-                    if (r && r.jqXHR) {
-                        var response = r.jqXHR.responseText;
-                        if (response) error = JSON.parse(response);
-                    }
-                    if (h.handler.failed) h.handler.failed(data.files, error);
-                }
-            }, t._getUploaderSettings())).fileupload('disable');
-            t._initDropZoneEffects(h.dropElement);
+            var $dndUploader = $('<input type="file" class="kloudspeaker-mainview-uploader-input" name="uploader-html5[]" multiple="multiple"' + attributes + '></input>').appendTo($form);
+            t._initUploader($dndUploader, h.dropElement, '', h.handler, s);
+            $dndUploader.fileupload('disable');
 
             return {
                 destroy: function() {
-                    if ($dndUploader) $dndUploader.fileupload("destroy");
+                    if (!$dndUploader) return;
+                    var $container = $dndUploader.closest(".uploader-container");
+                    $dndUploader.fileupload("destroy");
+                    $container.remove();
                     $dndUploader = false;
                 },
                 setUrl: function(url) {
