@@ -150,15 +150,15 @@ define(['kloudspeaker/localization', 'kloudspeaker/dom', 'kloudspeaker/service',
                 },
                 close: this.hide
             };
-            var $el = $('<div class="popover kloudspeaker-bubble-popover ' + (o.cls || '') + '"><div class="arrow"></div><div class="popover-inner"><div class="popover-content"><p></p></div></div></div>');
+            var bubbleTemplate = '<div class="popover kloudspeaker-bubble-popover ' + (o.cls || '') + '"><div class="arrow"></div><div class="popover-inner"><div class="popover-content"><p></p></div></div></div>';
             $e.popover({
-                title: false,
+                //title: false,
                 html: true,
                 placement: 'bottom',
                 trigger: 'manual',
-                template: $el,
+                template: bubbleTemplate,
                 content: html
-            }).bind("shown", function(e) {
+            }).bind('shown.bs.popover', function(e) {
                 $tip = $el;
                 ui.activePopup(api);
                 /*$tip.click(function(e) {
@@ -170,7 +170,7 @@ define(['kloudspeaker/localization', 'kloudspeaker/dom', 'kloudspeaker/service',
                     rendered = true;
                 }
                 if (o.handler && o.handler.onShowBubble) o.handler.onShowBubble(actionId, api);
-            }).bind("hidden", function() {
+            }).bind('hidden.bs.popover', function() {
                 //$e.unbind("shown").unbind("hidden");
                 ui.removeActivePopup(api.id);
             });

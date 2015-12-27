@@ -457,7 +457,7 @@ li#kloudspeaker-folder-hierarchy-item-root a.dropdown-toggle {
     visibility: visible;
 }
 
-@media (min-width: $screen-md-max) {
+@include media-breakpoint-up(md) {
     body {
         padding-top: 90px;
     }
@@ -499,7 +499,7 @@ li#kloudspeaker-folder-hierarchy-item-root a.dropdown-toggle {
     }*/
 }
 
-@media (max-width: $screen-md-max) {
+@include media-breakpoint-down(md) {
     body {
         padding-top: 0;
     }
@@ -513,26 +513,26 @@ li#kloudspeaker-folder-hierarchy-item-root a.dropdown-toggle {
 }
 
 
-/* Large desktop */
+/* Large desktop
 
-@media (min-width: $screen-lg-min) {
+@include media-breakpoint-up(lg) {
     #kloudspeaker-mainview-navlist-parent {
         width: 18.404255319148934%;
     }
-}
+}*/
 
 
-/* Portrait tablet to landscape and desktop */
+/* Portrait tablet to landscape and desktop 
 
 @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
     #kloudspeaker-mainview-navlist-parent {
         position: relative;
         width: 70%;
     }
-}
+}*/
 
 
-/* Landscape phone to portrait tablet */
+/* Landscape phone to portrait tablet
 
 @media (max-width: $screen-sm-min) {
     .navbar-fixed-top,
@@ -554,3 +554,4 @@ li#kloudspeaker-folder-hierarchy-item-root a.dropdown-toggle {
         padding-top: 0;
     }
 }
+*/

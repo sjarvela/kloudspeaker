@@ -4,7 +4,7 @@
     "main": [],
     "dependencies": {
         "font-awesome": "4.4",
-        "bootstrap": "3.3.5",
-        "bootstrap-sass": "*"
+        "bootstrap": "v4.0.0-alpha.2",
+        "tether": "1.1.1"
     }
 }
