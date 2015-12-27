@@ -150,7 +150,7 @@ define(['kloudspeaker/localization', 'kloudspeaker/dom', 'kloudspeaker/service',
                 },
                 close: this.hide
             };
-            var bubbleTemplate = '<div class="popover kloudspeaker-bubble-popover ' + (o.cls || '') + '"><div class="arrow"></div><div class="popover-inner"><div class="popover-content"><p></p></div></div></div>';
+            var bubbleTemplate = '<div class="popover kloudspeaker-bubble-popover ' + (o.cls || '') + '" role="tooltip"><div class="popover-arrow"></div><div class="popover-content"></div></div>';
             $e.popover({
                 //title: false,
                 html: true,
@@ -159,7 +159,7 @@ define(['kloudspeaker/localization', 'kloudspeaker/dom', 'kloudspeaker/service',
                 template: bubbleTemplate,
                 content: html
             }).bind('shown.bs.popover', function(e) {
-                $tip = $el;
+                $tip = $(this);
                 ui.activePopup(api);
                 /*$tip.click(function(e) {
                     e.preventDefault();

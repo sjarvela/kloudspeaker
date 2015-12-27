@@ -296,7 +296,8 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
         that.onResize = function() {
             if (that._currentView && that._currentView.onResize) that._currentView.onResize();
 
-            var w = $(window).width();
+            //TODO
+            /*var w = $(window).width();
             var h = $(window).height();
             var top = $("#kloudspeaker-mainview-navlist-parent").position().top;
             var maxH = (h - top - 60); //60?
@@ -313,7 +314,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
 
             if (maxH > 0)
                 $("#kloudspeaker-mainview-navlist-content").css("max-height", maxH + "px");
-            else $("#kloudspeaker-mainview-navlist-content").css("max-height", false);
+            else $("#kloudspeaker-mainview-navlist-content").css("max-height", false);*/
         }
 
         that.getSessionActions = function() {

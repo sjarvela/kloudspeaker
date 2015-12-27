@@ -2,30 +2,23 @@
 	<div id="kloudspeaker-login-data" class="container kloudspeaker-fullpage-form center">
 		<div class="kloudspeaker-logo"></div>
 
-		<fieldset>
-			<p>
-				<input id="kloudspeaker-login-name" type="text" class="hintbox" hint-key="loginDialogUsername"></input>
-			</p>
+		<fieldset class="form-group">
+			<input id="kloudspeaker-login-name" type="text" class="form-control hintbox" hint-key="loginDialogUsername"></input>
 		</fieldset>
 
-		<fieldset>
-			<p>
-				<input id="kloudspeaker-login-password" type="password" class="hintbox" hint-key="loginDialogPassword"></input>
-			</p>
+		<fieldset class="form-group">
+			<input id="kloudspeaker-login-password" type="password" class="form-control hintbox" hint-key="loginDialogPassword"></input>
 		</fieldset>
 			
-		<fieldset>
-			<p>
-				<label id="kloudspeaker-login-remember" class="checkbox inline">
-				</label>
-				<input id="kloudspeaker-login-remember-cb" type="checkbox" /><span class="localized" text-key="loginDialogRememberMe"></span>
-			</p>
+		<fieldset class="form-group">
+			<label id="kloudspeaker-login-remember" class="checkbox">
+				<input id="kloudspeaker-login-remember-cb" type="checkbox" />
+				<span class="localized" text-key="loginDialogRememberMe"></span>
+			</label>
 		</fieldset>
 
-		<fieldset>
-			<p>
-				<a id="kloudspeaker-login-button" class="localized btn btn-large btn-primary primary-action" text-key="loginDialogLoginButton"></a>
-			</p>
+		<fieldset class="form-group">
+			<a id="kloudspeaker-login-button" class="localized btn btn-large btn-primary primary-action" text-key="loginDialogLoginButton"></a>
 		</fieldset>
 		
 		<div id="kloudspeaker-login-links">
@@ -33,8 +26,8 @@
 			<div id="kloudspeaker-login-forgot-password-bubble" style="display:none">
 				<div id="kloudspeaker-login-forgot-password-content" class="bubble-content">
 					<input id="kloudspeaker-login-forgot-email" type="text" class="hintbox" hint-key="resetPasswordPopupMessage"></input>
-					<a id="kloudspeaker-login-forgot-button" class="localized btn btn-small" text-key="resetPasswordPopupButton"></a>
-					<a id="kloudspeaker-login-forgot-button-hint" class="localized btn btn-small" text-key="sendPasswordHintPopupButton" style="display: none"></a>
+					<a id="kloudspeaker-login-forgot-button" class="localized btn btn-primary btn-small" text-key="resetPasswordPopupButton"></a>
+					<a id="kloudspeaker-login-forgot-button-hint" class="localized btn btn-primary btn-small" text-key="sendPasswordHintPopupButton" style="display: none"></a>
 				</div>
 			</div>
 			<a href="javascript:void(0)" id="kloudspeaker-login-register" class="kloudspeaker-login-link link localized" text-key="loginDialogRegister" style="display:none"></a>
