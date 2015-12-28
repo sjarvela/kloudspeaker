@@ -136,7 +136,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
 
         that.init = function(mainview) {
             that.title = loc.get('mainviewMenuTitle');
-            that.icon = "file-o";
+            that.icon = "fa fa-file";
             that._viewStyle = 0;
             if (settings["file-view"]["default-view-mode"] == "small-icon") that._viewStyle = 1;
             if (settings["file-view"]["default-view-mode"] == "large-icon") that._viewStyle = 2;
@@ -478,10 +478,13 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
         };
 
         that.initViewTools = function($t) {
-            dom.template("kloudspeaker-tmpl-fileview-tools").appendTo($t);
+            var $tools = dom.template("kloudspeaker-tmpl-fileview-tools").appendTo($t);
 
-            ui.process($t, ["radio"], that);
-            that.controls["kloudspeaker-fileview-style-options"].set(that._viewStyle);
+            var $styles = $tools.find(".fileview-style-option");
+            $styles.click(function() {
+                var selected = $styles.index(this);
+                that.onViewStyleChanged(selected)
+            }).eq(that._viewStyle).button('toggle');
 
             var onSearch = function() {
                 var val = $("#kloudspeaker-fileview-search-input").val();
@@ -549,11 +552,11 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             that.refresh();
         };
 
-        that.onRadioChanged = function(groupId, valueId, i) {
+        /*TODO that.onRadioChanged = function(groupId, valueId, i) {
             if (groupId == "kloudspeaker-fileview-style-options") that.onViewStyleChanged(valueId, i);
-        };
+        };*/
 
-        that.onViewStyleChanged = function(id, i) {
+        that.onViewStyleChanged = function(i) {
             that._viewStyle = i;
             that.initList();
             that.refresh();

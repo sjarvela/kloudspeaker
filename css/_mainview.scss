@@ -1,4 +1,15 @@
-#kloudspeaker-mainview-viewcontent {
+.kloudspeaker-mainview-header {
+    .kloudspeaker-mainview-logo {
+        width: 70px;
+        height: 62px;
+        background: url(images/kloudspeaker_img_small2.png) no-repeat;
+    }
+}
+
+
+/* --------- */
+
+/*#kloudspeaker-mainview-viewcontent {
     float: left;
 }
 
@@ -461,9 +472,6 @@ li#kloudspeaker-folder-hierarchy-item-root a.dropdown-toggle {
     body {
         padding-top: 90px;
     }
-    /*#kloudspeaker-mainview-menu {
-        margin: 15px 0 0 8px;
-    }*/
     #kloudspeaker-mainview-viewtools {
         margin: 15px 0 0 0;
     }
@@ -487,16 +495,6 @@ li#kloudspeaker-folder-hierarchy-item-root a.dropdown-toggle {
     #kloudspeaker-folderview.detached .no-detached {
         display: none;
     }
-    /*#kloudspeaker-folderview-header {
-        position: fixed;
-        top: 60px;
-        background-color: #ffffff;
-        padding-top: 30px;
-    }
-    
-    #kloudspeaker-folderview-items {
-        padding-top: 125px;
-    }*/
 }
 
 @include media-breakpoint-down(md) {
@@ -510,7 +508,7 @@ li#kloudspeaker-folder-hierarchy-item-root a.dropdown-toggle {
 
 #kloudspeaker-mainview-navlist-parent {
     width: 16.92817679558011%;
-}
+}*/
 
 
 /* Large desktop

@@ -1,28 +1,25 @@
-<nav id="kloudspeaker-mainview-header" class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="fa fa-navicon"></span>
-            </button>
-            <div id="kloudspeaker-mainview-logo" class="navbar-brand"></div>
-        </div>
-        <div class="navbar-collapse collapse">
-            <ul id="kloudspeaker-mainview-menu" class="kloudspeaker-mainview-menubar nav navbar-left navbar-nav"></ul>
-            <ul id="kloudspeaker-mainview-user" class="nav navbar-right navbar-nav"></ul>
-            <div id="kloudspeaker-mainview-viewtools" class="nav navbar-form form-inline navbar-right"></div>
-        </div>
+<nav class="kloudspeaker-mainview-header navbar navbar-dark navbar-fixed-top bg-inverse">
+    <div class="navbar-header">
+        <a class="kloudspeaker-mainview-logo navbar-brand" href="#"></a>
+        <button class="navbar-toggler hidden-sm-up" type="button" data-toggle="collapse" data-target="kloudspeaker-mainview-header-content">
+            <span class="fa fa-navicon"></span>
+        </button>
+    </div>
+    <div id="kloudspeaker-mainview-header-content" class="navbar-toggleable-xs collapse">
+        <ul class="kloudspeaker-mainview-menu nav navbar-left navbar-nav"></ul>
+        <ul class="kloudspeaker-mainview-user nav navbar-right navbar-nav"></ul>
+        <div class="kloudspeaker-mainview-viewtools nav navbar-form form-inline navbar-right"></div>
     </div>
 </nav>
-<div id="kloudspeaker-mainview-main" class="container-fluid">
-    <div id="kloudspeaker-mainview-content" class="row">
-        <div id="kloudspeaker-mainview-navlist-container" class="col-md-3">
+<div class="kloudspeaker-mainview-main container-fluid">
+    <div class="kloudspeaker-mainview-content row">
+        <!--div id="kloudspeaker-mainview-navlist-container" class="col-md-3">
             <div id="kloudspeaker-mainview-navlist-parent" class="well affix"></div>
-        </div>
-        <div id="kloudspeaker-mainview-viewcontent" class="col-md-9">
+        </div-->
+        <div class="kloudspeaker-mainview-viewcontent col-md-12">
         </div>
     </div>
 </div>
-
 <script id="kloudspeaker-tmpl-main-notification" type="text/x-jquery-tmpl">
     <div class="kloudspeaker-mainview-notification alert {{if type}}alert-${type}{{/if}} {{if cls}}${cls}{{/if}}">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -31,8 +28,8 @@
 </script>
 <script id="kloudspeaker-tmpl-main-username" type="text/x-jquery-tmpl">
     {{if user}}
-    <li id="kloudspeaker-username-dropdown" class="dropdown">
-        <a href="#" class="dropdown-toggle">${user.name}&nbsp;<b class="caret"></b></a>
+    <li class="nav-item dropdown">
+        <a href="#" class="nav-link dropdown-toggle"><i class="fa fa-user"></i>&nbsp;<b class="caret"></b></a>
     </li>
     {{/if}}
 </script>
@@ -57,7 +54,12 @@
     </div>
 </script>
 <script id="kloudspeaker-tmpl-main-menubar" type="text/x-jquery-tmpl">
-    <li class="kloudspeaker-mainview-menubar-item" title="${title}"><a href="javascript: void(0);">{{if icon}}<span class="kloudspeaker-mainview-menubar-item-icon"><i class="${icon}"></i></span>{{/if}}<span class="kloudspeaker-mainview-menubar-item-title">${title}</span></a></li>
+    <li class="nav-item kloudspeaker-mainview-menubar-item" title="${title}">
+        <a class="nav-link" href="javascript: void(0);">
+            {{if icon}}<i class="${icon}"></i>{{/if}}
+            <span class="title">${title}</span>
+        </a>
+    </li>
 </script>
 <script id="kloudspeaker-tmpl-main-navbar" type="text/x-jquery-tmpl">
     <ul class="kloudspeaker-mainview-navbar nav nav-list">
@@ -66,7 +68,9 @@
     </ul>
 </script>
 <script id="kloudspeaker-tmpl-main-navbar-item" type="text/x-jquery-tmpl">
-    <li class="kloudspeaker-mainview-navbar-item"><a href="javascript: void(0);">${title}</a></li>
+    <li class="kloudspeaker-mainview-navbar-item">
+        <a class="" href="javascript: void(0);">${title}</a>
+    </li>
 </script>
 <script id="kloudspeaker-tmpl-fileview" type="text/x-jquery-tmpl">
     <div id="kloudspeaker-folderview">
@@ -88,10 +92,16 @@
     </div>
 </script>
 <script id="kloudspeaker-tmpl-fileview-tools" type="text/x-jquery-tmpl">
-    <div id="kloudspeaker-fileview-style-options" class="kloudspeaker-radio">
-        <button id="kloudspeaker-fileview-style-list" class="btn btn-inverse btn-flat fileview-style-option"><i class="fa fa-list-ul"></i></a>
-            <button id="kloudspeaker-fileview-style-small-icons" class="btn btn-inverse btn-flat fileview-style-option"><i class="fa fa-th"></i></a>
-                <button id="kloudspeaker-fileview-style-large-icons" class="btn btn-inverse btn-flat fileview-style-option"><i class="fa fa-th-large"></i></a>
+    <div class="fileview-style btn-group" data-toggle="buttons">
+        <label class="btn btn-secondary fileview-style-option">
+            <input type="radio" name="fileview-style" value="list" autocomplete="off"><i class="fa fa-list-ul"></i>
+        </label>
+        <label class="btn btn-secondary fileview-style-option">
+            <input type="radio" name="fileview-style" value="small-icons" autocomplete="off"><i class="fa fa-th"></i>
+        </label>
+        <label class="btn btn-secondary fileview-style-option">
+            <input type="radio" name="fileview-style" value="large-icons" autocomplete="off"><i class="fa fa-th-large"></i>
+        </label>
     </div>
     <div id="kloudspeaker-fileview-search" class="input-append">
         <input id="kloudspeaker-fileview-search-input" class="hintbox" type="text" hint-key="mainViewSearch">
@@ -145,13 +155,13 @@
         </button>
         {{/if}} {{if ($item.data.dropdown && !$item.data.action)}}
         <a class="btn btn-flat dropdown-toggle" href="#">
-			{{if icon}}
-			<i class="${icon}"></i>
-			{{else}}
-			${$item.title()}
-			{{/if}}
-			&nbsp;<b class="caret"></b>
-		</a> {{/if}} {{if (!$item.data.dropdown)}}
+            {{if icon}}
+            <i class="${icon}"></i>
+            {{else}}
+            ${$item.title()}
+            {{/if}}
+            &nbsp;<b class="caret"></b>
+        </a> {{/if}} {{if (!$item.data.dropdown)}}
         <button class="btn btn-flat foldertool">
             {{if icon}}
             <i class="${icon}"></i> {{else}} ${$item.title()} {{/if}}

@@ -37,6 +37,12 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             });
 
             return dom.loadContentInto($c, templates.url("mainview.html"), function() {
+                that._$nav = $c.find(".kloudspeaker-mainview-navbar");
+                that._$viewcontent = $c.find(".kloudspeaker-mainview-viewcontent");
+                that._$mainviewmenu = $c.find(".kloudspeaker-mainview-menu");
+                that._$usermenu = $c.find(".kloudspeaker-mainview-user");
+                that._$viewtools = $c.find(".kloudspeaker-mainview-viewtools")
+
                 that.onLoad(viewId);
             }, ['localize']);
         }
@@ -53,10 +59,10 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             that.onResize();
 
             var s = session.get();
-            dom.template("kloudspeaker-tmpl-main-username", s).appendTo("#kloudspeaker-mainview-user");
+            dom.template("kloudspeaker-tmpl-main-username", s).appendTo(that._$usermenu);
             if (s.user) {
                 ui.controls.dropdown({
-                    element: $('#kloudspeaker-username-dropdown'),
+                    element: that._$usermenu.find('.dropdown'),
                     items: that.getSessionActions()
                 });
             }
@@ -75,8 +81,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 });
             });
 
-            var $mb = $("#kloudspeaker-mainview-menu");
-            var $mbitems = dom.template("kloudspeaker-tmpl-main-menubar", menuitems).appendTo($mb);
+            var $mbitems = dom.template("kloudspeaker-tmpl-main-menubar", menuitems).appendTo(that._$mainviewmenu);
             $mbitems.click(function() {
                 var i = $mbitems.index($(this));
                 that.activateView(that._views[i]);
@@ -125,13 +130,13 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
         that.activateView = function(v, id) {
             ui.hideActivePopup();
             if (that._currentView && that._currentView.onDeactivate) that._currentView.onDeactivate();
-            $("#kloudspeaker-mainview-navlist-content").empty();
+            $("#kloudspeaker-mainview-navlist-content").empty(); //TODO
 
             that._currentView = v;
 
             $("#kloudspeaker-mainview-navbar").empty();
-            var $content = $("#kloudspeaker-mainview-viewcontent").empty();
-            var $tools = $("#kloudspeaker-mainview-viewtools").empty();
+            var $content = that._$viewcontent.empty();
+            var $tools = that._$viewtools.empty();
 
             if (v.onActivate)
                 v.onActivate({
