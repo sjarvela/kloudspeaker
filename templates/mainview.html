@@ -103,9 +103,11 @@
             <input type="radio" name="fileview-style" value="large-icons" autocomplete="off"><i class="fa fa-th-large"></i>
         </label>
     </div>
-    <div id="kloudspeaker-fileview-search" class="input-append">
-        <input id="kloudspeaker-fileview-search-input" class="hintbox" type="text" hint-key="mainViewSearch">
-        <button class="btn" type="button"><i class="fa fa-search"></i></button>
+    <div class="kloudspeaker-fileview-search input-group">
+        <input class="form-control hintbox" type="text" hint-key="mainViewSearch">
+        <span class="input-group-btn">
+            <button class="btn btn-secondary" type="button"><i class="fa fa-search"></i></button>
+        </span>
     </div>
 </script>
 <script id="kloudspeaker-tmpl-fileview-header" type="text/x-jquery-tmpl">

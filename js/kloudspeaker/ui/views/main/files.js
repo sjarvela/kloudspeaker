@@ -486,19 +486,22 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 that.onViewStyleChanged(selected)
             }).eq(that._viewStyle).button('toggle');
 
+            var $search = $tools.find(".kloudspeaker-fileview-search");
+            var $searchInput = $search.find("input");
+
             var onSearch = function() {
-                var val = $("#kloudspeaker-fileview-search-input").val();
+                var val = $searchInput.val();
                 if (!val || val.length === 0) return;
-                $("#kloudspeaker-fileview-search-input").val("");
+                $searchInput.val("");
                 that.changeToFolder({
                     type: "search",
                     id: encodeURIComponent(val)
                 });
             };
-            $("#kloudspeaker-fileview-search-input").keyup(function(e) {
+            $searchInput.keyup(function(e) {
                 if (e.which == 13) onSearch();
             });
-            $("#kloudspeaker-fileview-search > button").click(onSearch);
+            $search.find("button").click(onSearch);
         };
 
         that.getDataRequest = function() {
