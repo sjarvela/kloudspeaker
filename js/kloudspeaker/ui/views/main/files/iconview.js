@@ -1,7 +1,7 @@
 define(['kloudspeaker/settings', 'kloudspeaker/service', 'kloudspeaker/ui/dnd', 'kloudspeaker/dom'], function(settings, service, dnd, dom) {
-    return function(container, $headerContainer, id, cls, thumbs) {
+    return function($container, $headerContainer, id, cls, thumbs) {
         var t = this;
-        t.$c = $("#" + container);
+        t.$c = $container;
         t.viewId = 'kloudspeaker-iconview-' + id;
 
         this.init = function(p) {

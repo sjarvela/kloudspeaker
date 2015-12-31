@@ -254,7 +254,10 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
         that.onResize = function() {}
 
         that.onActivate = function(h) {
-            dom.template("kloudspeaker-tmpl-fileview").appendTo(h.content);
+            var $fv = dom.template("kloudspeaker-tmpl-fileview").appendTo(h.content);
+            that._$folderView = h.content.find(".kloudspeaker-folderview");
+            that._$folderItems = that._$folderView.find(".kloudspeaker-folderview-items");
+
             that.showProgress();
             // TODO expose file urls
 
@@ -298,13 +301,13 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             that.initViewTools(h.tools);
             that.initList();
 
-            that.uploadProgress = new UploadProgress($("#kloudspeaker-mainview-progress"));
+            that.uploadProgress = new UploadProgress($("#kloudspeaker-mainview-progress")); //TODO id->class
             that._dndUploader = false;
 
             if (uploader && uploader.initDragAndDropUploader) {
                 that._dndUploader = uploader.initDragAndDropUploader({
                     container: app.getElement(),
-                    dropElement: $("#kloudspeaker-folderview"),
+                    dropElement: that._$folderView,
                     handler: that._getUploadHandler()
                 });
             }
@@ -446,14 +449,14 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
 
         that._updateScroll = function() {
             var s = $(window).scrollTop();
-            var $e = $("#kloudspeaker-folderview");
+            var $e = that._$folderView;
 
             var isDetached = $e.hasClass("detached");
             var toggle = (!isDetached && s > that._scrollOutThreshold) || (isDetached && s < that._scrollInThreshold);
             if (!toggle) return;
 
-            if (!isDetached) $("#kloudspeaker-folderview").addClass("detached");
-            else $("#kloudspeaker-folderview").removeClass("detached");
+            if (!isDetached) that._$folderView.addClass("detached");
+            else that._$folderView.removeClass("detached");
         };
 
         that.openInitialFolder = function() {
@@ -575,11 +578,11 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
         };
 
         that.showProgress = function() {
-            $("#kloudspeaker-folderview-items").addClass("loading");
+            that._$folderItems.addClass("loading");
         };
 
         that.hideProgress = function() {
-            $("#kloudspeaker-folderview-items").removeClass("loading");
+            that._$folderItems.removeClass("loading");
         };
 
         that.changeToFolder = function(f, noStore) {
@@ -745,7 +748,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                     return that.data.title ? that.data.title : loc.get(that.data['title-key']);
                 }
             };
-            var $h = $("#kloudspeaker-folderview-header-content").empty();
+            var $h = that._$folderView.find(".kloudspeaker-folderview-header-content").empty();
 
             if (that._currentFolder && that._currentFolder.type) {
                 // prevent custom folder upload (custom folders need to handle it explicitly)
@@ -767,8 +770,8 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 else
                     dom.template("kloudspeaker-tmpl-main-rootfolders").appendTo($h);
 
-                var $tb = $("#kloudspeaker-fileview-folder-tools").empty();
-                var $fa = $("#kloudspeaker-fileview-folder-actions");
+                var $tb = $h.find(".kloudspeaker-fileview-folder-tools").empty();
+                var $fa = $h.find(".kloudspeaker-fileview-folder-actions");
 
                 if (that._currentFolder) {
                     if (that._canWrite()) {
@@ -865,10 +868,10 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
 
             ui.process($h, ['localize']);
 
-            that._scrollOutThreshold = $("#kloudspeaker-folderview-header").outerHeight() + 40;
+            that._scrollOutThreshold = $h.outerHeight() + 40;
             that._scrollInThreshold = that._scrollOutThreshold - 60;
-            $("#kloudspeaker-folderview-detachholder").css("height", (that._scrollInThreshold + 40) + "px");
-            $("#kloudspeaker-folderview").removeClass("detached");
+            $h.find(".kloudspeaker-folderview-detachholder").css("height", (that._scrollInThreshold + 40) + "px");
+            that._$folderView.removeClass("detached");
             that.onResize();
             that._updateSelect();
 
@@ -1101,7 +1104,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 itemElement: that.itemWidget.getItemElement(item),
                 panelContainer: that.itemWidget.getPanelContainer(item),
                 viewport: that.itemWidget.getContainerElement(),
-                container: $("#kloudspeaker-folderview-items"),
+                container: that._$folderItems,
                 folder: that._currentFolder,
                 folder_writable: that._currentFolder ? permissions.hasFilesystemPermission(that._currentFolder, "filesystem_item_access", "rw", true) : false
             };
@@ -1120,10 +1123,10 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 if (that._currentFolderType && that._customFolderTypes[that._currentFolderType] && that._customFolderTypes[that._currentFolderType].getFileListCols) {
                     cols = that._customFolderTypes[that._currentFolderType].getFileListCols();
                 }
-                that.itemWidget = new FileList('kloudspeaker-folderview-items', $h, 'main', that._filelist, cols);
+                that.itemWidget = new FileList(that._$folderItems, $h, 'main', that._filelist, cols);
             } else {
                 var thumbs = features.hasFeature('thumbnails');
-                that.itemWidget = new IconView('kloudspeaker-folderview-items', $h, 'main', that._viewStyle == 1 ? 'iconview-small' : 'iconview-large', thumbs);
+                that.itemWidget = new IconView(that._$folderItems, $h, 'main', that._viewStyle == 1 ? 'iconview-small' : 'iconview-large', thumbs);
             }
 
             that.itemWidget.init({

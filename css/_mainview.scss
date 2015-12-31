@@ -4,14 +4,22 @@
         height: 62px;
         background: url(images/kloudspeaker_img_small2.png) no-repeat;
     }
-
-    .kloudspeaker-mainview-viewtools, .kloudspeaker-mainview-user {
+    .kloudspeaker-mainview-viewtools,
+    .kloudspeaker-mainview-user {
         float: right;
+    }
+}
+
+.kloudspeaker-mainview-viewcontent {
+    .kloudspeaker-folderview-detachholder {
+        float: left;
+        display: none;
     }
 }
 
 
 /* --------- */
+
 
 /*#kloudspeaker-mainview-viewcontent {
     float: left;

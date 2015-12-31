@@ -1,8 +1,8 @@
 define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'kloudspeaker/dom', 'kloudspeaker/localization', 'kloudspeaker/utils', 'jquery'], function(app, settings, dnd, dom, loc, utils, $) {
-    return function(container, $headerContainer, id, filelistSpec, columns) {
+    return function($container, $headerContainer, id, filelistSpec, columns) {
         var t = this;
         t.minColWidth = 25;
-        t.$c = $("#" + container);
+        t.$c = $container;
         t.$hc = $headerContainer;
         t.listId = 'kloudspeaker-filelist-' + id;
         t.cols = [];
