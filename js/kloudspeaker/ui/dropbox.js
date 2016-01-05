@@ -22,10 +22,10 @@ define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/ui/views'
             var h = $(window).height() - y;
             if (w < 980) h = $("body").height() - y;
 
-            console.log({
+            /*console.log({
                 w: w,
                 h: h
-            });
+            });*/
             that.$dbE.height(h);
         });
 
