@@ -159,7 +159,7 @@
 		private function checkSystem() {
 			//TODO
 			
-			/*if (!function_exists('mysql_connect')) {
+			/*if (!function_exists('mysqli_connect')) {
 				$this->processor->setError("MySQL not detected", "Kloudspeaker cannot be installed to this system when MySQL is not available. Check your system configuration or choose different configuration type.");
 				$this->processor->showPage("install_error");
 			}

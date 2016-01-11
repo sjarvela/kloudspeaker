@@ -74,7 +74,7 @@
 			if ($this->socket != NULL) $host = 'localhost:'.$this->socket;
 			else if ($this->port != NULL) $host .= ":".$this->port;
 			
-			$db = @mysql_connect($host, $this->user, $this->pw);
+			$db = @mysqli_connect($host, $this->user, $this->pw);
 			if (!$db) throw new ServiceException("INVALID_CONFIGURATION", "Could not connect to database (host=".$this->host.", user=".$this->user.", password=".$this->pw."), error: ".mysql_error());
 
 			$this->db = $db;			

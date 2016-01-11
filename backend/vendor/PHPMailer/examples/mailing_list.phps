@@ -25,7 +25,7 @@ $mail->Subject = "PHPMailer Simple database mailing list test";
 
 //connect to the database and select the recipients from your mailing list that have not yet been sent to
 //You'll need to alter this to match your database
-$mysql = mysql_connect('localhost', 'username', 'password');
+$mysql = mysqli_connect('localhost', 'username', 'password');
 mysql_select_db('mydb', $mysql);
 $result = mysql_query("SELECT full_name, email, photo FROM mailinglist WHERE sent = false", $mysql);
 
