@@ -654,6 +654,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
         };
 
         that._canWrite = function() {
+            if (!that._currentFolder) return false;
             return permissions.hasFilesystemPermission(that._currentFolder, "filesystem_item_access", "rw", true);
         }
 
