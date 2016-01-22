@@ -1,4 +1,4 @@
-define(['kloudspeaker/core/user/repository', 'kloudspeaker/settings', 'kloudspeaker/utils', 'kloudspeaker/ui/texts', 'knockout'], function(repository, settings, utils, texts, ko) {
+define(['kloudspeaker/core/user/repository', 'kloudspeaker/settings', 'kloudspeaker/utils', 'kloudspeaker/ui/texts', 'kloudspeaker/ui/dialogs', 'knockout'], function(repository, settings, utils, texts, dialogs, ko) {
     return function() {
         var showLanguages = (settings.language.options && settings.language.options.length > 1);
         var model = {
@@ -94,7 +94,14 @@ define(['kloudspeaker/core/user/repository', 'kloudspeaker/settings', 'kloudspea
                 }
                 if (model.newUser) {
                     user.password = model.password();
-                    repository.addUser(user).done(this.complete);
+                    repository.addUser(user).done(this.complete).fail(function(e) {
+                        if (e.code == 101) {
+                            this.handled = true;
+                            dialogs.error({
+                                message: texts.get('configAdminUsersUserErrorDuplicate')
+                            });
+                        }
+                    });
                 } else repository.updateUser(model.user.id, user).done(this.complete);
             },
             showLanguages: showLanguages,
