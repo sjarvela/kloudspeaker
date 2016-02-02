@@ -10,8 +10,10 @@
  */
 
 class Util {
-	public static function escapePathRegex($p) {
-		return str_replace("*", "\*", str_replace("+", "\+", $p));
+	public static function escapePathRegex($p, $double = TRUE) {
+		$rp = str_replace("'", "\'", str_replace("*", "\*", str_replace("+", "\+", $p)));
+		if ($double) $rp = str_replace("\\", "\\\\", $rp);
+		return $rp;
 	}
 	public static function inBytes($a) {
 		$amount = trim($a);
