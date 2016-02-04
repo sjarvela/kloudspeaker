@@ -1191,6 +1191,7 @@ class FilesystemController {
 		if (!$item->isFile()) {
 			throw new ServiceException("NOT_A_FILE", $item->path());
 		}
+		$this->assertRights($item, self::PERMISSION_LEVEL_READWRITE, "update content");
 
 		$this->validateAction(FileEvent::UPDATE_CONTENT, $item, array("size" => $size));
 		if ($this->triggerActionInterceptor(FileEvent::UPDATE_CONTENT, $item, array("name" => $item->name(), "target" => $item, "size" => $size))) {
@@ -1198,10 +1199,7 @@ class FilesystemController {
 		}
 
 		Logging::logDebug('updating file contents [' . $item->id() . ']');
-		$this->assertRights($item, self::PERMISSION_LEVEL_READWRITE, "update content");
-
 		$item->put($content);
-
 		$this->env->events()->onEvent(FileEvent::updateContent($item));
 	}
 

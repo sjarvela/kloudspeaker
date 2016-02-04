@@ -11,7 +11,8 @@
 
 class Util {
 	public static function escapePathRegex($p, $double = TRUE) {
-		$rp = str_replace("'", "\'", str_replace("*", "\*", str_replace("+", "\+", $p)));
+		$rp = $p;		
+		$rp = str_replace("'", "\'", str_replace("*", "\*", str_replace("+", "\+", $rp)));
 		if ($double) $rp = str_replace("\\", "\\\\", $rp);
 		return $rp;
 	}

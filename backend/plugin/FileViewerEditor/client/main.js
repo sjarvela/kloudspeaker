@@ -234,7 +234,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/filesystem', 'kloudspeaker/plugin
                     }
                 });
             }
-            if (editorAvailable && permissions.hasFilesystemPermission(item, "filesystem_item_access", "rw")) {
+            if (editorAvailable && permissions.hasFilesystemPermission(item, "filesystem_item_access", "rw", true)) {
                 result.actions.push({
                     id: 'pluginFileViewerEditorView',
                     "title-key": 'pluginFileViewerEditorEdit',

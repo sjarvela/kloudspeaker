@@ -108,7 +108,6 @@ class Kloudspeaker_PermissionsDao {
 	}
 
 	public function getFilesystemPermissionsForChildren($name, $parent, $userId, $groupIds = NULL) {
-		//$parentLocation = str_replace("'", "\'", str_replace("\\", "\\\\", $parent->location()));	//itemidprovider
 		$table = $this->db->table("permission");
 		$mysql = (strcmp("mysql", $this->db->type()) == 0);
 

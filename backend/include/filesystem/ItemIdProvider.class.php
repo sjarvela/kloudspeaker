@@ -142,7 +142,7 @@ class ItemIdProvider {
 		if ($this->convertPathDelimiter) {
 			$path = str_replace(DIRECTORY_SEPARATOR, self::PATH_DELIMITER, $path);
 		}
-		if ($escape) $path = Util::escapePathRegex($path);
+		if ($escape) $path = Util::escapePathRegex($path, TRUE);
 		return $path;
 	}
 
@@ -152,7 +152,7 @@ class ItemIdProvider {
 		if ($recursive) {
 			$pathFilter = $col." like '" . $this->env->db()->string(str_replace("'", "\'", $this->itemQueryPath($parent))) . "%'";
 		} else {
-			$p = $this->env->db()->string(str_replace("'", "\'", $this->itemQueryPath($parent, TRUE)));
+			$p = $this->itemQueryPath($parent, TRUE);
 			if (strcasecmp("mysql", $this->env->db()->type()) == 0) {
 				$pathFilter = $col." REGEXP '^" . $p . "[^/]+[/]?$'";
 			} else {
