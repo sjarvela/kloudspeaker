@@ -1,8 +1,8 @@
 {
     "name": "kloudspeaker",
     "description": "Kloudspeaker",
-    "version": "2.7.11",
-    "revision": "39",
+    "version": "2.7.12",
+    "revision": "40",
     "keywords": ["kloudspeaker"],
     "homepage": "http://www.kloudspeaker.com/",
     "author": "Samuli Järvelä",
