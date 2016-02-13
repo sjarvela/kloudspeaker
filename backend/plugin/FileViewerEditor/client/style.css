@@ -1,0 +1,88 @@
+.kloudspeaker-fileviewereditor-viewer-popup {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: rgba(50, 50, 50, 0.8);
+	z-index: 9999;
+}
+
+.kloudspeaker-fileviewereditor-viewer-popup .header {
+	display: table;
+	table-layout: fixed;
+	box-sizing: border-box;
+	background-color: rgba(0, 0, 0, 1);
+	width: 100%;
+	padding: 5px 10px 5px 10px;
+}
+
+.kloudspeaker-fileviewereditor-viewer-popup .header > h4 {
+	display: block;
+	float: left;
+	color: #fff;
+}
+
+.kloudspeaker-fileviewereditor-viewer-popup .header > .tools {
+	display: block;
+	float: right;
+}
+
+.kloudspeaker-fileviewereditor-viewer-popup .content {
+	position: absolute;
+	top: 50px;
+	bottom: 40px;
+	left: 0;
+	right: 0;
+	height: calc(100% - 90px);
+	overflow: hidden;
+	text-align: center;
+	vertical-align: middle;
+}
+
+.kloudspeaker-fileviewereditor-viewer-popup .content .content-container {
+	height: 100%;
+}
+
+.kloudspeaker-fileviewereditor-viewer-popup .content .content-container .viewer-item-container {
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	box-sizing: border-box;
+}
+
+.kloudspeaker-fileviewereditor-viewer-popup .content .content-container .viewer-item-content {
+	width: auto;
+	background-color: #fff;
+}
+
+.kloudspeaker-fileviewereditor-viewer-popup .content .content-container .viewer-item-container.image .viewer-item-content {
+	position: relative;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.kloudspeaker-fileviewereditor-viewer-popup .content .content-container .viewer-item-container.image .viewer-item-content > img {
+	width: auto;
+	height: 100%;
+	max-height: none;
+	max-width: none;
+	border: none;
+}
+
+.kloudspeaker-fileviewereditor-viewer-popup .hover-tools {
+	display: none;
+	visibility: hidden;
+	position: absolute;
+	bottom: 60px;
+	left: 50%;
+}
+
+.kloudspeaker-fileviewereditor-viewer-popup .hover-tools.visible {
+	visibility: visible;
+}
+
+.kloudspeaker-fileviewereditor-viewer-popup .content .loader {
+	visibility: hidden;
+	height: 0;
+}
