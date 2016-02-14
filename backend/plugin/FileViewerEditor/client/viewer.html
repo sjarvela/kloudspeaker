@@ -4,17 +4,17 @@
         <h4 data-bind="text: item().name"></h4>
         <!-- /ko -->
         <div class="tools">
-            <button type="button" class="close" data-bind="click: close"><span aria-hidden="true">&times;</span></button>
+            <button type="button" class="btn" data-bind="click: close"><i class="fa fa-close"></i></button>
         </div>
     </div>
     <div class="content">
         <div class="content-container">
         </div>
         <div class="hover-tools" data-bind="css : { visible: zoomable() }">
-            <button type="button" data-bind="click: zoomIn, clickBubble: false"><span aria-hidden="true">-</span></button>
-            <button type="button" data-bind="click: zoomReal, clickBubble: false"><span aria-hidden="true">real</span></button>
-            <button type="button" data-bind="click: zoomFit, clickBubble: false"><span aria-hidden="true">fit</span></button>
-            <button type="button" data-bind="click: zoomOut, clickBubble: false"><span aria-hidden="true">+</span></button>
+            <button type="button" class="btn" data-bind="click: zoomIn, clickBubble: false"><i class="fa fa-search-minus"></i></button>
+            <button type="button" class="btn" data-bind="click: zoomReal, clickBubble: false"><i class="fa fa-sign-in"></i></button>
+            <button type="button" class="btn" data-bind="click: zoomFit, clickBubble: false"><i class="fa fa-arrows-alt"></i></button>
+            <button type="button" class="btn" data-bind="click: zoomOut, clickBubble: false"><i class="fa fa-search-plus"></i></button>
         </div>
     </div>
 </div>

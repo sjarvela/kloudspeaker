@@ -49,7 +49,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/filesystem', 'kloudspeaker/plugin
     };
 
     that.onView = function(item, all, spec) {
-        ui.showPopup({
+        ui.showFullscreenPopup({
             model: ['kloudspeaker/fileviewereditor/viewer', { item: item, spec: spec}]
         });
         /*var loaded = {};

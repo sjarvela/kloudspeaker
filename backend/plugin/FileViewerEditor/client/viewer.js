@@ -1,6 +1,7 @@
 define(['kloudspeaker/settings', 'kloudspeaker/utils', 'knockout'], function(settings, utils, ko) {
     var opts = {
-        hoverInterval: 1000
+        hoverInterval: 1000,
+        zoomAmount: 0.1
     };
 
     return function() {
@@ -32,7 +33,8 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils', 'knockout'], function(set
         }
 
         this._onResize = function() {
-            this._setZoom();
+            if (this.zoomable())
+                this._setZoom();
         }
 
         this._initHoverToolbar = function() {
@@ -57,7 +59,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils', 'knockout'], function(set
                     $ht.hide();
                 }, opts.hoverInterval);
             });
-            $ht.css("margin-left", (0 - ($ht.width() / 2)) + "px");
+            $ht.css("margin-left", (0 - ($ht.outerWidth() / 2)) + "px");
         }
 
         this.load = function(i) {
@@ -71,10 +73,11 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils', 'knockout'], function(set
             }).done(function(data) {
                 $l.html(data.result.html);
                 var img = $l.children("img");
+                var type = data.type;
                 var isImage = ($l.children().length == 1 && img.length == 1);
                 var contentInfo = {
                     zoomable: false,
-                    cls: ''
+                    cls: 'full'
                 };
                 var onContentReady = function(info) {
                     that.loading(false);
@@ -91,6 +94,13 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils', 'knockout'], function(set
                         onContentReady(contentInfo);
                     });
                 } else {
+                    if (data.result['resized_element_id']) {
+                        contentInfo.resized = $("#"+data.result['resized_element_id']);
+                        contentInfo.resized.css({
+                            'width' : '100%',
+                            'height' : '100%'
+                        });
+                    }
                     onContentReady(contentInfo);
                 }
             });
@@ -101,12 +111,15 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils', 'knockout'], function(set
             $loader.remove();
 
             this.zoomable(info.zoomable);
-            this.zoom = 100;
+            this.zoom = 1;
+            this.zoomBase = 'fit';
             this.ci = info;
 
             this.$vic = $("<div class='viewer-item-content'></div>").append($c);
             this.$c.empty().append($("<div class='viewer-item-container " + info.cls + "'></div>").append(this.$vic));
-            if (this.ci.zoomable && this.ci.originalHeight < this.$c.height()) this.zoom = 'real';
+            if (this.ci.zoomable && this.ci.originalHeight < this.$c.height()) {
+                this.zoomBase = 'real';
+            }
             this._onResize();
         }
 
@@ -115,49 +128,65 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils', 'knockout'], function(set
         }
 
         this.zoomIn = function() {
-            this._zoom(-10);
+            this._zoom(-1 * opts.zoomAmount);
         }
 
         this.zoomOut = function() {
-            this._zoom(10);
+            this._zoom(opts.zoomAmount);
         }
 
         this.zoomReal = function() {
-            this.zoom = 'real';
+            this.zoom = 1;
+            this.zoomBase = 'real';
             this._setZoom();
         }
 
         this.zoomFit = function() {
-            this.zoom = 100;
+            this.zoom = 1;
+            this.zoomBase = 'fit';
             this._setZoom();
         }
 
         this._zoom = function(a) {
             if (!this.zoomable()) return;
 
-            this.zoom = Math.max(10, Math.min(300, this.zoom + a));
+            this.zoom += a;
             this._setZoom();
         }
 
         this._setZoom = function() {
             if (!this.zoomable()) return;
 
-            var h = this.$c.height();
+            this._calcZoomMinMax();
+            this.zoom = Math.max(this.minZoom, Math.min(this.maxZoom, this.zoom));
 
-            if (this.zoom == 'real') {
+            var h = (this.zoomBase == 'fit') ? this.$c.height() : this.ci.originalHeight;
+
+            /*if (this.zoom == 'real') {
                 this.ci.zoomable.css('height', "auto");
                 h = this.ci.originalHeight;
+            } else {*/
+            if (this.zoom == 0) {
+                this.ci.zoomable.css('height', "");
             } else {
-                if (this.zoom == 100) {
-                    this.ci.zoomable.css('height', "");
-                } else {
-                    h = (h * (this.zoom / 100));
-                    this.ci.zoomable.css('height', h + "px");
-                }
+                h = (h * (this.zoom));
+                this.ci.zoomable.css('height', h + "px");
             }
+            //}
 
             this.ci.zoomable.css('width', (this.ci.originalWidth / this.ci.originalHeight) * h + "px");
             this._reposition();
+        }
+
+        this._calcZoomMinMax = function() {
+            if (!this.zoomable()) return;
+
+            var h = (this.zoomBase == 'fit') ? this.$c.height() : this.ci.originalHeight;
+            var minSize = 50;
+            //var maxSize = h * 10;
+
+            this.minZoom = Math.ceil((minSize / h) * 10) / 10;
+            this.maxZoom = 10;
         }
 
         this._reposition = function() {
