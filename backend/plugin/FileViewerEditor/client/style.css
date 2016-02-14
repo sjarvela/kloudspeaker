@@ -1,97 +1,130 @@
 .kloudspeaker-fileviewereditor-viewer-popup {
-	width: 100%;
-	height: 100%;
+    width: 100%;
+    height: 100%;
 }
 
 .kloudspeaker-fileviewereditor-viewer-popup .header {
-	display: table;
-	table-layout: fixed;
-	box-sizing: border-box;
-	background-color: rgba(0, 0, 0, 1);
-	width: 100%;
-	padding: 5px 10px 5px 10px;
+    display: table;
+    table-layout: fixed;
+    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 1);
+    width: 100%;
+    padding: 5px 10px 5px 10px;
 }
 
 .kloudspeaker-fileviewereditor-viewer-popup .header > h4 {
-	display: block;
-	float: left;
-	color: #fff;
+    display: block;
+    float: left;
+    color: #fff;
 }
 
 .kloudspeaker-fileviewereditor-viewer-popup .header > .tools {
-	display: block;
-	float: right;
-	color: #fff;
+    display: block;
+    float: right;
+    color: #fff;
+}
+
+.kloudspeaker-fileviewereditor-viewer-popup .header > .tools > button {
+	width: 40px;
+    height: 40px;
+    background-color: #000;
+    color: #f0f0f0;
+    border: none;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+}
+
+.kloudspeaker-fileviewereditor-viewer-popup .header > .tools > button:hover {
+	background-color: #222;
 }
 
 .kloudspeaker-fileviewereditor-viewer-popup .content {
-	position: absolute;
-	top: 50px;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	height: calc(100% - 50px);
-	overflow: hidden;
-	text-align: center;
-	vertical-align: middle;
+    position: absolute;
+    top: 50px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: calc(100% - 50px);
+    overflow: hidden;
+    text-align: center;
+    vertical-align: middle;
 }
 
 .kloudspeaker-fileviewereditor-viewer-popup .content .content-container {
-	height: 100%;
+    height: 100%;
+}
+
+.kloudspeaker-fileviewereditor-viewer-popup .content .content-container > .loading {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -25px;
+    margin-top: -25px;
+    background-color: #fff;
+    border-radius: 8px;
 }
 
 .kloudspeaker-fileviewereditor-viewer-popup .content .content-container .viewer-item-container {
-	width: 100%;
-	height: 100%;
-	overflow: auto;
-	box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    box-sizing: border-box;
 }
 
 .kloudspeaker-fileviewereditor-viewer-popup .content .content-container .viewer-item-content {
-	width: auto;
-	background-color: #fff;
+    width: auto;
+    background-color: #fff;
+}
+
+.kloudspeaker-fileviewereditor-viewer-popup .content .content-container .viewer-item-container.image {
+    padding: 10px;
+    box-sizing: border-box;
 }
 
 .kloudspeaker-fileviewereditor-viewer-popup .content .content-container .viewer-item-container.image .viewer-item-content {
-	position: relative;
-	display: inline-block;
-	vertical-align: middle;
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .kloudspeaker-fileviewereditor-viewer-popup .content .content-container .viewer-item-container.image .viewer-item-content > img {
-	width: auto;
-	height: 100%;
-	max-height: none;
-	max-width: none;
-	border: none;
+    width: auto;
+    height: 100%;
+    max-height: none;
+    max-width: none;
+    border: none;
 }
 
 .kloudspeaker-fileviewereditor-viewer-popup .content .content-container .viewer-item-container.full .viewer-item-content {
-	width: 100%;
-	height: 100%;
-	box-sizing: border-box;
-	padding: 10px;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 10px;
 }
 
 .kloudspeaker-fileviewereditor-viewer-popup .content .content-container .viewer-item-container .viewer-item-content > iframe {
-	border: none;
+    border: none;
 }
 
 .kloudspeaker-fileviewereditor-viewer-popup .hover-tools {
-	display: none;
-	visibility: hidden;
-	position: absolute;
-	bottom: 20px;
-	left: 50%;
+    display: none;
+    visibility: hidden;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
     padding: 10px;
     background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
 }
 
 .kloudspeaker-fileviewereditor-viewer-popup .hover-tools.visible {
-	visibility: visible;
+    visibility: visible;
 }
 
 .kloudspeaker-fileviewereditor-viewer-popup .content .loader {
-	visibility: hidden;
-	height: 0;
+    visibility: hidden;
+    height: 0;
 }

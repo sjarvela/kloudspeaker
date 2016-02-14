@@ -65,8 +65,10 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils', 'knockout'], function(set
         this.load = function(i) {
             var that = this;
             this.item(i.item);
-            this.loading(true);
+            this.setLoading(true);
             var $l = $("<div class='loader'/>").appendTo(this.$c);
+            
+            //TODO use internal service instead of direct ajax, handles result/debug & error codes
             $.ajax({
                 type: 'GET',
                 url: utils.noncachedUrl(i.spec.view.embedded)
@@ -80,7 +82,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils', 'knockout'], function(set
                     cls: 'full'
                 };
                 var onContentReady = function(info) {
-                    that.loading(false);
+                    that.setLoading(false);
                     that._initContent(info, $l);
                 }
                 if (isImage) {
@@ -106,6 +108,11 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils', 'knockout'], function(set
             });
         }
 
+        this.setLoading = function(l) {
+            if (l) this.$c.empty().append($("<div class='loading'></div>"));
+            this.loading(l);
+        }
+
         this._initContent = function(info, $loader) {
             var $c = $loader.children().remove();
             $loader.remove();
@@ -116,7 +123,9 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils', 'knockout'], function(set
             this.ci = info;
 
             this.$vic = $("<div class='viewer-item-content'></div>").append($c);
-            this.$c.empty().append($("<div class='viewer-item-container " + info.cls + "'></div>").append(this.$vic));
+            this.$vicc = $("<div class='viewer-item-container " + info.cls + "'></div>").append(this.$vic);
+
+            this.$c.empty().append(this.$vicc);
             if (this.ci.zoomable && this.ci.originalHeight < this.$c.height()) {
                 this.zoomBase = 'real';
             }
@@ -160,19 +169,13 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils', 'knockout'], function(set
             this._calcZoomMinMax();
             this.zoom = Math.max(this.minZoom, Math.min(this.maxZoom, this.zoom));
 
-            var h = (this.zoomBase == 'fit') ? this.$c.height() : this.ci.originalHeight;
-
-            /*if (this.zoom == 'real') {
-                this.ci.zoomable.css('height', "auto");
-                h = this.ci.originalHeight;
-            } else {*/
+            var h = (this.zoomBase == 'fit') ? this.$vicc.height() : this.ci.originalHeight;
             if (this.zoom == 0) {
                 this.ci.zoomable.css('height', "");
             } else {
                 h = (h * (this.zoom));
                 this.ci.zoomable.css('height', h + "px");
             }
-            //}
 
             this.ci.zoomable.css('width', (this.ci.originalWidth / this.ci.originalHeight) * h + "px");
             this._reposition();
@@ -181,7 +184,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils', 'knockout'], function(set
         this._calcZoomMinMax = function() {
             if (!this.zoomable()) return;
 
-            var h = (this.zoomBase == 'fit') ? this.$c.height() : this.ci.originalHeight;
+            var h = (this.zoomBase == 'fit') ? this.$vicc.height() : this.ci.originalHeight;
             var minSize = 50;
             //var maxSize = h * 10;
 
@@ -193,7 +196,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils', 'knockout'], function(set
             this.$vic.css("margin-top", "");
             if (this.ci.zoomable) {
                 var vich = this.$vic.height();
-                var ch = this.$c.height();
+                var ch = this.$vicc.height();
                 if (vich < ch) {
                     this.$vic.css("margin-top", ((ch - vich) / 2) + "px");
                 }
