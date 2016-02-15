@@ -2,6 +2,9 @@ define(['kloudspeaker/settings', 'kloudspeaker/filesystem', 'kloudspeaker/plugin
     var that = {};
 
     that.onEdit = function(item, spec) {
+        ui.showFullscreenPopup({
+            model: ['kloudspeaker/fileviewereditor/viewereditor', { item: item, spec: spec, edit: true}]
+        });
         /*dialogs.custom({
             resizable: true,
             initSize: [600, 400],
@@ -50,7 +53,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/filesystem', 'kloudspeaker/plugin
 
     that.onView = function(item, all, spec) {
         ui.showFullscreenPopup({
-            model: ['kloudspeaker/fileviewereditor/viewer', { item: item, spec: spec}]
+            model: ['kloudspeaker/fileviewereditor/viewereditor', { item: item, spec: spec, view: true}]
         });
         /*var loaded = {};
         var list = [{
@@ -162,6 +165,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/filesystem', 'kloudspeaker/plugin
         load(init);*/
     };
 
+    loc.registerPluginResource('FileViewerEditor');
     dom.importCss(plugins.url('FileViewerEditor', 'style.css'));
 
     plugins.register({
@@ -220,7 +224,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/filesystem', 'kloudspeaker/plugin
                     "title-key": 'pluginFileViewerEditorEdit',
                     type: "primary",
                     callback: function() {
-                        that.onEdit(item, data.edit);
+                        that.onEdit(item, data);
                     }
                 });
             }

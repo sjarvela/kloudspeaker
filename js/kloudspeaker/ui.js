@@ -274,12 +274,12 @@ define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins'
 
     ui.showFullscreenPopup = function(spec) {
         var $p = $('<div class="kloudspeaker-fullscreen-popup-container"/>').appendTo($("body"));
-        $("body").css("overflow", "hidden");
+        $("body").addClass("no-scroll");
         var handle = {
             close: function() {
                 ko.utils.domNodeDisposal.removeNode($p[0]);
                 $p.remove();
-                $("body").css("overflow", "");
+                $("body").removeClass("no-scroll");
             }
         };
         var m = spec.model;

@@ -24,19 +24,29 @@
     color: #fff;
 }
 
-.kloudspeaker-fileviewereditor-viewer-popup .header > .tools > button {
-	width: 40px;
+.kloudspeaker-fileviewereditor-viewer-popup .header > .tools > button,
+.kloudspeaker-fileviewereditor-viewer-popup .hover-tools > button {
+    width: 40px;
     height: 40px;
-    background-color: #000;
+    background: none;
+    background-color: rgba(0, 0, 0, 1.0);
     color: #f0f0f0;
     border: none;
     padding: 0;
     border-radius: 0;
     background: none;
+    text-shadow: none;
+    box-shadow: none;
 }
 
-.kloudspeaker-fileviewereditor-viewer-popup .header > .tools > button:hover {
-	background-color: #222;
+.kloudspeaker-fileviewereditor-viewer-popup .hover-tools > button {
+	color: #fff;
+	border-radius: 8px;
+}
+
+.kloudspeaker-fileviewereditor-viewer-popup .header > .tools > button:hover,
+.kloudspeaker-fileviewereditor-viewer-popup .hover-tools > button:hover {
+    background-color: #222;
 }
 
 .kloudspeaker-fileviewereditor-viewer-popup .content {

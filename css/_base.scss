@@ -26,6 +26,10 @@ body {
     background-color: #ffffff;
 }
 
+body.no-scroll {
+    overflow: hidden !important;
+}
+
 #kloudspeaker,
 a.button,
 input,
