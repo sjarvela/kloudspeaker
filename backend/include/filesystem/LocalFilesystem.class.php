@@ -406,6 +406,7 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 	}
 
 	public function createFolder($folder, $name) {
+		$name = trim($name);
 		self::assertFilename($name);
 
 		$path = self::folderPath(self::joinPath($this->internalPath($folder), $name));
@@ -431,6 +432,7 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 	}
 
 	public function createFile($folder, $name) {
+		$name = trim($name);
 		self::assertFilename($name);
 
 		$target = self::joinPath($this->internalPath($folder), $name);
