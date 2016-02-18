@@ -144,8 +144,8 @@ define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'k
             };
             var onAddGroupUsers = function() {
                 var currentIds = utils.extractValue(users, "id");
-                var selectable = utils.filter(allUsers, function(u) {
-                    return u.is_group === 0 && currentIds.indexOf(u.id) < 0;
+                var selectable = utils.filter(that._allUsers, function(u) {
+                    return (u.is_group === 0 || u.is_group === "0") && currentIds.indexOf(u.id) < 0;
                 });
                 //if (selectable.length === 0) return;
 
