@@ -12,7 +12,7 @@
 class ViewerJSViewer extends EmbeddedContentViewer {
 	protected function getHtml($item, $full) {
 		$resourceUrl = $this->getResourceUrl();
-		return '<iframe id="viewerjs-content" src = "'.$resourceUrl.'/ViewerJS/#' . $this->getContentUrl($item) . '" style="width: 100%; height: 100%">';
+		return '<iframe id="viewerjs-content" src = "'.$resourceUrl.'/ViewerJS/#' . $this->getContentUrl($item) . '" />';
 	}
 
 	protected function getEmbeddedSize() {

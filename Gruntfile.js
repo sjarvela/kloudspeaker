@@ -98,7 +98,8 @@ module.exports = function(grunt) {
                     'js/lib/ZeroClipboard.js',
                     'js/lib/knockout-3.3.0.js',
                     'js/lib/knockout.validation.js',
-                    'js/lib/require.js'
+                    'js/lib/require.js',
+                    'js/lib/imagesloaded.js'
                 ],
                 dest: 'out/libs.js'
             },

@@ -2,7 +2,10 @@ define(['kloudspeaker/settings', 'kloudspeaker/filesystem', 'kloudspeaker/plugin
     var that = {};
 
     that.onEdit = function(item, spec) {
-        dialogs.custom({
+        ui.showFullscreenPopup({
+            model: ['kloudspeaker/fileviewereditor/viewereditor', { item: item, spec: spec, edit: true}]
+        });
+        /*dialogs.custom({
             resizable: true,
             initSize: [600, 400],
             title: loc.get('fileViewerEditorViewEditDialogTitle'),
@@ -34,7 +37,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/filesystem', 'kloudspeaker/plugin
                 $content.removeClass("loading").append($frm);
                 h.center();
             }
-        });
+        });*/
     };
 
     that.view = function(item) {
@@ -49,7 +52,10 @@ define(['kloudspeaker/settings', 'kloudspeaker/filesystem', 'kloudspeaker/plugin
     };
 
     that.onView = function(item, all, spec) {
-        var loaded = {};
+        ui.showFullscreenPopup({
+            model: ['kloudspeaker/fileviewereditor/viewereditor', { item: item, spec: spec, view: true}]
+        });
+        /*var loaded = {};
         var list = [{
             embedded: spec.view.embedded,
             full: spec.view.full,
@@ -72,19 +78,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/filesystem', 'kloudspeaker/plugin
                 $lb.lightbox('centerImage');
             else
                 $lb.lightbox('center');
-            /*maxW = ($(window).width() - 100);
-            maxH = ($(window).height() - 100);
-            $lbc.css({
-                "max-width": maxW + "px",
-                "max-height": maxH + "px"
-            });
-            if ($i) {
-                $i.css({
-                    "max-width": maxW + "px",
-                    "max-height": maxH + "px"
-                });
-            }
-            $lb.lightbox('center');*/
+
         };
         //$(window).resize(resize);
         var load = function(itm) {
@@ -112,20 +106,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/filesystem', 'kloudspeaker/plugin
                 }
 
                 // if img, wait until it is loaded
-                /*var $img = $ic.find('img:first');
-                if ($img.length > 0) {
-                    $img.one('load', function() {
-                        var w = $img.width();
-                        if (!data.result.size && w > 0)
-                            $img.css({
-                                "width": w + "px",
-                                "height": $img.height() + "px"
-                            });
-                        resize();
-                    });
-                } else {
-                    resize();
-                }*/
+
 
 
                 resize();
@@ -181,8 +162,11 @@ define(['kloudspeaker/settings', 'kloudspeaker/filesystem', 'kloudspeaker/plugin
             $lb.lightbox('hide');
             that.onEdit(item, spec.edit); //TODO activeItem
         });
-        load(init);
+        load(init);*/
     };
+
+    loc.registerPluginResource('FileViewerEditor');
+    dom.importCss(plugins.url('FileViewerEditor', 'style.css'));
 
     plugins.register({
         id: "plugin-fileviewereditor",
@@ -240,7 +224,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/filesystem', 'kloudspeaker/plugin
                     "title-key": 'pluginFileViewerEditorEdit',
                     type: "primary",
                     callback: function() {
-                        that.onEdit(item, data.edit);
+                        that.onEdit(item, data);
                     }
                 });
             }

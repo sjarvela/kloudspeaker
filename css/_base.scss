@@ -26,6 +26,10 @@ body {
     background-color: #ffffff;
 }
 
+body.no-scroll {
+    overflow: hidden !important;
+}
+
 #kloudspeaker,
 a.button,
 input,
@@ -281,4 +285,14 @@ input.kloudspeaker-tableselect {
 
 a.kloudspeaker-tableaction {
     cursor: pointer;
+}
+
+.kloudspeaker-fullscreen-popup-container {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(50, 50, 50, 0.8);
+    z-index: 9999;
 }

@@ -29,14 +29,19 @@
 		}
 
 		protected function processEmbeddedViewRequest($item) {
-			$html = '<iframe id="viewer-frame" src="'.$this->getDataUrl($item, "view", TRUE).'&embedded=true" style="border: none;"></iframe>';
+			$html = '<iframe id="viewer-frame" src="'.$this->getDataUrl($item, "view", TRUE).'&embedded=true"></iframe>';
 			$size = $this->getEmbeddedSize();
 			 
 			$this->response()->success(array(
 				"html" => $html,
 				"resized_element_id" => "viewer-frame",
-				"size" => $size[0].";".$size[1]
+				"size" => $size[0].";".$size[1],
+				"type" => $this->getContentType()
 			));
+		}
+
+		protected function getContentType() {
+			return "iframe";
 		}
 		
 		protected function getEmbeddedSize() {

@@ -17,10 +17,14 @@
 				"size" => "600;400"
 			));
 		}
+
+		protected function getContentType() {
+			return "iframe";
+		}
 		
 		private function getGoogleViewerUrl($item, $full = FALSE) {
 			$url = $this->getContentUrl($item, TRUE);
-			return 'http://docs.google.com/viewer?url='.urlencode($url).($full ? '' : '&embedded=true');
+			return 'https://docs.google.com/viewer?url='.urlencode($url).($full ? '' : '&embedded=true');
 		}
 	}
 ?>

@@ -44,7 +44,7 @@
 			// read file
 			$stream = $this->getItemContent($item);
 			while (!feof($stream))
-				$html .= fread($stream, 1024);
+				$html .= htmlspecialchars(fread($stream, 1024));
 			fclose($stream);
 
 			$html .= ']]></script><script type="text/javascript">SyntaxHighlighter.all()</script>';
