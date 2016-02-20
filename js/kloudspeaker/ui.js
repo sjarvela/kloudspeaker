@@ -101,7 +101,8 @@ define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins'
             if (!view) _view = _model; //TODO platform
             else if (typeof(view) == "string") _view = view; //TODO platform
 
-            var ctx = (utils.isArray(model) && model.length > 1) ? model.slice(1) : {};
+            var ctx = (utils.isArray(model) && model.length > 1) ? model.slice(1) : [];
+            //if (utils.isArray(ctx) && ctx.length == 1) ctx = ctx[0];
             if (!$v) {
                 var c = {
                     model: _model,
@@ -117,7 +118,7 @@ define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins'
                 platform.composition.compose($target[0], c, {}); //TODO
             } else {
                 require([_model], function(m) {
-                    if (typeof(m) == 'function') m = m(ctx);
+                    if (typeof(m) == 'function') m = m.apply(m, ctx);
                     dom.bind(m, ctx, $v);
                     if (m.attached) m.attached($v, $target);
                     df.resolve(m, $v);

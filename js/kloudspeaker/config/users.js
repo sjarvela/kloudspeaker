@@ -97,7 +97,8 @@ define(['kloudspeaker/session', 'kloudspeaker/plugins', 'kloudspeaker/service', 
                         content: '<i class="fa fa-user"></i>'
                     }, {
                         id: "id",
-                        title: loc.get('configAdminTableIdTitle')
+                        title: loc.get('configAdminTableIdTitle'),
+                        sortable: true
                     }, {
                         id: "name",
                         title: loc.get('configAdminUsersNameTitle'),
