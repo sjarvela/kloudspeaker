@@ -59,10 +59,12 @@ define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'k
                         content: '<i class="fa fa-user"></i>'
                     }, {
                         id: "id",
-                        title: loc.get('configAdminTableIdTitle')
+                        title: loc.get('configAdminTableIdTitle'),
+                        sortable: true
                     }, {
                         id: "name",
-                        title: loc.get('configAdminGroupsNameTitle')
+                        title: loc.get('configAdminGroupsNameTitle'),
+                        sortable: true
                     }, {
                         id: "description",
                         title: loc.get('configAdminGroupsDescriptionTitle')
