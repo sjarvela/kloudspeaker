@@ -156,6 +156,7 @@ define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'k
                     message: loc.get('configAdminGroupAddUserMessage'),
                     key: "id",
                     initSize: [600, 400],
+                    resizable: true,
                     columns: [{
                         id: "icon",
                         title: "",
@@ -185,7 +186,8 @@ define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'k
                     title: loc.get('configAdminGroupAddFolderTitle'),
                     message: loc.get('configAdminGroupAddFolderMessage'),
                     key: "id",
-                    initSize: [600, 400],
+                    initSize: [800, 500],
+                    resizable: true,
                     columns: [{
                         id: "icon",
                         title: "",
@@ -199,7 +201,7 @@ define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'k
                         title: loc.get('configAdminUsersFolderDefaultNameTitle')
                     }, {
                         id: "user_name",
-                        title: loc.get('configAdminUsersFolderNameTitle'),
+                        title: loc.get('configAdminGroupFolderNameTitle'),
                         type: "input"
                     }, {
                         id: "path",
