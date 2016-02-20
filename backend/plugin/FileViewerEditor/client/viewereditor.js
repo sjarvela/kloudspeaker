@@ -178,7 +178,9 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils', 'kloudspeaker/ui', 'knock
             if (!this.editMode()) return;
 
             document.getElementById('editor-frame').contentWindow.onEditorSave(function() {
-                if (!that.item().spec.view.embedded)
+                if (that.ctx.item.id == that.item().item.id && that.ctx.edit)
+                    that.close();
+                else if (!that.item().spec.view.embedded)
                     that.close();
                 else {
                     that.editMode(false);
