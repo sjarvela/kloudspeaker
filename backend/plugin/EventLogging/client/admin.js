@@ -111,10 +111,12 @@ define(['kloudspeaker/eventlogging/repository', 'kloudspeaker/core/user/reposito
             }],
             cols: [{
                 id: "id",
-                titleKey: 'configAdminTableIdTitle'
+                titleKey: 'configAdminTableIdTitle',
+                sortable: true
             }, {
                 id: "type",
-                titleKey: 'pluginEventLoggingEventTypeTitle'
+                titleKey: 'pluginEventLoggingEventTypeTitle',
+                sortable: true
             }, {
                 id: "user",
                 titleKey: 'pluginEventLoggingUserTitle',
