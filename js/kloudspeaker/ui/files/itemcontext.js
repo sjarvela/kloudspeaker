@@ -32,11 +32,11 @@ define(['kloudspeaker/filesystem', 'kloudspeaker/plugins', 'kloudspeaker/service
             template: '<div class="popover kloudspeaker-itemcontext-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
             content: html,
             container: $cont
-        }).bind("shown", function(e) {
+        }).bind("shown.bs.popover", function(e) {
             var api = {
                 id: popupId,
                 hide: function() {
-                    $e.popover('destroy');
+                    $e.popover('dispose');
                 }
             };
             api.close = api.hide;
@@ -74,7 +74,7 @@ define(['kloudspeaker/filesystem', 'kloudspeaker/plugins', 'kloudspeaker/service
                 };
                 ict.renderItemContext(api, $content, item, ctx);
             });
-        }).bind("hidden", function() {
+        }).bind("hidden.bs.popover", function() {
             $e.unbind("shown").unbind("hidden");
             ui.removeActivePopup(popupId);
         });
