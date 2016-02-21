@@ -23,8 +23,8 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 		$this->rootPath = self::folderPath($def["path"]);
 	}
 
-	public function isWritable() {
-		return is_writable($this->rootPath);
+	public function isWritable($item) {
+		return is_writable($this->localPath($item));
 	}
 
 	public function isDirectDownload() {
@@ -406,6 +406,7 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 	}
 
 	public function createFolder($folder, $name) {
+		$name = trim($name);
 		self::assertFilename($name);
 
 		$path = self::folderPath(self::joinPath($this->internalPath($folder), $name));
@@ -431,6 +432,7 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 	}
 
 	public function createFile($folder, $name) {
+		$name = trim($name);
 		self::assertFilename($name);
 
 		$target = self::joinPath($this->internalPath($folder), $name);

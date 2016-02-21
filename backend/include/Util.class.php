@@ -10,6 +10,12 @@
  */
 
 class Util {
+	public static function escapePathRegex($p, $double = TRUE) {
+		$rp = $p;		
+		$rp = str_replace("'", "\'", str_replace("*", "\*", str_replace("+", "\+", $rp)));
+		if ($double) $rp = str_replace("\\", "\\\\", $rp);
+		return $rp;
+	}
 	public static function inBytes($a) {
 		$amount = trim($a);
 		$last = strtolower($amount[strlen($amount) - 1]);

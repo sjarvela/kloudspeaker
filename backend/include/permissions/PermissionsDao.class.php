@@ -71,16 +71,16 @@ class Kloudspeaker_PermissionsDao {
 			$rootLocation = $this->env->filesystem()->itemIdProvider()->itemQueryPath($item->root());
 
 			if ($mysql) {
-				$hierarchyQuery = "(i.path REGEXP '^" . str_replace("'", "\'", $rootLocation);
+				$hierarchyQuery = "(i.path REGEXP '^" . Util::escapePathRegex($rootLocation);
 			} else {
-				$hierarchyQuery = "REGEX(i.path, '#^" . str_replace("'", "\'", $rootLocation);
+				$hierarchyQuery = "REGEX(i.path, '#^" . Util::escapePathRegex($rootLocation);
 			}
 
 			$hierarchyQueryEnd = "";
 			$parts = preg_split("/[\/]+/", substr($parentLocation, strlen($rootLocation)), -1, PREG_SPLIT_NO_EMPTY);
 			//Logging::logDebug(Util::array2str($parts));
 			foreach ($parts as $part) {
-				$hierarchyQuery .= "(" . str_replace("'", "\'", $part) . "/";
+				$hierarchyQuery .= "(" . Util::escapePathRegex($part) . "/";
 				$hierarchyQueryEnd .= ")*";
 			}
 			if ($mysql) {
@@ -108,7 +108,6 @@ class Kloudspeaker_PermissionsDao {
 	}
 
 	public function getFilesystemPermissionsForChildren($name, $parent, $userId, $groupIds = NULL) {
-		//$parentLocation = str_replace("'", "\'", str_replace("\\", "\\\\", $parent->location()));	//itemidprovider
 		$table = $this->db->table("permission");
 		$mysql = (strcmp("mysql", $this->db->type()) == 0);
 

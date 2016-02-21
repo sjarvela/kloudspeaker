@@ -625,9 +625,27 @@ define(['kloudspeaker/localization', 'kloudspeaker/dom', 'kloudspeaker/service',
                     });
                     return values;
                 },
+                get: function() {
+                    var items = [];
+                    $l.find("tr").each(function() {
+                        var $row = $(this);
+                        var item = $row[0].data;
+                        items.push(item);
+                    });
+                    return items;
+                },
                 set: function(items) {
                     if ($eh) $eh.detach();
                     $l.empty();
+
+                    if ((!o.remote || !o.remote.path) && sortKey)
+                        items.sort(function(a, b) {
+                            var av = a[sortKey.id];
+                            var bv = b[sortKey.id];
+                            if (av == bv) return 0;
+                            return (sortKey.asc ? 1 : -1) * ((av < bv) ? -1 : 1);
+                        });
+
                     $.each(items, function(i, item) {
                         addItem(item);
                     });
@@ -659,7 +677,11 @@ define(['kloudspeaker/localization', 'kloudspeaker/dom', 'kloudspeaker/service',
                 },
                 refresh: function() {
                     var df = $.Deferred();
-                    if (!o.remote || !o.remote.path) return df.resolve();
+                    if (!o.remote || !o.remote.path) {
+                        if (sortKey)
+                            api.set(api.get());
+                        return df.resolve();
+                    }
                     var queryParams = {
                         count: perPageMax,
                         start: dataInfo ? dataInfo.start : 0,

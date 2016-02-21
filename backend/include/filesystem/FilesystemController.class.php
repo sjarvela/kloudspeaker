@@ -1191,6 +1191,7 @@ class FilesystemController {
 		if (!$item->isFile()) {
 			throw new ServiceException("NOT_A_FILE", $item->path());
 		}
+		$this->assertRights($item, self::PERMISSION_LEVEL_READWRITE, "update content");
 
 		$this->validateAction(FileEvent::UPDATE_CONTENT, $item, array("size" => $size));
 		if ($this->triggerActionInterceptor(FileEvent::UPDATE_CONTENT, $item, array("name" => $item->name(), "target" => $item, "size" => $size))) {
@@ -1198,10 +1199,7 @@ class FilesystemController {
 		}
 
 		Logging::logDebug('updating file contents [' . $item->id() . ']');
-		$this->assertRights($item, self::PERMISSION_LEVEL_READWRITE, "update content");
-
 		$item->put($content);
-
 		$this->env->events()->onEvent(FileEvent::updateContent($item));
 	}
 
@@ -1259,6 +1257,9 @@ class FilesystemController {
 			if (is_array($files['tmp_name'])) {
 				foreach ($files['tmp_name'] as $index => $value) {
 					if (isset($files['error'][$index]) && $files['error'][$index] != UPLOAD_ERR_OK) {
+						if (Logging::isDebug()) {
+							Logging::logDebug("HTML5 multi upload failed: " . $name ? $name : $files['name'][$index] . " " . $files['error'][$index]);
+						}
 						throw new ServiceException("UPLOAD_FAILED", $files['error'][$index]);
 					}
 				}
@@ -1275,6 +1276,10 @@ class FilesystemController {
 				}
 			} else {
 				if (isset($files['error']) && $files['error'] != UPLOAD_ERR_OK) {
+					if (Logging::isDebug()) {
+						Logging::logDebug("HTML5 upload failed: " . $name ? $name : $files['name'] . " " . $files['error']);
+					}
+
 					throw new ServiceException("UPLOAD_FAILED", $files['error']);
 				}
 

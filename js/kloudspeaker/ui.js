@@ -1,4 +1,4 @@
-define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/templates', 'kloudspeaker/utils', 'kloudspeaker/dom'], function(platform, settings, plugins, templates, utils, dom) {
+define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/templates', 'kloudspeaker/utils', 'kloudspeaker/dom', 'knockout'], function(platform, settings, plugins, templates, utils, dom, ko) {
     var app = null;
     var session = null; //TODO remove session (move data to params)
     var loc = null;
@@ -101,7 +101,8 @@ define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins'
             if (!view) _view = _model; //TODO platform
             else if (typeof(view) == "string") _view = view; //TODO platform
 
-            var ctx = (utils.isArray(model) && model.length > 1) ? model[1] : {};
+            var ctx = (utils.isArray(model) && model.length > 1) ? model.slice(1) : [];
+            //if (utils.isArray(ctx) && ctx.length == 1) ctx = ctx[0];
             if (!$v) {
                 var c = {
                     model: _model,
@@ -117,7 +118,7 @@ define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins'
                 platform.composition.compose($target[0], c, {}); //TODO
             } else {
                 require([_model], function(m) {
-                    if (typeof(m) == 'function') m = m(ctx);
+                    if (typeof(m) == 'function') m = m.apply(m, ctx);
                     dom.bind(m, ctx, $v);
                     if (m.attached) m.attached($v, $target);
                     df.resolve(m, $v);
@@ -270,6 +271,22 @@ define(['kloudspeaker/platform', 'kloudspeaker/settings', 'kloudspeaker/plugins'
         $.each(a, function() {
             $('<img/>')[0].src = this;
         });
+    };
+
+    ui.showFullscreenPopup = function(spec) {
+        var $p = $('<div class="kloudspeaker-fullscreen-popup-container"/>').appendTo($("body"));
+        $("body").addClass("no-scroll");
+        var handle = {
+            close: function() {
+                ko.utils.domNodeDisposal.removeNode($p[0]);
+                $p.remove();
+                $("body").removeClass("no-scroll");
+            }
+        };
+        var m = spec.model;
+        if (utils.isArray(m)) spec.model.push(handle);
+        else spec.model = [m, handle];
+        ui.viewmodel(spec.view, spec.model, $p).done(function(m) {});
     };
 
     ui.showError = function(e) {

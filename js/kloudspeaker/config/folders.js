@@ -60,13 +60,16 @@ define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/filesystem
                         content: '<i class="fa fa-folder"></i>'
                     }, {
                         id: "id",
-                        title: loc.get('configAdminTableIdTitle')
+                        title: loc.get('configAdminTableIdTitle'),
+                        sortable: true
                     }, {
                         id: "name",
-                        title: loc.get('configAdminFoldersNameTitle')
+                        title: loc.get('configAdminFoldersNameTitle'),
+                        sortable: true
                     }, {
                         id: "path",
-                        title: loc.get('configAdminFoldersPathTitle')
+                        title: loc.get('configAdminFoldersPathTitle'),
+                        sortable: true
                     }, {
                         id: "edit",
                         title: loc.get('configAdminActionEditTitle'),

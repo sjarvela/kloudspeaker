@@ -443,6 +443,7 @@
 		"configAdminUsersFoldersTitle": "Folders",
 		"configAdminUsersGroupsTitle": "Groups",
 		"configAdminUsersFolderNameTitle": "User Folder Name",
+		"configAdminGroupFolderNameTitle": "Group Folder Name",
 		"configAdminUsersFolderDefaultNameTitle": "Default name",
 		"configAdminUsersGroupNameTitle": "Group name",
 		"configAdminUserAddFolderTitle": "Add User Folder",
@@ -458,6 +459,7 @@
 		"configAdminUserSearchOptionsNameTitle": "Name",
 		"configAdminUserSearchOptionsEmailTitle": "Email",
 		"configAdminUsersActionChangePasswordTitle": "Change Password",
+		"configAdminUsersUserErrorDuplicate": "User with same name or email already exists",
 
 		"configAdminUsersPermissionsTitle": "User Generic/Default Permissions",
 

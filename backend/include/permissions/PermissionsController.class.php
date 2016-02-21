@@ -197,7 +197,7 @@ class Kloudspeaker_PermissionsController {
 		}
 
 		// special case for readonly filesystem, overrides system permissions
-		if (isset($result[FilesystemController::FILESYSTEM_ITEM_ACCESS_PERMISSION]) and !$item->filesystem()->isWritable()) {
+		if (isset($result[FilesystemController::FILESYSTEM_ITEM_ACCESS_PERMISSION]) and !$item->isWritable()) {
 			$values = $this->filesystemPermissions[FilesystemController::FILESYSTEM_ITEM_ACCESS_PERMISSION];
 			$maxIndex = array_search(FilesystemController::PERMISSION_LEVEL_READ, $values);
 			$index = array_search($result[FilesystemController::FILESYSTEM_ITEM_ACCESS_PERMISSION], $values);

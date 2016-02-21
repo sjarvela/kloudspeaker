@@ -1,4 +1,4 @@
-define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'kloudspeaker/ui', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/dom', 'kloudspeaker/localization', 'kloudspeaker/ui/views', 'kloudspeaker/ui/config/listview'], function(session, service, utils, ui, controls, dialogs, dom, loc, views, ConfigListView) {
+define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'kloudspeaker/ui', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/dom', 'kloudspeaker/localization', 'kloudspeaker/ui/views', 'kloudspeaker/plugins', 'kloudspeaker/ui/config/listview'], function(session, service, utils, ui, controls, dialogs, dom, loc, views, plugins, ConfigListView) {
     return function(ctx) {
         var that = this;
 
@@ -59,10 +59,12 @@ define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'k
                         content: '<i class="fa fa-user"></i>'
                     }, {
                         id: "id",
-                        title: loc.get('configAdminTableIdTitle')
+                        title: loc.get('configAdminTableIdTitle'),
+                        sortable: true
                     }, {
                         id: "name",
-                        title: loc.get('configAdminGroupsNameTitle')
+                        title: loc.get('configAdminGroupsNameTitle'),
+                        sortable: true
                     }, {
                         id: "description",
                         title: loc.get('configAdminGroupsDescriptionTitle')
@@ -144,8 +146,8 @@ define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'k
             };
             var onAddGroupUsers = function() {
                 var currentIds = utils.extractValue(users, "id");
-                var selectable = utils.filter(allUsers, function(u) {
-                    return u.is_group === 0 && currentIds.indexOf(u.id) < 0;
+                var selectable = utils.filter(that._allUsers, function(u) {
+                    return (u.is_group === 0 || u.is_group === "0") && currentIds.indexOf(u.id) < 0;
                 });
                 //if (selectable.length === 0) return;
 
@@ -154,6 +156,7 @@ define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'k
                     message: loc.get('configAdminGroupAddUserMessage'),
                     key: "id",
                     initSize: [600, 400],
+                    resizable: true,
                     columns: [{
                         id: "icon",
                         title: "",
@@ -183,7 +186,8 @@ define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'k
                     title: loc.get('configAdminGroupAddFolderTitle'),
                     message: loc.get('configAdminGroupAddFolderMessage'),
                     key: "id",
-                    initSize: [600, 400],
+                    initSize: [800, 500],
+                    resizable: true,
                     columns: [{
                         id: "icon",
                         title: "",
@@ -197,7 +201,7 @@ define(['kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/utils', 'k
                         title: loc.get('configAdminUsersFolderDefaultNameTitle')
                     }, {
                         id: "user_name",
-                        title: loc.get('configAdminUsersFolderNameTitle'),
+                        title: loc.get('configAdminGroupFolderNameTitle'),
                         type: "input"
                     }, {
                         id: "path",

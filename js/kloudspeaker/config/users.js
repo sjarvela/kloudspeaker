@@ -97,7 +97,8 @@ define(['kloudspeaker/session', 'kloudspeaker/plugins', 'kloudspeaker/service', 
                         content: '<i class="fa fa-user"></i>'
                     }, {
                         id: "id",
-                        title: loc.get('configAdminTableIdTitle')
+                        title: loc.get('configAdminTableIdTitle'),
+                        sortable: true
                     }, {
                         id: "name",
                         title: loc.get('configAdminUsersNameTitle'),
@@ -264,7 +265,8 @@ define(['kloudspeaker/session', 'kloudspeaker/plugins', 'kloudspeaker/service', 
                     title: loc.get('configAdminUserAddFolderTitle'),
                     message: loc.get('configAdminUserAddFolderMessage'),
                     key: "id",
-                    initSize: [600, 400],
+                    initSize: [800, 600],
+                    resizable: true,
                     columns: [{
                         id: "icon",
                         title: "",
@@ -312,6 +314,7 @@ define(['kloudspeaker/session', 'kloudspeaker/plugins', 'kloudspeaker/service', 
                     message: loc.get('configAdminUserAddGroupMessage'),
                     key: "id",
                     initSize: [600, 400],
+                    resizable: true,
                     columns: [{
                         id: "icon",
                         title: "",

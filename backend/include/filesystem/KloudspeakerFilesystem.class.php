@@ -24,7 +24,7 @@
 			return FALSE;
 		}
 
-		public function isWritable() {
+		public function isWritable($item) {
 			return TRUE;
 		}
 

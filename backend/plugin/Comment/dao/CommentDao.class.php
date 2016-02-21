@@ -18,20 +18,14 @@ class CommentDao {
 
 	public function getCommentCount($item) {
 		$db = $this->env->db();
-		return $db->query("select count(`id`) from " . $db->table("comment") . " where `item_id` = " . $db->string($item->id(), TRUE))->value(0);
+		return $db->query("select count(`id`) from " . $db->table("comment") . " where item_id = " . $db->string($item->id(), TRUE))->value(0);
 	}
 
 	public function getCommentCountForChildren($parent) {
 		$db = $this->env->db();
-		//$parentLocation = $db->string(str_replace("\\", "\\\\", $parent->location()));	//itemidprovider
 		$pathFilter = $this->env->filesystem()->itemIdProvider()->pathQueryFilter($parent, FALSE, NULL);
 		$itemFilter = "select id from " . $db->table("item_id") . " where ".$pathFilter;
-		/*if (strcasecmp("mysql", $this->env->db()->type()) == 0) {
-			$itemFilter = "select id from " . $db->table("item_id") . " where path REGEXP '^" . $parentLocation . "[^/]+[/]?$'";
-		} else {
-			$itemFilter = "select id from " . $db->table("item_id") . " where REGEX(path, \"#^" . $parentLocation . "[^/]+[/]?$#\")";
-		}*/
-		return $db->query("select item_id, count(`id`) as count from " . $db->table("comment") . " where item_id in (" . $itemFilter . ") group by item_id")->valueMap("item_id", "count");
+		return $db->query("select item_id, count(id) as count from " . $db->table("comment") . " where item_id in (" . $itemFilter . ") group by item_id")->valueMap("item_id", "count");
 	}
 
 	public function getCommentCountForItems($items) {
@@ -46,7 +40,7 @@ class CommentDao {
 
 	public function findItemsWithComment($parent, $text = FALSE, $recursive = FALSE) {
 		$db = $this->env->db();
-		$p = $db->string(str_replace("\\", "\\\\", str_replace("'", "\'", $parent->location())));	//itemidprovider
+		/*$p = $db->string(str_replace("\\", "\\\\", str_replace("'", "\'", $parent->location())));	//itemidprovider
 
 		if ($recursive) {
 			$pathFilter = "i.path like '" . $p . "%'";
@@ -56,7 +50,8 @@ class CommentDao {
 			} else {
 				$pathFilter = "REGEX(i.path, \"#^" . $p . "[^/]+[/]?$#\")";
 			}
-		}
+		}*/
+		$pathFilter = $this->env->filesystem()->itemIdProvider()->pathQueryFilter($parent, $recursive);
 
 		$query = "SELECT item_id, comment from " . $db->table("comment") . " c, " . $db->table("item_id") . " i where c.item_id = i.id AND " . $pathFilter;
 		if ($text) {
@@ -94,7 +89,6 @@ class CommentDao {
 		} else {
 			return $db->update(sprintf("DELETE FROM " . $db->table("comment") . " WHERE item_id in (select id from " . $db->table("item_id") . " where path like '%s%%')", str_replace("'", "\'", $db->string($item->location()))));
 		}
-
 	}
 
 	public function cleanupItemIds($ids) {

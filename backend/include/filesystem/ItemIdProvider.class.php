@@ -66,10 +66,11 @@ class ItemIdProvider {
 		if ($recursive) {
 			$pathFilter = "path like '" . $db->string($this->itemQueryPath($parent)) . "%'";
 		} else {
+			$p = $this->itemQueryPath($parent, TRUE);
 			if (strcmp("mysql", $db->type()) == 0) {
-				$pathFilter = "path REGEXP '^" . $db->string($this->itemQueryPath($parent)) . "[^/]+[/]?$'";
+				$pathFilter = "path REGEXP '^" . $db->string($p) . "[^/]+[/]?$'";
 			} else {
-				$pathFilter = "REGEX(path, \"#^" . $db->string($this->itemQueryPath($parent)) . "[^/]+[/]?$#\")";
+				$pathFilter = "REGEX(path, \"#^" . $db->string($p) . "[^/]+[/]?$#\")";
 			}
 		}
 
@@ -136,21 +137,22 @@ class ItemIdProvider {
 		}
 	}
 
-	public function itemQueryPath($i) {
+	public function itemQueryPath($i, $escape = FALSE) {
 		$path = is_string($i) ? $i : $i->location();
 		if ($this->convertPathDelimiter) {
 			$path = str_replace(DIRECTORY_SEPARATOR, self::PATH_DELIMITER, $path);
 		}
+		if ($escape) $path = Util::escapePathRegex($path, TRUE);
 		return $path;
 	}
 
 	public function pathQueryFilter($parent, $recursive = FALSE, $prefix = "i") {
-		$p = $this->env->db()->string(str_replace("'", "\'", $this->itemQueryPath($parent)));
 		$col = ($prefix != NULL ? $prefix.".path" : "path");
 
 		if ($recursive) {
-			$pathFilter = $col." like '" . $p . "%'";
+			$pathFilter = $col." like '" . $this->env->db()->string(str_replace("'", "\'", $this->itemQueryPath($parent))) . "%'";
 		} else {
+			$p = $this->itemQueryPath($parent, TRUE);
 			if (strcasecmp("mysql", $this->env->db()->type()) == 0) {
 				$pathFilter = $col." REGEXP '^" . $p . "[^/]+[/]?$'";
 			} else {

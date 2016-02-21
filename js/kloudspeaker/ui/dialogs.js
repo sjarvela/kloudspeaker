@@ -117,6 +117,7 @@ define(['kloudspeaker/session', 'kloudspeaker/localization', 'kloudspeaker/ui/co
         dh.custom({
             title: spec.title,
             initSize: spec.initSize,
+            resizable: !!spec.resizable,
             content: $("#kloudspeaker-tmpl-dialog-select").tmpl({
                 message: spec.message
             }),

@@ -1,7 +1,7 @@
 define(['kloudspeaker/settings', 'kloudspeaker/events', 'kloudspeaker/localization'], function(settings, events, loc) {
     var session = null;
-    var dialogs = null;   //TODO remove
-    var ui = null;    //TODO remove
+    var dialogs = null; //TODO remove
+    var ui = null; //TODO remove
 
     var _baseUrl = "";
     var _limitedHttpMethods = false;
@@ -16,8 +16,8 @@ define(['kloudspeaker/settings', 'kloudspeaker/events', 'kloudspeaker/localizati
 
     st.setup = function() {
         session = require('kloudspeaker/session');
-        dialogs = require('kloudspeaker/ui/dialogs');   //TODO remove
-        ui = require('kloudspeaker/ui');    //TODO remove
+        dialogs = require('kloudspeaker/ui/dialogs'); //TODO remove
+        ui = require('kloudspeaker/ui'); //TODO remove
     }
 
     st.initialize = function(baseUrl) {
@@ -27,7 +27,12 @@ define(['kloudspeaker/settings', 'kloudspeaker/events', 'kloudspeaker/localizati
     st.url = function(u, full) {
         if (u.startsWith('http')) return u;
         var url = settings["service-path"] + "r.php";
-        url = url + (_serviceParam ? ("?sp=" + u) : ("/" + u));
+        var path = u;
+
+        if (_serviceParam) path = "?sp=" + path.replace('?', '&');
+        else path = "/" + path;
+
+        url = url + path;
         if (!full) return url;
         return _baseUrl + url;
     };
@@ -93,7 +98,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/events', 'kloudspeaker/localizati
                 var failContext = {
                     handled: false
                 }
-                
+
                 if (error.code == 100 && s.user) {
                     session.end(true);
                     failContext.handled = true;

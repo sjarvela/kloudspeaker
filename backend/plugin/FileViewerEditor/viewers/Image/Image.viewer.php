@@ -13,5 +13,9 @@
 		protected function getHtml($item, $full) {
 			return '<img src="'.$this->getContentUrl($item).'">';
 		}
+
+		protected function getContentType() {
+			return "image";
+		}
 	}
 ?>

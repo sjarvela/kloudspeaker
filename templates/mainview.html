@@ -304,38 +304,42 @@
 <script id="kloudspeaker-tmpl-main-itemcontext-details-selector" type="text/x-jquery-tmpl">
     <li id="kloudspeaker-itemcontext-details-selector-${id}" class="kloudspeaker-itemcontext-details-selector"><a href="javascript: void(0);">${title}</a></li>
 </script>
-<script id="kloudspeaker-tmpl-fileviewereditor-popup" type="text/x-jquery-tmpl">
-    <div class="lightbox hide fade" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class='lightbox-header'>
-            <button type="button" class="close" aria-hidden="true">&times;</button>
-        </div>
-        <div class='lightbox-content'>
-            <div class="carousel slide">
-                <div class="carousel-inner">
-                    {{each items}}
-                    <div id="kloudspeaker-fileviewereditor-viewer-item-${$value.item.id}" class="kloudspeaker-fileviewereditor-viewer-item item {{if $value.init}}active{{/if}}">
-                        <div class="kloudspeaker-fileviewereditor-viewer-item-content loading">
-                        </div>
-                        <div class="carousel-caption">
-                            <h4>${$value.item.name}</h4>
-                            <div class="kloudspeaker-fileviewereditor-viewer-tools">
-                                {{if $value.full}}
-                                <a href="javascript: void(0);" class="kloudspeaker-fileviewereditor-viewer-item-viewinnewwindow localized" text-key="fileViewerEditorViewInNewWindowTitle"></a>
-                                {{/if}} {{if $value.edit}}
-                                <a href="javascript: void(0);" class="kloudspeaker-fileviewereditor-viewer-item-edit localized" text-key="fileViewerEditorViewEditTitle"></a>
-                                {{/if}}
-                            </div>
-                        </div>
-                    </div>
-                    {{/each}}
-                </div>
-                {{if ($item.data.items.length > 1)}}
-                <a class="carousel-control left" href="javascript: void(0);">&lsaquo;</a>
-                <a class="carousel-control right" href="javascript: void(0);">&rsaquo;</a> {{/if}}
-            </div>
-        </div>
-    </div>
-</script>
+
+<!--script id="kloudspeaker-tmpl-fileviewereditor-popup" type="text/x-jquery-tmpl">
+	<div class="kloudspeaker-fileviewereditor-popup lightbox hide fade" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class='lightbox-header'>
+			<button type="button" class="close" aria-hidden="true">&times;</button>
+		</div>
+		<div class='lightbox-content'>
+			<div class="carousel slide">
+			  <div class="carousel-inner">
+			  	{{each items}}
+			    	<div id="kloudspeaker-fileviewereditor-viewer-item-${$value.item.id}" class="kloudspeaker-fileviewereditor-viewer-item item {{if $value.init}}active{{/if}}">
+			    		<div class="kloudspeaker-fileviewereditor-viewer-item-content loading">
+			    		</div>
+			    		<div class="carousel-caption">
+			    			<h4>${$value.item.name}</h4>
+			    			<div class="kloudspeaker-fileviewereditor-viewer-tools">
+			    				{{if $value.full}}
+			    				<a href="javascript: void(0);" class="kloudspeaker-fileviewereditor-viewer-item-viewinnewwindow localized" text-key="fileViewerEditorViewInNewWindowTitle"></a>
+			    				{{/if}}
+			    				{{if $value.edit}}
+			    				<a href="javascript: void(0);" class="kloudspeaker-fileviewereditor-viewer-item-edit localized" text-key="fileViewerEditorViewEditTitle"></a>
+			    				{{/if}}
+			    			</div>
+			    		</div>
+			    	</div>
+			    {{/each}}
+			  </div>
+			  {{if ($item.data.items.length > 1)}}
+			  <a class="carousel-control left" href="javascript: void(0);">&lsaquo;</a>
+			  <a class="carousel-control right" href="javascript: void(0);">&rsaquo;</a>
+			  {{/if}}
+			</div>
+		</div>
+	</div>
+</script-->
+
 <script id="kloudspeaker-tmpl-permission-editor" type="text/x-jquery-tmpl">
     <div id="kloudspeaker-pluginpermissions-editor-content">
         <div class="kloudspeaker-pluginpermissions-editor-permission-selector">

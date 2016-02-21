@@ -15,17 +15,17 @@ define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/ui/views'
 
     var onContentResize = function() {
         utils.invokeLater(function() {
-            var y = $("#kloudspeaker-mainview-header").height();
-            that.$dbE.css("top", y + "px");
-
             var w = $(window).width();
+            var y = $("#kloudspeaker-mainview-header").height();
+            if (w < 768)
+                y += $("#kloudspeaker-mainview-navlist-container").outerHeight() + 10;
+            that.$dbE.css("top", y + "px");
+            
             var h = $(window).height() - y;
-            if (w < 980) h = $("body").height() - y;
+            if (w < 980) {
+                h = $("body").height() - y;
+            }
 
-            console.log({
-                w: w,
-                h: h
-            });
             that.$dbE.height(h);
         });
 

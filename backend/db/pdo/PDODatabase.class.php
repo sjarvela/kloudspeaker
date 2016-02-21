@@ -171,6 +171,9 @@ class PDODatabase {
 		}
 
 		$sql = str_replace('{TABLE_PREFIX}', (isset($this->tablePrefix) and $this->tablePrefix != '') ? $this->tablePrefix : '', $sql);
+		if ($this->type == "mysql") {
+			$sql = str_replace('{ENGINE}', (isset($this->engine) and $this->engine != '') ? $this->engine : 'innodb', $sql);
+		}
 		$this->queries($sql);
 	}
 
