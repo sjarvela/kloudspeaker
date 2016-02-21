@@ -82,18 +82,16 @@ define(['kloudspeaker/localization', 'kloudspeaker/dom', 'kloudspeaker/service',
 
             $toggle.parent().append(createPopupItems(a.items));
 
-            $toggle.dropdown({
-                onshow: function($p) {
-                    if (!$mnu) $mnu = $($p.find(".dropdown-menu")[0]);
-                    if (!a.parentPopupId)
-                        popupId = ui.activePopup(api);
-                    if (!popupItems) $mnu.addClass("loading");
-                    if (a.onShow) a.onShow(api, popupItems);
-                },
-                onhide: function() {
-                    hidePopup();
-                    if (a.dynamic) popupItems = false;
-                }
+            $toggle.dropdown().parent().on('show.bs.dropdown', function() {
+                var $p = $(this);
+                if (!$mnu) $mnu = $($p.find(".dropdown-menu")[0]);
+                if (!a.parentPopupId)
+                    popupId = ui.activePopup(api);
+                if (!popupItems) $mnu.addClass("loading");
+                if (a.onShow) a.onShow(api, popupItems);
+            }).on('hidden.bs.dropdown', function() {
+                hidePopup();
+                if (a.dynamic) popupItems = false;
             });
             initPopupItems($e, a.items, onItem);
         },
