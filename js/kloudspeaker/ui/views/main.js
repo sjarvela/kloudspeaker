@@ -48,6 +48,13 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             });
         }
 
+        that._getViewTitle = function(v) {
+            var title = v.title;
+            if (typeof(title) === "string" && title.startsWith("i18n:")) title = loc.get(title.substring(5));
+            if (utils.isArray(title)) title = loc.get(title[0], title.slice(1));
+            return title;
+        }
+
         that.onLoad = function(viewId) {
             $(window).resize(that.onResize);
             that.onResize();
@@ -65,21 +72,26 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             $.each(that._views, function(i, v) {
                 if (v.init) v.init(that);
 
-                var title = v.title;
-                if (typeof(title) === "string" && title.startsWith("i18n:")) title = loc.get(title.substring(5));
-                if (utils.isArray(title)) title = loc.get(title[0], title.slice(1));
-
                 menuitems.push({
                     icon: v.icon,
-                    title: title
+                    title: that._getViewTitle(v),
+                    view: v
                 });
             });
 
-            var $mb = $("#kloudspeaker-mainview-menu");
-            var $mbitems = dom.template("kloudspeaker-tmpl-main-menubar", menuitems).appendTo($mb);
-            $mbitems.click(function() {
-                var i = $mbitems.index($(this));
-                that.activateView(that._views[i]);
+            ui.controls.dropdown({
+                element: $('#kloudspeaker-mainview-dropdown'),
+                items: menuitems,
+                onItem: function(i) {
+                    that.activateView(i.view);
+                }
+            });
+            that._subviewmenu = ui.controls.dropdown({
+                element: $('#kloudspeaker-mainsubview-dropdown'),
+                items: [],
+                onItem: function(i) {
+                    if (that._subviewcb) that._subviewcb(i);
+                }
             });
 
             if (that._views.length > 0) {
@@ -126,6 +138,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             ui.hideActivePopup();
             if (that._currentView && that._currentView.onDeactivate) that._currentView.onDeactivate();
             $("#kloudspeaker-mainview-navlist-content").empty();
+            that.showSubviewList(false);
 
             that._currentView = v;
 
@@ -149,6 +162,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 if (v.nav) {
                     var navBar = false;
                     var navBarItems = {};
+                    var subViews = [];
 
                     _.each(v.nav, function(navItem) {
                         if (navItem.type == 'heading') {
@@ -158,41 +172,52 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                                 items: []
                             };
                         } else if (navItem.type == 'link') {
-                            navBar.items.push({
+                            var i = {
                                 title: navItem.title,
                                 callback: function() {
                                     window.location.href = navItem.url;
                                 }
-                            });
+                            };
+                            navBar.items.push(i);
+                            subViews.push(i);
                         } else {
                             var sv = that._subviewsById[v.id + "/" + navItem.id];
                             var title = navItem.title || sv.title;
                             if (typeof(title) === "string" && title.startsWith("i18n:")) title = loc.get(title.substring(5));
                             if (utils.isArray(title)) title = loc.get(title[0], title.slice(1));
 
-                            navBar.items.push({
+                            var i = {
                                 title: title,
                                 callback: function() {
                                     activateSubView(v, sv);
                                 }
-                            });
+                            };
+                            navBar.items.push(i);
+                            subViews.push(i);
                         }
                     });
                     if (navBar) that.addNavBar(navBar);
+                    if (subViews) that.showSubviewList(subViews, function(sv) {
+                        activateSubView(v, sv);
+                    });
                 }
 
                 if (id && that._subviewsById[v.id + "/" + id]) that._doActivate(that._subviewsById[v.id + "/" + id], v);
                 else that._doActivate(v);
             }
-            var $mnu = $("#kloudspeaker-mainview-menu");
-            var $items = $mnu.find(".kloudspeaker-mainview-menubar-item").removeClass("active");
-            var i = that._views.indexOf(v);
-            $($items.get(i)).addClass("active");
+
+            //TODO template
+            var aih = that._getViewTitle(v);
+            if (v.icon) aih = "<i class='fa fa-" + v.icon + "'></i>&nbsp;" + aih;
+            var $ai = $("#kloudspeaker-mainview-dropdown > a > span").html(aih);
         };
 
         that._doActivate = function(v, parent) {
             var $content = $("#kloudspeaker-mainview-viewcontent").empty();
             var $tools = $("#kloudspeaker-mainview-viewtools").empty();
+
+            if (parent) that.setActiveSubview(v);
+            else that.setActiveSubview(false);
 
             if (v.model) {
                 var model = v.model;
@@ -213,6 +238,25 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 });
             }
         };
+
+        that.showSubviewList = function(list, cb) {
+            that._subviewmenu.items(list || []);
+            that._subviewcb = cb;   //TODO remove when legacy views rewritten
+            if (list)
+                $("#kloudspeaker-mainsubview-menu").show();
+            else $("#kloudspeaker-mainsubview-menu").hide();
+        }
+
+        that.setActiveSubview = function(sv) {
+            if (!sv) {
+                $("#kloudspeaker-mainsubview-dropdown > a > span").empty();
+                return;
+            }
+            //TODO template
+            var aih = that._getViewTitle(sv);
+            if (sv.icon) aih = "<i class='fa fa-" + sv.icon + "'></i>&nbsp;" + aih;
+            var $ai = $("#kloudspeaker-mainsubview-dropdown > a > span").html(aih);
+        }
 
         that.onNotification = function(spec) {
             var $trg = (spec && spec.target) ? ((typeof spec.target === 'string') ? $("#" + spec.target) : spec.target) : $("#kloudspeaker-mainview-content");

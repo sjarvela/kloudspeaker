@@ -135,6 +135,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
         });
 
         that.init = function(mainview) {
+            that._mainview = mainview;
             that.title = loc.get('mainviewMenuTitle');
             that.icon = "file-o";
             that._viewStyle = 0;
@@ -326,6 +327,19 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 that.showNoRoots();
                 return;
             }
+
+            var subviews = [];
+            _.each(fs.roots, function(r) {
+                subviews.push({
+                    title: r.name,
+                    icon: 'folder',
+                    item: r
+                });
+            })
+
+            h.mainview.showSubviewList(subviews, function(f) {
+                that.changeToFolder(f.item);
+            });
 
             var params = request.getParams();
             if (params.path) {
@@ -645,6 +659,12 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
         };
 
         that._setFolder = function(folder, data) {
+            var rootFolder = (folder && fs.rootsById[folder.root_id]) ? fs.rootsById[folder.root_id] : null;
+            that._mainview.setActiveSubview(rootFolder ? {
+                icon: 'folder',
+                title: rootFolder.name
+            } : false);
+
             that._currentFolder = folder;
             that._currentFolderType = (folder && folder.type) ? folder.type : null;
             that._currentFolderData = data;

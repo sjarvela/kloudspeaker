@@ -68,6 +68,10 @@ define(['kloudspeaker/localization', 'kloudspeaker/dom', 'kloudspeaker/service',
             var api = {
                 hide: hidePopup,
                 items: function(items) {
+                    if (!$mnu) {
+                        popupItems = items;
+                        return;
+                    }
                     $mnu.remove();
                     $mnu = createPopupItems(items);
                     $e.removeClass("loading").append($mnu);
@@ -84,10 +88,14 @@ define(['kloudspeaker/localization', 'kloudspeaker/dom', 'kloudspeaker/service',
 
             $toggle.dropdown({
                 onshow: function($p) {
-                    if (!$mnu) $mnu = $($p.find(".dropdown-menu")[0]);
+                    var itemsInitialized = !!$mnu;
+                    if (!$mnu)
+                        $mnu = $($p.find(".dropdown-menu")[0]);
                     if (!a.parentPopupId)
                         popupId = ui.activePopup(api);
                     if (!popupItems) $mnu.addClass("loading");
+                    else if (!itemsInitialized && popupItems) api.items(popupItems);
+                    
                     if (a.onShow) a.onShow(api, popupItems);
                 },
                 onhide: function() {
@@ -96,6 +104,7 @@ define(['kloudspeaker/localization', 'kloudspeaker/dom', 'kloudspeaker/service',
                 }
             });
             initPopupItems($e, a.items, onItem);
+            return api;
         },
 
         popupmenu: function(a) {

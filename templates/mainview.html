@@ -8,7 +8,16 @@
 			<div id="kloudspeaker-mainview-logo" class="brand"></div>
 			
 			<div class="nav-collapse collapse navbar-responsive-collapse">
-				<ul id="kloudspeaker-mainview-menu" class="kloudspeaker-mainview-menubar nav pull-left"></ul>				
+				<ul id="kloudspeaker-mainview-menu" class="kloudspeaker-mainview-menubar nav pull-left">
+                    <li id="kloudspeaker-mainview-dropdown" class="dropdown">
+                        <a href="#" class="dropdown-toggle"><span></span>&nbsp;<b class="caret"></b></a>
+                    </li>
+                </ul>
+                <ul id="kloudspeaker-mainsubview-menu" class="kloudspeaker-mainview-menubar nav pull-left" style="display: none">
+                    <li id="kloudspeaker-mainsubview-dropdown" class="dropdown">
+                        <a href="#" class="dropdown-toggle"><span></span>&nbsp;<b class="caret"></b></a>
+                    </li>
+                </ul>				
 				<ul id="kloudspeaker-mainview-user" class="nav pull-right"></ul>
 				<div id="kloudspeaker-mainview-viewtools" class="navbar-form form-inline pull-right"></div>
 			</div>
@@ -64,9 +73,9 @@
 	</div>
 </script>
 
-<script id="kloudspeaker-tmpl-main-menubar" type="text/x-jquery-tmpl">
+<!--script id="kloudspeaker-tmpl-main-menubar" type="text/x-jquery-tmpl">
 	<li class="kloudspeaker-mainview-menubar-item" title="${title}"><a href="javascript: void(0);">{{if icon}}<span class="kloudspeaker-mainview-menubar-item-icon"><i class="fa fa-${icon}"></i></span>{{/if}}<span class="kloudspeaker-mainview-menubar-item-title">${title}</span></a></li>
-</script>
+</script-->
 
 <script id="kloudspeaker-tmpl-main-navbar" type="text/x-jquery-tmpl">
 	<ul class="kloudspeaker-mainview-navbar nav nav-list">

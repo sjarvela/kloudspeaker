@@ -6,9 +6,11 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
         this._settings = false;
         this._views = [];
         this._adminViews = [];
+        this._allViews = [];
         this._adminViewsLoaded = false;
 
         this.init = function(mv) {
+            that._mainview = mv;
             that.title = loc.get('configviewMenuTitle');
             that.icon = "cogs";
 
@@ -38,6 +40,11 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                     that._views.push(v);
                 }
             });
+
+            that._allViews = that._views.concat(that._adminViews);
+            _.each(that._allViews, function(v) {
+                v.title = that._getViewTitle(v);
+            });
         }
 
         this.onResize = function() {}
@@ -50,12 +57,8 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
 
                 var navBarItems = [];
                 $.each(that._views, function(i, v) {
-                    var title = v.title;
-                    if (typeof(title) === "string" && title.startsWith("i18n:")) title = loc.get(title.substring(5));
-                    if (utils.isArray(title)) title = loc.get(title[0], title.slice(1));
-
                     navBarItems.push({
-                        title: title,
+                        title: that._getViewTitle(v),
                         obj: v,
                         callback: function() {
                             that._activateView(v);
@@ -66,6 +69,10 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 that._userNav = h.addNavBar({
                     title: loc.get("configViewUserNavTitle"),
                     items: navBarItems
+                });
+
+                that._mainview.showSubviewList(that._allViews, function(v) {
+                    that._activateView(v);
                 });
 
                 that.onResize();
@@ -89,12 +96,8 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
 
                 var navBarItems = [];
                 $.each(that._adminViews, function(i, v) {
-                    var title = v.title;
-                    if (typeof(title) === "string" && title.startsWith("i18n:")) title = loc.get(title.substring(5));
-                    if (utils.isArray(title)) title = loc.get(title[0], title.slice(1));
-
                     navBarItems.push({
-                        title: title,
+                        title: that._getViewTitle(v),
                         obj: v,
                         callback: function() {
                             that._activateView(v, true);
@@ -110,6 +113,13 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
 
             that._onInitDone(h);
         };
+
+        this._getViewTitle = function(v) {
+            var title = v.title;
+            if (typeof(title) === "string" && title.startsWith("i18n:")) title = loc.get(title.substring(5));
+            if (utils.isArray(title)) title = loc.get(title[0], title.slice(1));
+            return title;
+        }
 
         this._findView = function(id) {
             var found = false;
@@ -157,6 +167,8 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             }
             if (admin) that._adminNav.setActive(v);
             else that._userNav.setActive(v);
+
+            that._mainview.setActiveSubview(v);
 
             that.showLoading(false);
 
