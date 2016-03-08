@@ -72,7 +72,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 });
 
                 that._mainview.showSubviewList(that._allViews, function(v) {
-                    that._activateView(v);
+                    that._activateView(v, !!v.admin);
                 });
 
                 that.onResize();
