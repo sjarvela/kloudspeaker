@@ -74,7 +74,7 @@ class ResponseHandler {
 		$this->notifyResponse();
 	}
 
-	public function fail($code, $error, $details = NULL) {
+	public function fail($code, $error, $details = NULL, $data = NULL) {
 		$this->output->sendResponse(new Response(403, "json", $this->getErrorResponse(array($code, $error, 403), $details, $data)));
 		$this->notifyResponse();
 	}

@@ -141,6 +141,11 @@ class ConfigurationDao {
 		return $result->firstRow();
 	}
 
+	public function getUsersByEmail($email) {
+		$result = $this->db->query(sprintf("SELECT id, name, user_type, lang, email, ua.type as auth FROM " . $this->db->table("user") . " left outer join " . $this->db->table("user_auth") . " ua on id=ua.user_id WHERE (email='%s') and is_group=0", $this->db->string($email)));
+		return $result->rows();
+	}
+
 	public function getAllUsers($groups = FALSE, $usersGroups = FALSE) {
 		if ($usersGroups) {
 			$rows = $this->db->query("SELECT u.id as id, u.name as name, u.lang as lang, u.email as email, u.user_type as user_type, u.expiration as expiration, u.is_group as is_group, ug.group_id as group_id FROM " . $this->db->table("user") . " u LEFT OUTER JOIN " . $this->db->table("user_group") . " ug on ug.user_id = u.id ORDER BY id ASC")->rows();

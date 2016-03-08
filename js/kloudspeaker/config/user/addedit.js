@@ -75,7 +75,7 @@ define(['kloudspeaker/core/user/repository', 'kloudspeaker/settings', 'kloudspea
                     var effectiveAuth = model.auth() || model.authOptions[0];
                     var pwRequired = (effectiveAuth === 'pw');
                     if (pwRequired && (!model.password() || model.password().length === 0)) {
-                        model.passwordMissing(true);    //TODO dynamic validation
+                        model.passwordMissing(true); //TODO dynamic validation
                         return;
                     }
                 }
@@ -95,14 +95,21 @@ define(['kloudspeaker/core/user/repository', 'kloudspeaker/settings', 'kloudspea
                 if (model.newUser) {
                     user.password = model.password();
                     repository.addUser(user).done(this.complete).fail(function(e) {
-                        if (e.code == 101) {
+                        if (e.code == 301) {
                             this.handled = true;
                             dialogs.error({
                                 message: texts.get('configAdminUsersUserErrorDuplicate')
                             });
                         }
                     });
-                } else repository.updateUser(model.user.id, user).done(this.complete);
+                } else repository.updateUser(model.user.id, user).done(this.complete).fail(function(e) {
+                    if (e.code == 301) {
+                        this.handled = true;
+                        dialogs.error({
+                            message: texts.get('configAdminUsersUserErrorDuplicate')
+                        });
+                    }
+                });
             },
             showLanguages: showLanguages,
 
