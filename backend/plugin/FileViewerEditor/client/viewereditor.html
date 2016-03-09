@@ -9,7 +9,9 @@
             <!-- /ko -->
             <!-- ko if: editing -->
                 <button type="button" data-bind="click: save" data-i18n="[title]fileViewerEditor.save"><i class="fa fa-save"></i></button>
+                <!-- ko if: item().spec.view -->
                 <button type="button" data-bind="click: cancelEdit" data-i18n="[title]fileViewerEditor.cancel"><i class="fa fa-eye"></i></button>
+                <!-- /ko -->
             <!-- /ko -->
             <!-- ko if: fullAvailable -->
                 <button type="button" data-bind="click: viewFull" data-i18n="[title]fileViewerEditor.fullscreen"><i class="fa fa-arrows-alt"></i></button>
