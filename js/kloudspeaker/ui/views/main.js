@@ -186,14 +186,14 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                             if (typeof(title) === "string" && title.startsWith("i18n:")) title = loc.get(title.substring(5));
                             if (utils.isArray(title)) title = loc.get(title[0], title.slice(1));
 
-                            var i = {
+                            var svi = {
                                 title: title,
                                 callback: function() {
                                     activateSubView(v, sv);
                                 }
                             };
-                            navBar.items.push(i);
-                            subViews.push(i);
+                            navBar.items.push(svi);
+                            subViews.push(svi);
                         }
                     });
                     if (navBar) that.addNavBar(navBar);
