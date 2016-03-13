@@ -178,7 +178,7 @@ define(['knockout', 'text', 'durandal/system', 'durandal/viewlocator', 'durandal
                     });
                 }
                 //TODO map
-                console.log("Resolve view:" + moduleId + " -> " + path);
+                //console.log("Resolve view:" + moduleId + " -> " + path);
                 return path;
             };
         });
