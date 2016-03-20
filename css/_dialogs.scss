@@ -1,0 +1,82 @@
+.modal .ui-resizable-s {
+    bottom: 0;
+}
+
+.modal .ui-resizable-e {
+    right: 0;
+}
+
+.modal-footer .info {
+    float: left;
+}
+
+.kloudspeaker-inputdialog-input {
+    margin-top: 8px;
+}
+
+.kloudspeaker-itemselector-tree {
+    margin-top: 18px;
+    width: 512px;
+    height: 300px;
+    overflow: auto;
+    padding: 8px;
+    background-color: #fcfcfc;
+}
+
+.kloudspeaker-itemselector-item {
+    display: inline-block;
+    float: left;
+    clear: both;
+}
+
+.kloudspeaker-itemselector-item-indentation {
+    float: left;
+    display: inline-block;
+}
+
+.kloudspeaker-itemselector-item-indentation-step {
+    float: left;
+    width: 20px;
+    height: 10px;
+    display: inline-block;
+}
+
+.kloudspeaker-itemselector-folder-indicator {
+    float: left;
+    display: inline-block;
+    margin-right: 2px;
+    width: 10px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.kloudspeaker-itemselector-item-name {
+    display: inline-block;
+    font-size: 12px;
+    padding-left: 20px;
+    padding-right: 4px;
+    float: left;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.kloudspeaker-itemselector-item.folder .kloudspeaker-itemselector-item-name {
+    background: url(images/folder.png) no-repeat 2px 3px;
+}
+
+.kloudspeaker-itemselector-item.file .kloudspeaker-itemselector-item-name {
+    background: url(images/mimetypes/empty.png) no-repeat 13px 3px;
+    padding-left: 32px;
+}
+
+.kloudspeaker-itemselector-item.selected > .kloudspeaker-itemselector-item-name {
+    background-color: #dedaff;
+}
+
+.kloudspeaker-itemselector-item.root > .kloudspeaker-itemselector-item-name {
+    font-weight: bold;
+}
+
+#kloudspeaker-itemdetails-content {
+    font-family: "Arial";
+}

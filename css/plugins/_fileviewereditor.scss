@@ -1,0 +1,22 @@
+.kloudspeaker-fileviewereditor-popup {
+	.carousel {
+		margin: 0;
+	}
+
+	.carousel-caption {
+	    display: block;
+	    position: relative;
+	}
+
+	.kloudspeaker-fileviewereditor-viewer-item {
+		.kloudspeaker-fileviewereditor-viewer-item-content {
+		    overflow: auto;
+		    min-width: 300px;
+		    min-height: 200px;
+		}
+	}
+
+	.fileviewereditor-editor-content {
+	    height: 100%;
+	}
+}

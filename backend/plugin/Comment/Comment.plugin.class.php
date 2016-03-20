@@ -46,6 +46,10 @@ class Comment extends PluginBase {
 		return $this->handler;
 	}
 
+	public function getClientModuleId() {
+		return "kloudspeaker/comment";
+	}
+
 	public function __toString() {
 		return "CommentPlugin";
 	}

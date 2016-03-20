@@ -28,7 +28,7 @@
 		protected function processEditorRequest($item) {
 			$html = '<html>
 				<head>
-					<title>'.$item->name().'</title>
+					<title>'.(is_array($item) ? $item["name"] : $item->name()).'</title>
 					<meta content="text/html; charset=utf-8" http-equiv="content-type" />
 					<script type="text/javascript" src="'.$this->getCommonResourcesUrl().'jquery-1.4.2.min.js"></script>
 					<script type="text/javascript" src="'.$this->getCommonResourcesUrl().'json.js"></script>
@@ -40,7 +40,7 @@
 								type: "POST",
 								processData: false,
 								contentType: "text/plain",
-								url: "'.$this->getServiceUrl("filesystem", array($item->id(), 
+								url: "'.$this->getServiceUrl("filesystem", array((is_array($item) ? $item["id"] : $item->id()), 
 "content"), TRUE).'",
 								data: data,
 								success: function(result) {

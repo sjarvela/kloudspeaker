@@ -19,6 +19,22 @@
 			$this->name = $name;
 			$this->filesystemInfo = $filesystemInfo;
 		}
+
+		public function allowUnassigned() {
+			return FALSE;
+		}
+
+		public function isWritable($item) {
+			return TRUE;
+		}
+
+		public function getOverriddenItemPermission($item, $name) {
+			return FALSE;
+		}
+
+		public function getOverriddenChildrenPermissions($name, $parent) {
+			return FALSE;
+		}
 		
 		abstract function type();
 		
@@ -88,8 +104,8 @@
 			return array();
 		}
 				
-		protected function ignoredItems($path) {
-			return $this->filesystemInfo->ignoredItems($this, $path);
+		protected function isItemIgnored($parentPath, $name, $path) {
+			return $this->filesystemInfo->isItemIgnored($this, $parentPath, $name, $path);
 		}
 		
 		protected function itemWithPath($path) {

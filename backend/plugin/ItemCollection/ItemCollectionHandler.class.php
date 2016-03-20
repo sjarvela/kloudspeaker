@@ -42,17 +42,12 @@ class ItemCollectionHandler {
 
 		$am = $ap->getArchiveManager();
 		$af = $am->compress($items);
-		$key = str_replace(".", "", uniqid('', true));
 
 		$this->env->events()->onEvent(MultiFileEvent::download($items));
-
-		Logging::logDebug("Storing prepared package " . $key . ":" . $af);
-		$this->env->session()->param($key, $af);
-
-		return array("key" => $key);
+		return $af;
 	}
 
-	public function processGetShare($id, $share, $params) {
+	/*public function processGetShare($id, $share, $params) {
 		if ($params == NULL or !isset($params["key"])) {
 			throw new ServiceException("INVALID_REQUEST");
 		}
@@ -79,15 +74,19 @@ class ItemCollectionHandler {
 		$mobile = ($this->env->request()->hasParam("m") and strcmp($this->env->request()->param("m"), "1") == 0);
 		$this->env->response()->sendFile($file, $name . "." . $type, $type, $mobile, filesize($file));
 		unlink($file);
-	}
+	}*/
 
-	public function getShareInfo($id, $share) {
+	public function getShareItem($id) {
 		$ic = $this->dao()->getItemCollection($id);
 		if (!$ic) {
 			Logging::logDebug("Invalid share request, no item collection found with id " . $id);
 			return NULL;
 		}
-		return array("name" => $ic["name"], "type" => "prepared_download");
+		return array("name" => $ic["name"]);
+	}
+
+	public function getShareTypes($id) {
+		return array("prepared_download");
 	}
 
 	/* -> share handler */
@@ -148,7 +147,8 @@ class ItemCollectionHandler {
 				$this->dao()->deleteCollectionItems($item);
 			}
 		} else if (strcmp(UserEvent::EVENT_TYPE_USER, $type) == 0 and $subType === UserEvent::USER_REMOVE) {
-			$ids = $this->dao()->deleteUserItemCollections($e->id());
+			$userId = $e->id();
+			$ids = $this->dao()->deleteUserItemCollections($userId);
 			if ($this->env->plugins()->hasPlugin("Share") and count($ids) > 0) {
 				foreach ($ids as $id) {
 					$this->env->plugins()->getPlugin("Share")->deleteSharesForItem("ic_" . $id);

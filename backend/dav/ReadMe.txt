@@ -16,7 +16,7 @@ CONFIGURATION
 
 	Modify "index.php" and update variable $BASE_URI according to your configuration. The value is the access url without protocol or host ip.
 
-	For example, if kloudspeaker backend is located at "http://host/kloudspeaker/backend", the base uri should be "/kloudspeaker/backend/dav/" (assuming rewrite applies, "/kloudspeaker/backend/dav/index.php/" if not).
+	For example, if Kloudspeaker backend is located at "http://host/kloudspeaker/backend", the base uri should be "/kloudspeaker/backend/dav/" (assuming rewrite applies, "/kloudspeaker/backend/dav/index.php/" if not).
 	
 	If htaccess rules are not available, you can also use Apache alias. For example following alias in Apache configuration will do the same (without the quotes):
 	"alias  /kloudspeaker/backend/dav  /kloudspeaker/backend/dav/index.php"
@@ -27,7 +27,7 @@ CONFIGURATION
 
 3) Authentication
 
-	Dav plugin default authentication method is digest authentication. If basic authentication is required (not recommended), set "$BASIC_AUTH = TRUE;" in index.php
+	Currently only basic auth is possible.
 
 4) Locking
 

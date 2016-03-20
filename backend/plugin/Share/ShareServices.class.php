@@ -20,11 +20,29 @@ class ShareServices extends ServicesBase {
 	}
 
 	public function processGet() {
-		if (count($this->path) > 2 or (strcmp($this->path[0], 'items') != 0 and strcmp($this->path[0], 'all') != 0)) {
+		$itemsOrAll = (strcmp($this->path[0], 'items') == 0 or strcmp($this->path[0], 'all') == 0);
+
+		if (count($this->path) == 1 and !$itemsOrAll) {
+			// share/xxx : get single share by id
+			$id = $this->path[0];
+
+			if ($this->env->request()->hasParam("info")) {
+				$this->response()->success($this->handler()->getShareInfo($id));
+				return;
+			}
+			$this->response()->success($this->handler()->getShare($id));
+			return;
+		}
+
+		if (!$itemsOrAll) {
 			throw $this->invalidRequestException();
 		}
 
 		if (strcmp($this->path[0], 'all') == 0) {
+			if (count($this->path) > 2) {
+				throw $this->invalidRequestException();
+			}
+
 			$shares = $this->handler()->getUserShares();
 			$items = array();
 			$invalid = array();
@@ -36,12 +54,12 @@ class ShareServices extends ServicesBase {
 					}
 					if (strpos($ik, "_") !== FALSE) {
 						$parts = explode("_", $ik);
-						$info = $this->handler()->getCustomShareInfo($parts[0], $parts[1], $i);
-						if ($info == NULL) {
+						$item = $this->handler()->getCustomShareItem($parts[0], $parts[1]);
+						if ($item == NULL) {
 							continue;
 						}
 
-						$nonFs[] = array("id" => $ik, "type" => $parts[0], "name" => $info["name"]);
+						$nonFs[] = array("id" => $ik, "type" => $parts[0], "name" => $item["name"]);
 						continue;
 					}
 
@@ -73,12 +91,37 @@ class ShareServices extends ServicesBase {
 			return;
 		}
 
-		$itemId = $this->path[1];
-		if (strpos($itemId, "_") === FALSE) {
-			$this->item($itemId);
+		//share/items/xxx : item shares
+
+		if (count($this->path) == 2) {
+			$itemId = $this->path[1];
+			if (strpos($itemId, "_") === FALSE) {
+				$this->item($itemId);
+			}
+
+			$result = array("shares" => $this->handler()->getShares($itemId));
+			if ($this->request->hasParam("canAdd"))
+				$result["canAdd"] = (count($this->handler()->getShareTypes($itemId)) > 0);
+			$this->response()->success($result);
+			return;
 		}
 
-		$this->response()->success($this->handler()->getShares($itemId));
+		//share/items/xxx/options : item share options
+
+		if (count($this->path) == 3 and strcmp($this->path[2], 'options') == 0) {
+			$itemId = $this->path[1];
+			$this->response()->success($this->handler()->getShareOptions($itemId));
+			return;
+		}
+
+		//share/items/xxx/quick : quick share
+
+		if (count($this->path) == 3 and strcmp($this->path[2], 'quick') == 0) {
+			$itemId = $this->path[1];
+			$this->response()->success($this->handler()->getQuickShare($itemId));
+			return;
+		}
+		throw $this->invalidRequestException();
 	}
 
 	public function processDelete() {
@@ -92,7 +135,7 @@ class ShareServices extends ServicesBase {
 			}
 
 			$id = $this->path[1];
-			$this->handler()->deleteSharesForItem($id);
+			$this->handler()->deleteUserSharesForItem($id);
 			$this->response()->success(array());
 		} else if ($this->path[0] == "list") {
 			if (count($this->path) != 1) {
@@ -141,12 +184,12 @@ class ShareServices extends ServicesBase {
 					$s["nonfs"] = TRUE;
 
 					$parts = explode("_", $ik);
-					$info = $this->handler()->getCustomShareInfo($parts[0], $parts[1], $s);
-					if ($info == NULL) {
+					$item = $this->handler()->getCustomShareItem($parts[0], $parts[1]);
+					if ($item == NULL) {
 						continue;
 					}
 
-					$nonFs[] = array("id" => $ik, "type" => $parts[0], "name" => $info["name"]);
+					$nonFs[] = array("id" => $ik, "type" => $parts[0], "name" => $item["name"]);
 					continue;
 				}
 
@@ -197,7 +240,7 @@ class ShareServices extends ServicesBase {
 			throw $this->invalidRequestException("Invalid datatype: expiration");
 		}
 
-		$this->handler()->addShare($itemId, $data["name"], $data["expiration"], isset($data["active"]) ? $data["active"] : TRUE, $data["restriction"]);
+		$this->handler()->addShare($itemId, $data["name"], $data["type"], $data["expiration"], isset($data["active"]) ? $data["active"] : TRUE, $data["restriction"]);
 		$this->response()->success($this->handler()->getShares($itemId));
 	}
 
@@ -232,7 +275,7 @@ class ShareServices extends ServicesBase {
 			throw $this->invalidRequestException("Invalid datatype: expiration " . $data["expiration"]);
 		}
 
-		$this->handler()->editShare($id, $data["name"], $data["expiration"], isset($data["active"]) ? $data["active"] : TRUE, $data["restriction"]);
+		$this->handler()->editShare($id, $data["name"], $data["type"], $data["expiration"], isset($data["active"]) ? $data["active"] : TRUE, $data["restriction"]);
 		$this->response()->success(array());
 	}
 

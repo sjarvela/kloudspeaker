@@ -45,7 +45,13 @@ abstract class EmbeddedContentViewer extends ViewerBase {
 			$result["resized_element_id"] = $element;
 		}
 
+		$result["type"] = $this->getContentType();
+
 		$this->response()->success($result);
+	}
+
+	protected function getContentType() {
+		return NULL;
 	}
 
 	protected function processFullPageRequest($item) {

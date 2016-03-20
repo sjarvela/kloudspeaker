@@ -80,7 +80,7 @@ function pageFooter() {?>
  		</div>
  		<div class="footer">
 	 		<div class="container">
-	 			Copyright &copy; Samuli J&auml;rvel&auml; 2008 -
+	 			Copyright &copy; Samuli J&auml;rvel&auml; 2015 -
 	 		</div>
  		</div>
 	</body><?php

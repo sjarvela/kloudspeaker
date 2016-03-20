@@ -1,5 +1,23 @@
 dist/
 node_modules/
+<<<<<<< HEAD
+=======
+bower_components/
+>>>>>>> master
 jspm_packages/
 npm-debug.log
 backend/configuration.php
+
+out/modules.js
+
+release.sh
+
+out/*
+
+css/kloudspeaker.css
+
+update_test.sh
+
+css/kloudspeaker.css.map
+
+.sass-cache/*

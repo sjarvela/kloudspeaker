@@ -1,0 +1,45 @@
+{
+    "locale": "fr",
+    "texts": {
+        "registrationNewTitle": "S'inscrire",
+        "registrationNewName": "Nom",
+        "registrationNewPw": "Mot de passe",
+        "registrationNewPwConfirm": "Confirmez le mot de passe",
+        "registrationNewEmail": "Email",
+        "registrationNewHint": "Indice pour le mot de passe",
+        "registrationNewSubmit": "S'inscrire",
+        "registrationFailed": "La demande d'inscription a échouée, merci de réessayer ultérieurement",
+        "registrationFailedDuplicateNameOrEmail": "Un utilisateur est déjà inscrit avec le même nom ou la même adresse email",
+        "registrationNewSuccessTitle": "Demande d'inscription effectuée",
+        "registrationNewSuccessMessage": "Finalisez la demande d'inscription en suivant les instructions qui viennent d'être envoyées à votr
+e adresse email.",
+        "registrationInvalidConfirm": "Confirmation de demande d'inscription invalide",
+        "registrationConfirmTitle": "Confirmation de le demande d'inscription",
+        "registrationConfirmMessage": "Finalisez la demande d'inscription en entrant la clé de confirmation qui a été envoyée à votre adress
+e email.",
+        "registrationConfirmEmail": "Email",
+        "registrationConfirmKey": "Clé de confirmation",
+        "registrationConfirmSubmit": "Confirmer",
+        "registrationConfirmFailed": "La demande d'inscription ne peut pas être confirmé",
+        "registrationConfirmSuccessTitle": "Inscription terminée",
+        "registrationConfirmSuccessMessage": "Votre inscription est maintenant terminée, vous pouvez vous connecter à kloudspeaker.",
+        "registrationConfirmSuccessWaitApprovalTitle": "Demande d'inscription terminée",
+        "registrationConfirmSuccessWaitApprovalMessage": "Votre demande d'inscription est maintenant terminée, elle est en attente d'approba
+tion.",
+        "registrationContinueButton": "Se connecter à kloudspeaker",
+        "registrationInvalidApproval": "Requête d'approbation invalide",
+        "registrationApprovalSuccessTitle": "Inscription approuvée",
+        "registrationApprovalSuccessMessage": "Compte utilisateur créé : {0} ({1})",
+        "registrationApprovalFailed": "L'approbation d'inscription a échoué",
+
+        "permission_manage_user_registrations": "Gérer les inscriptions d'utilisateurs",
+        "pluginRegistrationAdminNavTitle": "Inscriptions",
+        "pluginRegistrationAdminAddRegistrationTitle": "Ajouter une inscription",
+        "pluginRegistrationAdminNameTitle": "Nom",
+        "pluginRegistrationAdminEmailTitle": "Email",
+        "pluginRegistrationAdminKeyTitle": "Clé de confirmation",
+        "pluginRegistrationAdminTimeTitle": "Inscrit",
+        "pluginRegistrationAdminConfirmedTitle": "Confirmé",
+        "pluginRegistrationAdminApproveTitle": "Approuvé"
+    }
+}

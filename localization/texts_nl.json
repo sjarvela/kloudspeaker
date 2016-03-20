@@ -5,7 +5,7 @@
 		"language_de": "Deutsch",
 		"language_es": "Español",
 		"language_fr": "Français",
-        "language_nl": "Nederlands",
+    "language_nl": "Nederlands",
 
 		"decimalSeparator": ".",
 		"groupingSeparator": ",",
@@ -88,12 +88,16 @@
 		"mainViewSearchResultsTitle" : "{0} resultaten gevonden",
 		"mainViewSearchResultsDesc" : "Zoeken \"{0}\"",
 		"mainViewSearchResultTooltipMatches" : "Resultaten: ",
+		"mainViewSearchResultTooltipMatchType_name" : "Naam",
+		"mainViewSearchResultTooltipMatchType_description" : "Beschrijving",
+		"mainViewSearchResultTooltipMatchType_comment" : "Aantekening",
 
 		"uploaderWidgetTitle": "Upload nieuwe bestanden door hier te klikken of ze hiernaartoe te slepen:",
 		"mainviewUploadProgressOneMessage": "1 bestand aan het uploaden",
 		"mainviewUploadProgressManyMessage": "{0} bestanden aan het uploaden",
 		"mainviewFileUploadFailed": "Bestand uploaden mislukt",
 		"mainviewFileUploadComplete": "Bestanden uploaden voltooid",
+		"mainviewFileUploadAborted": "Bestanden uploaden afgebroken",
 		"mainviewFileUploadNotAllowed": "Bestanden uploaden niet toegestaan",
 		"mainviewRetrieveFileTitle": "Haal bestand van internetadres op:",
 		"mainviewRetrieveUrlTitle": "Internetadres van bestand",
@@ -127,10 +131,25 @@
 		"actionDeleteMultiple": "Verwijderen",
 		"actionRenameItem": "Hernoemen",
 
+		"actionCreateEmptyFileItem": "Leeg bestand aanmaken...",
+		"actionCreateEmptyFileTitle": "Maak leeg bestand aan...",
+		"actionCreateEmptyFileMessage": "Voer de naam van het nieuwe lege bestand in:",
+
+		"genericActionDeniedMsg": "Actie was niet toegestaan omdat:",
 		"actionDeniedDelete": "Bestand \"{0}\" kan niet worden verwijderd ondat:",
 		"actionDeniedDeleteMany": "1 of meer bestanden kunnen niet worden verwijderd omdat:",
 		"actionAcceptDelete": "Weet u zeker dat u \"{0}\" wilt verwijderen?",
-		"actionAcceptDeleteMany": "Weet u zeker dat u {0} bestanden wilt verwijderen?",
+		"actionAcceptDeleteMany": "Weet u zeker dat u \"{0}\" bestanden wilt verwijderen?",
+		"actionDeniedCopy": "Bestand \"{0}\" kan niet worden gekopieerd omdat:",
+		"actionDeniedCopyMany": "1 of meer bestanden kunnen niet worden gekopieerd omdat:",
+		"actionAcceptCopy": "Weet u zeker dat u \"{0}\" wilt kopiëren?",
+		"actionAcceptCopyMany": "Weet u zeker dat u {0} items wilt kopiëren?",
+		"actionDeniedMove": "Item \"{0}\" kan niet worden verplatst omdat:",
+		"actionDeniedMoveMany": "1 of meer bestanden kunnen niet worden verplaatst omdat:",
+		"actionAcceptMove": "Weet u zeker dat u \"{0}\" wilt verplaatsen?",
+		"actionAcceptMoveMany": "Weet u zeker dat u {0} items wilt verplaatsen?",
+		"actionDeniedUpload": "Uploaden werd geweigerd omdat:",
+
 
 		"fileItemDetailsGroupFile": "Bestand",
 		"fileItemContextDataName": "Naam",
@@ -148,6 +167,15 @@
 
 		"copyFileDialogTitle": "Kopiëren",
 		"copyFileMessage": "Selecteer de map waar \"{0}\" bestanden naartoe gekopieerd moet worden:",
+
+		"copyOverwriteConfirmationTitle": "Bestand bestaat al",
+		"copyOverwriteConfirmationMsg": "Bestand \"{0}\" bestaat al in de doelmap. Wilt u het bestand overschrijven?",
+		"copyManyOverwriteConfirmationTitle": "Bestand bestaat al",
+		"copyManyOverwriteConfirmationMsg": "{0} bestanden bestaan al in de doelmap. Wilt u de bestanden overschrijven?",
+		"moveOverwriteConfirmationTitle": "Bestand bestaat al",
+		"moveOverwriteConfirmationMsg": "Bestand \"{0}\" bestaat al in de doelmap. Wilt u het bestand overschrijven?",
+		"moveManyOverwriteConfirmationTitle": "Bestanden bestaan al",
+		"moveManyOverwriteConfirmationMsg": "{0} bestanden bestaan al in de doelmap. Wilt u de bestanden overschrijven?",
 
 		"copyMultipleFileDialogTitle": "Kopiëren",
 		"copyMultipleFileMessage": "Selecteer de map waar {0} bestanden naartoe gekopieerd moeten worden:",
@@ -168,8 +196,10 @@
 
 		"deleteFileConfirmationDialogTitle": "Bestand verwijderen",
 		"deleteFolderConfirmationDialogTitle": "Map verwijderen",
+		"deleteManyConfirmationDialogTitle": "Verwijderen",
 		"confirmFileDeleteMessage": "Weet u zeker dat u het bestand \"{0}\" wilt verwijderen?",
 		"confirmFolderDeleteMessage": "Weet u zeker dat u de map \"{0}\" en alle bestanden en submappen daarin wilt verwijderen?",
+		"confirmDeleteManyMessage": "Weet u zeker dat u {0} bestanden/mappen wilt verwijderen?",
 
 		"dropboxEmpty": "Wissen",
 
@@ -192,11 +222,11 @@
 		"pluginPermissionsAction": "Rechten...",
 		"pluginPermissionsContextTitle": "Rechten",
 		"pluginPermissionsContextEditAction": "Bewerken...",
-		
+
 		"pluginPermissionsEditUserPermissionsAction": "Gebruikersrechten bewerken",
 		"pluginPermissionsEditGroupPermissionsAction": "Groepsrechten bewerken",
 		"pluginPermissionsEditDefaultPermissionsAction": "Bewerk standaard systeemrechten",
-		
+
 		"pluginPermissionsEditDialogTitle": "Rechten voor {0}",
 		"pluginPermissionsEditDefaultDialogTitle": "Standaard rechten",
 		"pluginPermissionsEditDialogPermissionName": "rechten:",
@@ -210,7 +240,10 @@
 		"pluginPermissionsEditDialogUnsaved": "Niet-opgeslagen bewerkingen",
 		"configAdminPermissionsRemoveConfirmationTitle": "Rechten verwijderen",
 		"configAdminPermissionsRemoveConfirmationMessage": "Weet u zeker dat u alle geselecteerde rechten wilt verwijderen?",
-										
+		"configAdminPermissionsEditItemPermissionsTooltip": "Itemrechten bewerken",
+		"configAdminPermissionsEditItemPermissionsTitle": " Item selecteren",
+		"configAdminPermissionsEditItemPermissionsMessage": "Selecteer het item waarvan de rechten bewerkt moeten worden:",
+
 		"pluginPermissionsEditColUser": "Gebruiker",
 		"pluginPermissionsPermissionName": "Naam",
 		"pluginPermissionsPermissionValue": "Rechten",
@@ -224,7 +257,7 @@
 		"pluginPermissionsEditDefaultPermission": "Alle (Standaard bestandsrechten)",
 		"pluginPermissionsEditNoUser": "Selecteer gebruiker",
 		"pluginPermissionsEditNoPermission": "Selecteer rechten",
-		
+
 		"permission_change_password": "Wachtwoord wijzigen",
 		"permission_filesystem_item_access": "Bestandssysteemtoegang",
 		"permission_default": "{0} (Standaard)",
@@ -232,20 +265,20 @@
 		"permission_user_default": "Gebruikersstandaardwaarden",
 		"permission_group_default": "Groepsstandaardwaarden",
 		"permission_system_default": "Systeemstandaardwaarden",
-						
+
 		"permission_edit_description": "Bewerk map/bestandsomschrijving",
 		"permission_comment_item": "Omschrijf bestanden/mappen",
 		"permission_share_item": "Deel bestanden/mappen",
-				
+
 		"permission_filesystem_item_access_value_rwd": "Lezen&Schrijven&Verwijderen",
 		"permission_filesystem_item_access_value_rw": "Lezen&Schrijven, Niet verwijderen",
 		"permission_filesystem_item_access_value_r": "Alleen lezen",
 		"permission_filesystem_item_access_value_n": "Geen rechten",
-		
+
 		"permission_value_0": "Nee",
 		"permission_value_1": "Ja",
 		"permission_value_undefined": "Niet-gedefinieerd",
-		
+
 		"pluginPermissionsConfigViewNavTitle": "Rechten",
 		"pluginPermissionsAdminOptionsTitle": "Filter",
 		"pluginPermissionsAdminAny": "Alle",
@@ -253,13 +286,13 @@
 		"pluginPermissionsAdminOptionUser": "Gebruiker",
 		"pluginPermissionsAdminOptionSubject": "Onderliggende items",
 		"pluginPermissionsAdminOptionSubject_none": "Geen (algemeen/standaard)",
-		"pluginPermissionsAdminOptionSubject_filesystem_item": "Bestand of map",
-		"pluginPermissionsAdminOptionSubject_filesystem_child": "Alle bestanden of mappen eronder",
+		"pluginPermissionsAdminOptionSubject_filesystem_item": "Bestand en/of map",
+		"pluginPermissionsAdminOptionSubject_filesystem_child": "Alle bestanden en mappen eronder",
 		"pluginPermissionsSelectItemTitle": "Selecteer item",
 		"pluginPermissionsSelectItemMsg": "Selecteer item",
 		"pluginPermissionsSelectFolderTitle": "Selecteer map",
 		"pluginPermissionsSelectFolderMsg": "Selecteer map",
-				
+
 		"pluginDropboxAddTo": "Toevoegen aan Dropbox",
 
 		"pluginArchiverCompress": "Inpakken...",
@@ -299,7 +332,7 @@
 		"shareDialogShareAccessRestrictionTitle": "Beperking",
 		"shareDialogShareAccessNoRestrictionTitle": "Publiek, geen beperking",
 		"shareDialogShareAccessPasswordTitle": "Publiek, wachtwoord vereist:",
-        "shareDialogShareAccessLoggedInTitle": "Privé, vereist ingelogde gebruiker",
+    "shareDialogShareAccessLoggedInTitle": "Privé, vereist ingelogde gebruiker",
 		"shareDialogShareAccessEnterPwTitle": "Voer wachtwoord in",
 		"shareDialogShareAccessChangePwTitle": "Wachtwoord wijzigen",
 		"shareDialogSave": "Opslaan",
@@ -318,6 +351,27 @@
 		"shareAccessPasswordTitle": "Wachtwoord",
 		"shareAccessPasswordButtonTitle": "OK",
 		"shareAccessPasswordFailed": "Wachtwoord is onjuist",
+		"pluginShareAdminOptionsTitle": "Filter",
+		"pluginShareAdminOptionItem": "Gedeeld item",
+		"pluginShareAdminAny": "Alle",
+		"pluginShareAdminOptionItem_none": "Geen systeemitem",
+		"pluginShareAdminOptionItem_filesystem_item": "Bestand of map",
+		"pluginShareAdminOptionItem_filesystem_child": "Alle bestanden of mappen eronder",
+		"pluginShareSelectItemTitle": "Selecteer item",
+		"pluginShareSelectItemMsg": "Selecteer item",
+		"pluginShareSelectFolderTitle": "Selecteer map",
+		"pluginShareSelectFolderMsg": "Selecteer map",
+		"pluginShareConfigViewShareActivate": "Activeren",
+		"pluginShareConfigViewShareDeactivate": "Deactiveren",
+		"pluginShareConfigViewPathTitle": "Pad",
+		"pluginShareConfigViewUserTitle": "gebruiker",
+		"pluginShareConfigViewItemNameTitle": "Naam item",
+		"pluginShareConfigViewShareNameTitle": "Name",
+		"pluginShareConfigViewExpirationTitle": "Verloopt op",
+		"pluginShareConfigViewRestrictionTitle": "Beperking",
+		"pluginShareConfigViewActiveTitle": "Actief",
+		"pluginShareConfigRemoveShareTitle": "Delingspunten verwijderen",
+		"pluginShareConfigRemoveShareMessage": "Weet u zeker dat u de geselecteerde delingspunten wilt verwijderen",
 
 		"pluginItemCollectionsNavTitle": "Opgeslagen",
 		"pluginItemCollectionStore": "Opslaan...",
@@ -334,6 +388,13 @@
 		"configviewMenuTitle": "Instellingen",
 		"configViewUserNavTitle": "Gebruiker",
 
+		"configSystemNavTitle": "Systeem",
+		"configSystemVersionTitle": "Versie",
+		"configSystemCheckNewVersion": "Op updates controleren",
+		"configSystemVersionCheckUpgradeAvailable": "Versie {0} is beschikbaar. <a href='{2}' target='_blank'>Downloaden</a>",
+		"configSystemVersionCheckLatest": "De laatste versie is al geïnstalleerd.",
+		"configSystemVersionCheckFailed": "Kon niet versie controleren.",
+
 		"configUserAccountNavTitle": "Account",
 		"configUserAccountUsernameTitle": "Gebruiker",
 		"configUserAccountPasswordTitle": "Wachtwoord",
@@ -346,7 +407,7 @@
 
 		"configAdminActionRemoveTitle": "Verwijderen",
 		"configAdminActionEditTitle": "Bewerken",
-		
+
 		"configAdminUsersTypeNormal": "Normaal",
 		"configAdminUsersType_a": "Beheerder",
 
@@ -367,7 +428,7 @@
 		"configAdminUserDialogExpirationTitle": "Verloopt op:",
 		"configAdminUsersFoldersTitle": "Mappen",
 		"configAdminUsersGroupsTitle": "Groepen",
-		"configAdminUsersFolderNameTitle": "Naam gebruikersmap",
+		"configAdminUsersFolderNameTitle": "Naam groepsmap",
 		"configAdminUsersFolderDefaultNameTitle": "Standaardmap",
 		"configAdminUsersGroupNameTitle": "Groepsnaam",
 		"configAdminUserAddFolderTitle": "Gebruikersmap toevoegen",
@@ -383,7 +444,7 @@
 		"configAdminUserSearchOptionsNameTitle": "Naam",
 		"configAdminUserSearchOptionsEmailTitle": "E-mail",
 		"configAdminUsersActionChangePasswordTitle": "Wachtwoord wijzigen",
-		
+
 		"configAdminUsersPermissionsTitle": "Algemene/standaard gebruikersrechten",
 
 		"configAdminFoldersNavTitle": "Mappen",
@@ -397,7 +458,7 @@
 		"configAdminFolderDialogNameTitle": "Mapnaam",
 		"configAdminFolderDialogPathTitle": "Bestandspad op server",
 		"configAdminUsersFolderDefaultName": "{0} (standaard)",
-		"configAdminFolderUsersTitle": "Mappen, gebruikers en groepen",
+		"configAdminFolderUsersTitle": "Mapgebruikers en groepen",
 		"configAdminFoldersFolderDialogAddFolderDoesNotExist": "Map bestaat niet. Map aanmaken?",
 		"configAdminFoldersRemoveFoldersConfirmationTitle": "Mappen verwijderens",
 		"configAdminFoldersRemoveFoldersConfirmationMessage": "Weet u zeker dat u {0} mappen wilt verwijderen?",
@@ -407,6 +468,7 @@
 
 		"configAdminGroupsDialogAddTitle": "Groep toevoegen",
 		"configAdminGroupsDialogEditTitle": "Groep bewerken",
+		"configAdminGroupsNameTitle": "Groepsnaam",
 		"configAdminGroupDialogNameTitle": "Naam",
 		"configAdminGroupsDescriptionTitle": "Omschrijving",
 		"configAdminGroupsUsersTitle": "Groepsgebruikers",
@@ -420,44 +482,6 @@
 		"configAdminGroupsRemoveGroupConfirmationTitle": "Groep verwijderen",
 		"configAdminGroupsRemoveGroupConfirmationMessage": "Weet u zeker dat groep \"{0}\" wilt verwijderen?",
 		"configAdminGroupsPermissionsTitle": "Algemene/standaard groepsrechten",
-		
-		"registrationNewTitle": "Registreren",
-		"registrationNewName": "Naam",
-		"registrationNewPw": "Wachtwoord",
-		"registrationNewPwConfirm": "Wachtwoord bevestigen",
-		"registrationNewEmail": "E-mail",
-        "registrationNewHint": "Wachtwoord aanwijzing",
-		"registrationNewSubmit": "Registreren",
-		"registrationFailed": "Registreren mislukt, probeer het later opnieuw",
-		"registrationFailedDuplicateNameOrEmail": " Gebruiker is al met dezelfde naam of hetzelfde e-mailadres geregistreerd.",
-		"registrationNewSuccessTitle": "Registratie geslaagd",
-		"registrationNewSuccessMessage": "Voltooi de registratie door de instructies te volgen die naar uw e-mailadres zijn verzonden.",
-		"registrationInvalidConfirm": "Ongeldige registratiebevestiging",
-		"registrationConfirmTitle": "Registratie bevestigen",
-		"registrationConfirmMessage": "Voltooi uw registratie door de bevestigingsssleutel die u per e-mail hebt ontvangen in te voeren.",
-		"registrationConfirmEmail": "E-mail",
-		"registrationConfirmKey": "Bevestigingsssleutel",
-		"registrationConfirmSubmit": "Bevestigen",
-		"registrationConfirmFailed": "Registratie kon niet worden bevestigd",
-		"registrationConfirmSuccessTitle": "Registratie voltooid",
-		"registrationConfirmSuccessMessage": "Uw registratie is nu voltooid en u kunt nu bij kloudspeaker inloggen.",
-		"registrationConfirmSuccessWaitApprovalTitle": "Registratie voltooid",
-		"registrationConfirmSuccessWaitApprovalMessage": "Uw registratie is nu voltooid, maar deze moet nog bevestigd worden.",
-		"registrationContinueButton": "Inloggen bij kloudspeaker",
-        "registrationInvalidApproval": "Ongeldige bevestigingsaanvraag",
-        "registrationApprovalSuccessTitle": "Registratie bevestigd",
-        "registrationApprovalSuccessMessage": "Gebruikersaccount aangemaakt: {0} ({1})",
-        "registrationApprovalFailed": "Registratiebevestiging mislukt",
-		
-		"permission_manage_user_registrations": "Gebruikersregistraties beheren",
-		"pluginRegistrationAdminNavTitle" : "Registraties",
-		"pluginRegistrationAdminAddRegistrationTitle" : "Registratie toevoegen",
-		"pluginRegistrationAdminNameTitle" : "Naam",
-		"pluginRegistrationAdminEmailTitle" : "E-mail",
-		"pluginRegistrationAdminKeyTitle" : "Registratiesleutel",
-		"pluginRegistrationAdminTimeTitle" : "Geregistreerd",
-		"pluginRegistrationAdminConfirmedTitle" : "Bevestigd",
-		"pluginRegistrationAdminApproveTitle" : "Akkoord",
 
 		"pluginNotificatorEventFilterType_item_parent": "Bovenliggende map",
 		"pluginNotificatorEventFilterType_item_any_parent": "Iedere bovenliggende map",

@@ -45,6 +45,10 @@
 		public function getSettings() {
 			return $this->env->getViewerSettings($this->id);
 		}
+
+		public function getItemContent($item) {
+			return $this->env->getItemContent($item);
+		}
 		
 		protected function invalidRequestException($details = NULL) {
 			return new ServiceException("INVALID_REQUEST", "Invalid ".get_class($this)." request: ".strtoupper($this->env->request()->method())." ".$this->env->request()->URI().($details != NULL ? (" ".$details): ""));

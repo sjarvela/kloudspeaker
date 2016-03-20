@@ -41,19 +41,19 @@
 					
 			$html = '<script type="syntaxhighlighter" class="brush: '.$syntax.'"><![CDATA[';
 
-			// read file			
-			$stream = $item->read();
+			// read file
+			$stream = $this->getItemContent($item);
 			while (!feof($stream))
-				$html .= fread($stream, 1024);
+				$html .= htmlspecialchars(fread($stream, 1024));
 			fclose($stream);
 
 			$html .= ']]></script><script type="text/javascript">SyntaxHighlighter.all()</script>';
 			
-			return "<html><head><title>".$item->name()."</title>".$head."</head><body>".$html."</body></html>";
+			return "<html><head><title>".(is_array($item) ? $item["name"] : $item->name())."</title>".$head."</head><body>".$html."</body></html>";
 		}
 		
 		private function getSyntax($item) {
-			$ext = $item->extension();
+			$ext = (is_array($item) ? $item["extension"] : $item->extension());
 			
 			if ($ext === 'as3') return "as3";
 			if ($ext === 'js') return "js";

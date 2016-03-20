@@ -15,6 +15,7 @@ class FilesystemController {
 
 	const EVENT_TYPE_FILE = "filesystem";
 
+	const FILESYSTEM_ITEM_ACCESS_PERMISSION = "filesystem_item_access";
 	const PERMISSION_LEVEL_NONE = "n";
 	const PERMISSION_LEVEL_READ = "r";
 	const PERMISSION_LEVEL_READWRITE = "rw";
@@ -25,6 +26,7 @@ class FilesystemController {
 	private $allowedUploadTypes;
 	private $permissionCache = array();
 	private $folderCache = array();
+	private $filesystemIdCache = NULL;
 	private $contextPlugins = array();
 	private $actionValidators = array();
 	private $actionInterceptors = array();
@@ -32,6 +34,7 @@ class FilesystemController {
 	private $itemCleanupHandlers = array();
 	private $searchers = array();
 	private $filesystems = array();
+	private $registeredFilesystemIds = array();
 	private $idProvider;
 
 	public $allowFilesystems = FALSE;
@@ -45,6 +48,7 @@ class FilesystemController {
 		require_once "CoreFileDataProvider.class.php";
 		require_once "ItemIdProvider.class.php";
 		require_once "include/metadata/MetadataController.class.php";
+		require_once "FilesystemCommands.class.php";
 
 		$this->env = $env;
 		$this->idProvider = new ItemIdProvider($env);
@@ -52,6 +56,7 @@ class FilesystemController {
 
 		$this->allowedUploadTypes = $env->settings()->setting('allowed_file_upload_types');
 		$this->forbiddenUploadTypes = $env->settings()->setting('forbidden_file_upload_types');
+		$this->ignoredItems = $env->settings()->setting('ignored_items');
 	}
 
 	public function initialize() {
@@ -64,7 +69,7 @@ class FilesystemController {
 		$coreData = new CoreFileDataProvider($this->env);
 		$coreData->init($this);
 
-		$this->env->permissions()->registerFilesystemPermission("filesystem_item_access", array(
+		$this->env->permissions()->registerFilesystemPermission(self::FILESYSTEM_ITEM_ACCESS_PERMISSION, array(
 			self::PERMISSION_LEVEL_NONE,
 			self::PERMISSION_LEVEL_READ,
 			self::PERMISSION_LEVEL_READWRITE,
@@ -76,6 +81,9 @@ class FilesystemController {
 		$this->metadata->initialize();
 		$this->env->events()->register("filesystem/", $this);
 
+		// register filesystem commands
+		$cmds = new Kloudspeaker_FilesystemCommands($this->env);
+		$cmds->initialize();
 	}
 
 	public function onEvent($e) {
@@ -98,6 +106,14 @@ class FilesystemController {
 				$this->setCreatedMetadata($item);
 			}
 		}
+
+		if ($type === FileEvent::UPDATE_CONTENT) {
+			$items = array($e->item());
+
+			foreach ($items as $item) {
+				$this->updateModifiedMetadata($item);
+			}
+		}
 	}
 
 	public function setCreatedMetadata($item, $time = NULL, $by = NULL) {
@@ -113,6 +129,22 @@ class FilesystemController {
 
 		$this->metadata->set($item, "created", $t);
 		$this->metadata->set($item, "created_by", $u);
+		$this->updateModifiedMetadata($item, $t, $u);
+	}
+
+	public function updateModifiedMetadata($item, $time = NULL, $by = NULL) {
+		$t = $time;
+		if ($t == NULL) {
+			$t = '' . $this->env->configuration()->formatTimestampInternal(time());
+		}
+
+		$u = $by;
+		if ($u == NULL) {
+			$u = $this->env->session()->userId();
+		}
+
+		$this->metadata->set($item, "modified", $t);
+		$this->metadata->set($item, "modified_by", $u);
 	}
 
 	public function getCreatedMetadataInfo($item, $raw = FALSE) {
@@ -122,6 +154,31 @@ class FilesystemController {
 		}
 
 		$by = $this->metadata->get($item, "created_by");
+		if ($by != NULL and !$raw) {
+			$user = $this->env->configuration()->getUser($by);
+			if ($user == NULL) {
+				$by = NULL;
+			} else {
+				$by = array(
+					"id" => $user["id"],
+					"name" => $user["name"],
+				);
+			}
+
+		}
+		return array(
+			"at" => $at,
+			"by" => $by,
+		);
+	}
+
+	public function getModifiedMetadataInfo($item, $raw = FALSE) {
+		$at = $this->metadata->get($item, "modified");
+		if ($at == NULL) {
+			return NULL;
+		}
+
+		$by = $this->metadata->get($item, "modified_by");
 		if ($by != NULL and !$raw) {
 			$user = $this->env->configuration()->getUser($by);
 			if ($user == NULL) {
@@ -173,6 +230,10 @@ class FilesystemController {
 		foreach ($keys as $key) {
 			$this->dataRequestPlugins[$key] = $plugin;
 		}
+	}
+
+	public function registerFilesystemId($id, $factory) {
+		$this->registeredFilesystemIds[$id] = $factory;
 	}
 
 	public function getDataRequestPlugins() {
@@ -285,6 +346,7 @@ class FilesystemController {
 		}
 
 		$list = array();
+		$this->filesystemIdCache = array();
 
 		foreach ($folderDefs as $folderDef) {
 			if (array_key_exists($folderDef['id'], $list)) {
@@ -305,15 +367,16 @@ class FilesystemController {
 			}
 
 			$list[$folderDef['id']] = $folderDef;
+			$this->filesystemIdCache[] = $folderDef['id'];
 		}
 
 		return $list;
 	}
 
-	private function hasRights($item, $required) {
-		if (is_array($item)) {
-			foreach ($item as $i) {
-				if (!$this->env->permissions()->hasFilesystemPermission("filesystem_item_access", $i, $required)) {
+	public function hasRights($i, $required) {
+		if (is_array($i)) {
+			foreach ($i as $item) {
+				if (!$this->hasItemRights($item, $required)) {
 					return FALSE;
 				}
 			}
@@ -321,7 +384,30 @@ class FilesystemController {
 			return TRUE;
 		}
 
-		return $this->env->permissions()->hasFilesystemPermission("filesystem_item_access", $item, $required);
+		return $this->hasItemRights($i, $required);
+	}
+
+	private function getUserFilesystemIds() {
+		if ($this->filesystemIdCache != NULL) return $this->filesystemIdCache;
+
+		$folderDefs = $this->env->configuration()->getUserFolders($this->env->session()->userId(), TRUE);
+
+		$list = array();
+		foreach ($folderDefs as $folderDef) {
+			$list[] = $folderDef['id'];
+		}
+		$this->filesystemIdCache = $list;
+		return $list;
+	}
+
+	private function hasItemRights($item, $required) {
+		if ($this->allowFilesystems and ($required == self::PERMISSION_LEVEL_READ or $required == self::PERMISSION_LEVEL_READWRITE)) return TRUE;
+
+		if (!$this->env->authentication()->isAdmin()) {
+			// if not admin, folder must be assigned
+			if (!$item->filesystem()->allowUnassigned() and !in_array($item->filesystem()->id(), $this->getUserFilesystemIds())) return FALSE;
+		}
+		return $this->env->permissions()->hasFilesystemPermission(self::FILESYSTEM_ITEM_ACCESS_PERMISSION, $item, $required);
 	}
 
 	public function assertRights($item, $required, $desc = "Unknown action") {
@@ -351,17 +437,16 @@ class FilesystemController {
 		$id = isset($folderDef['id']) ? $folderDef['id'] : '';
 		$type = isset($folderDef['type']) ? $folderDef['type'] : NULL;
 
-		if ($type == NULL or !isset($this->filesystems[$type])) {
-			throw new ServiceException("INVALID_CONFIGURATION", "Invalid root folder definition (" . $id . "), type unknown [" . $type . "]");
+		if (array_key_exists($id, $this->registeredFilesystemIds)) {
+			$factory = $this->registeredFilesystemIds[$id];
+		} else {
+			if ($type == NULL or !isset($this->filesystems[$type])) {
+				throw new ServiceException("INVALID_CONFIGURATION", "Invalid root folder definition (" . $id . "), type unknown [" . $type . "]");
+			}
+
+			$factory = $this->filesystems[$type];
 		}
 
-		//TODO this is hack, support real filesystem types
-		/*if (array_key_exists("S3FS", $this->filesystems)) {
-		$factory = $this->filesystems["S3FS"];
-		return $factory->createFilesystem($id, $folderDef, $this);
-		}*/
-
-		$factory = $this->filesystems[$type];
 		return $factory->createFilesystem($id, $folderDef, $this);
 	}
 
@@ -383,12 +468,13 @@ class FilesystemController {
 			$name = array_pop($nameParts);
 
 			$result["folders"][] = array(
+				"folder_id" => $folder->filesystem()->id(),
 				"id" => $folder->id(),
 				"name" => $name,
 				"group" => implode("/", $nameParts),
 				"parent_id" => NULL,
 				"root_id" => $folder->id(),
-				"path" => "",
+				"path" => ""
 			);
 		}
 
@@ -413,6 +499,11 @@ class FilesystemController {
 	}
 
 	public function filesystemFromId($id, $assert = TRUE) {
+		if (array_key_exists($id, $this->registeredFilesystemIds)) {
+			$factory = $this->registeredFilesystemIds[$id];
+			$folderDef = $factory->getFolderDef($id);
+			return $this->filesystem($folderDef, $assert);
+		}
 		return $this->filesystem($this->env->configuration()->getFolder($id), $assert);
 	}
 
@@ -426,7 +517,10 @@ class FilesystemController {
 	}
 
 	public function item($id, $nonexisting = FALSE) {
-		$location = $this->itemIdProvider()->getLocation($id);
+		return $this->itemWithLocation($this->itemIdProvider()->getLocation($id), $nonexisting);
+	}
+
+	public function itemWithLocation($location, $nonexisting = FALSE) {
 		$parts = explode(":" . DIRECTORY_SEPARATOR, $location);
 		if (count($parts) != 2) {
 			throw new ServiceException("INVALID_CONFIGURATION", "Invalid item location: " . $location);
@@ -440,23 +534,27 @@ class FilesystemController {
 
 		if (array_key_exists($filesystemId, $this->folderCache)) {
 			$folderDef = $this->folderCache[$filesystemId];
+		} else if (array_key_exists($filesystemId, $this->registeredFilesystemIds)) {
+			$factory = $this->registeredFilesystemIds[$filesystemId];
+			$folderDef = $factory->getFolderDef($filesystemId);
 		} else {
 			$folderDef = $this->env->configuration()->getFolder($filesystemId);
 			if (!$folderDef) {
-				Logging::logDebug("Root folder does not exist: " . $location . " (" . $id . ")");
+				Logging::logDebug("Root folder does not exist: " . $location);
 				throw new ServiceException("REQUEST_FAILED");
-			}
-			if (!$this->isFolderValid($folderDef)) {
-				Logging::logDebug("No permissions for root folder: " . $location . " (" . $id . ")");
-				throw new ServiceException("INSUFFICIENT_PERMISSIONS");
 			}
 
 			$this->folderCache[$filesystemId] = $folderDef;
+		}
+		if (!$this->isFolderValid($folderDef)) {
+			Logging::logDebug("No permissions for root folder: " . $location);
+			throw new ServiceException("INSUFFICIENT_PERMISSIONS");
 		}
 		if (strlen($path) == 0) {
 			return $this->filesystem($folderDef)->root();
 		}
 
+		$id = $this->itemIdProvider()->getItemId($location);
 		return $this->filesystem($folderDef)->createItem($id, $path, $nonexisting);
 	}
 
@@ -476,12 +574,23 @@ class FilesystemController {
 		$this->filesystem($folderDef, TRUE);
 	}
 
-	public function ignoredItems($filesystem, $path) {
-		return array('kloudspeaker.dsc', 'kloudspeaker.uac'); //TODO get from settings and/or configuration etc
+	public function isItemIgnored($filesystem, $parentPath, $name, $path) {
+		if (!$this->ignoredItems or count($this->ignoredItems) == 0) {
+			return FALSE;
+		}
+
+		//Logging::logDebug("isItemIgnored: ".$name."/".$path);
+
+		foreach ($this->ignoredItems as $p) {
+			if (preg_match($p, $path)) {
+				return TRUE;
+			}
+		}
+		return FALSE;
 	}
 
 	public function items($folder) {
-		$this->env->permissions()->prefetchFilesystemChildrenPermissions("filesystem_item_access", $folder);
+		$this->env->permissions()->prefetchFilesystemChildrenPermissions(self::FILESYSTEM_ITEM_ACCESS_PERMISSION, $folder);
 		$this->assertRights($folder, self::PERMISSION_LEVEL_READ, "items");
 		$this->itemIdProvider()->load($folder);
 
@@ -506,7 +615,9 @@ class FilesystemController {
 		$this->assertRights($item, self::PERMISSION_LEVEL_READ, "details");
 
 		$details = $item->details();
-		$details["metadata"] = $this->metadata->get($item);
+		$metadata = $this->metadata->get($item);
+		if ($metadata == NULL) $metadata = array();
+		$details["metadata"] = $metadata;
 		$details["permissions"] = $this->env->permissions()->getAllFilesystemPermissions($item);
 		$details["parent_permissions"] = $item->isRoot() ? NULL : $this->env->permissions()->getAllFilesystemPermissions($item->parent());
 		$details["plugins"] = $this->getItemContextData($item, $details, $data);
@@ -783,6 +894,10 @@ class FilesystemController {
 			if ($meta != NULL) {
 				$this->setCreatedMetadata($target, $meta["at"], $meta["by"]);
 			}
+			$meta = $this->getModifiedMetadataInfo($item, TRUE);
+			if ($meta != NULL) {
+				$this->updateModifiedMetadata($target, $meta["at"], $meta["by"]);
+			}
 
 			$this->doDeleteItem($item, TRUE, TRUE, FALSE); // "hard-delete", remove also meta-data
 		}
@@ -891,8 +1006,8 @@ class FilesystemController {
 		$this->doDeleteItem($item);
 	}
 
-	private function doDeleteItem($item, $sendEvent = TRUE, $removeId = TRUE, $removeFile = TRUE) {
-		if ($removeFile) {
+	public function doDeleteItem($item, $sendEvent = TRUE, $removeId = TRUE, $removeFile = TRUE) {
+		if ($removeFile && $item->exists()) {
 			$item->delete();
 		}
 
@@ -1009,7 +1124,7 @@ class FilesystemController {
 
 		$name = $file->name();
 		$size = $file->size();
-		$range = $this->getDownloadRangeInfo($range);
+		$range = $this->getDownloadRangeInfo($range, $size);
 
 		if ($range) {
 			Logging::logDebug("Download range " . $range[0] . "-" . $range[1]);
@@ -1021,7 +1136,7 @@ class FilesystemController {
 	}
 
 	// TODO somewhere else
-	public function getDownloadRangeInfo($range) {
+	public function getDownloadRangeInfo($range, $size) {
 		if ($range == NULL) {
 			return NULL;
 		}
@@ -1047,11 +1162,22 @@ class FilesystemController {
 		return array($start, $end, $size);
 	}
 
-	public function view($file) {
-		Logging::logDebug('view [' . $file->id() . ']');
+	public function view($file, $range = NULL) {
+		if (!$range) {
+			Logging::logDebug('view [' . $file->id() . ']');
+		}
 		$this->assertRights($file, self::PERMISSION_LEVEL_READ, "view");
-		$this->env->events()->onEvent(FileEvent::view($file));
-		$this->env->response()->send($file->name(), $file->extension(), $file->read(), $file->size());
+
+		$size = $file->size();
+		$range = $this->getDownloadRangeInfo($range, $size);
+
+		if ($range or $range[0] == 0) {
+			Logging::logDebug("View range " . $range[0] . "-" . $range[1]);
+		} else {
+			$this->env->events()->onEvent(FileEvent::view($file));
+		}
+		
+		$this->env->response()->send($file->name(), $file->extension(), $file->read($range), $size, $range);
 	}
 
 	public function read($file) {
@@ -1065,6 +1191,7 @@ class FilesystemController {
 		if (!$item->isFile()) {
 			throw new ServiceException("NOT_A_FILE", $item->path());
 		}
+		$this->assertRights($item, self::PERMISSION_LEVEL_READWRITE, "update content");
 
 		$this->validateAction(FileEvent::UPDATE_CONTENT, $item, array("size" => $size));
 		if ($this->triggerActionInterceptor(FileEvent::UPDATE_CONTENT, $item, array("name" => $item->name(), "target" => $item, "size" => $size))) {
@@ -1072,8 +1199,6 @@ class FilesystemController {
 		}
 
 		Logging::logDebug('updating file contents [' . $item->id() . ']');
-		$this->assertRights($item, self::PERMISSION_LEVEL_READWRITE, "update content");
-
 		$item->put($content);
 		$this->env->events()->onEvent(FileEvent::updateContent($item));
 	}
@@ -1132,6 +1257,9 @@ class FilesystemController {
 			if (is_array($files['tmp_name'])) {
 				foreach ($files['tmp_name'] as $index => $value) {
 					if (isset($files['error'][$index]) && $files['error'][$index] != UPLOAD_ERR_OK) {
+						if (Logging::isDebug()) {
+							Logging::logDebug("HTML5 multi upload failed: " . $name ? $name : $files['name'][$index] . " " . $files['error'][$index]);
+						}
 						throw new ServiceException("UPLOAD_FAILED", $files['error'][$index]);
 					}
 				}
@@ -1148,6 +1276,10 @@ class FilesystemController {
 				}
 			} else {
 				if (isset($files['error']) && $files['error'] != UPLOAD_ERR_OK) {
+					if (Logging::isDebug()) {
+						Logging::logDebug("HTML5 upload failed: " . $name ? $name : $files['name'] . " " . $files['error']);
+					}
+
 					throw new ServiceException("UPLOAD_FAILED", $files['error']);
 				}
 
@@ -1482,23 +1614,23 @@ class MultiFileEvent extends Event {
 	private $items;
 
 	static function download($items) {
-		return new MultiFileEvent($items, FileEvent::DOWNLOAD);
+		return new MultiFileEvent($items, FileSystemController::EVENT_TYPE_FILE, FileEvent::DOWNLOAD);
 	}
 
 	static function copy($items, $to, $targets = NULL, $replace = FALSE) {
-		return new MultiFileEvent($items, FileEvent::COPY, array("to" => $to, "targets" => $targets, "replace" => $replace));
+		return new MultiFileEvent($items, FileSystemController::EVENT_TYPE_FILE, FileEvent::COPY, array("to" => $to, "targets" => $targets, "replace" => $replace));
 	}
 
 	static function move($items, $to, $targets = NULL, $replace = FALSE) {
-		return new MultiFileEvent($items, FileEvent::MOVE, array("to" => $to, "targets" => $targets, "replace" => $replace));
+		return new MultiFileEvent($items, FileSystemController::EVENT_TYPE_FILE, FileEvent::MOVE, array("to" => $to, "targets" => $targets, "replace" => $replace));
 	}
 
 	static function delete($items) {
-		return new MultiFileEvent($items, FileEvent::DELETE);
+		return new MultiFileEvent($items, FileSystemController::EVENT_TYPE_FILE, FileEvent::DELETE);
 	}
 
-	function __construct($items, $type, $info = NULL) {
-		parent::__construct(time(), FileSystemController::EVENT_TYPE_FILE, $type);
+	function __construct($items, $type, $subtype, $info = NULL) {
+		parent::__construct(time(), $type, $subtype);
 		$this->items = $items;
 		$this->info = $info;
 	}

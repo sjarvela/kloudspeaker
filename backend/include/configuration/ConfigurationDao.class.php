@@ -47,9 +47,9 @@ class ConfigurationDao {
 		$expirationCriteria = $expiration ? " AND (expiration is null or expiration > " . $this->formatTimestampInternal($expiration) . ")" : "";
 
 		if ($allowEmail) {
-			$result = $this->db->query(sprintf("SELECT id, name, user_type, lang, email, ua.type as auth FROM " . $this->db->table("user") . " left outer join " . $this->db->table("user_auth") . " ua on id=ua.user_id WHERE (name=%s or email=%s)" . $expirationCriteria, $this->db->string($username, TRUE), $this->db->string($username, TRUE)));
+			$result = $this->db->query(sprintf("SELECT id, name, lower(user_type) as user_type, lower(lang) as lang, email, lower(ua.type) as auth FROM " . $this->db->table("user") . " left outer join " . $this->db->table("user_auth") . " ua on id=ua.user_id WHERE (name=%s or email=%s)" . $expirationCriteria, $this->db->string($username, TRUE), $this->db->string($username, TRUE)));
 		} else {
-			$result = $this->db->query(sprintf("SELECT id, name, user_type, lang, email, ua.type as auth FROM " . $this->db->table("user") . " left outer join " . $this->db->table("user_auth") . " ua on id=ua.user_id WHERE name=%s" . $expirationCriteria, $this->db->string($username, TRUE)));
+			$result = $this->db->query(sprintf("SELECT id, name, lower(user_type) as user_type, lower(lang) as lang, email, lower(ua.type) as auth FROM " . $this->db->table("user") . " left outer join " . $this->db->table("user_auth") . " ua on id=ua.user_id WHERE name=%s" . $expirationCriteria, $this->db->string($username, TRUE)));
 		}
 		$matches = $result->count();
 
@@ -71,7 +71,7 @@ class ConfigurationDao {
 	}
 
 	public function getUserAuth($id) {
-		return $this->db->query(sprintf("SELECT user_id, type, hash, salt, hint FROM " . $this->db->table("user_auth") . " WHERE user_id=%s", $this->db->string($id, TRUE)))->firstRow();
+		return $this->db->query(sprintf("SELECT user_id, lower(type) as type, hash, salt, hint FROM " . $this->db->table("user_auth") . " WHERE user_id=%s", $this->db->string($id, TRUE)))->firstRow();
 	}
 
 	public function storeUserAuth($id, $username, $type, $pw, $hint = "") {
@@ -105,14 +105,10 @@ class ConfigurationDao {
 		$this->db->update(sprintf("UPDATE " . $this->db->table("user_auth") . " SET type=%s WHERE user_id=%s", $this->db->string($type, TRUE), $this->db->string($id, TRUE)));
 	}
 
-	public function getUserLegacyPw($id) {
-		return $this->db->query(sprintf("SELECT password FROM " . $this->db->table("user") . " WHERE id=%s", $this->db->string($id, TRUE)))->value();
-	}
-
 	public function getUserByName($username, $expiration = FALSE) {
 		$expirationCriteria = $expiration ? " AND (expiration is null or expiration > " . $this->formatTimestampInternal($expiration) . ")" : "";
 
-		$result = $this->db->query(sprintf("SELECT id, name, user_type, lang, email, ua.type as auth FROM " . $this->db->table("user") . " left outer join " . $this->db->table("user_auth") . " ua on id=ua.user_id WHERE name='%s' and is_group=0" . $expirationCriteria, $this->db->string($username)));
+		$result = $this->db->query(sprintf("SELECT id, name, lower(user_type) as user_type, lower(lang) as lang, email, lower(ua.type) as auth FROM " . $this->db->table("user") . " left outer join " . $this->db->table("user_auth") . " ua on id=ua.user_id WHERE name='%s' and is_group=0" . $expirationCriteria, $this->db->string($username)));
 		$matches = $result->count();
 
 		if ($matches === 0) {
@@ -129,7 +125,7 @@ class ConfigurationDao {
 	}
 
 	public function getUserByNameOrEmail($name) {
-		$result = $this->db->query(sprintf("SELECT id, name, user_type, lang, email, ua.type as auth FROM " . $this->db->table("user") . " left outer join " . $this->db->table("user_auth") . " ua on id=ua.user_id WHERE (name='%s' or email='%s') and is_group=0", $this->db->string($name), $this->db->string($name)));
+		$result = $this->db->query(sprintf("SELECT id, name, lower(user_type) as user_type, lower(lang) as lang, email, lower(ua.type) as auth FROM " . $this->db->table("user") . " left outer join " . $this->db->table("user_auth") . " ua on id=ua.user_id WHERE (name='%s' or email='%s') and is_group=0", $this->db->string($name), $this->db->string($name)));
 		$matches = $result->count();
 
 		if ($matches === 0) {
@@ -145,9 +141,14 @@ class ConfigurationDao {
 		return $result->firstRow();
 	}
 
+	public function getUsersByEmail($email) {
+		$result = $this->db->query(sprintf("SELECT id, name, lower(user_type) as user_type, lower(lang) as lang, email, lower(ua.type) as auth FROM " . $this->db->table("user") . " left outer join " . $this->db->table("user_auth") . " ua on id=ua.user_id WHERE (email='%s') and is_group=0", $this->db->string($email)));
+		return $result->rows();
+	}
+
 	public function getAllUsers($groups = FALSE, $usersGroups = FALSE) {
 		if ($usersGroups) {
-			$rows = $this->db->query("SELECT u.id as id, u.name as name, u.lang as lang, u.email as email, u.user_type as user_type, u.expiration as expiration, u.is_group as is_group, ug.group_id as group_id FROM " . $this->db->table("user") . " u LEFT OUTER JOIN " . $this->db->table("user_group") . " ug on ug.user_id = u.id ORDER BY id ASC")->rows();
+			$rows = $this->db->query("SELECT u.id as id, u.name as name, lower(u.lang) as lang, u.email as email, lower(u.user_type) as user_type, u.expiration as expiration, u.is_group as is_group, ug.group_id as group_id FROM " . $this->db->table("user") . " u LEFT OUTER JOIN " . $this->db->table("user_group") . " ug on ug.user_id = u.id ORDER BY id ASC")->rows();
 			$prev = NULL;
 			$result = array();
 			$last = NULL;
@@ -173,13 +174,13 @@ class ConfigurationDao {
 
 			return $result;
 		}
-		return $this->db->query("SELECT id, name, lang, email, user_type, expiration, is_group FROM " . $this->db->table("user") . " where " . ($groups ? "1=1" : "is_group = 0") . " ORDER BY id ASC")->rows();
+		return $this->db->query("SELECT id, name, lower(lang) as lang, email, lower(user_type) as user_type, expiration, is_group FROM " . $this->db->table("user") . " where " . ($groups ? "1=1" : "is_group = 0") . " ORDER BY id ASC")->rows();
 	}
 
 	public function getUser($id, $expiration = FALSE) {
 		$expirationCriteria = $expiration ? " AND (expiration is null or expiration > " . $this->formatTimestampInternal($expiration) . ")" : "";
 
-		return $this->db->query(sprintf("SELECT id, name, user_type, lang, email, expiration, ua.type as auth FROM " . $this->db->table("user") . " left outer join " . $this->db->table("user_auth") . " ua on id=ua.user_id WHERE id='%s'" . $expirationCriteria, $this->db->string($id)))->firstRow();
+		return $this->db->query(sprintf("SELECT id, name, lower(user_type) as user_type, lower(lang) as lang, email, expiration, lower(ua.type) as auth FROM " . $this->db->table("user") . " left outer join " . $this->db->table("user_auth") . " ua on id=ua.user_id WHERE id='%s'" . $expirationCriteria, $this->db->string($id)))->firstRow();
 	}
 
 	public function userQuery($rows, $start, $criteria, $sort = NULL) {
@@ -210,7 +211,7 @@ class ConfigurationDao {
 		}
 
 		$count = $db->query("select count(id) " . $query)->value(0);
-		$result = $db->query("select id, name, user_type, lang, email, expiration, is_group, ua.type as auth " . $query . " limit " . $rows . " offset " . $start)->rows();
+		$result = $db->query("select id, name, lower(user_type) as user_type, lower(lang) as lang, email, expiration, is_group, lower(ua.type) as auth " . $query . " limit " . $rows . " offset " . $start)->rows();
 
 		return array("start" => $start, "count" => count($result), "total" => $count, "data" => $result);
 	}
@@ -454,8 +455,6 @@ class ConfigurationDao {
 	}
 
 	public function cleanupItemIds($ids) {
-		$this->db->update("DELETE FROM " . $this->db->table("item_description") . " WHERE item_id in (" . $this->db->arrayString($ids, TRUE) . ")");
-
 	}
 
 	private function itemId($item) {

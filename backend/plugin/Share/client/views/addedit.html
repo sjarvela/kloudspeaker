@@ -1,0 +1,70 @@
+<form class="share-addedit form-horizontal">
+    <div class="control-group">
+        <label class="control-label" data-i18n="shareDialogShareItemNameTitle"></label>
+        <div class="controls">
+            <input type="text" data-bind="value: model.itemName" readonly="true"></input>
+        </div>
+    </div>
+    <legend data-i18n="shareDialogShareGeneralTitle"></legend>
+    <div class="control-group">
+        <label class="control-label" for="share-general-name" data-i18n="shareDialogShareNameTitle"></label>
+        <div class="controls">
+            <input id="share-general-name" type="text" data-bind="value: model.name" autofocus></input>
+        </div>
+    </div>
+    <!-- ko if: model.typeOptions().length > 1 -->
+    <div class="control-group">
+        <label class="control-label" data-i18n="shareDialogShareTypeTitle"></label>
+        <div class="controls">
+            <select data-bind="value: model.type, options: model.typeOptions, optionsText: model.typeOptionTitle">
+            </select>
+        </div>
+    </div>
+    <!-- /ko -->
+    <!-- ko if: model.typeOptions().length == 1 -->
+    <div class="control-group">
+        <label class="control-label" data-i18n="shareDialogShareTypeTitle"></label>
+        <div class="controls">
+            <input type="text" data-bind="value: model.typeOptionTitle(model.type())" readonly="true"></input>
+            </select>
+        </div>
+    </div>
+    <!-- /ko -->
+
+    <div class="control-group">
+        <label class="control-label" for="share-general-active" data-i18n="shareDialogShareActiveTitle"></label>
+        <div class="controls">
+            <input id="share-general-active" type="checkbox" data-bind="checked: model.active"></input>
+        </div>
+    </div>
+    <legend data-i18n="shareDialogShareValidityTitle"></legend>
+    <div class="control-group">
+        <label class="control-label" for="share-validity-expirationdate-value" data-i18n="shareDialogShareExpirationTitle"></label>
+        <div class="controls">
+            <div class="input-append">
+                <div id="share-validity-expirationdate-value" data-bind="time-picker:{ value: model.expiration }" />
+            </div>
+        </div>
+    </div>
+    <legend data-i18n="shareDialogShareAccessTitle"></legend>
+    <div class="control-group">
+        <label class="control-label" for="shareAccess" data-i18n="shareDialogShareAccessRestrictionTitle"></label>
+        <div class="controls">
+            <label class="radio">
+                <input type="radio" name="shareAccess" value="no" data-bind="checked: model.accessRestriction">
+                <span data-i18n="shareDialogShareAccessNoRestrictionTitle"></span>
+            </label>
+            <label class="radio">
+                <input type="radio" name="shareAccess" value="pw" data-bind="checked: model.accessRestriction">
+                <span data-i18n="shareDialogShareAccessPasswordTitle"></span>
+            </label>
+            <div class="control-group" data-bind="attr: {class: 'control-group inner ' + (model.passwordMissing() ? 'error' : '')}">
+                <input type="text" data-bind="value: model.accessPw, i18n: (model.edit && model.originalAccessRestriction == 'pw') ? 'shareDialogShareAccessChangePwTitle' : 'shareDialogShareAccessEnterPwTitle'" data-i18n-bind-target="placeholder"></input>
+            </div>
+            <label class="radio">
+                <input type="radio" name="shareAccess" value="private" data-bind="checked: model.accessRestriction">
+                <span data-i18n="shareDialogShareAccessLoggedInTitle"></span>
+            </label>
+        </div>
+    </div>
+</form>

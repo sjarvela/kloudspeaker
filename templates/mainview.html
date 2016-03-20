@@ -2,15 +2,22 @@
 	<div class="navbar-inner">
 		<div class="container-fluid">
 			<button type="button" id="kloudspeaker-mainview-navcollapse" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-responsive-collapse">
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
+				<span class="fa fa-navicon"></span>
 			</button>
       
 			<div id="kloudspeaker-mainview-logo" class="brand"></div>
 			
 			<div class="nav-collapse collapse navbar-responsive-collapse">
-				<ul id="kloudspeaker-mainview-menu" class="kloudspeaker-mainview-menubar nav pull-left"></ul>				
+				<ul id="kloudspeaker-mainview-menu" class="kloudspeaker-mainview-menubar nav pull-left">
+                    <li id="kloudspeaker-mainview-dropdown" class="dropdown">
+                        <a href="#" class="dropdown-toggle"><span></span>&nbsp;<b class="caret"></b></a>
+                    </li>
+                </ul>
+                <ul id="kloudspeaker-mainsubview-menu" class="kloudspeaker-mainview-menubar nav pull-left" style="display: none">
+                    <li id="kloudspeaker-mainsubview-dropdown" class="dropdown">
+                        <a href="#" class="dropdown-toggle"><span></span>&nbsp;<b class="caret"></b></a>
+                    </li>
+                </ul>				
 				<ul id="kloudspeaker-mainview-user" class="nav pull-right"></ul>
 				<div id="kloudspeaker-mainview-viewtools" class="navbar-form form-inline pull-right"></div>
 			</div>
@@ -20,7 +27,9 @@
 <div id="kloudspeaker-mainview-main" class="container-fluid">
 	<div id="kloudspeaker-mainview-content" class="row-fluid">
 		<div id="kloudspeaker-mainview-navlist-container" class="span3">
-			<div id="kloudspeaker-mainview-navlist-parent" class="well affix"></div>
+			<div id="kloudspeaker-mainview-navlist-parent" class="well affix">
+				<div id="kloudspeaker-mainview-navlist-content"></div>
+			</div>
 		</div>
 		
 		<div id="kloudspeaker-mainview-viewcontent" class="span9">
@@ -64,9 +73,9 @@
 	</div>
 </script>
 
-<script id="kloudspeaker-tmpl-main-menubar" type="text/x-jquery-tmpl">
-	<li class="kloudspeaker-mainview-menubar-item" title="${title}"><a href="javascript: void(0);">{{if icon}}<span class="kloudspeaker-mainview-menubar-item-icon"><i class="${icon}"></i></span>{{/if}}<span class="kloudspeaker-mainview-menubar-item-title">${title}</span></a></li>
-</script>
+<!--script id="kloudspeaker-tmpl-main-menubar" type="text/x-jquery-tmpl">
+	<li class="kloudspeaker-mainview-menubar-item" title="${title}"><a href="javascript: void(0);">{{if icon}}<span class="kloudspeaker-mainview-menubar-item-icon"><i class="fa fa-${icon}"></i></span>{{/if}}<span class="kloudspeaker-mainview-menubar-item-title">${title}</span></a></li>
+</script-->
 
 <script id="kloudspeaker-tmpl-main-navbar" type="text/x-jquery-tmpl">
 	<ul class="kloudspeaker-mainview-navbar nav nav-list">
@@ -93,7 +102,10 @@
 		
 		<div id="kloudspeaker-mainview-progress" style="display: none">
 			<div class="title"></div>
+			
+			<button class="close">&times;</button>
 			<div class="speed"></div>
+			
 			<div class="progress progress-striped active">
 				<div class="bar" style="width: 0%;"></div>
 			</div>
@@ -103,13 +115,13 @@
 
 <script id="kloudspeaker-tmpl-fileview-tools" type="text/x-jquery-tmpl">
 	<div id="kloudspeaker-fileview-style-options" class="kloudspeaker-radio">
-		<button id="kloudspeaker-fileview-style-list" class="btn btn-inverse btn-flat fileview-style-option"><i class="icon-list-ul"></i></a>
-		<button id="kloudspeaker-fileview-style-small-icons" class="btn btn-inverse btn-flat fileview-style-option"><i class="icon-th"></i></a>
-		<button id="kloudspeaker-fileview-style-large-icons" class="btn btn-inverse btn-flat fileview-style-option"><i class="icon-th-large"></i></a>
+		<button id="kloudspeaker-fileview-style-list" class="btn btn-inverse btn-flat fileview-style-option"><i class="fa fa-list-ul"></i></a>
+		<button id="kloudspeaker-fileview-style-small-icons" class="btn btn-inverse btn-flat fileview-style-option"><i class="fa fa-th"></i></a>
+		<button id="kloudspeaker-fileview-style-large-icons" class="btn btn-inverse btn-flat fileview-style-option"><i class="fa fa-th-large"></i></a>
 	</div>
 	<div id="kloudspeaker-fileview-search" class="input-append">
 		<input id="kloudspeaker-fileview-search-input" class="hintbox" type="text" hint-key="mainViewSearch">
-		<button class="btn" type="button"><i class="icon-search"></i></button>
+		<button class="btn" type="button"><i class="fa fa-search"></i></button>
 	</div>
 </script>
 
@@ -190,7 +202,7 @@
 		<span id="kloudspeaker-mainview-createfolder-title" class="localized" text-key="mainviewCreateFolderTitle"></span>
 		<div id="kloudspeaker-mainview-createfolder-name" class="input-append pull-right">
 			<input id="kloudspeaker-mainview-createfolder-name-input" class="hintbox" type="text" hint-key="mainviewCreateFolderName">
-			<button id="kloudspeaker-mainview-createfolder-button" class="btn" type="button"><i class="icon-arrow-right"></i></button>
+			<button id="kloudspeaker-mainview-createfolder-button" class="btn" type="button"><i class="fa fa-arrow-right"></i></button>
 		</div>
 	</div>
 </script>
@@ -207,7 +219,7 @@
 			<span id="kloudspeaker-mainview-addfile-retrieve-title" class="localized" text-key="mainviewRetrieveFileTitle"></span>
 			<div class="input-append pull-right">
 				<input id="kloudspeaker-mainview-addfile-retrieve-url-input" class="hintbox" type="text" hint-key="mainviewRetrieveUrlTitle">
-				<button id="kloudspeaker-mainview-addfile-retrieve-button" class="btn" type="button"><i class="icon-arrow-right"></i></button>
+				<button id="kloudspeaker-mainview-addfile-retrieve-button" class="btn" type="button"><i class="fa fa-arrow-right"></i></button>
 			</div>
 		</div>
 	</div>
@@ -251,8 +263,8 @@
 <script id="kloudspeaker-tmpl-filelist-item" type="text/x-jquery-tmpl">
 	<div id="kloudspeaker-filelist-item-${id}" class="kloudspeaker-filelist-item ${$item.typeClass($data)}" unselectable="on">
 		<div class="kloudspeaker-filelist-col kloudspeaker-filelist-col-sel">
-			<i class="kloudspeaker-filelist-item-sel unselected icon-check-empty"></i>
-			<i class="kloudspeaker-filelist-item-sel selected icon-check"></i>
+			<i class="kloudspeaker-filelist-item-sel unselected fa fa-square-o"></i>
+			<i class="kloudspeaker-filelist-item-sel selected fa fa-check-square-o"></i>
 		</div>
 		<div class="kloudspeaker-filelist-col kloudspeaker-filelist-col-icon">
 			<div class="kloudspeaker-filelist-item-icon"></div>
@@ -271,15 +283,15 @@
 <script id="kloudspeaker-tmpl-iconview-item" type="text/x-jquery-tmpl">
 	<div id="kloudspeaker-iconview-item-${id}" title="${name}" class="kloudspeaker-iconview-item ${$item.typeClass($data)}">
 		{{if $item.showThumb($data)}}
-		<div class="kloudspeaker-iconview-item-icon-thumb"><img src="${$item.thumbUrl($data)}"></img></div>
+		<div class="kloudspeaker-iconview-item-fa fa-thumb"><img src="${$item.thumbUrl($data)}"></img></div>
 		{{else}}
 		<div class="kloudspeaker-iconview-item-icon"></div>
 		{{/if}}
 		<div class="kloudspeaker-iconview-item-label">${name}</div>
-		<div class="kloudspeaker-iconview-item-info"><i class="icon-info-sign"></i></div>
+		<div class="kloudspeaker-iconview-item-info"><i class="fa fa-info-sign"></i></div>
 		<div class="kloudspeaker-iconview-item-sel">
-			<i class="kloudspeaker-iconview-item-sel-option unselected icon-check-empty"></i>
-			<i class="kloudspeaker-iconview-item-sel-option selected icon-check"></i>
+			<i class="kloudspeaker-iconview-item-sel-option unselected fa fa-square-o"></i>
+			<i class="kloudspeaker-iconview-item-sel-option selected fa fa-check-square-o"></i>
 		</div>
 	</div>
 </script>
@@ -336,41 +348,6 @@
 	<li id="kloudspeaker-itemcontext-details-selector-${id}" class="kloudspeaker-itemcontext-details-selector"><a href="javascript: void(0);">${title}</a></li>
 </script>
 
-<script id="kloudspeaker-tmpl-fileviewereditor-popup" type="text/x-jquery-tmpl">
-	<div class="lightbox hide fade" tabindex="-1" role="dialog" aria-hidden="true">
-		<div class='lightbox-header'>
-			<button type="button" class="close" aria-hidden="true">&times;</button>
-		</div>
-		<div class='lightbox-content'>
-			<div class="carousel slide">
-			  <div class="carousel-inner">
-			  	{{each items}}
-			    	<div id="kloudspeaker-fileviewereditor-viewer-item-${$value.item.id}" class="kloudspeaker-fileviewereditor-viewer-item item {{if $value.init}}active{{/if}}">
-			    		<div class="kloudspeaker-fileviewereditor-viewer-item-content loading">
-			    		</div>
-			    		<div class="carousel-caption">
-			    			<h4>${$value.item.name}</h4>
-			    			<div class="kloudspeaker-fileviewereditor-viewer-tools">
-			    				{{if $value.full}}
-			    				<a href="javascript: void(0);" class="kloudspeaker-fileviewereditor-viewer-item-viewinnewwindow localized" text-key="fileViewerEditorViewInNewWindowTitle"></a>
-			    				{{/if}}
-			    				{{if $value.edit}}
-			    				<a href="javascript: void(0);" class="kloudspeaker-fileviewereditor-viewer-item-edit localized" text-key="fileViewerEditorViewEditTitle"></a>
-			    				{{/if}}
-			    			</div>
-			    		</div>
-			    	</div>
-			    {{/each}}
-			  </div>
-			  {{if ($item.data.items.length > 1)}}
-			  <a class="carousel-control left" href="javascript: void(0);">&lsaquo;</a>
-			  <a class="carousel-control right" href="javascript: void(0);">&rsaquo;</a>
-			  {{/if}}
-			</div>
-		</div>
-	</div>
-</script>
-
 <script id="kloudspeaker-tmpl-permission-editor" type="text/x-jquery-tmpl">
 	<div id="kloudspeaker-pluginpermissions-editor-content">
 		<div class="kloudspeaker-pluginpermissions-editor-permission-selector">
@@ -398,7 +375,7 @@
 					</select>
 					<select id="kloudspeaker-pluginpermissions-editor-new-permission">
 					</select>
-					<button id="kloudspeaker-pluginpermissions-editor-new-add" class="btn btn-success"><i class="icon-plus"></i></button>
+					<button id="kloudspeaker-pluginpermissions-editor-new-add" class="btn btn-success"><i class="fa fa-plus"></i></button>
 				</div>
 			</div>
 			
@@ -433,7 +410,7 @@
 </script>
 
 <script id="kloudspeaker-tmpl-permission-editor-listremove" type="text/x-jquery-tmpl">
-	<div><i class='icon-trash'></i></div>
+	<div><i class='fa fa-trash'></i></div>
 </script>
 
 <script id="kloudspeaker-tmpl-permission-generic-editor" type="text/x-jquery-tmpl">
@@ -490,10 +467,10 @@
 	<div id="kloudspeaker-dropbox" class="closed">
 		<div id="kloudspeaker-dropbox-handle">
 			<div id="kloudspeaker-dropbox-handle-icon-open" class="kloudspeaker-dropbox-handle-icon">
-				<i class="icon-caret-left"></i>
+				<i class="fa fa-caret-left"></i>
 			</div>
 			<div id="kloudspeaker-dropbox-handle-icon-close" class="kloudspeaker-dropbox-handle-icon">
-				<i class="icon-caret-right"></i>
+				<i class="fa fa-caret-right"></i>
 			</div>
 		</div>
 		<div id="kloudspeaker-dropbox-container">
@@ -502,7 +479,7 @@
 				</div>
 				<div class="btn-group">
 					<li id="kloudspeaker-dropbox-actions">
-						<button class="btn dropdown-toggle"><i class="icon-cog"></i>&nbsp;<b class="caret"></b></button>
+						<button class="btn dropdown-toggle"><i class="fa fa-cog"></i>&nbsp;<b class="caret"></b></button>
 					</li>
 				</div>
 			</div>
@@ -514,6 +491,6 @@
 	<div class="kloudspeaker-dropbox-list-item {{if is_file}}file{{else}}folder{{/if}}">
 		<div class="item-icon"></div>
 		<div class="item-label">${name}</div>
-		<a class="item-remove" href="javascript: void(0);"><i class="icon-trash"></i></a>
+		<a class="item-remove" href="javascript: void(0);"><i class="fa fa-trash"></i></a>
 	</div>
 </script>

@@ -104,6 +104,10 @@ abstract class FilesystemItem {
 		return FALSE;
 	}
 
+	public function isWritable() {
+		return $this->filesystem->isWritable($this);
+	}
+
 	public function create() {
 		return $this->filesystem->createNewItem($this);
 	}

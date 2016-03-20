@@ -63,6 +63,7 @@ class Settings {
 		"no_udev_random" => FALSE, //typo in name, remove later
 		"no_dev_urandom" => FALSE,
 		"client_page" => NULL,
+		"ignored_items" => FALSE,
 	);
 
 	function __construct($settings) {

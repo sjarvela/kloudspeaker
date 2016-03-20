@@ -56,11 +56,17 @@
 		<div class="modal-body">{{html $item.getContent()}}</div>
 		<div class="modal-footer">
 			<div class="info"></div>
+			<div class="buttons">
 			{{each buttons}}
-			<a id="kloudspeaker-custom-dialog-button-${id}" class="kloudspeaker-custom-dialog-button btn ${cls}">${$item.getButtonTitle($value)}</a>
+				<a id="kloudspeaker-custom-dialog-button-${id}" class="kloudspeaker-custom-dialog-button btn ${cls}">${$item.getButtonTitle($value)}</a>
 			{{/each}}
+			</div>
 		</div>
 	</div>
+</script>
+
+<script id="kloudspeaker-tmpl-dialog-button" type="text/x-jquery-tmpl">
+	<a id="kloudspeaker-custom-dialog-button-${id}" class="kloudspeaker-custom-dialog-button btn ${cls}">${$item.getButtonTitle($item.data)}</a>
 </script>
 
 <script id="kloudspeaker-tmpl-dialog-error-debug" type="text/x-jquery-tmpl">
@@ -91,7 +97,7 @@
 			{{/each}}
 		</div>
 		{{if !$item.data.is_file}}
-		<div class="kloudspeaker-itemselector-folder-indicator"><i class="icon-caret-right"></i></div>
+		<div class="kloudspeaker-itemselector-folder-indicator"><i class="fa fa-caret-right"></i></div>
 		{{/if}}
 		<div class="kloudspeaker-itemselector-item-name">${name}</div>
 	</div>
@@ -112,7 +118,7 @@
 			{{tmpl($item.data) "#kloudspeaker-tmpl-popupmenu"}}
 		</li>
 	{{else}}
-	<li class="dropdown-item"><a href="#">{{if $item.data.icon}}<i class="icon-${$item.data.icon}"></i>&nbsp;&nbsp;{{/if}}${$item.data.title}</a></li>
+	<li class="dropdown-item"><a href="#">{{if $item.data.icon}}<i class="fa fa-${$item.data.icon}"></i>&nbsp;&nbsp;{{/if}}${$item.data.title}</a></li>
 	{{/if}}
 </script>
 
@@ -129,7 +135,7 @@
 <script id="kloudspeaker-tmpl-fullpage-error" type="text/x-jquery-tmpl">
 	<div class="kloudspeaker-fullpage-form-bg">
 		<div id="kloudspeaker-registration-main" class="container kloudspeaker-fullpage-form center wide">
-			<h2><i class="icon-exclamation-sign"></i>&nbsp;&nbsp;{{html title}}</h2>
+			<h2><i class="fa fa-exclamation-circle"></i>&nbsp;&nbsp;{{html title}}</h2>
 			<p>{{html message}}</p>
 		</div>
 	</div>

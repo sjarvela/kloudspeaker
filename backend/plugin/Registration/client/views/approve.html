@@ -1,0 +1,13 @@
+<div class="kloudspeaker-fullpage kloudspeaker-registration-page">
+	<div class="kloudspeaker-fullpage-bg" data-bind="attr: {class: 'kloudspeaker-fullpage-bg ' + (model.loading() ? 'loading' : '') }"></div>
+
+	<div class="kloudspeaker-fullpage-form wide center container">
+		<!-- ko if: model.success -->
+		<h1><i class="fa fa-check"></i>&nbsp;&nbsp;<span data-bind="text: model.success"></span></h1>
+		<p></p>
+		<!-- /ko -->
+		<!-- ko if: model.failed -->
+		<h2><i class="fa fa-exclamation-circle"></i>&nbsp;&nbsp;<span data-bind="text: model.failed"></span></h2>
+		<!-- /ko -->
+	</div>
+</div>

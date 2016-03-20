@@ -105,30 +105,33 @@
 		}
 		
 		public function downloadBinary($filename, $type, $mobile, $stream, $size = NULL, $range = NULL) {
+			$streamSize = NULL;
 			if ($range) {
 				$start = $range[0];
 				$end = $range[1];
-				$size = $range[2];
+				$rsize = $range[2];
 				
 				if ($start > 0 || $end < ($size - 1))
 					header('HTTP/1.1 206 Partial Content');
 				header("Cache-Control:");
 				header("Cache-Control: public");
 				header('Accept-Ranges: bytes');
-				header('Content-Range: bytes '.$start.'-'.$end.'/'.$size);
+				header('Content-Range: bytes '.$start.'-'.$end.'/'.$rsize);
 				header('Content-Length: '.($end - $start + 1));
+				$streamSize = $rsize;
 			} else {
 				$this->sendDownloadHeaders($filename, $type, $mobile, $size);
+				if ($size) $streamSize = $size;
 			}
 
 			Logging::logDebug("Sending $filename ($size)");			
 			if ($range) fseek($stream, $range[0]);
 
-			$this->doSendBinary($stream);
+			$this->doSendBinary($stream, $streamSize);
 		}
 		
 		private function sendDownloadHeaders($filename, $type, $mobile, $size) {
-			header("Content-Disposition: attachment; filename=\"".$filename."\";");
+			header('Content-Disposition: attachment; filename*=UTF-8\'\''.rawurlencode($filename));
 			if ($size) header("Content-Length: ".$size);
 			header("Pragma: public");
 			header("Expires: 0");
@@ -143,11 +146,31 @@
 			}
 		}
 
-		public function sendBinary($filename, $type, $stream, $size = NULL) {
-			if ($size) header("Content-Length: ".$size);
+		public function sendBinary($filename, $type, $stream, $size = NULL, $range = NULL) {
+			$streamSize = NULL;
+			if ($range) {
+				$start = $range[0];
+				$end = $range[1];
+				$rsize = $range[2];
+				
+				if ($start > 0 || $end < ($size - 1))
+					header('HTTP/1.1 206 Partial Content');
+				header("Cache-Control:");
+				header("Cache-Control: public");
+				header('Accept-Ranges: bytes');
+				header('Content-Range: bytes '.$start.'-'.$end.'/'.$rsize);
+				header('Content-Length: '.($end - $start + 1));
+				$streamSize = $rsize;
+			} else {
+				if ($size) {
+					header("Content-Length: ".$size);
+					$streamSize = $size;
+				}
+			}
 			header("Content-Type: ".$this->getMime(trim(strtolower($type))));
 			
-			$this->doSendBinary($stream);
+			if ($range) fseek($stream, $range[0]);
+			$this->doSendBinary($stream, $streamSize);
 		}
 
 		public function sendFile($file, $name, $type, $mobile, $size = NULL) {			
@@ -159,13 +182,18 @@
 			$this->doSendBinary($handle);
 		}
 				
-		private function doSendBinary($stream) {
+		private function doSendBinary($stream, $size = NULL) {
 			//if ($this->supportOutputBuffer) ob_start();
+			$chunk = 1024;
 			$count = 0;
+
 			while (!feof($stream)) {
 				$count = $count + 1;
+				$read = $chunk;
+				//TODO if size, make sure only up to size is read
+
 				set_time_limit(0);
-				echo fread($stream, 1024);
+				echo fread($stream, $read);
 				if ($this->supportOutputBuffer and ob_get_length() != FALSE) @ob_flush();
 				flush();
 			}

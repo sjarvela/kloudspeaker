@@ -1,0 +1,181 @@
+.filelist-item-share-info {}
+
+.filelist-item-share-info.others {
+    color: #cecece;
+}
+
+#share-header {
+    margin: 0 0 8px 0;
+}
+
+.share-items-container {
+    overflow: hidden;
+    height: 100%;
+}
+
+.item-share-list {
+    margin-bottom: 0;
+}
+
+.share-items {
+    width: 100%;
+    height: 240px;
+    overflow: scroll;
+}
+
+.no-share-items {
+    width: 530px;
+    float: left;
+    font-size: 23px;
+    color: #c6c6c6;
+    text-align: center;
+    height: 200px;
+    line-height: 200px;
+}
+
+.item-share {
+    position: relative;
+    border-bottom: 1px dotted #adadad;
+    float: left;
+    width: 100%;
+}
+
+.item-share.active,
+.item-share.hover, .item-share:hover {
+    background-color: #f8f8f8;
+}
+
+.item-share.quick {
+    background-color: #E9F9EB;
+}
+
+.share-info {
+    width: 100%;
+    float: left;
+    margin: 8px 0 0 8px;
+}
+
+.share-icon,
+.share-name {
+    float: left;
+}
+
+.share-name {
+    margin: 0 0 0 8px;
+}
+
+.item-share.unnamed .share-name {
+    font-style: italic;
+    color: #cecece;
+}
+
+.item-share.inactive {
+    color: #d2d2d2;
+}
+
+.share-inactive-title {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 8px;
+}
+
+.share-link-content {
+    float: left;
+    padding: 0 8px 8px 8px;
+    width: 100%;
+}
+
+.item-share-list .btn {
+    margin-top: 18px;
+}
+
+.share-actions {
+    float: left;
+    margin: 0 0 4px 4px;
+    font-size: 12px;
+}
+
+ul.share-actions a {
+    color: #92b5c6;
+    padding: 4px;
+    cursor: pointer;
+}
+
+.share-actions .share-remove {
+    color: #f689a5;
+}
+
+ul.share-actions a:hover, ul.share-actions a.hover {
+    color: #333333;
+    background-color: #eeeeee;
+    cursor: pointer;
+}
+
+ul.share-actions a.share-link-copy.no-clipboard {
+    display: none;
+}
+
+.share-link-instructions {
+    font-size: 12px;
+    color: #898989;
+    margin: 0 0 4px 4px;
+}
+
+.share-addedit .control-group.inner {
+    margin-bottom: 0;
+}
+
+#share-access-public-password-value {
+    margin-left: 20px;
+}
+
+#share-access-public-password-value.error {
+    border-color: #b94a48;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+.kloudspeaker-share-upload .kloudspeaker-uploader-file-selector {
+    margin: 0 270px;
+}
+
+.kloudspeaker-share-upload .upload-progress {
+    width: 100%;
+    clear: both;
+    margin-top: 80px;
+}
+
+.kloudspeaker-share-upload .upload-progress .title,
+.kloudspeaker-share-upload .upload-progress .speed {
+    text-align: left;
+    height: 20px;
+    width: auto;
+    min-width: 50px;
+}
+
+.kloudspeaker-share-upload .upload-progress .title {
+    float: left;
+}
+
+.kloudspeaker-share-upload .upload-progress.success .title {
+    color: #468847;
+}
+
+.kloudspeaker-share-upload .upload-progress.failure .title {
+    color: #b94a48;
+}
+
+.kloudspeaker-share-upload .upload-progress .speed {
+    float: right;
+}
+
+.kloudspeaker-share-upload .upload-progress .progress {
+    float: left;
+    width: 100%;
+}
+
+.share-quick .share-link-copy {
+    float: left;
+}

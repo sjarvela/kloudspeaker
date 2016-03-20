@@ -23,6 +23,10 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 		$this->rootPath = self::folderPath($def["path"]);
 	}
 
+	public function isWritable($item) {
+		return is_writable($this->localPath($item));
+	}
+
 	public function isDirectDownload() {
 		return TRUE;
 	}
@@ -60,11 +64,11 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 		$fullPath = self::joinPath($this->rootPath, $path);
 		$isFile = (strcasecmp(substr($fullPath, -1), DIRECTORY_SEPARATOR) != 0);
 
-		if ($isFile) {
-			return new File($id, $this->rootId(), $path, self::basename($fullPath), $this);
-		}
+		$name = $this->itemName(dirname($path), self::basename($fullPath), $fullPath);
 
-		return new Folder($id, $this->rootId(), $path, self::basename($fullPath), $this);
+		if ($isFile)
+			return new File($id, $this->rootId(), $path, $name, $this);
+		return new Folder($id, $this->rootId(), $path, $name, $this);
 	}
 
 	private function publicPath($path) {
@@ -119,7 +123,7 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 			throw new ServiceException("INVALID_PATH", $parent->id());
 		}
 
-		$ignored = $this->ignoredItems($this->publicPath($parentPath));
+		//$ignored = $this->ignoredItems($this->publicPath($parentPath));
 
 		$result = array();
 		foreach ($items as $i => $name) {
@@ -127,13 +131,16 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 				continue;
 			}
 
-			if (in_array(strtolower($name), $ignored)) {
-				continue;
-			}
+			//if (in_array(strtolower($name), $ignored)) {
+			//	continue;
+			//}
 
 			$path = self::joinPath($parentPath, $this->filesystemInfo->env()->convertCharset($name));
 			$nativePath = self::joinPath($nativeParentPath, $name);
-			$itemName = $this->filesystemInfo->env()->convertCharset($name);
+			if ($this->isItemIgnored($parentPath, $name, $nativePath)) continue;
+
+			$itemName = $this->itemName($parentPath, $name, $nativePath);
+			if (!$itemName) continue;
 
 			if (is_link($nativePath) and !file_exists($nativePath)) {
 				Logging::logError("Symbolic link broken: " . $nativePath);
@@ -152,6 +159,10 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 		return $result;
 	}
 
+	protected function itemName($parentPath, $name, $nativePath) {
+		return $this->filesystemInfo->env()->convertCharset($name);
+	}
+
 	public function calculateRecursiveSize($folder) {
 		return $this->folderSizeRecursively($this->localPath($folder));
 	}
@@ -163,15 +174,17 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 			throw new ServiceException("INVALID_PATH", $this->path);
 		}
 
-		$ignored = $this->ignoredItems($this->publicPath($nativePath));
+		//$ignored = $this->ignoredItems($this->publicPath($nativePath));
 		$size = 0;
 
 		foreach ($files as $i => $name) {
-			if (substr($name, 0, 1) == '.' || in_array(strtolower($name), $ignored)) {
+			if (substr($name, 0, 1) == '.') {
 				continue;
 			}
 
 			$fullPath = self::joinPath($nativePath, $name);
+			if ($this->isItemIgnored($nativePath, $name, $fullPath)) continue;
+
 			if (is_link($fullPath) and !file_exists($fullPath)) {
 				Logging::logError("Symbolic link broken: " . $fullPath);
 				continue;
@@ -215,15 +228,17 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 			throw new ServiceException("INVALID_PATH", $this->path);
 		}
 
-		$ignored = $this->ignoredItems($this->publicPath($nativePath));
+		//$ignored = $this->ignoredItems($this->publicPath($nativePath));
 		$result = array();
 
 		foreach ($files as $i => $name) {
-			if (substr($name, 0, 1) == '.' || in_array(strtolower($name), $ignored)) {
+			if (substr($name, 0, 1) == '.') {
 				continue;
 			}
 
 			$fullPath = self::joinPath($nativePath, $name);
+			if ($this->isItemIgnored($nativePath, $name, $fullPath)) continue;
+
 			if (is_dir($fullPath)) {
 				$result = array_merge($result, $this->allFilesRecursively($fullPath));
 				continue;
@@ -391,6 +406,7 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 	}
 
 	public function createFolder($folder, $name) {
+		$name = trim($name);
 		self::assertFilename($name);
 
 		$path = self::folderPath(self::joinPath($this->internalPath($folder), $name));
@@ -400,15 +416,23 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 			throw new ServiceException("DIR_ALREADY_EXISTS", $folder->id() . "/" . $name);
 		}
 
-		if (!mkdir($nativePath, $this->filesystemInfo->setting("new_folder_permission_mask"))) {
-			throw new ServiceException("CANNOT_CREATE_FOLDER", $folder->id() . "/" . $name);
+		$mask = $this->filesystemInfo->setting("new_folder_permission_mask");
+		if ($mask === FALSE) {
+			if (!mkdir($nativePath)) {
+				throw new ServiceException("CANNOT_CREATE_FOLDER", $folder->id() . "/" . $name);
+			}
 		} else {
-			chmod($nativePath, $this->filesystemInfo->setting("new_folder_permission_mask"));
+			if (!mkdir($nativePath, $mask)) {
+				throw new ServiceException("CANNOT_CREATE_FOLDER", $folder->id() . "/" . $name);
+			} else {
+				chmod($nativePath, $mask);
+			}
 		}
 		return $this->itemWithPath($this->publicPath($path));
 	}
 
 	public function createFile($folder, $name) {
+		$name = trim($name);
 		self::assertFilename($name);
 
 		$target = self::joinPath($this->internalPath($folder), $name);

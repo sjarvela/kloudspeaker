@@ -11,6 +11,7 @@
 
 class Request {
 	const METHOD_GET = 'get';
+	const METHOD_HEAD = 'head';
 	const METHOD_PUT = 'put';
 	const METHOD_POST = 'post';
 	const METHOD_DELETE = 'delete';
@@ -24,7 +25,7 @@ class Request {
 	private $raw;
 
 	public static function get($raw = FALSE) {
-		$method = strtolower($_SERVER['REQUEST_METHOD']);
+		$method = isset($_SERVER['REQUEST_METHOD']) ? strtolower($_SERVER['REQUEST_METHOD']) : NULL;
 		$uri = self::getUri();
 		$ip = self::getIp();
 
@@ -72,12 +73,15 @@ class Request {
 
 		}
 
-		return $_SERVER["REMOTE_ADDR"];
+		return isset($_SERVER["REMOTE_ADDR"]) ? $_SERVER["REMOTE_ADDR"] : "local";
 	}
 
 	private static function getParams($method) {
+		if (!$method) return array();
+
 		switch ($method) {
 			case self::METHOD_GET:
+			case self::METHOD_HEAD:
 				return $_GET;
 
 			case self::METHOD_POST:
@@ -100,8 +104,11 @@ class Request {
 	}
 
 	private static function getData($method, $raw, $params) {
+		if (!$method) return NULL;
+		
 		switch ($method) {
 			case self::METHOD_GET:
+			case self::METHOD_HEAD:
 				break;
 
 			case self::METHOD_POST:
@@ -117,7 +124,7 @@ class Request {
 				}
 				break;
 			default:
-				throw new Exception("Unsupported method: " . $this->method);
+				throw new Exception("Unsupported method: " . $method);
 		}
 		return NULL;
 	}

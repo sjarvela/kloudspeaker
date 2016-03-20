@@ -37,17 +37,6 @@ class Kloudspeaker_MetadataDao {
 	}
 
 	public function find($parent, $key, $value = FALSE, $recursive = FALSE) {
-		/*$p = $this->db->string(str_replace("\\", "\\\\", str_replace("'", "\'", $parent->location())));	//itemidprovider
-
-		if ($recursive) {
-			$pathFilter = "i.path like '" . $p . "%'";
-		} else {
-			if (strcasecmp("mysql", $this->env->db()->type()) == 0) {
-				$pathFilter = "i.path REGEXP '^" . $p . "[^/]+[/]?$'";
-			} else {
-				$pathFilter = "REGEX(i.path, \"#^" . $p . "[^/]+[/]?$#\")";
-			}
-		}*/
 		$pathFilter = $this->env->filesystem()->itemIdProvider()->pathQueryFilter($parent, $recursive);
 
 		$query = "SELECT item_id, md_key, md_value from " . $this->db->table("metadata") . " md, " . $this->db->table("item_id") . " i where md.item_id = i.id AND " . $pathFilter;
@@ -62,19 +51,6 @@ class Kloudspeaker_MetadataDao {
 		}
 	}
 
-	public function getItemDescriptions($items) {
-		$itemIds = array();
-		foreach ($items as $item) {
-			$itemIds[] = $item->id();
-		}
-		if (count($itemIds) == 0) {
-			return array();
-		}
-
-		$query = "SELECT item_id, description from " . $this->db->table("item_description") . " where item_id in (" . $this->db->arrayString($itemIds, TRUE) . ")";
-		return $this->db->query($query)->valueMap("item_id", "description");
-	}
-
 	public function removeItemMetadata($item, $key = NULL) {
 		if ($key == NULL) {
 			return $this->deleteMetadata($item);
@@ -84,7 +60,8 @@ class Kloudspeaker_MetadataDao {
 	}
 
 	public function getItemMetadataForChildren($parent) {
-		return $this->groupDataByItem($this->db->query(sprintf("SELECT item_id, md_key, md_value FROM " . $this->db->table("metadata") . " WHERE item_id in (select id from " . $this->db->table("item_id") . " where path like '%s%%') order by item_id asc", str_replace("'", "\'", $this->db->string($parent->location()))))->rows());
+		$pathFilter = $this->env->filesystem()->itemIdProvider()->pathQueryFilter($parent, FALSE, NULL);
+		return $this->groupDataByItem($this->db->query(sprintf("SELECT item_id, md_key, md_value FROM " . $this->db->table("metadata") . " WHERE item_id in (select id from " . $this->db->table("item_id") . " where ".$pathFilter.") order by item_id asc", str_replace("'", "\'", $this->db->string($parent->location()))))->rows());
 	}
 
 	private function groupDataByItem($data) {

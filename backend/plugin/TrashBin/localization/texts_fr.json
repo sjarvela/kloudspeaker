@@ -1,0 +1,19 @@
+{
+	"locale" : "fr",
+	"texts": {
+		"pluginTrashBinViewTitle" : "Poubelle",
+		"pluginTrashBinOpenAction" : "Ouvrir",
+		"pluginTrashBinEmptyAction" : "Vider la poubelle...",
+		"pluginTrashBinRestoreAction" : "Restaurer",
+		"pluginTrashBinDeleteAction" : "Supprimer",
+		"pluginTrashBinOriginalPathCol" : "Chemin",
+		"pluginTrashBinTrashedCol" : "Supprimé",
+		"pluginTrashBinDeleteSingleMessage" : "Confirmez la suppression de \"{0}\"?",
+		"pluginTrashBinDeleteMultiMessage" : "Confirmez la suppression de {0} fichierS/dossiers ?",
+		"pluginTrashBinEmptyTitle" : "Vider la poubelle",
+		"pluginTrashBinEmptyConfirmation" : "Confirmez la purge de la poubelle ?",
+		"pluginTrashBinRestoreFailedParentMissing" : "Le fichier ou dossier ne peut être restauré car l'emplacement d'origine est inexistant. Créez le(s) dossier(s) nécessaire(s).",
+		"pluginTrashBinRestoreFailedItemExists" : "Le fichier ou dossier ne peut être restauré car un nom semblable existe déjà. Renommez l'original.",
+		"pluginTrashBinRestoreFailed" : "Le fichier ou dossier ne peut être restauré."
+	}
+}

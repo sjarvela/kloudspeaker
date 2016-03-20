@@ -23,6 +23,11 @@
 			
 			$isHtml = (stripos($message, "<html>") !== FALSE);
 			$f = ($from != NULL ? $from : $this->env->settings()->setting("mail_notification_from"));
+
+			$emailStartIndex = strpos($f, "<");
+			$emailEndIndex = strpos($f, ">");
+			$fromName = ($emailStartIndex !== FALSE) ? substr($f, 0, $emailStartIndex) : NULL;
+			if ($emailStartIndex !== FALSE and $emailEndIndex !== FALSE) $f = substr($f, $emailStartIndex+1, ($emailEndIndex - $emailStartIndex));
 			
 			$validRecipients = $this->getValidRecipients($to);
 			if (count($validRecipients) === 0) {
@@ -31,7 +36,7 @@
 			}
 			
 			if (Logging::isDebug())
-				Logging::logDebug("Sending mail from [".$f."] to [".Util::array2str($validRecipients)."]: [".$message."]");
+				Logging::logDebug("Sending mail from [".$f."] ".($fromName != NULL ? ('(' . $fromName . ')') : '' )." to [".Util::array2str($validRecipients)."]: [".$message."]");
 			
 			set_include_path("vendor/PHPMailer".DIRECTORY_SEPARATOR.PATH_SEPARATOR.get_include_path());
 			require 'class.phpmailer.php';
@@ -53,8 +58,9 @@
 			}
 			
 			$mailer->From = $f;
+			if ($fromName != NULL) $mailer->FromName = $fromName;
 			foreach ($validRecipients as $recipient) {
-				$mailer->addBCC($recipient["email"], $recipient["name"]);
+				$mailer->addBCC($recipient["email"], isset($recipient["name"]) ? $recipient["name"] : "");
 			}
 
 			if (!$isHtml)
@@ -86,7 +92,13 @@
 		private function getValidRecipients($recipients) {
 			$valid = array();
 			foreach ($recipients as $recipient) {
-				if ($recipient["email"] === NULL or strlen($recipient["email"]) == 0) continue;
+				if (is_string($recipient)) {
+					$valid[] = array("email" => $recipient);
+					continue;
+				}
+				else
+					if ($recipient["email"] === NULL or strlen($recipient["email"]) == 0) continue;
+
 				$valid[] = $recipient;
 			}
 			return $valid;

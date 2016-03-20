@@ -21,9 +21,12 @@ class ShareDao {
 		return $db->query("select count('id') from " . $db->table("share") . " where item_id = " . $db->string($item->id(), TRUE) . " and user_id = " . $db->string($userId, TRUE))->value(0);
 	}
 
-	public function getShare($id, $mustBeValidAfter = NULL) {
+	public function getShare($id, $mustBeValidAfter = NULL, $onlyActive = TRUE) {
 		$db = $this->env->db();
-		$query = "select id, name, item_id, active, restriction from " . $db->table("share") . " where active=1 and id = " . $db->string($id, TRUE);
+		$activeCriteria = "";
+		if ($onlyActive) $activeCriteria = "active=1 and ";
+		
+		$query = "select id, user_id, name, item_id, type, active, quick, restriction, expiration from " . $db->table("share") . " where " .$activeCriteria . "id = " . $db->string($id, TRUE);
 		if ($mustBeValidAfter) {
 			$query .= ' and (expiration is null or expiration >= ' . $db->string($mustBeValidAfter) . ')';
 		}
@@ -39,7 +42,7 @@ class ShareDao {
 
 	public function getUserShares($userId) {
 		$db = $this->env->db();
-		$list = $db->query("select id, user_id, item_id, name, expiration, active, restriction from " . $db->table("share") . " where user_id = " . $db->string($userId, TRUE) . " order by item_id asc, created asc")->rows();
+		$list = $db->query("select id, user_id, item_id, type, name, expiration, active, quick, restriction from " . $db->table("share") . " where user_id = " . $db->string($userId, TRUE) . " order by item_id asc, created asc")->rows();
 
 		$res = array();
 		$itemId = FALSE;
@@ -56,21 +59,26 @@ class ShareDao {
 			}
 			$itemId = $s["item_id"];
 
-			$res[$userId][$itemId][] = array("id" => $s["id"], "name" => $s["name"], "expiration" => $s["expiration"], "active" => ($s["active"] == 1), "restriction" => $s["restriction"]);
+			$res[$userId][$itemId][] = array("id" => $s["id"], "name" => $s["name"], "type" => $s["type"], "expiration" => $s["expiration"], "active" => ($s["active"] == 1), "quick" => ($s["quick"] == 1), "restriction" => $s["restriction"]);
 		}
 		return $res;
 	}
 
 	public function getShares($itemId, $userId) {
 		$db = $this->env->db();
-		$list = $db->query("select id, name, expiration, active, restriction from " . $db->table("share") . " where item_id = " . $db->string($itemId, TRUE) . " and user_id = " . $db->string($userId, TRUE) . " order by created asc")->rows();
+		$list = $db->query("select id, name, type, expiration, active, quick, restriction from " . $db->table("share") . " where item_id = " . $db->string($itemId, TRUE) . " and user_id = " . $db->string($userId, TRUE) . " order by created asc")->rows();
 
 		$res = array();
 		foreach ($list as $s) {
-			$res[] = array("id" => $s["id"], "name" => $s["name"], "expiration" => $s["expiration"], "active" => ($s["active"] == 1), "restriction" => $s["restriction"]);
+			$res[] = array("id" => $s["id"], "name" => $s["name"], "type" => $s["type"], "expiration" => $s["expiration"], "active" => ($s["active"] == 1), "quick" => ($s["quick"] == 1), "restriction" => $s["restriction"]);
 		}
 
 		return $res;
+	}
+
+	public function getItemQuickShare($itemId, $userId) {
+		$db = $this->env->db();
+		return $db->query("select id, name, type, expiration, active, quick, restriction from " . $db->table("share") . " where item_id = " . $db->string($itemId, TRUE) . " and user_id = " . $db->string($userId, TRUE) . " and quick=1 order by created asc")->firstRow();
 	}
 
 	public function processQuery($q) {
@@ -89,7 +97,7 @@ class ShareDao {
 				$location = str_replace("'", "\'", $item->location());
 				$criteria .= sprintf(" AND item_id in (select id from " . $db->table("item_id") . " where path like '%s%%')", $location);
 			} else if ($q["item"] == 'none') {
-				$criteria .= " AND item_id like '%_%'";
+				$criteria .= " AND item_id like '%!_%' escape '!'";
 			}
 		}
 
@@ -97,7 +105,7 @@ class ShareDao {
 		$rows = isset($q["count"]) ? $q["count"] : 50;
 		$start = isset($q["start"]) ? $q["start"] : 0;
 
-		$list = $db->query("select id, user_id, item_id, name, expiration, active, restriction from " . $db->table("share") . " WHERE " . $criteria . " order by user_id asc, item_id asc, created asc" . " limit " . $rows . " offset " . $start)->rows();
+		$list = $db->query("select id, user_id, item_id, type, name, expiration, active, quick, restriction from " . $db->table("share") . " WHERE " . $criteria . " order by user_id asc, item_id asc, created asc" . " limit " . $rows . " offset " . $start)->rows();
 		return array("start" => $start, "count" => count($list), "total" => $total, "data" => $list);
 	}
 
@@ -146,7 +154,7 @@ class ShareDao {
 		return $db->query("select item_id, sum(case when user_id = " . $db->string($currentUser, TRUE) . " then 1 else 0 end) as own, sum(case when user_id <> " . $db->string($currentUser, TRUE) . " then 1 else 0 end) as other from " . $db->table("share") . " where item_id in (" . $db->arrayString($ids, TRUE) . ") group by item_id")->valueMap("item_id", "own", "other");
 	}
 
-	public function addShare($id, $itemId, $name, $userId, $expirationTime, $time, $active = TRUE, $restriction = FALSE) {
+	public function addShare($id, $itemId, $name, $type, $userId, $expirationTime, $time, $active = TRUE, $restriction = FALSE, $quick = FALSE) {
 		$restrictionType = NULL;
 		if (is_array($restriction) and isset($restriction["type"])) {
 			if ($restriction["type"] == "private") {
@@ -158,7 +166,7 @@ class ShareDao {
 
 		$db = $this->env->db();
 		$db->startTransaction();
-		$db->update(sprintf("INSERT INTO " . $db->table("share") . " (id, name, item_id, user_id, expiration, created, active, restriction) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", $db->string($id, TRUE), $db->string($name, TRUE), $db->string($itemId, TRUE), $db->string($userId, TRUE), $db->string($expirationTime), $db->string($time), ($active ? "1" : "0"), $db->string($restrictionType, TRUE)));
+		$db->update(sprintf("INSERT INTO " . $db->table("share") . " (id, name, type, item_id, user_id, expiration, created, active, restriction, quick) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", $db->string($id, TRUE), $db->string($name, TRUE), $db->string($type, TRUE), $db->string($itemId, TRUE), $db->string($userId, TRUE), $db->string($expirationTime), $db->string($time), ($active ? "1" : "0"), $db->string($restrictionType, TRUE), ($quick ? "1" : "0")));
 
 		if ($restrictionType == "pw") {
 			$this->createAuth($db, $id, $restriction["value"]);
@@ -172,7 +180,7 @@ class ShareDao {
 		$db->update(sprintf("INSERT INTO " . $db->table("share_auth") . " (id, hash, salt) VALUES (%s, %s, %s)", $db->string($id, TRUE), $db->string($hash["hash"], TRUE), $db->string($hash["salt"], TRUE)));
 	}
 
-	public function editShare($id, $name, $expirationTime, $active, $restriction) {
+	public function editShare($id, $name, $type, $expirationTime, $active, $restriction) {
 		$old = $this->getShare($id);
 
 		$oldRestrictionType = $old["restriction"];
@@ -182,7 +190,7 @@ class ShareDao {
 			if ($restriction["type"] == "private") {
 				$restrictionType = "private";
 			} else if ($restriction["type"] == "pw") {
-				if ($oldRestrictionType != "pw" and !isset($restriction["value"]) or strlen($restriction["value"]) == 0) {
+				if ($oldRestrictionType != "pw" and (!isset($restriction["value"]) or strlen($restriction["value"]) == 0)) {
 					throw new ServiceException("INVALID_REQUEST", "pw missing");
 				}
 
@@ -198,7 +206,7 @@ class ShareDao {
 			$db->update("DELETE FROM " . $db->table("share_auth") . " WHERE id = " . $db->string($id, TRUE));
 		}
 
-		$db->update(sprintf("UPDATE " . $db->table("share") . " SET name = %s, active = %s, expiration = %s, restriction = %s WHERE id=%s", $db->string($name, TRUE), ($active ? "1" : "0"), $db->string($expirationTime), $db->string($restrictionType, TRUE), $db->string($id, TRUE)));
+		$db->update(sprintf("UPDATE " . $db->table("share") . " SET name = %s, type = %s, active = %s, expiration = %s, restriction = %s WHERE id=%s", $db->string($name, TRUE), $db->string($type, TRUE), ($active ? "1" : "0"), $db->string($expirationTime), $db->string($restrictionType, TRUE), $db->string($id, TRUE)));
 		if ($restrictionPwValue) {
 			$this->createAuth($db, $id, $restriction["value"]);
 		}
@@ -264,11 +272,13 @@ class ShareDao {
 		return $success;
 	}
 
-	public function deleteSharesForItem($itemId) {
+	public function deleteSharesForItemId($itemId, $userId = NULL) {
 		$db = $this->env->db();
 		$db->startTransaction();
 
 		$criteria = "item_id = " . $db->string($itemId, TRUE);
+		if ($userId != NULL) $criteria .= " and user_id = " . $db->string($userId, TRUE);
+
 		$db->update("DELETE FROM " . $db->table("share_auth") . " WHERE id in (SELECT id FROM " . $db->table("share") . " WHERE " . $criteria . ")");
 		$success = $db->update("DELETE FROM " . $db->table("share") . " WHERE " . $criteria);
 

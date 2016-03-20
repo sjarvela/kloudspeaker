@@ -142,10 +142,12 @@ class FilesystemServices extends ServicesBase {
 				}
 
 				if (!in_array(strtolower($item->extension()), array("gif", "png", "jpg", "jpeg"))) {
-					throw $this->invalidRequestException();
+					throw $this->invalidRequestException("Thumbnail not allowed for ".$item->name());
 				}
 
 				if ($this->env->settings()->setting("enable_thumbnails")) {
+					$this->env->filesystem()->assertRights($item, FilesystemController::PERMISSION_LEVEL_READ, "read");
+
 					require_once "include/Thumbnail.class.php";
 					$maxWidth = 400;
 					$maxHeight = 400;
@@ -318,6 +320,7 @@ class FilesystemServices extends ServicesBase {
 		$result["folder"] = ($item != NULL) ? $item->data() : NULL;
 		$result["files"] = $files;
 		$result["folders"] = $folders;
+		$result["items"] = array_merge($folders, $files);
 		$result["permissions"] = ($item != NULL) ? $this->env->permissions()->getAllFilesystemPermissions($item) : array();
 		$result["data"] = $this->env->filesystem()->getRequestData($item, $items, $data);
 
@@ -375,6 +378,35 @@ class FilesystemServices extends ServicesBase {
 				$includeHierarchy = ($this->request->hasParam("h") and strcmp($this->request->param("h"), "1") == 0);
 				$this->response()->success($this->getFolderInfo($item, $includeHierarchy, $this->request->data["data"]));
 				return;
+			case 'fileinfo':
+				if (!isset($this->request->data["files"])) {
+					throw $this->invalidRequestException();
+				}
+
+				$info = array();
+				foreach ($this->request->data["files"] as $file) {
+					$p = strrpos($file, "/");
+					if ($p === FALSE) {
+						$p = -1;
+					}
+
+					$p = max($p, strrpos($file, "\\"));
+
+					if ($p !== FALSE and $p >= 0) {
+						$fn = substr($file, $p + 1);
+					} else {
+						$fn = $file;
+					}
+
+					$f = $item->fileWithName($fn);
+					if ($f->exists()) {
+						$info[$file] = array("size" => $f->size());
+					} else {
+						$info[$file] = NULL;
+					}
+				}
+				$this->response()->success($info);
+				return;
 			case 'check':
 				if (!isset($this->request->data["files"])) {
 					throw $this->invalidRequestException();
@@ -426,12 +458,7 @@ class FilesystemServices extends ServicesBase {
 					throw $this->invalidRequestException();
 				}
 
-				$folder = $this->item($data['folder']);
-				$to = $folder->folderWithName($item->name());
-				Logging::logDebug("COPY TO " . $to->internalPath());
-				if ($to->exists()) {
-					throw new ServiceException("DIR_ALREADY_EXISTS");
-				}
+				$to = $this->item($data['folder']);
 
 				$this->env->filesystem()->copy($item, $to);
 				break;

@@ -41,6 +41,7 @@ class ShareHandler {
 		return array(
 			"count" => $own ? $this->dao()->getShareCount($item, $this->env->session()->userId()) : 0,
 			"other_users" => $others,
+			"can_add" => (count($this->getShareTypes($item)) > 0)
 		);
 	}
 
@@ -91,6 +92,78 @@ class ShareHandler {
 		return $list;
 	}
 
+	public function getShare($id) {
+		$share = $this->dao()->getShare($id);
+		if (!$share) return NULL;
+		if ($share["user_id"] != $this->env->session()->userId()) return NULL;
+		return $share;
+	}
+
+	public function getShareInfo($id) {
+		$share = $this->dao()->getShare($id, NULL, FALSE);
+		if (!$share) return NULL;
+		if (!$this->env->authentication()->isAdmin() and $share["user_id"] != $this->env->session()->userId()) return NULL;
+
+		$itemId = $share["item_id"];
+		$item = $this->getShareItem($itemId);
+
+		$possibleTypes = $this->getShareTypes($item);
+		if ($share["type"] == NULL) {
+			$share["type"] = $possibleTypes[0];
+		} else {
+			if (!in_array($share["type"], $possibleTypes))
+				throw new ServiceException("INVALID_REQUEST", "Invalid share type");
+		}
+
+		return array("share" => $share, "item" => (is_array($item) ? $item : $item->data()), "share_types" => $possibleTypes);
+	}
+
+	private function getShareItem($itemId, $anonymous = TRUE) {
+		if (strpos($itemId, "_") > 0) {
+			$parts = explode("_", $itemId);
+			$info = $this->getCustomShareItem($parts[0], $parts[1]);
+			if ($info == NULL) {
+				return NULL;
+			}
+			return array("id" => $itemId, "item_id" => $parts[0], "name" => $info["name"], "custom" => TRUE, "type" => $parts[0]);
+		}
+
+		//TODO proper way to tell filesystem that "for this request, it is ok to access folder X"
+		if ($anonymous) $this->env->filesystem()->allowFilesystems = TRUE;
+		return $this->env->filesystem()->item($itemId);
+	}
+
+	public function getShareOptions($itemId) {
+		$item = $this->getShareItem($itemId);
+		return array("item" => (is_array($item) ? $item : $item->data()), "share_types" => $this->getShareTypes($item));
+	}
+
+	public function getShareTypes($itm, $all = FALSE) {
+		$item = $itm;
+		if (is_string($itm)) $item = $this->getShareItem($itm);
+
+		if (is_array($item)) {
+			return $this->getCustomShareTypes($item["type"], $item["item_id"]);
+		}
+		return $this->getFileShareTypes($item, $all);
+	}
+
+	private function getFileShareTypes($item, $all) {
+		// file
+		if ($item->isFile()) return array("download");
+
+		// folder
+		$types = array();
+		if ($all or $this->env->permissions()->hasFilesystemPermission(FilesystemController::FILESYSTEM_ITEM_ACCESS_PERMISSION, $item, FilesystemController::PERMISSION_LEVEL_READWRITE)) {
+			$types[] = "upload";
+		}
+
+		if ($all or $this->env->permissions()->hasFilesystemPermission(FilesystemController::FILESYSTEM_ITEM_ACCESS_PERMISSION, $item, FilesystemController::PERMISSION_LEVEL_READ) and $this->env->plugins()->exists("Archiver")) {
+			$types[] = "prepared_download";
+		}
+		return $types;
+	}
+
 	public function getUserShares() {
 		return $this->dao()->getUserShares($this->env->session()->userId());
 	}
@@ -107,33 +180,85 @@ class ShareHandler {
 		return $this->dao()->getShareUsers($i);
 	}
 
-	public function addShare($itemId, $name, $expirationTs, $active, $restriction) {
-		if (strpos($itemId, "_") === FALSE) {
-			$this->env->filesystem()->item($itemId);
-			$item = $this->env->filesystem()->item($itemId);
+	public function addShare($itemId, $name, $type, $expirationTs, $active, $restriction) {
+		$item = $this->getShareItem($itemId, FALSE);
+		if (!is_array($item)) {
 			if (!$this->env->permissions()->hasFilesystemPermission("share_item", $item)) {
 				throw new ServiceException("INSUFFICIENT_PERMISSIONS");
 			}
 		}
 
+		$possibleTypes = $this->getShareTypes($item);
+		if (!in_array($type, $possibleTypes))
+			throw new ServiceException("INVALID_REQUEST", "Invalid share type");
+
+		$this->assertRequiredCreatePermission($item, $type);
+
 		$created = $this->env->configuration()->formatTimestampInternal(time());
-		$this->dao()->addShare($this->GUID(), $itemId, $name, $this->env->session()->userId(), $expirationTs, $created, $active, $restriction);
+		$this->dao()->addShare($this->GUID(), $itemId, $name, $type, $this->env->session()->userId(), $expirationTs, $created, $active, $restriction);
 	}
 
-	public function editShare($id, $name, $expirationTs, $active, $restriction) {
-		$share = $this->dao()->getShare($id);
+	public function editShare($id, $name, $type, $expirationTs, $active, $restriction) {
+		$share = $this->dao()->getShare($id, NULL, FALSE);
 		if ($share == NULL) {
 			return;
 		}
 
-		if (strpos($share["item_id"], "_") === FALSE) {
-			$item = $this->env->filesystem()->item($share["item_id"]);
+		$item = $this->getShareItem($share["item_id"], FALSE);
+		if (!is_array($item)) {
 			if (!$this->env->permissions()->hasFilesystemPermission("share_item", $item)) {
 				throw new ServiceException("INSUFFICIENT_PERMISSIONS");
 			}
 		}
 
-		$this->dao()->editShare($id, $name, $expirationTs, $active, $restriction);
+		$possibleTypes = $this->getShareTypes($item);
+		if (!in_array($type, $possibleTypes))
+			throw new ServiceException("INVALID_REQUEST", "Invalid share type");
+
+		$this->assertRequiredCreatePermission($item, $type);
+
+		$this->dao()->editShare($id, $name, $type, $expirationTs, $active, $restriction);
+	}
+
+	private function assertRequiredCreatePermission($item, $type) {
+		if (!is_array($item)) {
+			//fs
+			$required = FilesystemController::PERMISSION_LEVEL_READ;
+			if ($type == "upload") $required = FilesystemController::PERMISSION_LEVEL_READWRITE;
+
+			if (!$this->env->permissions()->hasFilesystemPermission(FilesystemController::FILESYSTEM_ITEM_ACCESS_PERMISSION, $item, $required)) {
+				throw new ServiceException("INSUFFICIENT_PERMISSIONS");
+			}
+		}
+		// custom type permission assert?
+	}
+
+	public function getQuickShare($itemId) {
+		$item = $this->getShareItem($itemId, FALSE);
+		if (!is_array($item)) {
+			if (!$this->env->permissions()->hasFilesystemPermission("share_item", $item)) {
+				throw new ServiceException("INSUFFICIENT_PERMISSIONS");
+			}
+		}
+		$created = FALSE;
+		$qs = $this->dao()->getItemQuickShare($itemId, $this->env->session()->userId());
+		if ($qs == NULL) {
+			$this->addQuickShare($itemId, $item);
+			$qs = $this->dao()->getItemQuickShare($itemId, $this->env->session()->userId());
+			$created = TRUE;
+		}
+		return array("created" => $created, "share" => $qs);
+	}
+
+	private function addQuickShare($itemId, $item) {
+		$id = $this->GUID();
+		$name = "";
+		$created = $this->env->configuration()->formatTimestampInternal(time());
+		$possibleTypes = $this->getShareTypes($item);
+		if (count($possibleTypes) == 0) throw new ServiceException("INSUFFICIENT_PERMISSIONS");
+
+		$type = $possibleTypes[0];
+		$this->dao()->addShare($id, $itemId, $name, $type, $this->env->session()->userId(), NULL, $created, TRUE, FALSE, TRUE);
 	}
 
 	public function updateShares($ids, $update) {
@@ -148,8 +273,16 @@ class ShareHandler {
 		$this->dao()->deleteSharesById($ids);
 	}
 
-	public function deleteSharesForItem($itemId) {
-		$this->dao()->deleteSharesForItem($itemId);
+	public function deleteSharesForItem($item) {
+		if (is_object($item)) $this->dao()->deleteShares($item);
+		else $this->dao()->deleteSharesForItemId($item);
+	}
+
+	public function deleteUserSharesForItem($item, $userId = NULL) {
+		$id = (is_object($item)) ? $item->id() : $item;
+		$uid = $userId;
+		if ($uid === NULL) $uid = $this->env->session()->userId();
+		$this->dao()->deleteSharesForItemId($id, $uid);
 	}
 
 	public function getPublicShareInfo($id) {
@@ -163,10 +296,11 @@ class ShareHandler {
 
 	private function doGetSharePublicInfo($share) {
 		$itemId = $share["item_id"];
-		$type = NULL;
+		//$type = NULL;
 		$name = NULL;
 
-		if (strpos($itemId, "_") > 0) {
+		//TODO get types list
+		/*if (strpos($itemId, "_") > 0) {
 			$parts = explode("_", $itemId);
 			$info = $this->getCustomShareInfo($parts[0], $parts[1], $share);
 			if ($info == NULL) {
@@ -180,10 +314,25 @@ class ShareHandler {
 			$item = $this->env->filesystem()->item($itemId);
 			$type = $item->isFile() ? "download" : "upload";
 			$name = $item->name();
+		}*/
+
+		$item = $this->getShareItem($itemId);
+		if ($item == NULL)
+			throw new ServiceException("INVALID_REQUEST", "Invalid share item");
+
+		if (is_array($item)) $name = $item["name"];
+		else $name = $item->name();
+
+		$possibleTypes = $this->getShareTypes($item, TRUE);
+		if ($share["type"] == NULL) {
+			$share["type"] = $possibleTypes[0];
+		} else {
+			if (!in_array($share["type"], $possibleTypes))
+				throw new ServiceException("INVALID_REQUEST", "Invalid share type");
 		}
 
 		//TODO processed download
-		$info = array("type" => $type, "name" => $name, "restriction" => $share["restriction"]);
+		$info = array("type" => $share["type"], "name" => $name, "restriction" => $share["restriction"]);
 
 		if ($share["restriction"] == "pw") {
 			$hash = $this->dao()->getShareHash($share["id"]);
@@ -279,13 +428,22 @@ class ShareHandler {
 		throw new ServiceException("REQUEST_FAILED", "Invalid share restriction: " . $share["restriction"]);
 	}
 
-	public function getCustomShareInfo($type, $id, $share) {
+	public function getCustomShareItem($type, $id) {
 		if (!array_key_exists($type, $this->customShareHandlers)) {
 			Logging::logError("No custom share handler found: " . $type);
 			return NULL;
 		}
 		$handler = $this->customShareHandlers[$type];
-		return $handler->getShareInfo($id, $share);
+		return $handler->getShareItem($id);
+	}
+
+	public function getCustomShareTypes($type, $id) {
+		if (!array_key_exists($type, $this->customShareHandlers)) {
+			Logging::logError("No custom share handler found: " . $type);
+			return NULL;
+		}
+		$handler = $this->customShareHandlers[$type];
+		return $handler->getShareTypes($id);
 	}
 
 	public function processShareGet($id, $params) {
@@ -295,6 +453,35 @@ class ShareHandler {
 		}
 
 		$this->assertAccess($share);
+
+		$info = $this->doGetSharePublicInfo($share);
+		if ($info == NULL or ($info["type"] != "download" and $info["type"] != "prepared_download")) {
+			throw new ServiceException("INVALID_REQUEST", "Invalid share type");
+		}
+
+		if ($info["type"] == "prepared_download") {
+			//TODO allow custom process?
+			if (!isset($params["key"]))
+				throw new ServiceException("INVALID_REQUEST", "Prepared key missing");
+
+			$file = $this->env->session()->param($params["key"]);
+			if (!$file or !file_exists($file)) {
+				Logging::logDebug("Invalid share request, no prepared package found " . $params["key"] . ":" . $file);
+				throw new ServiceException("INVALID_REQUEST");
+			}
+
+			$name = $info["name"];
+			if (!$name or strlen($name) == 0) {
+				$name = "download";	//TODO get from info?
+			}
+
+			$type = "zip"; //TODO get from archiver
+
+			$mobile = ($this->env->request()->hasParam("m") and strcmp($this->env->request()->param("m"), "1") == 0);
+			$this->env->response()->sendFile($file, $name . "." . $type, $type, $mobile, filesize($file));
+			unlink($file);
+			return;
+		}
 
 		$itemId = $share["item_id"];
 		if (strpos($itemId, "_") > 0) {
@@ -332,23 +519,42 @@ class ShareHandler {
 		$itemId = $share["item_id"];
 		if (strpos($itemId, "_") > 0) {
 			$parts = explode("_", $itemId);
-			return $this->processCustomPrepareGet($parts[0], $parts[1], $share);
+			$af = $this->processCustomPrepareGet($parts[0], $parts[1], $share);
+		} else {
+			$af = $this->processFilePrepareGet($itemId);
 		}
 
-		//TODO zip download
-		throw new ServiceException("INVALID_REQUEST");
+		if (!$af) {
+			throw new ServiceException("INVALID_REQUEST", "Could not prepare download");
+		}
 
+		$key = str_replace(".", "", uniqid('', true));
+
+		Logging::logDebug("Storing prepared package " . $key . ":" . $af);
+		$this->env->session()->param($key, $af);
+
+		return array("key" => $key);
+	}
+
+	private function processFilePrepareGet($itemId) {
 		$this->env->filesystem()->allowFilesystems = TRUE;
 		$item = $this->env->filesystem()->item($itemId);
 		if (!$item) {
-			throw new ServiceException("INVALID_REQUEST");
+			throw new ServiceException("INVALID_REQUEST", "Invalid item");
 		}
 
 		if ($item->isFile()) {
 			throw new ServiceException("INVALID_REQUEST");
 		}
 
-		//prepare zip for folder
+		$ap = $this->env->plugins()->getPlugin("Archiver");
+		if (!$ap) {
+			throw new ServiceException("INVALID_REQUEST", "No archiver plugin");
+		}
+
+		$am = $ap->getArchiveManager();
+		Logging::logDebug("Share: compressing " . $item);
+		return $am->compress($item);
 	}
 
 	private function processCustomGet($type, $id, $share, $params) {
@@ -383,6 +589,11 @@ class ShareHandler {
 		}
 
 		$this->assertAccess($share);
+
+		$info = $this->doGetSharePublicInfo($share);
+		if ($info == NULL or $info["type"] != "upload") {
+			throw new ServiceException("INVALID_REQUEST");
+		}
 
 		$this->env->filesystem()->allowFilesystems = TRUE;
 		$item = $this->env->filesystem()->item($share["item_id"]);

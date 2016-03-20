@@ -1,0 +1,43 @@
+#kloudspeaker-trashbin {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 45px;
+    height: 50px;
+    padding: 0;
+    text-align: center;
+    font-size: 30px;
+    -webkit-border-top-left-radius: 4px;
+    -moz-border-top-left-radius: 4px;
+    border-top-left-radius: 4px;
+    background-color: #c8c8c8;
+}
+
+#kloudspeaker-trashbin.folder {
+    cursor: pointer;
+}
+
+#kloudspeaker-trashbin > .drop-target {
+    float: left;
+    width: 100%;
+    height: 100%;
+    line-height: 50px;
+}
+
+#kloudspeaker-trashbin > .drop-target.dragover {
+    background-color: #a8a8a8;
+}
+
+#kloudspeaker-trashbin .dropdown-menu {
+    position: fixed;
+    bottom: 50px;
+    top: initial;
+    right: 0;
+    left: initial;
+}
+
+@media (max-width: 767px) {
+    #kloudspeaker-trashbin {
+        display: none;
+    }
+}

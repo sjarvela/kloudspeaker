@@ -1,0 +1,68 @@
+<div>
+    <div class="share-list" data-bind="config-list: {tools: tools, cols: cols, remote: remote, optionsModel: model.options, selected: model.selected, hilight: model.view, defaultSort: { id: 'time', asc: false }, restrict: model.restrictConfigList }">
+        <h2 data-part="header-title"><i class="fa fa-time"></i>&nbsp;<span data-i18n="pluginEventLoggingAdminNavTitle"></span></h2>
+        <form data-part="options" class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label" for="event-type" data-i18n="pluginEventLoggingAdminOptionEventType"></label>
+                <div class="controls">
+                    <select id="event-type" data-bind="value: settings.optionsModel.eventType, options: settings.optionsModel.eventTypes,  optionsText: settings.optionsModel.eventTypeOptionTitle, optionsCaption: settings.optionsModel.eventTypeNoneTitle"></select>
+                    <!-- ko if: (settings.optionsModel.eventType() == 'custom') -->
+                    <input type="text" data-bind="value: settings.optionsModel.customEventType"></input>
+                    <!-- /ko -->
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="event-user" data-i18n="pluginEventLoggingAdminOptionUser"></label>
+                <div class="controls">
+                    <select id="event-user" data-bind="value: settings.optionsModel.user, options: settings.optionsModel.users, optionsText: settings.optionsModel.userOptionTitle, optionsCaption: settings.optionsModel.userNoneTitle"></select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" data-i18n="pluginEventLoggingAdminOptionTime"></label>
+                <div class="controls">
+                    <div data-bind="time-picker:{ value: settings.optionsModel.start }" />
+                    <div data-bind="time-picker:{ value: settings.optionsModel.end }" />
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" data-i18n="pluginEventLoggingAdminOptionItem"></label>
+                <div class="controls">
+                    <select id="event-item-option" data-bind="value: settings.optionsModel.itemType, options: settings.optionsModel.itemTypes, optionsText: settings.optionsModel.itemTypeOptionTitle, optionsCaption: settings.optionsModel.itemTypeNoneTitle"></select>
+
+                    <!-- ko if: (settings.optionsModel.itemType() && settings.optionsModel.itemType() != 'none' && settings.optionsModel.itemType() != 'path') -->
+                    <div id="event-item-selector">
+                        <input type="text" disabled data-bind="format: settings.optionsModel.item, formatter: settings.optionsModel.pathFormatter" data-format-target="value"></input>
+                        <button class="btn" data-bind="click: settings.optionsModel.onSelectItem">...</button>
+                    </div>
+                    <!-- /ko -->
+
+                    <!-- ko if: (settings.optionsModel.itemType() == 'path') -->
+                    <input type="text" data-bind="value: settings.optionsModel.itemPath"></input>
+                    <!-- /ko -->
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- ko if: model.view() != null -->
+    <div class="eventlog-event-details" data-bind="with: model.view()">
+        <button type="button" class="close" data-bind="click: function() { $root.model.view(null) }">×</button>
+        <legend data-bind="text: ('#' + id + ' ' + type)"></legend>
+        <dl class="dl-horizontal">
+            <dt data-i18n="pluginEventLoggingAdminDetailsTime"></dt>
+            <dd data-bind="format: time, formatter: $root.timeFormatter"></dd>
+            <dt data-i18n="pluginEventLoggingAdminDetailsUser"></dt>
+            <dd data-bind="text: user"></dd>
+            <dt data-i18n="pluginEventLoggingAdminDetailsIP"></dt>
+            <dd data-bind="text: ip"></dd>
+            <!-- ko if: item -->
+            <dt data-i18n="pluginEventLoggingAdminDetailsItem"></dt>
+            <dd data-bind="html: item.replace(/,/g, '<br/>')"></dd>
+            <!-- /ko -->
+            <!-- ko foreach: details -->
+            <dt data-bind="text: title"></dt>
+            <dd data-bind="text: value"></dd>
+            <!-- /ko -->
+        </dl>
+    </div>
+    <!-- /ko -->
+</div>

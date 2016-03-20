@@ -67,6 +67,10 @@ class PluginController {
 		return isset($this->plugins[$id]);
 	}
 
+	public function exists($id) {
+		return $this->hasPlugin($id);
+	}
+
 	public function getSessionInfo() {
 		$result = array();
 		$settings = $this->env->settings()->setting("plugins");
@@ -84,6 +88,13 @@ class PluginController {
 				$info["client_plugin"] = $custom ? $this->env->resources()->getCustomPluginUrl($id, $clientPlugin) : $this->env->getPluginUrl($id, $clientPlugin, TRUE);
 			}
 
+			$clientModule = $p->getClientModuleId();
+			if ($clientModule != NULL) {
+				$path = "client/";
+				$info["client_module_path"] = $custom ? $this->env->resources()->getCustomPluginUrl($id, $path) : $this->env->getPluginUrl($id, $path, TRUE);
+				$info["client_module_id"] = $clientModule;
+			}
+			
 			$result[$id] = $info;
 		}
 		return $result;

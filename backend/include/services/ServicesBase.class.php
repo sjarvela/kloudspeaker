@@ -59,6 +59,7 @@ abstract class ServicesBase {
 	public function processRequest() {
 		switch ($this->request->method()) {
 			case Request::METHOD_GET:
+			case Request::METHOD_HEAD:
 				$this->processGet();
 				break;
 			case Request::METHOD_PUT:
@@ -106,6 +107,12 @@ abstract class ServicesBase {
 
 	protected function invalidRequestException($details = NULL) {
 		return new ServiceException("INVALID_REQUEST", "Invalid " . get_class($this) . " request: " . strtoupper($this->request->method()) . " " . $this->request->URI() . ($details != NULL ? (" " . $details) : ""));
+	}
+
+	protected function error($code, $error="", $details = NULL) {
+		Logging::logError("Request error: " . get_class($this) . " request: " . strtoupper($this->request->method()) . " " . $this->request->URI() . ($details != NULL ? (" " . $details) : ""));
+		$this->env->response()->fail($code, $error, $details);
+		die();
 	}
 
 	function log() {

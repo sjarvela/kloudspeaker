@@ -1,6 +1,13 @@
 {
 	"locale" : "en",
 	"texts": {
-		"actionSendViaEmailSingle" : "Send..."
+		"actionSendViaEmailSingle" : "Send...",
+
+		"sendViaEmailSendSingleTitle": "Send file via email",
+		"sendViaEmailSendItemTitle" : "Item:",
+		"sendViaEmailSendRecipient" : "To:",
+		"sendViaEmailSendTitle": "Title:",
+		"sendViaEmailSendMsg": "Message:",
+		"sendViaEmailSendAction": "Send"
 	}
 }
