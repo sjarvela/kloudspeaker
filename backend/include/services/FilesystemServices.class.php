@@ -28,6 +28,10 @@ class FilesystemServices extends ServicesBase {
 	}
 
 	public function processPut() {
+		if ($this->path[0] === 'roots' and $this->path[1] === 'info') {
+			$this->response()->success($this->getFolderInfo(NULL, FALSE, NULL));
+			return;
+		}
 		$item = $this->item($this->path[0]);
 		if ($item->isFile()) {
 			$this->processPutFile($item);

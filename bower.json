@@ -1,9 +1,0 @@
-{
-    "name": "kloudspeaker",
-    "version": "2.7",
-    "main": [],
-    "dependencies": {
-        "font-awesome": "4.5",
-        "bootstrap": "3.3.5"
-    }
-}

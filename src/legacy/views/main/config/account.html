@@ -1,0 +1,21 @@
+<script id="kloudspeaker-tmpl-config-useraccountview" type="text/x-jquery-tmpl">
+	<div id="kloudspeaker-config-useraccountview">
+		<form class="form-horizontal">
+			<div class="control-group">
+				<label class="control-label localized" text-key="configUserAccountUsernameTitle"></label>
+				<div class="controls">
+					<span class="uneditable-input">${user.name}</span>
+				</div>
+			</div>
+			
+			{{if features.change_password && user.auth == 'pw' && user.hasPermission("change_password")}}
+			<div class="control-group">
+				<label class="control-label localized" text-key="configUserAccountPasswordTitle"></label>
+				<div class="controls">
+					<a id="user-account-change-password-btn" class="btn localized" href="javascript: void(0);" text-key="configUserAccountPasswordAction"></a>
+				</div>
+			</div>
+			{{/if}}
+		</form>
+	</div>
+</script>

@@ -1,0 +1,16 @@
+<div id="kloudspeaker-config-systemview">
+    <form class="form-horizontal">
+        <div class="control-group">
+            <label class="control-label localized" text-key="configSystemVersionTitle"></label>
+            <div class="controls">
+                <span class="uneditable-input" data-bind="text: model.version() + ' (rev. ' + model.revision() + ')'"></span>
+                <!-- ko if: model.versionCheck -->
+                <a id="system-check-new-version-btn" class="btn localized" text-key="configSystemCheckNewVersion" data-bind="click: checkVersion"></a>
+                <!-- ko if: model.alertType -->
+                <div style="margin-top: 20px;" data-bind="html: model.msg, attr: {class: 'alert alert-'+model.alertType()}"></div>
+                <!-- /ko -->
+                <!-- /ko -->
+            </div>
+        </div>
+    </form>
+</div>

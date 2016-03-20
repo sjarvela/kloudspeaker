@@ -212,10 +212,6 @@ class ConfigurationServices extends ServicesBase {
 			} else {
 				$user['user_type'] = NULL;
 			}
-			if (isset($user['email']) and strlen($user['email']) > 0) {
-				$users = $this->env->configuration()->getUsersByEmail($user['email']);
-				if (count($users) > 0) $this->error(301, "Duplicate email address");
-			}
 			//$this->env->authentication()->assertPermissionValue($user['permission_mode']);
 
 			$auths = $this->env->settings()->setting("authentication_methods");
@@ -309,12 +305,6 @@ class ConfigurationServices extends ServicesBase {
 			//TODO validate time
 			if (isset($user['expiration']) and $user['expiration'] != NULL) {
 				$expiration = $user['expiration'];
-			}
-			if (isset($user['email']) and strlen($user['email']) > 0) {
-				$users = $this->env->configuration()->getUsersByEmail($user['email']);
-				foreach ($users as $u) {
-					if ($u['id'] != $userId) $this->error(301, "Duplicate email address");
-				}
 			}
 
 			$this->env->configuration()->updateUser($userId, $user['name'], isset($user['lang']) ? $user['lang'] : NULL, isset($user['email']) ? $user['email'] : NULL, $user['user_type'], $expiration);

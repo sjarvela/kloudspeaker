@@ -1,0 +1,342 @@
+<script id="kloudspeaker-tmpl-empty" type="text/x-jquery-tmpl">
+</script>
+
+<script id="kloudspeaker-tmpl-slidepanel" type="text/x-jquery-tmpl"> 
+	<div class="kloudspeaker-slidepanel-container">
+		<button type="button" class="close">×</button>
+		<div class="kloudspeaker-slidepanel-content-container">
+			<div class="kloudspeaker-slidepanel-content"></div>
+		</div>
+	</div>
+</script>
+
+<script id="kloudspeaker-tmpl-configlistview" type="text/x-jquery-tmpl">
+	<div class="kloudspeaker-configlistview">
+		<div class="kloudspeaker-configlistview-header">
+			{{if title}}
+			<div class="kloudspeaker-configlistview-title">${title}</div>
+			{{/if}}
+			{{if actions}}
+			<div class="kloudspeaker-configlistview-actions">
+				{{tmpl(actions) "#kloudspeaker-tmpl-configlistview-action"}}
+			</div>
+			{{/if}}
+			<div class="kloudspeaker-configlistview-options"></div>
+		</div>
+		<table class="kloudspeaker-configlistview-table"></table>
+	</div>
+</script>
+
+<script id="kloudspeaker-tmpl-configlistview-action" type="text/x-jquery-tmpl">
+	<a id="kloudspeaker-configlistview-action-${id}" class="kloudspeaker-configlistview-action btn ${cls}">{{if content}}{{html content}}{{/if}}{{if title}}${title}{{/if}}</a>
+</script>
+
+<script id="kloudspeaker-tmpl-config-admin-user-searchoptions" type="text/x-jquery-tmpl">
+	<div class="kloudspeaker-admin-user-searchoptions accordion">
+		<div class="accordion-group">
+			<div class="accordion-heading">
+				<a class="accordion-toggle localized" data-toggle="collapse" href="#userSearchOptions" text-key="configAdminUserSearchOptionsTitle"></a>
+			</div>
+			<div id="userSearchOptions" class="accordion-body collapse">
+				<div class="accordion-inner">
+		      
+					<form class="form-horizontal">
+						<div class="control-group">
+							<label class="control-label localized" for="kloudspeaker-admin-user-searchoptions-name" text-key="configAdminUserSearchOptionsNameTitle"></label>
+							<div class="controls">
+								<input id="kloudspeaker-admin-user-searchoptions-name" type="text"></input>
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label localized" for="kloudspeaker-admin-user-searchoptions-email" text-key="configAdminUserSearchOptionsEmailTitle"></label>
+							<div class="controls">
+								<input id="kloudspeaker-admin-user-searchoptions-email" type="text"></input>
+							</div>
+						</div>
+					</form>
+		
+				</div>
+			</div>
+		</div>
+	</div>
+</script>
+
+<script id="kloudspeaker-tmpl-config-admin-userdialog" type="text/x-jquery-tmpl">
+	<div id="kloudspeaker-config-admin-userdialog-content">
+		<form class="form-horizontal">
+			<div class="control-group">
+				<label class="control-label localized" text-key="configAdminUserDialogUsernameTitle"></label>
+				<div class="controls">
+					<input type="text" id="usernameField">
+				</div>
+			</div>
+
+			{{if showLanguages}}
+			<div class="control-group">
+				<label class="control-label localized" text-key="configAdminUserDialogLanguageTitle"></label>
+				<div class="controls">
+					<select id="languageField">
+					</select>
+				</div>
+			</div>
+			{{/if}}
+
+			<div class="control-group">
+				<label class="control-label localized" text-key="configAdminUserDialogEmailTitle"></label>
+				<div class="controls">
+					<input type="text" id="emailField">
+				</div>
+			</div>
+			
+			{{if !user}}
+			<div class="control-group">
+				<label class="control-label localized" text-key="configAdminUserDialogPasswordTitle"></label>
+				<div class="controls">
+					<input type="text" id="passwordField">
+					<a id="generatePasswordBtn" class="btn localized" text-key="configAdminUserDialogGeneratePassword" href="javascript: void(0)"></a>
+				</div>
+			</div>
+			{{/if}}
+			
+			<div class="control-group">
+				<label class="control-label localized" text-key="configAdminUserDialogTypeTitle"></label>
+				<div class="controls">
+					<select id="typeField">
+					</select>
+				</div>
+			</div>
+			
+			<div class="control-group">
+				<label class="control-label localized" text-key="configAdminUserDialogAuthenticationTitle"></label>
+				<div class="controls">
+					<select id="authenticationField">
+					</select>
+				</div>
+			</div>
+			
+			<div class="control-group">
+				<label class="control-label localized" text-key="configAdminUserDialogExpirationTitle"></label>
+				<div class="controls">
+					<div id="expirationField" class="input-append">
+					    <input id="expirationFieldInput" type="text"></input>
+					    <span class="add-on">
+					      <i data-time-icon="fa fa-time" data-date-icon="fa fa-calendar"></i>
+					    </span>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</script>
+
+<script id="kloudspeaker-tmpl-config-admin-userchangepassworddialog" type="text/x-jquery-tmpl">
+	<div id="kloudspeaker-config-admin-userchangepassworddialog-content">
+		<form class="form-horizontal">
+			<div class="control-group">
+				<label class="control-label localized" text-key="configAdminUserDialogPasswordTitle"></label>
+				<div class="controls">
+					<input type="text" id="passwordField">
+					<a id="generatePasswordBtn" class="btn localized" text-key="configAdminUserDialogGeneratePassword" href="javascript: void(0)"></a>
+				</div>
+			</div>
+		</form>
+	</div>
+</script>
+
+<script id="kloudspeaker-tmpl-config-admin-userdetails" type="text/x-jquery-tmpl">
+	<div id="kloudspeaker-config-admin-userdetails-content">
+		<legend>${user.name}</legend>
+		
+		<div class="kloudspeaker-config-admin-userdetails-section">
+			<div class="kloudspeaker-config-admin-userdetails-folders">
+			</div>
+		</div>
+
+		<div class="kloudspeaker-config-admin-userdetails-section">
+			<div class="kloudspeaker-config-admin-userdetails-groups">
+			</div>
+		</div>
+		
+		<div class="kloudspeaker-config-admin-userdetails-section">
+			<div class="kloudspeaker-config-admin-userdetails-permissions">
+			</div>
+		</div>
+	</div>
+</script>
+
+<script id="kloudspeaker-tmpl-config-admin-groupdetails" type="text/x-jquery-tmpl">
+	<div id="kloudspeaker-config-admin-groupdetails-content">
+		<legend>${group.name}</legend>
+		
+		<div class="kloudspeaker-config-admin-groupdetails-section">
+			<div class="kloudspeaker-config-admin-groupdetails-users">
+			</div>
+		</div>
+
+		<div class="kloudspeaker-config-admin-groupdetails-section">
+			<div class="kloudspeaker-config-admin-groupdetails-folders">
+			</div>
+		</div>
+		
+		<div class="kloudspeaker-config-admin-groupdetails-section">
+			<div class="kloudspeaker-config-admin-groupdetails-permissions">
+			</div>
+		</div>
+	</div>
+</script>
+
+<script id="kloudspeaker-tmpl-config-admin-folderdialog" type="text/x-jquery-tmpl">
+	<div id="kloudspeaker-config-admin-folderdialog-content">
+		<form class="form-horizontal">
+			<div class="control-group">
+				<label class="control-label localized" text-key="configAdminFolderDialogNameTitle"></label>
+				<div class="controls">
+					<input type="text" id="nameField">
+				</div>
+			</div>
+			
+			<div class="control-group">
+				<label class="control-label localized" text-key="configAdminFolderDialogPathTitle"></label>
+				<div class="controls">
+					<input type="text" id="pathField">
+				</div>
+			</div>
+		</form>
+	</div>
+</script>
+
+<script id="kloudspeaker-tmpl-config-admin-folderdetails" type="text/x-jquery-tmpl">
+	<div id="kloudspeaker-config-admin-folderdetails-content">
+		<legend>${folder.name}</legend>
+		
+		<div class="kloudspeaker-config-admin-folderdetails-section">
+			<div class="kloudspeaker-config-admin-folderdetails-usersandgroups">
+			</div>
+		</div>
+	</div>
+</script>
+
+<script id="kloudspeaker-tmpl-config-admin-groupdialog" type="text/x-jquery-tmpl">
+	<div id="kloudspeaker-config-admin-groupdialog-content">
+		<form class="form-horizontal">
+			<div class="control-group">
+				<label class="control-label localized" text-key="configAdminGroupDialogNameTitle"></label>
+				<div class="controls">
+					<input type="text" id="nameField">
+				</div>
+			</div>
+			
+			<div class="control-group">
+				<label class="control-label localized" text-key="configAdminGroupsDescriptionTitle"></label>
+				<div class="controls">
+					<input type="text" id="descriptionField">
+				</div>
+			</div>
+		</form>
+	</div>
+</script>
+
+<script id="kloudspeaker-tmpl-dialog-info" type="text/x-jquery-tmpl">
+	<p>${message}</p>
+</script>
+
+<script id="kloudspeaker-tmpl-dialog-error" type="text/x-jquery-tmpl">
+	<p>{{html $item.data.message}}</p>
+</script>
+
+<script id="kloudspeaker-tmpl-dialog-confirmation" type="text/x-jquery-tmpl">
+	<p>${message}</p>
+	{{if options}}
+		<p>
+		<div class="control-group">
+			<div class="controls">
+				{{each options}}
+					<label class="checkbox inline">
+						<input type="checkbox" id="kloudspeaker-confirmation-option-${key}" class="kloudspeaker-confirmation-option"><span>${title}</span>
+					</label>
+				{{/each}}
+			</div>
+		</div>
+		</p>
+	{{/if}}
+</script>
+
+<script id="kloudspeaker-tmpl-notification" type="text/x-jquery-tmpl"> 
+	<div class="kloudspeaker-notification">
+		<div class="kloudspeaker-notification-content">${message}</div>
+	</div>
+</script>
+
+<script id="kloudspeaker-tmpl-dialog-select" type="text/x-jquery-tmpl">
+	<p>${message}</p>
+	<table class="kloudspeaker-selectdialog-table"></table>
+</script>
+
+<script id="kloudspeaker-tmpl-wait" type="text/x-jquery-tmpl"> 
+	<div class="kloudspeaker-wait"></div>
+</script>
+
+<script id="kloudspeaker-tmpl-slidepanel" type="text/x-jquery-tmpl"> 
+	<div class="kloudspeaker-slidepanel-container">
+		<button type="button" class="close">×</button>
+		<div class="kloudspeaker-slidepanel-content-container">
+			<div class="kloudspeaker-slidepanel-content"></div>
+		</div>
+	</div>
+</script>
+
+<script id="kloudspeaker-tmpl-dialog-custom" type="text/x-jquery-tmpl">
+	<div class="kloudspeaker-dialog modal">
+		<div class="modal-header">
+			<h3>${title}</h3>
+		</div>
+
+		<div class="modal-body">{{html $item.getContent()}}</div>
+		<div class="modal-footer">
+			<div class="info"></div>
+			<div class="buttons">
+			{{each buttons}}
+				<a id="kloudspeaker-custom-dialog-button-${id}" class="kloudspeaker-custom-dialog-button btn ${cls}">${$item.getButtonTitle($value)}</a>
+			{{/each}}
+			</div>
+		</div>
+	</div>
+</script>
+
+<script id="kloudspeaker-tmpl-dialog-button" type="text/x-jquery-tmpl">
+	<a id="kloudspeaker-custom-dialog-button-${id}" class="kloudspeaker-custom-dialog-button btn ${cls}">${$item.getButtonTitle($item.data)}</a>
+</script>
+
+<script id="kloudspeaker-tmpl-dialog-error-debug" type="text/x-jquery-tmpl">
+	<p>{{html $item.data.message}}</p>
+	<p class="well debug">{{html $item.data.debug}}</p>
+</script>
+
+<script id="kloudspeaker-tmpl-dialog-input" type="text/x-jquery-tmpl">
+	<div class="kloudspeaker-inputdialog">
+		<div class="kloudspeaker-inputdialog-message">{{html $item.data.message}}</div>
+		<input class="kloudspeaker-inputdialog-input">
+	</div>
+</script>
+
+<script id="kloudspeaker-tmpl-dialog-itemselector" type="text/x-jquery-tmpl">
+	<div class="kloudspeaker-itemselector">
+		<div class="kloudspeaker-itemselector-message">{{html $item.data.message}}</div>
+		<div class="kloudspeaker-itemselector-tree well well-large">
+		</div>
+	</div>
+</script>
+
+<script id="kloudspeaker-tmpl-dialog-itemselector-item" type="text/x-jquery-tmpl">
+	<div class="kloudspeaker-itemselector-item ${$item.cls} {{if $item.data.is_file}}file{{else}}folder{{/if}}">
+		<div class="kloudspeaker-itemselector-item-indentation">
+			{{each $item.levels}}
+			<div class="kloudspeaker-itemselector-item-indentation-step"></div>
+			{{/each}}
+		</div>
+		{{if !$item.data.is_file}}
+		<div class="kloudspeaker-itemselector-folder-indicator"><i class="fa fa-caret-right"></i></div>
+		{{/if}}
+		<div class="kloudspeaker-itemselector-item-name">${name}</div>
+	</div>
+</script>

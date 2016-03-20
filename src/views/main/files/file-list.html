@@ -1,0 +1,5 @@
+<template>
+	<div class="file-list">
+		<div repeat.for="item of items" click.delegate="onSelect(item, $event)">${item.name}</div>
+	</div>
+</template>
