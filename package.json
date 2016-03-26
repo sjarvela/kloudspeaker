@@ -39,6 +39,7 @@
     "gulp-plumber": "^1.0.1",
     "gulp-protractor": "1.0.0",
     "gulp-sourcemaps": "^1.3.0",
+    "gulp-sass": "^2.2.0",
     "jspm": "^0.16.27",
     "karma": "^0.13.15",
     "karma-babel-preprocessor": "^5.2.1",
