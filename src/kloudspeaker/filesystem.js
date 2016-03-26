@@ -56,6 +56,14 @@ export class Filesystem {
         });
     }
 
+    itemInfo(item) {
+        var id = (typeof item === "object") ? item.id : item;
+        return this.service.itemInfo(id).then(info => {
+            //process
+            return info;
+        });
+    }
+
     items(parent) {
         var pid = (typeof parent === "object") ? parent.id : parent;
         return this.service.items(pid).then(items => {

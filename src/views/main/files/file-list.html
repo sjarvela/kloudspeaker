@@ -8,7 +8,10 @@
 				${item.extension}
 			</div>
 			<div class="info-container" if.bind="infoItem.id == item.id">
-				INFO: ${infoItem.name}
+				<div if.bind="!itemInfo">LOADING</div>
+				<div if.bind="itemInfo">
+					${itemInfo.last_modified}
+				</div>
 			</div>
 		</div>
 	</div>

@@ -22,6 +22,11 @@ export class FilesystemService {
     	return this.service.post('filesystem/' + (fid ? fid : "roots") + "/info/" + (hierarchy ? "?h=1" : ""), data);
     }
 
+    itemInfo(id, data) {
+        //TODO rename details->info?
+        return this.service.post('filesystem/' + id+ "/details/", data);
+    }
+
     items(fid) {
         return this.service.get('filesystem/'+fid+'/items');
     }

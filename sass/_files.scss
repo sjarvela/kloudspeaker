@@ -4,6 +4,11 @@
 
 		.file-list-item {
 			float: left;
+			clear: both;
+
+			.file-list-item-col {
+				float: left;
+			}
 		}
 
 	}

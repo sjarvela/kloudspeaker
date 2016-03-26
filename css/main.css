@@ -1,4 +1,7 @@
 .files-view .file-list {
   float: left; }
   .files-view .file-list .file-list-item {
-    float: left; }
+    float: left;
+    clear: both; }
+    .files-view .file-list .file-list-item .file-list-item-col {
+      float: left; }
