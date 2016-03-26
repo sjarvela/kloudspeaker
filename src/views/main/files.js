@@ -18,6 +18,7 @@ let logger = LogManager.getLogger('files');
 inject(Filesystem, Router)
 export class FilesView {
     items = [];
+    @bindable infoItem = null;
     hierarchy = [];
 
     constructor(fs, r) {
@@ -59,6 +60,6 @@ export class FilesView {
     }
 
     showInfo(item) {
-
+        this.infoItem = item;
     }
 }

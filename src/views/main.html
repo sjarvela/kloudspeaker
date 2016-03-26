@@ -1,5 +1,5 @@
 <template>
-    <nav class="navbar navbar-default main-nav">
+    <nav class="kloudspeaker-main-nav navbar navbar-default main-nav">
         <div class="navbar-brand">KS</div>
         <div class="app-menu dropdown">
             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -21,7 +21,7 @@
             <compose view-model.bind="activeViewModel" view="${activeView.toolbarView ? (activeView.toolbarView + '.html') : null}"></compose>
         </div-->
     </nav>
-    <div class="container-fluid">
+    <div class="kloudspeaker-main-container container-fluid">
         <router-view>
         </router-view>
     </div>

@@ -1,5 +1,15 @@
 <template>
 	<div class="file-list">
-		<div repeat.for="item of items" click.delegate="onSelect(item, $event)">${item.name}</div>
+		<div class="file-list-item" repeat.for="item of items" click.delegate="onSelect(item, $event)">
+			<div class="file-list-item-col">
+				${item.name}
+			</div>
+			<div class="file-list-item-col">
+				${item.extension}
+			</div>
+			<div class="info-container" if.bind="infoItem.id == item.id">
+				INFO: ${infoItem.name}
+			</div>
+		</div>
 	</div>
 </template>
