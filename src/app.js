@@ -59,6 +59,7 @@ export class App {
         this.plugins = plugins;
         this.fs = fs;
         this.permissions = permissions;
+        this.service = service;
 
         moment.locale('fi');
 
@@ -176,7 +177,7 @@ export class App {
         logger.debug("Activate app");
 
         return new Promise(function(resolve) {
-            setupLegacy(that.session, that.permissions, that.fs, that.service, that.plugins, that.events).then(() => {
+            setupLegacy(that.session, that.permissions, that.fs, that.service, that.plugins, that.events, that.views).then(() => {
                 that.session.initialize().then(s => {
                     that._initialize(s).then(() => {
                         resolve();
@@ -187,8 +188,12 @@ export class App {
     }
 
     _initialize(session) {
+        var that = this;
+
         logger.debug("init", session);
-        return Promise.all([this.plugins.initialize()]);
+        return Promise.all([this.plugins.load()]).then(() => {
+            that.plugins.initialize();
+        });
     }
 }
 
@@ -230,7 +235,9 @@ class RouteWatchStep {
     }
 }
 
-function setupLegacy(session, permissions, fs, service, plugins, events) {
+function setupLegacy(session, permissions, fs, service, plugins, events, views) {
+    window._ = _;
+
     return new Promise(function(resolve) {
         define('kloudspeaker/session', function() {
             return {
@@ -282,6 +289,13 @@ function setupLegacy(session, permissions, fs, service, plugins, events) {
                         df.resolve(r);
                     });
                     return df;
+                },
+                post: function(p, data) {
+                    var df = $.Deferred();
+                    service.post(p, data).then(r => {
+                        df.resolve(r);
+                    });
+                    return df;
                 }
             };
         });
@@ -308,6 +322,14 @@ function setupLegacy(session, permissions, fs, service, plugins, events) {
                 },
                 registerConfigView: function(cv) {
                     logger.debug("TODO registerConfigView:" + cv.viewId);
+                    views.register({
+                        parent: 'config',
+                        //route: 'folders',
+                        name: cv.viewId,
+                        viewType: 'custom',
+                        moduleId: cv.model,
+                        requiresAdmin: !!cv.admin
+                    });
                 },
                 registerView: function(id, v) {
                     logger.debug("TODO registerView:" + id);

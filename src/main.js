@@ -65,7 +65,7 @@ function setup(aurelia) {
     var orlm = aurelia.loader.loadModule;
     aurelia.loader.loadModule = function(id) {
         if (id.endsWith("!custom")) {
-            var nid = id.substring('http://localhost:8888/kloudspeaker-aurelia/src/'.length, id.length - 7);
+            var nid = id.startsWith('http') ? id.substring('http://localhost:8888/kloudspeaker-aurelia/src/'.length, id.length - 7) : id.substring(0, id.length - 7);
             return new Promise(function(resolve) {
                 require([nid], function(m) {
                     var moduleName = nid.replaceAll('/', '_');

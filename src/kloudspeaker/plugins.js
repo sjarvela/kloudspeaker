@@ -27,7 +27,7 @@ export class Plugins {
         this.appConfig = appConfig;
     }
 
-    initialize() {
+    load() {
         var wait = [];
         var that = this;
         var sessionData = this.session.getData();
@@ -70,19 +70,13 @@ export class Plugins {
             p = id;
             id = p.id;
         }
-        if (this.plugins[id]) return;
-
-        this.plugins[id] = p;
-        return this._initializePlugin(id);
-    }
-
-    _initializePlugin(id) {
-        var p = this.plugins[id];
-        if (!p || p._initialized) return Promise.resolve();
-        p._initialized = true;
+        if (this.plugins[id]) return Promise.resolve();
 
         var pr = null;
+        var that = this;
+
         if (p.client_module_path) {
+            // client plugin loader, don't register anything yet
             require.config({
                 packages: [{
                     name: p.client_module_id,
@@ -95,9 +89,24 @@ export class Plugins {
                     resolve();
                 });
             });
+        } else {
+            this.plugins[id] = p;
+            //p._initialized = true;
         }
         if (!pr) return Promise.resolve();
         return pr;
+    }
+
+    initialize() {
+        var that = this;
+
+        _.each(_.keys(this.plugins), function(pid) {
+            var p = that.plugins[pid];
+            if (p._initialized) return;
+            p._initialized = true;
+
+            if (p.initialize) p.initialize();
+        });
     }
 
     get(id) {

@@ -42,10 +42,11 @@ export class Views {
     }
 
     getRouterConfig(p) {
-    	var user = this.session.getUser();
-        return _.filter(this.routeConfig[p || ''], function(rc) {
+    	//var user = this.session.getUser();
+        return this.routeConfig[p || ''];
+        /*return _.filter(this.routeConfig[p || ''], function(rc) {
         	if (rc.requiresAdmin && !user.admin) return false;
             return true;
-        });
+        });*/
     }
 }
