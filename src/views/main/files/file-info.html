@@ -1,0 +1,6 @@
+<template>
+	<div if.bind="!info"><i class="fa fa-spinner fa-spin"></i></div>
+	<div if.bind="info" class="info-content">
+		${info.last_modified}
+	</div>
+</template>

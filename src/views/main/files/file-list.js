@@ -17,13 +17,14 @@ inject(Filesystem)
 export class FileList {
     @bindable items;
     @bindable infoItem;
-    itemInfo = null;
+    //itemInfo = null;
 
     constructor(fs) {
-        this.fs = fs;
+        //this.fs = fs;
     }
 
     bind(bindingContext) {
+        //TODO read onSelect name from data-select etc
     	this._onSelect = bindingContext['onSelect'].bind(bindingContext);
     	logger.debug('bind', bindingContext)
     }
@@ -32,12 +33,12 @@ export class FileList {
     	this._onSelect(item);
     }
 
-    infoItemChanged() {
+    /*infoItemChanged() {
     	logger.debug('info', this.infoItem);
         this.itemInfo = null;
         var that = this;
         this.fs.itemInfo(this.infoItem).then(i => {
             that.itemInfo = i;
         });
-    }
+    }*/
 }

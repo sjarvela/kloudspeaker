@@ -8,10 +8,7 @@
 				${item.extension}
 			</div>
 			<div class="info-container" if.bind="infoItem.id == item.id">
-				<div if.bind="!itemInfo">LOADING</div>
-				<div if.bind="itemInfo">
-					${itemInfo.last_modified}
-				</div>
+				<compose model.bind="infoItem" view-model="./file-info"></compose>
 			</div>
 		</div>
 	</div>
