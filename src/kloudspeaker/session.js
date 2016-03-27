@@ -51,7 +51,7 @@ export class Session {
     initialize() {
         let that = this;
         return this.service.sessionInfo().then(info => {
-            that._initialize(info);
+            return that._initialize(info);
         });
     }
 
@@ -77,6 +77,8 @@ export class Session {
         var o = { user: this._user, data: this._data };
         this.events.publish('kloudspeaker/session/init', o);    //internal
         this.events.publish('kloudspeaker/session/start', o);
+
+        return o;
     }
 
     login(username, password) {

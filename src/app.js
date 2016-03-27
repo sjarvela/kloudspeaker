@@ -38,20 +38,27 @@ import {
     Views
 }
 from 'kloudspeaker/views';
+import {
+    Plugins
+}
+from 'kloudspeaker/plugins';
 
 let logger = LogManager.getLogger('app');
 
 @
-inject(Session, Permissions, Filesystem, EventAggregator, ServiceBase, Views)
+inject(Session, Permissions, Filesystem, EventAggregator, ServiceBase, Views, Plugins)
 export class App {
     activeView = null;
 
-    constructor(session, permissions, fs, events, service, views) {
+    constructor(session, permissions, fs, events, service, views, plugins) {
         let that = this;
 
         this.session = session;
         this.events = events;
         this.views = views;
+        this.plugins = plugins;
+        this.fs = fs;
+        this.permissions = permissions;
 
         moment.locale('fi');
 
@@ -117,7 +124,6 @@ export class App {
             moduleId: './config/folders',
             requiresAdmin: true
         });
-        setupLegacy(session, permissions, fs, service);
     }
 
     attached() {
@@ -170,12 +176,19 @@ export class App {
         logger.debug("Activate app");
 
         return new Promise(function(resolve) {
-            setupLegacy().then(() => {
-                that.session.initialize().then(() => {
-                    resolve();
+            setupLegacy(that.session, that.permissions, that.fs, that.service, that.plugins, that.events).then(() => {
+                that.session.initialize().then(s => {
+                    that._initialize(s).then(() => {
+                        resolve();
+                    });
                 })
             });
         });
+    }
+
+    _initialize(session) {
+        logger.debug("init", session);
+        return Promise.all([this.plugins.initialize()]);
     }
 }
 
@@ -217,7 +230,7 @@ class RouteWatchStep {
     }
 }
 
-function setupLegacy(session, permissions, fs, service) {
+function setupLegacy(session, permissions, fs, service, plugins, events) {
     return new Promise(function(resolve) {
         define('kloudspeaker/session', function() {
             return {
@@ -232,7 +245,19 @@ function setupLegacy(session, permissions, fs, service) {
                 }
             };
         });
-        var settings = {};
+        define('kloudspeaker/request', function() {
+            return {
+            };
+        });
+        define('kloudspeaker/plugins', function() {
+            return {
+                register: plugins.register.bind(plugins),
+                url: plugins.getUrl.bind(plugins)
+            };
+        });
+        var settings = {
+            plugins: {}
+        };
         define('kloudspeaker/settings', [], settings);
         define('kloudspeaker/permissions', function() {
             return {
@@ -242,7 +267,10 @@ function setupLegacy(session, permissions, fs, service) {
         define('kloudspeaker/events', function() {
             return {
                 addEventHandler: function(cb, t) {
-                    that.events.subscribe(t, cb);
+                    events.subscribe(t, cb);
+                },
+                on: function(t, cb) {
+                    events.subscribe(t, cb);
                 }
             };
         });
@@ -260,6 +288,9 @@ function setupLegacy(session, permissions, fs, service) {
         var loc = {
             get: function(key) {
                 return 'text-' + key; //TODO
+            },
+            registerPluginResource: function(pid) {
+                logger.debug("TODO registerPluginResource:" + pid);
             }
         };
         define('kloudspeaker/localization', function() {
@@ -274,6 +305,15 @@ function setupLegacy(session, permissions, fs, service) {
                     return {
                         showLoading: function() {}
                     };
+                },
+                registerConfigView: function(cv) {
+                    logger.debug("TODO registerConfigView:" + cv.viewId);
+                },
+                registerView: function(id, v) {
+                    logger.debug("TODO registerView:" + id);
+                },
+                registerFileViewHandler: function(fvh) {
+                    logger.debug("TODO registerFileViewHandler");
                 }
             };
         });
