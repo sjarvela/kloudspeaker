@@ -13,6 +13,11 @@
 			.info-container{
 				clear: both;
 				width: 100%;
+
+				.info-content-selector {
+					float: left;
+					padding: 10px;
+				}
 			}
 		}
 

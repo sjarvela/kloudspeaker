@@ -1,5 +1,7 @@
 import {
-    bindable, inject, LogManager
+    bindable,
+    inject,
+    LogManager
 }
 from 'aurelia-framework';
 
@@ -18,6 +20,9 @@ import _ from 'underscore';
 import moment from 'moment';
 import fi from 'moment/locale/fi';
 
+import {
+    Localization
+} from 'kloudspeaker/localization';
 import {
     Session
 }
@@ -42,17 +47,22 @@ import {
     Plugins
 }
 from 'kloudspeaker/plugins';
+import {
+    app_config
+}
+from 'app-config';
 
 let logger = LogManager.getLogger('app');
 
 @
-inject(Session, Permissions, Filesystem, EventAggregator, ServiceBase, Views, Plugins)
+inject(app_config, Session, Permissions, Filesystem, EventAggregator, ServiceBase, Views, Plugins, Localization)
 export class App {
     activeView = null;
 
-    constructor(session, permissions, fs, events, service, views, plugins) {
+    constructor(appConfig, session, permissions, fs, events, service, views, plugins, localization) {
         let that = this;
 
+        this.appConfig = appConfig;
         this.session = session;
         this.events = events;
         this.views = views;
@@ -60,6 +70,7 @@ export class App {
         this.fs = fs;
         this.permissions = permissions;
         this.service = service;
+        this.localization = localization;
 
         moment.locale('fi');
 
@@ -177,7 +188,7 @@ export class App {
         logger.debug("Activate app");
 
         return new Promise(function(resolve) {
-            setupLegacy(that.session, that.permissions, that.fs, that.service, that.plugins, that.events, that.views).then(() => {
+            setupLegacy(that.appConfig, that.session, that.permissions, that.fs, that.service, that.plugins, that.events, that.views, that.localization).then(() => {
                 that.session.initialize().then(s => {
                     that._initialize(s).then(() => {
                         resolve();
@@ -191,8 +202,14 @@ export class App {
         var that = this;
 
         logger.debug("init", session);
-        return Promise.all([this.plugins.load()]).then(() => {
-            that.plugins.initialize();
+        return new Promise(function(resolve) {
+            Promise.all([that.plugins.load()]).then(() => {
+                that.plugins.initialize();
+
+                that.localization.initialize().then(() => {
+                    resolve();
+                });
+            });
         });
     }
 }
@@ -235,7 +252,7 @@ class RouteWatchStep {
     }
 }
 
-function setupLegacy(session, permissions, fs, service, plugins, events, views) {
+function setupLegacy(cfg, session, permissions, fs, service, plugins, events, views, localization) {
     window._ = _;
 
     return new Promise(function(resolve) {
@@ -253,8 +270,7 @@ function setupLegacy(session, permissions, fs, service, plugins, events, views) 
             };
         });
         define('kloudspeaker/request', function() {
-            return {
-            };
+            return {};
         });
         define('kloudspeaker/plugins', function() {
             return {
@@ -262,13 +278,14 @@ function setupLegacy(session, permissions, fs, service, plugins, events, views) 
                 url: plugins.getUrl.bind(plugins)
             };
         });
-        var settings = {
+        var settings = _.extend({
             plugins: {}
-        };
+        }, cfg);
         define('kloudspeaker/settings', [], settings);
         define('kloudspeaker/permissions', function() {
             return {
-                hasPermission: permissions.has.bind(permissions)
+                hasPermission: permissions.has.bind(permissions),
+                hasFilesystemPermission: permissions.hasFilesystemPermission.bind(permissions)
             };
         });
         define('kloudspeaker/events', function() {

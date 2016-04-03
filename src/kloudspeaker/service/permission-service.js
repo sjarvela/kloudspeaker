@@ -19,6 +19,6 @@ export class PermissionService {
     }
 
     itemPermissions(id) {
-        return this.service.get('permissions/items/' + itemId);
+        return this.service.get('permissions/items/' + id);
     }
 }

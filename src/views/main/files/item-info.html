@@ -1,0 +1,16 @@
+<template>
+	<div if.bind="!info"><i class="fa fa-spinner fa-spin"></i></div>
+	<div if.bind="info" class="info-content">
+		<ul class="nav nav-tabs">
+			<li class="nav-item" repeat.for="content of contents" click.delegate="activateContent(content, $event)">
+				<a class="nav-link ${activeContent == content ? 'active' : ''}">${content.title}</a>
+			</li>
+		</ul>
+
+		<div class="info-content" if.bind="activeContent">
+			<compose if.bind="activeContent.type == 'custom'" model.bind="{item: item, info: info, content: activeContent}" view-model="views/custom-compose"></compose>
+			<compose if.bind="activeContent.type != 'custom'" model.bind="{item: item, info: info, content: activeContent}" view-model="${activeContent.viewModel}"></compose>
+		</div>
+		${info.last_modified}
+	</div>
+</template>

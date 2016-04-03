@@ -5,3 +5,9 @@
     clear: both; }
     .files-view .file-list .file-list-item .file-list-item-col {
       float: left; }
+    .files-view .file-list .file-list-item .info-container {
+      clear: both;
+      width: 100%; }
+      .files-view .file-list .file-list-item .info-container .info-content-selector {
+        float: left;
+        padding: 10px; }

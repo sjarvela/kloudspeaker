@@ -1,5 +1,6 @@
 import {
-    inject, LogManager
+    inject,
+    LogManager
 }
 from 'aurelia-framework';
 
@@ -64,7 +65,7 @@ export class Permissions {
         if (!list || list[name] === undefined) return false;
         var v = list[name];
 
-        var options = _types.values[name];
+        var options = this._types.values[name];
         if (!required || !options) return v == "1";
 
         var ui = options.indexOf(v);
@@ -73,48 +74,44 @@ export class Permissions {
     }
 
     getTypes() {
-        return _types;
+        return this._types;
     }
 
     putFilesystemPermissions(id, permissions) {
-        if (!_filesystemPermissions[id]) _filesystemPermissions[id] = {};
-        this._updatePermissions(_filesystemPermissions[id], permissions);
+        if (!_filesystemPermissions[id]) this._filesystemPermissions[id] = {};
+        this._updatePermissions(this._filesystemPermissions[id], permissions);
     }
 
-    hasFilesystemPermission(item, name, required, dontFetch) {
-        if (item.type) {
-            // custom folder types need own permission handling
-            if (dontFetch) return false;
-            return df.resolve(false);
-        }
-        var df = $.Deferred();
-        if (this._types.keys.all.indexOf(name) < 0) {
-            if (dontFetch) return false;
-            return df.resolve(false);
-        }
-
-        var user = session.get().user;
-        if (!user) {
-            if (dontFetch) return false;
-            return df.resolve(false);
-        }
-
-        var itemId = ((typeof(item) === "string") ? item : item.id);
-        var list = this._filesystemPermissions[itemId];
+    hasFilesystemPermission(item, name, required) {
         var that = this;
-        if (!list) {
-            if (dontFetch) throw "Cannot resolve permission, permissions not fetched";
+        return new Promise(function(resolve) {
+            if (item.type) {
+                // custom folder types need own permission handling
+                return resolve(false);
+            }
 
-            service.itemPermissions(itemId).done(function(p) {
-                _filesystemPermissions[itemId] = p;
-                df.resolve(that._hasPermission(p, name, required));
-            });
-        } else {
-            var p = this._hasPermission(list, name, required);
-            if (dontFetch) return p;
-            df.resolve(p);
-        }
-        return df;
+            if (that._types.keys.all.indexOf(name) < 0) {
+                return resolve(false);
+            }
+
+            var user = that.session.getUser();
+            if (!user) {
+                return resolve(false);
+            }
+
+            var itemId = ((typeof(item) === "string") ? item : item.id);
+            var list = that._filesystemPermissions[itemId];
+
+            if (!list) {
+                that.service.itemPermissions(itemId).then(p => {
+                    that._filesystemPermissions[itemId] = p;
+                    resolve(that._hasPermission(p, name, required));
+                });
+            } else {
+                var p = that._hasPermission(list, name, required);
+                resolve(p);
+            }
+        });
     }
 
     has(name, required) {

@@ -76,7 +76,9 @@ export class Plugins {
         var that = this;
 
         if (p.client_module_path) {
-            // client plugin loader, don't register anything yet
+            this.plugins[id] = p;
+            p._initialized = true;
+
             require.config({
                 packages: [{
                     name: p.client_module_id,
@@ -113,6 +115,26 @@ export class Plugins {
         return this.plugins[id];
     }
 
+    getRequestData(item, id) {
+        var that = this;
+        var result = {};
+
+        _.each(_.keys(this.plugins), function(pid) {
+            var p = that.plugins[pid];
+            var pd = false;
+
+            if (p.getRequestData) {
+                pd = p.getRequestData(item, id);
+            } else {
+                //legacy
+                if (id == 'item-info' && p.itemContextRequestData)
+                    pd = p.itemContextRequestData(item);
+            }
+            if (pd) result[pid] = pd;
+        });
+        return result;
+    }
+
     getUrl(id, resource, admin) {
         var ps = this.plugins[id];
         if (!ps) return null;
@@ -125,5 +147,37 @@ export class Plugins {
 
         if (!resource) return url;
         return url + (admin ? "/admin/" : "/client/") + resource;
+    }
+
+    getContent(type, o, data) {
+        var that = this;
+        var result = [];
+
+        _.each(_.keys(this.plugins), function(pid) {
+            var p = that.plugins[pid];
+            var pd = data[pid];
+
+            //TODO content API?
+
+            //legacy
+            if (p.itemContextHandler) {
+                var pr = p.itemContextHandler(o, {}, pd, data);
+                if (pr && pr.details) {
+                    var content = {
+                        title: pr.details['title-key'], //localize
+                        type: 'custom',
+                        handler: pr.details
+                    };
+                    if (pr.details['on-render']) {
+                        content.viewType = 'custom';
+                        content.render = function($e, ctx) {
+                            pr.details['on-render']({}, $e, ctx);
+                        }
+                    }
+                    result.push(content);
+                }
+            }
+        });
+        return result;
     }
 }

@@ -76,6 +76,8 @@
       "datepicker": "github:eternicode/bootstrap-datepicker@^1.6.0",
       "fetch": "github:github/fetch@^0.11.0",
       "font-awesome": "npm:font-awesome@^4.4.0",
+      "i18next": "npm:i18next@^2.4.0",
+      "i18next-xhr-backend": "npm:i18next-xhr-backend@^0.5.3",
       "moment": "npm:moment@^2.11.1",
       "requirejs": "npm:requirejs@^2.1.22",
       "text": "github:systemjs/plugin-text@^0.0.4",

@@ -24,7 +24,7 @@ export class FilesystemService {
 
     itemInfo(id, data) {
         //TODO rename details->info?
-        return this.service.post('filesystem/' + id+ "/details/", data);
+        return this.service.post('filesystem/' + id+ "/details/", {data: data});
     }
 
     items(fid) {

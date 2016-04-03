@@ -18,17 +18,23 @@ import {
 }
 from 'kloudspeaker/service/filesystem-service';
 
+import {
+    Plugins
+}
+from 'kloudspeaker/plugins';
+
 let logger = LogManager.getLogger('filesystem');
 
 @
-inject(Session, FilesystemService, EventAggregator)
+inject(Session, FilesystemService, EventAggregator, Plugins)
 export class Filesystem {
     _roots = [];
 
-    constructor(session, filesystemService, events) {
+    constructor(session, filesystemService, events, plugins) {
         this.session = session;
         this.service = filesystemService;
         this.events = events;
+        this.plugins = plugins;
 
         events.subscribe(
             'kloudspeaker/session/init',
@@ -57,8 +63,10 @@ export class Filesystem {
     }
 
     itemInfo(item) {
+        var data = this.plugins.getRequestData(item, 'item-info');
+
         var id = (typeof item === "object") ? item.id : item;
-        return this.service.itemInfo(id).then(info => {
+        return this.service.itemInfo(id, data).then(info => {
             //process
             return info;
         });

@@ -173,7 +173,6 @@ class CustomView {
                 ui.viewmodel(that.$c, that.instructions.viewModel);
             });
         }
-
     }
 
     removeNodes() {
