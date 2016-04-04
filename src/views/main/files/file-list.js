@@ -10,6 +10,14 @@ from 'kloudspeaker/filesystem';
 
 let logger = LogManager.getLogger('file-list');
 
+let _cols = [{
+    id: 'name'
+}, {
+    id: 'quickaction'
+}, {
+    id: 'type'
+}]
+
 @
 customElement('file-list')
 @
@@ -21,6 +29,7 @@ export class FileList {
 
     constructor(fs) {
         //this.fs = fs;
+        this.cols = _cols;
     }
 
     bind(bindingContext) {
@@ -31,6 +40,12 @@ export class FileList {
 
     onSelect(item, $e) {
     	this._onSelect(item);
+    }
+
+    getColValue(item, col) {
+        if (col.id == 'name') return item.name;
+        if (col.id == 'type') return item.is_file ? item.extension : '';
+        return "-";
     }
 
     /*infoItemChanged() {

@@ -1,13 +1,13 @@
 .files-view .file-list {
-  float: left; }
+  display: table; }
   .files-view .file-list .file-list-item {
-    float: left;
-    clear: both; }
-    .files-view .file-list .file-list-item .file-list-item-col {
-      float: left; }
+    display: table-row;
+    /*float: left;
+            clear: both;*/ }
+    .files-view .file-list .file-list-item .col {
+      display: table-cell; }
     .files-view .file-list .file-list-item .info-container {
-      clear: both;
-      width: 100%; }
+      display: table-row; }
       .files-view .file-list .file-list-item .info-container .info-content-selector {
         float: left;
         padding: 10px; }

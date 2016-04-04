@@ -139,13 +139,9 @@ export class App {
     }
 
     attached() {
-        this.subscription = this.events.subscribe(
-            'router:navigation:success',
-            this.navigationSuccess.bind(this));
     }
 
     detached() {
-        this.subscription.dispose();
     }
 
     canActivate(params, routeConfig, navigationInstruction) {
@@ -174,13 +170,9 @@ export class App {
         this.subscription = this.events.subscribe('kloudspeaker/session/start', function(e) {
             if (that.session.isLoggedIn())
                 that.router.navigate('/main/files');
+            else
+                that.router.navigate('/login');
         });
-    }
-
-    navigationSuccess(event) {
-        logger.debug(event);
-        //this.activeView = event.instruction.config;
-        //this.activeViewModel = event.instruction.viewPortInstructions.default.component.viewModel;
     }
 
     activate() {

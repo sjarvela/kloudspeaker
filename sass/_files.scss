@@ -1,25 +1,20 @@
 .files-view {
-	.file-list {
-		float: left;
-
-		.file-list-item {
-			float: left;
-			clear: both;
-
-			.file-list-item-col {
-				float: left;
-			}
-
-			.info-container{
-				clear: both;
-				width: 100%;
-
-				.info-content-selector {
-					float: left;
-					padding: 10px;
-				}
-			}
-		}
-
-	}
+    .file-list {
+        display: table;
+        .file-list-item {
+            display: table-row;
+            /*float: left;
+            clear: both;*/
+            .col {
+                display: table-cell;
+            }
+            .info-container {
+                display: table-row;
+                .info-content-selector {
+                    float: left;
+                    padding: 10px;
+                }
+            }
+        }
+    }
 }

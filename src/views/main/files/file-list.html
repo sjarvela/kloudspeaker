@@ -1,15 +1,14 @@
 <template>
-	<div class="file-list">
-		<div class="file-list-item" repeat.for="item of items" click.delegate="onSelect(item, $event)">
-			<div class="file-list-item-col">
-				${item.name}
-			</div>
-			<div class="file-list-item-col">
-				${item.extension}
-			</div>
-			<div class="info-container" if.bind="infoItem.id == item.id">
-				<compose model.bind="infoItem" view-model="./item-info"></compose>
-			</div>
-		</div>
-	</div>
+    <div class="file-list">
+    	<template repeat.for="item of items">
+	        <div class="file-list-item" click.delegate="onSelect(item, $event)">
+	            <div repeat.for="col of cols" class="col col-${col.id}">
+	                ${getColValue(item, col)}
+	            </div>
+	        </div>
+	        <div class="info-container" if.bind="infoItem.id == item.id">
+	            <compose model.bind="infoItem" view-model="./item-info"></compose>
+	        </div>
+        </template>
+    </div>
 </template>

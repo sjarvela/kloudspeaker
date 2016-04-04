@@ -60,6 +60,7 @@ export class FilesView {
     }
 
     showInfo(item) {
-        this.infoItem = item;
+        if (this.infoItem == item) this.infoItem = null;
+        else this.infoItem = item;
     }
 }
