@@ -188,6 +188,8 @@ export class App {
         logger.debug("Activate app");
 
         return new Promise(function(resolve) {
+            that.service.initialize(that.session);
+
             setupLegacy(that.appConfig, that.session, that.permissions, that.fs, that.service, that.plugins, that.events, that.views, that.localization).then(() => {
                 that.session.initialize().then(s => {
                     that._initialize(s).then(() => {

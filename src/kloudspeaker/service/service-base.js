@@ -1,5 +1,5 @@
 import {
-    inject, LogManager
+    Lazy, inject, LogManager
 }
 from 'aurelia-framework';
 
@@ -8,33 +8,43 @@ import {
 }
 from 'app-config';
 
-/*import {
-    HttpClient
+import {
+    EventAggregator
 }
-from "aurelia-fetch-client";*/
+from 'aurelia-event-aggregator';
+
 import $ from 'jquery';
 
-import {
+/*import {
     Cookies
 }
-from "cookies";
+from "cookies";*/
 
 let logger = LogManager.getLogger('service');
 
 @
-inject(app_config)
+inject(EventAggregator)
 export class ServiceBase {
-    sessionId = null;
+    _sessionId = null;
 
-    constructor(http: HttpClient, app_config) {
+    constructor(events) {
         logger.debug("Service");
-        /*http.configure(config => {
-            config
-                .withBaseUrl(app_config.service.url + "/r.php/");
-        });
-        this.http = http;*/
+        
         // get initial sessionId from cookie
-        this.sessionId = Cookies.get('kloudspeaker_app_session');
+        //this._sessionId = Cookies.get('kloudspeaker_app_session');
+
+        var that = this;
+
+        events.subscribe('kloudspeaker/session/start', function(s) {
+            that._sessionId = that.session.getId();
+        });
+        events.subscribe('kloudspeaker/session/end', function(s) {
+            that._sessionId = null;
+        });
+    }
+
+    initialize(session) {
+        this.session = session;
     }
 
     get(path) {
@@ -60,7 +70,7 @@ export class ServiceBase {
                 "kloudspeaker-session-id": sessionId
             }
         }*/
-        var startSessionId = this.sessionId;
+        var startSessionId = this._sessionId;
         return new Promise(function(resolve, reject) {
             $.ajax({
                 type: method,
@@ -70,8 +80,8 @@ export class ServiceBase {
                 contentType: 'application/json',
                 dataType: 'json',
                 beforeSend: function(xhr) {
-                    if (that.sessionId)
-                        xhr.setRequestHeader("kloudspeaker-session-id", that.sessionId);
+                    if (that._sessionId)
+                        xhr.setRequestHeader("kloudspeaker-session-id", that._sessionId);
                     //if (st._limitedHttpMethods || diffMethod)
                     //    xhr.setRequestHeader("kloudspeaker-http-method", type);
                 }
@@ -86,7 +96,7 @@ export class ServiceBase {
                 var df = $.Deferred();
 
                 // if session has expired since starting request, ignore it
-                if (that.sessionId != startSessionId) return df;
+                if (that._sessionId != startSessionId) return df;
 
                 var error = false;
                 var data = false;
@@ -96,14 +106,16 @@ export class ServiceBase {
                     code: 999
                 }; //unknown
 
+                if (error.code == 100 && that.session.isLoggedIn()) {
+                    that.session.end(true);
+                    //failContext.handled = true;
+                }
+
                 /*var failContext = {
                     handled: false
                 }
 
-                if (error.code == 100 && s.user) {
-                    session.end(true);
-                    failContext.handled = true;
-                }
+
                 // push default handler to end of callback list
                 setTimeout(function() {
                     df.fail(function(err) {

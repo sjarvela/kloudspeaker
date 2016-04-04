@@ -1,5 +1,6 @@
 import {
-    inject, LogManager
+    inject,
+    LogManager
 }
 from 'aurelia-framework';
 
@@ -13,23 +14,17 @@ import {
 }
 from 'kloudspeaker/service/session-service';
 
-import {
-    ServiceBase
-}
-from 'kloudspeaker/service/service-base';
-
 let logger = LogManager.getLogger('session');
 
 @
-inject(SessionService, EventAggregator, ServiceBase)
+inject(SessionService, EventAggregator)
 export class Session {
     _user = null;
     _data = null;
 
-    constructor(sessionService, events, serviceBase) {
+    constructor(sessionService, events) {
         this.service = sessionService;
         this.events = events;
-        this.serviceBase = serviceBase;
     }
 
     isInitialized() {
@@ -42,6 +37,10 @@ export class Session {
 
     getData() {
         return this._data;
+    }
+
+    getId() {
+        return this._data ? this._data.session_id : null;
     }
 
     isLoggedIn() {
@@ -59,8 +58,6 @@ export class Session {
         this._data = info;
 
         if (info.authenticated) {
-            this.serviceBase.sessionId = info.session_id;
-
             this._user = {
                 id: info.user_id,
                 name: info.username,
@@ -71,14 +68,22 @@ export class Session {
             };
         } else {
             this._user = null;
-            this.serviceBase.sessionId = null;
         }
 
         var o = { user: this._user, data: this._data };
-        this.events.publish('kloudspeaker/session/init', o);    //internal
+        this.events.publish('kloudspeaker/session/init', o); //internal
         this.events.publish('kloudspeaker/session/start', o);
 
         return o;
+    }
+
+    end(dontSend) {
+        this._data = null;
+        this._user = null;
+
+        this.events.publish('kloudspeaker/session/end', {});
+        if (!dontSend)
+            return this.logout();
     }
 
     login(username, password) {
