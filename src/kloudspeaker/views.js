@@ -102,6 +102,10 @@ export class Views {
         this.events.publish('kloudspeaker/view/activate', this.activeViews);
     }
 
+    getActiveViews() {
+        return this.activeViews;
+    }
+
     getActiveView(level) {
         if (typeof level === 'number') return this.activeViews[level];
         return this.activeViews ? this.activeViews[this.activeViews.length - 1] : null;
@@ -122,7 +126,9 @@ export class Views {
 
         if (v.name)
             this.views[v.name] = v;
-        this.routeConfig[parent].push(v);
+        var pv = (parent != '') ? this.get(parent) : null;
+        if (!pv || !pv.noChildRoute)
+            this.routeConfig[parent].push(v);
     }
 
     get(id) {

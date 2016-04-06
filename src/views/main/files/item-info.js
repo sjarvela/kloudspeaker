@@ -30,6 +30,8 @@ export class ItemInfo {
     }
 
     activate(item) {
+        if (!item) return;
+        
     	this.item = item;
     	logger.debug('info', this.item);
 

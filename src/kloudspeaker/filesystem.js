@@ -80,4 +80,12 @@ export class Filesystem {
         });
     }
 
+    search(val) {
+        //TODO opts: parent?
+        //TODO validate val
+        return this.service.search(val).then(rs => {
+            //process
+            return rs;
+        });
+    }
 }

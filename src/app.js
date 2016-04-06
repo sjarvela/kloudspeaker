@@ -98,7 +98,8 @@ export class App {
             route: ['files', 'files/:id'],
             name: 'files',
             moduleId: './main/files',
-            toolbarView: './main/files/toolbar'
+            toolbarView: './main/files/toolbar',
+            noChildRoute: true
         });
         views.register({
             parent: 'main',
@@ -135,6 +136,14 @@ export class App {
             viewType: 'custom',
             moduleId: './config/folders',
             requiresAdmin: true
+        });
+
+        //files
+        views.register({
+            parent: 'files',
+            name: 'search',
+            moduleId: 'views/main/files/search:Search',
+            type: 'model'
         });
     }
 

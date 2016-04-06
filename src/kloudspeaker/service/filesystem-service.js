@@ -27,6 +27,11 @@ export class FilesystemService {
         return this.service.post('filesystem/' + id+ "/details/", {data: data});
     }
 
+    search(val) {
+        //TODO rq-data
+        return this.service.post('filesystem/search/', {text: val, rq_data: {}});
+    }
+
     items(fid) {
         return this.service.get('filesystem/'+fid+'/items');
     }
