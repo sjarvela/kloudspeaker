@@ -1,19 +1,33 @@
 .files-view {
     .file-list {
-        display: table;
+        display: flex;
+        flex-flow: column nowrap;
+        -webkit-box-pack: justify;
         .file-list-item {
-            display: table-row;
-            /*float: left;
-            clear: both;*/
+            display: flex;
+            flex-flow: row nowrap;
             .col {
-                display: table-cell;
-            }
-            .info-container {
-                display: table-row;
-                .info-content-selector {
-                    float: left;
-                    padding: 10px;
+                display: flex;
+                flex-flow: row nowrap;
+                flex-grow: 1;
+                flex-basis: 0;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                &.col-name {
+                    flex-grow: 3;
                 }
+                &.col-quickaction, &.col-icon {
+                    max-width: 40px;
+                }
+            }
+        }
+        .info-container {
+            float: left;
+            clear: both;
+            width: 100%;
+            .info-content-selector {
+                float: left;
+                padding: 10px;
             }
         }
     }

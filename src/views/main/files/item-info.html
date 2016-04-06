@@ -11,6 +11,5 @@
 			<compose if.bind="activeContent.type == 'custom'" model.bind="{item: item, info: info, content: activeContent}" view-model="views/custom-compose"></compose>
 			<compose if.bind="activeContent.type != 'custom'" model.bind="{item: item, info: info, content: activeContent}" view-model="${activeContent.viewModel}"></compose>
 		</div>
-		${info.last_modified}
 	</div>
 </template>

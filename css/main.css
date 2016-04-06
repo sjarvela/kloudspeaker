@@ -1,13 +1,25 @@
 .files-view .file-list {
-  display: table; }
+  display: flex;
+  flex-flow: column nowrap;
+  -webkit-box-pack: justify; }
   .files-view .file-list .file-list-item {
-    display: table-row;
-    /*float: left;
-            clear: both;*/ }
+    display: flex;
+    flex-flow: row nowrap; }
     .files-view .file-list .file-list-item .col {
-      display: table-cell; }
-    .files-view .file-list .file-list-item .info-container {
-      display: table-row; }
-      .files-view .file-list .file-list-item .info-container .info-content-selector {
-        float: left;
-        padding: 10px; }
+      display: flex;
+      flex-flow: row nowrap;
+      flex-grow: 1;
+      flex-basis: 0;
+      word-wrap: break-word;
+      overflow-wrap: break-word; }
+      .files-view .file-list .file-list-item .col.col-name {
+        flex-grow: 3; }
+      .files-view .file-list .file-list-item .col.col-quickaction, .files-view .file-list .file-list-item .col.col-icon {
+        max-width: 20px; }
+  .files-view .file-list .info-container {
+    float: left;
+    clear: both;
+    width: 100%; }
+    .files-view .file-list .info-container .info-content-selector {
+      float: left;
+      padding: 10px; }

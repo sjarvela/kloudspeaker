@@ -11,7 +11,10 @@ from 'kloudspeaker/filesystem';
 let logger = LogManager.getLogger('file-list');
 
 let _cols = [{
-    id: 'name'
+    id: 'icon'
+}, {
+    id: 'name',
+    extension: false
 }, {
     id: 'quickaction'
 }, {
@@ -38,12 +41,28 @@ export class FileList {
     	logger.debug('bind', bindingContext)
     }
 
-    onSelect(item, $e) {
-    	this._onSelect(item);
+    onClick(item, col, $e) {
+        logger.debug(col);
+        if (col.id == 'name')
+    	   this._onSelect(item);
+    }
+
+    getItemIcon(item) {
+        if (item.is_file) {
+            //TODO file type icons
+            return 'file';
+        }
+        return 'folder';
     }
 
     getColValue(item, col) {
-        if (col.id == 'name') return item.name;
+        if (col.id == 'name') {
+            var name = item.name;
+            if (col.extension) return name;
+            var ei = name.lastIndexOf('.');
+            if (ei < 0) return name;
+            return name.substring(0, ei);
+        }
         if (col.id == 'type') return item.is_file ? item.extension : '';
         return "-";
     }

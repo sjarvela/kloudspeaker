@@ -1,14 +1,21 @@
 <template>
     <div class="file-list">
-    	<template repeat.for="item of items">
-	        <div class="file-list-item" click.delegate="onSelect(item, $event)">
-	            <div repeat.for="col of cols" class="col col-${col.id}">
-	                ${getColValue(item, col)}
-	            </div>
-	        </div>
-	        <div class="info-container" if.bind="infoItem.id == item.id">
-	            <compose model.bind="infoItem" view-model="./item-info"></compose>
-	        </div>
+        <template repeat.for="item of items">
+            <div class="file-list-item">
+                <div repeat.for="col of cols" class="col col-${col.id}" click.delegate="onClick(item, col, $event)">
+                    <div class="quickactions" if.bind="col.id == 'quickaction'">
+                        qa
+                    </div>
+                    <div class="content" if.bind="col.id == 'icon'">
+                    	<i class="fa fa-${getItemIcon(item)}"></i>
+                    </div>
+                    <div class="content" if.bind="col.id != 'quickaction' && col.id != 'icon'" innerhtml.bind="getColValue(item, col) | sanitizeHTML">
+                    </div>
+                </div>
+            </div>
+            <div class="info-container" if.bind="infoItem.id == item.id">
+                <compose model.bind="infoItem" view-model="./item-info"></compose>
+            </div>
         </template>
     </div>
 </template>
