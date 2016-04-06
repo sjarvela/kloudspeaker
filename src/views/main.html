@@ -17,9 +17,9 @@
                 <li repeat.for="v of subViews"><a href="${'#/main/' + activeView.path + '/' + v.path}">${v.title || v.name}</a></li>
             </ul>
         </div>
-        <!--div class="nav-view-toolbar" if.bind="activeView && activeView.toolbarView && activeViewModel">
-            <compose view-model.bind="activeViewModel" view="${activeView.toolbarView ? (activeView.toolbarView + '.html') : null}"></compose>
-        </div-->
+        <div class="nav-view-toolbar" if.bind="activeView && activeView.toolbarView && activeViewModel">
+            <compose view-model.bind="activeViewModel" view="${activeView.toolbarView ? (activeView.toolbarView + '.html') : 'views/empty.html'}"></compose>
+        </div>
     </nav>
     <div class="kloudspeaker-main-container container-fluid">
         <router-view>

@@ -2,6 +2,7 @@
 	<require from="./files/file-list"></require>
 
     <div class="files-view">
-    	<file-list items.bind="items" info-item.bind="infoItem" data-select="onSelect"></file-list>
+    	<file-list if.bind="viewType == 'list'" items.bind="items" info-item.bind="infoItem" data-select="onSelect"></file-list>
+    	<div if.bind="viewType == 'icon'">icon</div>
     </div>
 </template>

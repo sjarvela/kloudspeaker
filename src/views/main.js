@@ -26,6 +26,7 @@ export class MainView {
     subViews = [];
 
     activeView = null;
+    activeViewModel = null;
     activeSubView = null;
 
     constructor(views, events) {
@@ -40,6 +41,7 @@ export class MainView {
             function(vl) {
                 logger.debug("nav");
                 that.activeView = vl[1].view;
+                that.activeViewModel = vl[1].model;
 
                 if (that.activeView != null)
                     that.views.getSubViews(vl[1].path).then(svl => {
@@ -47,9 +49,13 @@ export class MainView {
 
                         //TODO rethink active view resolving
                         that.activeSubView = (vl.length > 2) ? vl[2].view : null;
-                        if (!that.activeSubView && vl.length > 2) that.activeSubView = _.find(svl, function(v) {
-                            return (v.path == vl[2].path);
-                        });
+                        if (that.activeViewModel && that.activeViewModel.getActiveSubView)
+                            that.activeSubView = that.activeViewModel.getActiveSubView();
+
+                        if ((!that.activeSubView && vl.length > 2))
+                            that.activeSubView = _.find(svl, function(v) {
+                                return (v.path == vl[2].path);
+                            });
                     });
             });
     }

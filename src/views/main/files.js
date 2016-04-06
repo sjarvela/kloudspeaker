@@ -1,9 +1,11 @@
 import {
-    bindable, inject, LogManager
+    bindable,
+    inject,
+    LogManager
 }
 from 'aurelia-framework';
 
-import {Router} from 'aurelia-router';
+import { Router } from 'aurelia-router';
 
 import {
     Filesystem
@@ -17,6 +19,7 @@ let logger = LogManager.getLogger('files');
 @
 inject(Filesystem, Router)
 export class FilesView {
+    viewType = 'list';
     items = [];
     @bindable infoItem = null;
     hierarchy = [];
@@ -26,8 +29,7 @@ export class FilesView {
         this.router = r;
     }
 
-    attached() {
-    }
+    attached() {}
 
     activate(params, route, inst) {
         var that = this;
@@ -48,7 +50,14 @@ export class FilesView {
 
     getActiveSubView() {
         if (!this.hierarchy) return null;
-        return this.hierarchy[0].id;
+        return {
+            title: this.hierarchy[0].name,
+            path: this.hierarchy[0].id
+        };
+    }
+
+    setViewType(vt) {
+        this.viewType = vt;
     }
 
     onSelect(item) {
