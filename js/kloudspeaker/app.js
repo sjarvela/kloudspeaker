@@ -263,7 +263,7 @@ define([], function() {
             if (!settings["view-url"]) return;
             var s = session.get();
             var obj = {
-                user_id: session.user ? session.user.id : null
+                user_id: s.user ? s.user.id : null
             };
             if (window.history && window.history.pushState) window.history.pushState(obj, "", "?v=" + viewId);
         };
