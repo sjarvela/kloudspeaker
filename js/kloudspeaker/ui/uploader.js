@@ -52,7 +52,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/service', 'kloudspeaker/dom', 'kl
                 if (r) {
                     r.done(function(resumeFrom) {
                         if (resumeFrom && resumeFrom > 0) {
-                            console.log("Continue " + resumeFrom);
+                            //console.log("Continue " + resumeFrom);
                             data.uploadedBytes = resumeFrom;
                         }
 

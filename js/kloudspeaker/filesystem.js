@@ -59,7 +59,8 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/permissions
 
     mfs.getUploadUrl = function(folder) {
         if (!folder || folder.is_file) return null;
-        return service.url("filesystem/" + folder.id + '/files/') + "?format=binary";
+        var url = service.url("filesystem/" + folder.id + '/files/');
+        return url + ((url.indexOf('?') >= 0) ? "&" : "?") + "format=binary";
     };
 
     mfs.itemDetails = function(item, data) {
