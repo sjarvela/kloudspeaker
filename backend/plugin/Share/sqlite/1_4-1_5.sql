@@ -17,5 +17,5 @@ CREATE TABLE share (
   active TINYINT(1) NOT NULL
 );
 
-INSERT INTO share SELECT id,item_id,type,name,user_id,expiration,created,quick,active,restriction FROM share_backup;
+INSERT INTO share SELECT id,item_id,type,restriction,name,user_id,expiration,created,quick,active FROM share_backup;
 DROP TABLE share_backup;
