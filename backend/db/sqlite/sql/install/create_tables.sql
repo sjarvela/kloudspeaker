@@ -34,8 +34,12 @@ CREATE TABLE folder (
 CREATE TABLE item_id (
   id char(13) NOT NULL,
   path char(255) NOT NULL,
+  level smallint NOT NULL,
   PRIMARY KEY (id)
 );
+CREATE INDEX i_item_level ON item_id (level);
+CREATE INDEX i_item_path_level ON item_id (path, level);
+
 CREATE TABLE permission (
   name char(64) NOT NULL,
   user_id int(11) NULL DEFAULT 0,

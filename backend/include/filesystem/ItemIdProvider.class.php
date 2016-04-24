@@ -121,7 +121,7 @@ class ItemIdProvider {
 
 			$db->update(sprintf("UPDATE " . $db->table("item_id") . " SET path=" . $update . ", level = -1 WHERE path like '%s%%'", $db->string($toPath), $len, $db->string($path)));			
 		}
-		return $db->update(sprintf("UPDATE " . $db->table("item_id") . " SET level = (LENGTH(path) - LENGTH(REPLACE(SUBSTRING(path, 1, LENGTH(path)-1), '/', ''))) WHERE level = -1"));
+		return $db->update(sprintf("UPDATE " . $db->table("item_id") . " SET level = (LENGTH(path) - LENGTH(REPLACE(SUBSTR(path, 1, LENGTH(path)-1), '/', ''))) WHERE level = -1"));
 	}
 
 	public function itemQueryPath($i, $escape = FALSE) {
