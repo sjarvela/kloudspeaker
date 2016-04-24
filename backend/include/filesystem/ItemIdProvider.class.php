@@ -47,14 +47,7 @@ class ItemIdProvider {
 
 	public function loadRoots() {
 		$db = $this->env->db();
-
-		if (strcmp("mysql", $this->env->db()->type()) == 0) {
-			$pathFilter = "path REGEXP '^.:[/]$'";
-		} else {
-			$pathFilter = "REGEX(path, \"#^.:[/]$#\")";
-		}
-
-		$query = "select id, path from " . $db->table("item_id") . " where " . $pathFilter;
+		$query = "select id, path from " . $db->table("item_id") . " where level=1";
 		foreach ($db->query($query)->rows() as $r) {
 			$this->cache[$r["path"]] = $r["id"];
 		}
@@ -62,17 +55,10 @@ class ItemIdProvider {
 
 	public function load($parent, $recursive = FALSE) {
 		$db = $this->env->db();
+		$pathFilter = "path like '" . $db->string($this->itemQueryPath($parent)) . "%'";
 
-		if ($recursive) {
-			$pathFilter = "path like '" . $db->string($this->itemQueryPath($parent)) . "%'";
-		} else {
-			$p = $this->itemQueryPath($parent, TRUE);
-			if (strcmp("mysql", $db->type()) == 0) {
-				$pathFilter = "path REGEXP '^" . $db->string($p) . "[^/]+[/]?$'";
-			} else {
-				$pathFilter = "REGEX(path, \"#^" . $db->string($p) . "[^/]+[/]?$#\")";
-			}
-		}
+		if (!$recursive)
+			$pathFilter .= " and level=".($this->getLevel($parent) + 1);
 
 		$query = "select id, path from " . $db->table("item_id") . " where " . $pathFilter;
 		foreach ($db->query($query)->rows() as $r) {
@@ -91,11 +77,14 @@ class ItemIdProvider {
 		$result = $db->query($query);
 
 		if ($result->count() === 1) {
-			return $result->value(0, "id");
+			$id = $result->value(0, "id");
+			$this->cache[$p] = $id;
+			return $id;
 		}
 
 		$id = uniqid("");
-		$db->update(sprintf("INSERT INTO " . $db->table("item_id") . " (id, path) VALUES (%s,%s)", $db->string($id, TRUE), $db->string($p, TRUE)));
+		$db->update(sprintf("INSERT INTO " . $db->table("item_id") . " (id, path, level) VALUES (%s,%s, %s)", $db->string($id, TRUE), $db->string($p, TRUE), $this->getLevel($path)));
+		$this->cache[$p] = $id;
 		return $id;
 	}
 
@@ -118,14 +107,11 @@ class ItemIdProvider {
 		if ($item->isFile()) {
 			$p = $db->string($this->itemQueryPath($to), TRUE);
 			$db->update("DELETE FROM " . $db->table("item_id") . " WHERE path = " . $p);
-			return $db->update("UPDATE " . $db->table("item_id") . " SET path = " . $p . " where id = " . $db->string($item->id(), TRUE));
+			$db->update("UPDATE " . $db->table("item_id") . " SET path = " . $p . ", level = -1 where id = " . $db->string($item->id(), TRUE));
 		} else {
 			$path = $this->itemQueryPath($item);
 			$toPath = rtrim($this->itemQueryPath($to), self::PATH_DELIMITER);
-
 			$len = mb_strlen($path, "UTF-8");
-			//Logging::logDebug("len ".$path." = ".$len);
-			//Logging::logDebug("to ".$toPath);
 
 			if ($db->type() == "sqlite") {
 				$update = "('%s' || SUBSTR(path, %d)";
@@ -133,8 +119,9 @@ class ItemIdProvider {
 				$update = "CONCAT('%s', SUBSTR(path, %d)";
 			}
 
-			return $db->update(sprintf("UPDATE " . $db->table("item_id") . " SET path=" . $update . ") WHERE path like '%s%%'", $db->string($toPath), $len, $db->string($path)));
+			$db->update(sprintf("UPDATE " . $db->table("item_id") . " SET path=" . $update . ", level = -1 WHERE path like '%s%%'", $db->string($toPath), $len, $db->string($path)));			
 		}
+		return $db->update(sprintf("UPDATE " . $db->table("item_id") . " SET level = (LENGTH(path) - LENGTH(REPLACE(SUBSTRING(path, 1, LENGTH(path)-1), '/', ''))) WHERE level = -1"));
 	}
 
 	public function itemQueryPath($i, $escape = FALSE) {
@@ -147,19 +134,19 @@ class ItemIdProvider {
 	}
 
 	public function pathQueryFilter($parent, $recursive = FALSE, $prefix = "i") {
-		$col = ($prefix != NULL ? $prefix.".path" : "path");
-
-		if ($recursive) {
-			$pathFilter = $col." like '" . $this->env->db()->string(str_replace("'", "\'", $this->itemQueryPath($parent))) . "%'";
-		} else {
-			$p = $this->itemQueryPath($parent, TRUE);
-			if (strcasecmp("mysql", $this->env->db()->type()) == 0) {
-				$pathFilter = $col." REGEXP '^" . $p . "[^/]+[/]?$'";
-			} else {
-				$pathFilter = "REGEX(".$col.", \"#^" . $p . "[^/]+[/]?$#\")";
-			}
+		$pathFilter = ($prefix != NULL ? $prefix.".path" : "path") . " like '" . $this->env->db()->string(str_replace("'", "\'", $this->itemQueryPath($parent))) . "%'";
+		if (!$recursive) {
+			$pathFilter = $pathFilter . " and " . ($prefix != NULL ? $prefix.".level" : "level") . "=" . ($this->getLevel($parent) + 1);
 		}
 		return $pathFilter;
+	}
+
+	private function getLevel($i) {
+		$path = is_string($i) ? $i : $i->location();
+		if ($this->convertPathDelimiter) {
+			$path = str_replace(DIRECTORY_SEPARATOR, self::PATH_DELIMITER, $path);
+		}
+		return substr_count(substr($path, 0, -1), self::PATH_DELIMITER) + 1;
 	}
 
 	public function __toString() {

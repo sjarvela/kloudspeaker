@@ -40,7 +40,10 @@ CREATE TABLE `{TABLE_PREFIX}folder` (
 
 CREATE TABLE `{TABLE_PREFIX}item_id` (
   `id` char(13) NOT NULL UNIQUE,
-  `path` char(255) NOT NULL UNIQUE
+  `path` char(255) NOT NULL UNIQUE,
+  `level` smallint NOT NULL,
+  INDEX i_item_level (`level`),
+  INDEX i_item_path_level (`path`, `level`)
 ) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Kloudspeaker item ids';
 
 CREATE TABLE `{TABLE_PREFIX}permission` (

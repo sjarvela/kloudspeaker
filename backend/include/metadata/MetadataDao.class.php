@@ -60,8 +60,9 @@ class Kloudspeaker_MetadataDao {
 	}
 
 	public function getItemMetadataForChildren($parent) {
-		$pathFilter = $this->env->filesystem()->itemIdProvider()->pathQueryFilter($parent, FALSE, NULL);
-		return $this->groupDataByItem($this->db->query(sprintf("SELECT item_id, md_key, md_value FROM " . $this->db->table("metadata") . " WHERE item_id in (select id from " . $this->db->table("item_id") . " where ".$pathFilter.") order by item_id asc", str_replace("'", "\'", $this->db->string($parent->location()))))->rows());
+		$if = $this->env->filesystem()->itemIdProvider()->pathQueryFilter($parent, FALSE, NULL);
+
+		return $this->groupDataByItem($this->db->query("SELECT item_id, md_key, md_value FROM " . $this->db->table("metadata") . " WHERE item_id in (select id from " . $this->db->table("item_id") . " where ". $if .") order by item_id asc")->rows());
 	}
 
 	private function groupDataByItem($data) {
