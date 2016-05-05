@@ -435,6 +435,11 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                     that.uploadProgress.hide();
                     if (e && e.code == 109 && e.data && e.data.items) {
                         ui.actions.handleDenied('upload', e.data, loc.get('actionDeniedUpload'), false);
+                    } else if (e && e.code == 301) {
+                        dialogs.notification({
+                            message: loc.get('mainviewFileUploadFailedMaxSizeExceeded'),
+                            type: "error"
+                        });
                     } else {
                         dialogs.notification({
                             message: loc.get('mainviewFileUploadFailed'),

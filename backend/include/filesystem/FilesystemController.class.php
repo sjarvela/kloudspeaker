@@ -1219,6 +1219,12 @@ class FilesystemController {
 
 		if (!isset($_FILES['uploader-http']) and !isset($_FILES['uploader-html5'])) {
 			if (!isset($_SERVER['HTTP_CONTENT_DISPOSITION'])) {
+				if (isset($_SERVER['CONTENT_LENGTH'])) {
+					$maxSize = Util::inBytes(ini_get('upload_max_filesize'));
+					if ($_SERVER['CONTENT_LENGTH'] > $maxSize)
+						throw new ServiceException(array(301, "File size exceeded"));
+				}
+
 				throw new ServiceException("NO_UPLOAD_DATA");
 			}
 
@@ -1314,7 +1320,9 @@ class FilesystemController {
 		$append = ($range != NULL and $range[1] != 0);
 		//TODO check for max post size, range etc
 		$target = $folder->fileWithName($name);
-		Logging::logDebug('uploading to [' . $target . '] file [' . $name . '],size=' . $size . ',type=' . $type . ',range=' . Util::array2str($range) . ',append=' . $append);
+		if (Logging::isDebug()) {
+			Logging::logDebug('uploading to [' . $target . '] file [' . $name . '],size=' . $size . ',type=' . $type . ',range=' . Util::array2str($range) . ',append=' . $append);
+		}
 
 		if (!$append) {
 			$this->validateAction(FileEvent::UPLOAD, $target, array("size" => $size));

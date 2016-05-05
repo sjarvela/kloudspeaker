@@ -96,6 +96,7 @@
 		"mainviewUploadProgressOneMessage": "Uploading 1 file",
 		"mainviewUploadProgressManyMessage": "Uploading {0} files",
 		"mainviewFileUploadFailed": "File upload failed",
+		"mainviewFileUploadFailedMaxSizeExceeded": "File too large",
 		"mainviewFileUploadComplete": "File upload complete",
 		"mainviewFileUploadAborted": "File upload aborted",
 		"mainviewFileUploadNotAllowed": "File upload not allowed",
