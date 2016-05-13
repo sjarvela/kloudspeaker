@@ -89,7 +89,7 @@ define(['kloudspeaker/resources', 'kloudspeaker/events', 'kloudspeaker/utils', '
             try {
                 t = JSON.parse(r);
             } catch (e) {
-                new ui.showError('<b>Localization file syntax error</b> (<code>' + url + '</code>)', '<code>' + e.message + '</code>');
+                ui.showError('<b>Localization file syntax error</b> (<code>' + url + '</code>)', '<code>' + e.message + '</code>');
                 return;
             }
             if (!tt.locale)
