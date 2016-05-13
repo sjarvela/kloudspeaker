@@ -42,7 +42,7 @@ CREATE INDEX i_item_path_level ON item_id (path, level);
 
 CREATE TABLE permission (
   name char(64) NOT NULL,
-  user_id int(11) NULL DEFAULT 0,
+  user_id int(11) NOT NULL DEFAULT 0,
   subject char(255) NOT NULL DEFAULT '',
   value char(32) NOT NULL,
   PRIMARY KEY (name,user_id,subject)
