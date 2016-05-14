@@ -1,4 +1,4 @@
-define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/ui/views', 'kloudspeaker/events', 'kloudspeaker/ui', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/controls', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/ui/files/itemcontext'], function(app, plugins, views, events, ui, dnd, formatters, controls, utils, dom, ic) {
+define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/ui/views', 'kloudspeaker/events', 'kloudspeaker/ui', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/controls', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/ui/files/itemcontext', 'kloudspeaker/settings'], function(app, plugins, views, events, ui, dnd, formatters, controls, utils, dom, ic, settings) {
     var that = {};
     that.w = 0;
     that.$dbE = false;
@@ -14,6 +14,12 @@ define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/ui/views'
     that.itemContext = ic;
 
     var onContentResize = function() {
+        if (settings['dropbox'] && settings['dropbox']['resize']) {
+            settings['dropbox']['resize']({
+                element: that.$dbE
+            });
+            return;
+        }
         utils.invokeLater(function() {
             var w = $(window).width();
             var y = $("#kloudspeaker-mainview-header").height();

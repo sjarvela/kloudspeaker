@@ -464,6 +464,11 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
         };
 
         that._updateScroll = function() {
+            if (settings["file-view"]["header-scroll"] === false) return;
+            if (typeof settings["file-view"]["header-scroll"] == "function") {
+                settings["file-view"]["header-scroll"]();
+                return;
+            }
             var s = $(window).scrollTop();
             var $e = $("#kloudspeaker-folderview");
 
