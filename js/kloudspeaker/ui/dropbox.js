@@ -14,8 +14,8 @@ define(['kloudspeaker/instance', 'kloudspeaker/plugins', 'kloudspeaker/ui/views'
     that.itemContext = ic;
 
     var onContentResize = function() {
-        if (settings['dropbox'] && settings['dropbox']['resize']) {
-            settings['dropbox']['resize']({
+        if (settings.dropbox && settings.dropbox.resize && (typeof settings.dropbox.resize === 'function')) {
+            settings.dropbox.resize({
                 element: that.$dbE
             });
             return;
