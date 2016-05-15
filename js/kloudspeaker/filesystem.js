@@ -49,6 +49,18 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/permissions
         }
     };
 
+    mfs.download = function(item) {
+        var df = $.Deferred();
+        mfs._validated(mfs._download, [item], "download").done(df.resolve).fail(df.reject);
+        return df;
+    }
+
+    mfs._download = function(item) {
+        return service.post("filesystem/" + item.id + "/validate_download/").done(function(r) {
+            ui.download(mfs.getDownloadUrl(item));
+        });
+    }
+
     mfs.getDownloadUrl = function(item) {
         if (!item.is_file) return false;
         var url = service.url("filesystem/" + item.id, true);

@@ -1107,13 +1107,24 @@ class FilesystemController {
 		return $new;
 	}
 
+	public function validateDownload($file) {
+		$this->assertRights($file, self::PERMISSION_LEVEL_READ, "download");
+		$this->validateAction(FileEvent::DOWNLOAD, $file, array("size" => $file->size()));
+	}
+
 	public function download($file, $mobile, $range = NULL) {
 		if (!$range) {
 			Logging::logDebug('download [' . $file->id() . ']');
 		}
 
 		$this->assertRights($file, self::PERMISSION_LEVEL_READ, "download");
-		if ($this->triggerActionInterceptor(FileEvent::DOWNLOAD, $file, array("mobile" => $mobile, "range" => $range))) {
+		$name = $file->name();
+		$size = $file->size();
+		$range = $this->getDownloadRangeInfo($range, $size);
+
+		if ($range or $range[0] == 0)  $this->validateAction(FileEvent::DOWNLOAD, $file, array("mobile" => $mobile, "range" => $range, "size" => $size));
+
+		if ($this->triggerActionInterceptor(FileEvent::DOWNLOAD, $file, array("mobile" => $mobile, "range" => $range, "size" => $size))) {
 			return;
 		}
 
@@ -1121,10 +1132,6 @@ class FilesystemController {
 			$this->env->response()->redirect($file->filesystem()->getDownloadUrl($file));
 			return;
 		}
-
-		$name = $file->name();
-		$size = $file->size();
-		$range = $this->getDownloadRangeInfo($range, $size);
 
 		if ($range) {
 			Logging::logDebug("Download range " . $range[0] . "-" . $range[1]);

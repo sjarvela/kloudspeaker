@@ -209,6 +209,9 @@ class FilesystemServices extends ServicesBase {
 		}
 
 		switch (strtolower($this->path[1])) {
+			case 'validate_download':
+				$this->env->filesystem()->validateDownload($item);
+				$this->response()->success(TRUE);
 			case 'details':
 				$data = isset($this->request->data["data"]) ? $this->request->data["data"] : null;
 				$this->response()->success($this->env->filesystem()->details($item, $data));

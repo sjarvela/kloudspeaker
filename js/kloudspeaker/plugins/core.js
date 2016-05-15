@@ -80,7 +80,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/permissio
                     type: "primary",
                     group: "download",
                     callback: function() {
-                        ui.download(filesystem.getDownloadUrl(item));
+                        filesystem.download(item);
                     }
                 });
                 actions.push({
