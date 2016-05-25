@@ -114,9 +114,9 @@ class ItemIdProvider {
 			$len = mb_strlen($path, "UTF-8");
 
 			if ($db->type() == "sqlite") {
-				$update = "('%s' || SUBSTR(path, %d)";
+				$update = "('%s' || SUBSTR(path, %d))";
 			} else {
-				$update = "CONCAT('%s', SUBSTR(path, %d)";
+				$update = "CONCAT('%s', SUBSTR(path, %d))";
 			}
 
 			$db->update(sprintf("UPDATE " . $db->table("item_id") . " SET path=" . $update . ", level = -1 WHERE path like '%s%%'", $db->string($toPath), $len, $db->string($path)));			
