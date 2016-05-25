@@ -241,7 +241,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
 
         that.showSubviewList = function(list, cb) {
             that._subviewmenu.items(list || []);
-            that._subviewcb = cb;   //TODO remove when legacy views rewritten
+            that._subviewcb = cb; //TODO remove when legacy views rewritten
             if (list)
                 $("#kloudspeaker-mainsubview-menu").show();
             else $("#kloudspeaker-mainsubview-menu").hide();
@@ -285,20 +285,25 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 if (nb.classes) $items.addClass(nb.classes);
                 if (nb.dropdown) {
                     $items.each(function(i, e) {
-                        var item = items[$items.index(this)];
-                        var $tr = $('<li class="kloudspeaker-mainview-navbar-dropdown"><a href="#" class="dropdown-toggle"><i class="fa fa-cog"></i></a></li>').appendTo($(e));
-                        var dropdownItems = [];
-                        if (typeof(nb.dropdown.items) != 'function') dropdownItems = nb.dropdown.items;
-                        ui.controls.dropdown({
-                            element: $tr,
+                        $('<li class="kloudspeaker-mainview-navbar-dropdown"><a href="#" class="dropdown-toggle"><i class="fa fa-cog"></i></a></li>').appendTo($(e));
+                    });
+                    $items.on('click', '.kloudspeaker-mainview-navbar-dropdown > a', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        var $item = $(this).closest('.kloudspeaker-mainview-navbar-item');
+                        var item = items[$items.index($item)];
+                        var dropdownItems = nb.dropdown.items;
+                        if (typeof(nb.dropdown.items) == 'function') dropdownItems = nb.dropdown.items(item.obj);
+                        var $h = $(this).parent().addClass("open");
+
+                        var popup = ui.controls.popupmenu({
+                            element: $h,
                             items: dropdownItems,
-                            onShow: function(api, menuItems) {
-                                if (menuItems.length > 0) return;
-                                if (typeof(nb.dropdown.items) == 'function') {
-                                    api.items(nb.dropdown.items(item.obj));
-                                }
+                            onHide: function() {
+                                $h.removeClass("open");
                             }
-                        });
+                        })
                     });
                 }
                 $items.click(function() {

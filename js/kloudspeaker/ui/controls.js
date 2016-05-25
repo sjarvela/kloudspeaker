@@ -1,4 +1,6 @@
 define(['kloudspeaker/localization', 'kloudspeaker/dom', 'kloudspeaker/service', 'kloudspeaker/ui', 'kloudspeaker/utils'], function(loc, dom, service, ui, utils) {
+    var rootOffset;
+
     var processPopupActions = function(l) {
         $.each(l, function(i, item) {
             if (item.type == 'submenu') {
@@ -46,6 +48,7 @@ define(['kloudspeaker/localization', 'kloudspeaker/dom', 'kloudspeaker/service',
         //TODO remove
         setup: function(a) {
             app = require('kloudspeaker/instance');
+            rootOffset = $("#kloudspeaker").offset();
         },
 
         dropdown: function(a) {
@@ -111,7 +114,7 @@ define(['kloudspeaker/localization', 'kloudspeaker/dom', 'kloudspeaker/service',
             var popupId = false;
             var $e = $(a.element);
             var pos = $e.offset();
-            var $mnu = $('<div class="kloudspeaker-popupmenu" style="position: absolute; top: ' + (pos.top + $e.outerHeight()) + 'px; left:' + pos.left + 'px;"></div>');
+            var $mnu = $('<div class="kloudspeaker-popupmenu" style="position: absolute; top: ' + (pos.top - rootOffset.top + $e.outerHeight()) + 'px; left:' + (pos.left - rootOffset.left) + 'px;"></div>');
             var popupitems = a.items;
             var hidePopup = function() {
                 if (a.onHide) a.onHide();
