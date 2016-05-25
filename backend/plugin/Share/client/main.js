@@ -1,4 +1,4 @@
-define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/share/repository', 'kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/dialogs', 'kloudspeaker/localization', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/permissions', 'kloudspeaker/request', 'kloudspeaker/ui'], function(settings, plugins, events, repository, service, fs, views, formatters, dialogs, loc, utils, dom, permissions, rq, ui) {
+define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/share/repository', 'kloudspeaker/service', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/dialogs', 'kloudspeaker/localization', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/permissions', 'kloudspeaker/request', 'kloudspeaker/ui', 'kloudspeaker/session'], function(settings, plugins, events, repository, service, fs, views, formatters, dialogs, loc, utils, dom, permissions, rq, ui, session) {
     var that = {};
 
     events.on('localization/init', function() {
