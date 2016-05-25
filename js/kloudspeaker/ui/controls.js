@@ -1,5 +1,5 @@
-define(['kloudspeaker/localization', 'kloudspeaker/dom', 'kloudspeaker/service', 'kloudspeaker/ui', 'kloudspeaker/utils'], function(loc, dom, service, ui, utils) {
-    var rootOffset;
+define(['kloudspeaker/localization', 'kloudspeaker/dom', 'kloudspeaker/service', 'kloudspeaker/ui', 'kloudspeaker/utils', 'kloudspeaker/settings'], function(loc, dom, service, ui, utils, settings) {
+    var rootOffset = { top: 0, left: 0 };
 
     var processPopupActions = function(l) {
         $.each(l, function(i, item) {
@@ -48,7 +48,8 @@ define(['kloudspeaker/localization', 'kloudspeaker/dom', 'kloudspeaker/service',
         //TODO remove
         setup: function(a) {
             app = require('kloudspeaker/instance');
-            rootOffset = $("#kloudspeaker").offset();
+            if (settings.offset)
+                rootOffset = settings.offset;
         },
 
         dropdown: function(a) {
