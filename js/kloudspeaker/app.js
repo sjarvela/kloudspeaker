@@ -9,6 +9,7 @@ define([], function() {
             "default": "en",
             "options": ["en"]
         },
+        "defaultView": "/files/",
         "view-url": true,
         "app-element-id": "kloudspeaker",
         "service-path": "backend/",
@@ -147,7 +148,7 @@ define([], function() {
             if (app.activeView && app.activeView.destroy) app.activeView.destroy();
             app.activeView = false;
             app.activeViewId = null;
-            app.openView(app.pageParams.v || "/files/");
+            app.openView(app.pageParams.v || settings.defaultView);
         };
 
         app.openView = function(viewId) {
