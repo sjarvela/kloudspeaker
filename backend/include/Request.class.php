@@ -176,7 +176,9 @@ class Request {
 	}
 
 	public function param($param) {
-		return $this->params[$param];
+		if ($this->hasParam($param))
+			return $this->params[$param];
+		return NULL;
 	}
 
 	public function hasData($key = NULL) {
