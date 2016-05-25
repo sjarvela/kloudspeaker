@@ -240,7 +240,7 @@ define(['kloudspeaker/session', 'kloudspeaker/localization', 'kloudspeaker/ui/co
 
     dh.wait = function(spec) {
         var $trg = (spec && spec.target) ? $("#" + spec.target) : $("body");
-        var w = dom.template("kloudspeaker-tmpl-wait", $.extend(spec, dh._dialogDefaults)).appendTo($trg).show();
+        var w = dom.template("kloudspeaker-tmpl-wait", $.extend({}, spec, dh._dialogDefaults)).appendTo($trg).show();
         return {
             close: function() {
                 w.remove();
@@ -253,7 +253,7 @@ define(['kloudspeaker/session', 'kloudspeaker/localization', 'kloudspeaker/ui/co
 
         var $trg = (spec && spec.target) ? ((typeof spec.target === 'string') ? $("#" + spec.target) : spec.target) : $("#kloudspeaker-notification-container, .kloudspeaker-notification-container").first();
         if ($trg.length === 0) $trg = $("body");
-        var notification = dom.template("kloudspeaker-tmpl-notification", $.extend(spec, dh._dialogDefaults)).hide().appendTo($trg);
+        var notification = dom.template("kloudspeaker-tmpl-notification", $.extend({}, spec, dh._dialogDefaults)).hide().appendTo($trg);
         notification.fadeIn(300, function() {
             setTimeout(function() {
                 notification.fadeOut(300, function() {
@@ -280,7 +280,7 @@ define(['kloudspeaker/session', 'kloudspeaker/localization', 'kloudspeaker/ui/co
             if (b["title-key"]) return loc.get(b["title-key"]);
             return "";
         };
-        var $dlg = $("#kloudspeaker-tmpl-dialog-custom").tmpl($.extend(dh._dialogDefaults, s), {
+        var $dlg = $("#kloudspeaker-tmpl-dialog-custom").tmpl($.extend({}, dh._dialogDefaults, s), {
             getContent: function() {
                 if (spec.html) return spec.html;
                 if (spec.content) {
