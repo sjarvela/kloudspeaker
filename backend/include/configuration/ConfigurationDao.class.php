@@ -47,9 +47,9 @@ class ConfigurationDao {
 		$expirationCriteria = $expiration ? " AND (expiration is null or expiration > " . $this->formatTimestampInternal($expiration) . ")" : "";
 
 		if ($allowEmail) {
-			$result = $this->db->query(sprintf("SELECT id, name, lower(user_type) as user_type, lower(lang) as lang, email, lower(ua.type) as auth FROM " . $this->db->table("user") . " left outer join " . $this->db->table("user_auth") . " ua on id=ua.user_id WHERE (name=%s or email=%s)" . $expirationCriteria, $this->db->string($username, TRUE), $this->db->string($username, TRUE)));
+			$result = $this->db->query(sprintf("SELECT id, name, lower(user_type) as user_type, lower(lang) as lang, email, lower(ua.type) as auth FROM " . $this->db->table("user") . " left outer join " . $this->db->table("user_auth") . " ua on id=ua.user_id WHERE (name=%s or email=%s) and is_group=0" . $expirationCriteria, $this->db->string($username, TRUE), $this->db->string($username, TRUE)));
 		} else {
-			$result = $this->db->query(sprintf("SELECT id, name, lower(user_type) as user_type, lower(lang) as lang, email, lower(ua.type) as auth FROM " . $this->db->table("user") . " left outer join " . $this->db->table("user_auth") . " ua on id=ua.user_id WHERE name=%s" . $expirationCriteria, $this->db->string($username, TRUE)));
+			$result = $this->db->query(sprintf("SELECT id, name, lower(user_type) as user_type, lower(lang) as lang, email, lower(ua.type) as auth FROM " . $this->db->table("user") . " left outer join " . $this->db->table("user_auth") . " ua on id=ua.user_id WHERE name=%s and is_group=0" . $expirationCriteria, $this->db->string($username, TRUE)));
 		}
 		$matches = $result->count();
 
