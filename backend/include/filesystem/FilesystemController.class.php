@@ -827,7 +827,7 @@ class FilesystemController {
 			}
 		}
 
-		$this->env->events()->onEvent(MultiFileEvent::copy($items, $folder, $targets, $replace));
+		$this->env->events()->onEvent(MultiFileEvent::copy($items, $folder, $targets, $overwrite));
 	}
 
 	public function move($item, $to) {
