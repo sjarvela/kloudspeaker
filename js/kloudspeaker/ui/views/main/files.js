@@ -353,7 +353,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                         dialogs.error({
                             message: loc.get('mainviewFolderNotFound', params.path)
                         });
-                        that.handled = true;
+                        this.handled = true;
                     }
                     that.hideProgress();
                     that.openInitialFolder();
@@ -363,10 +363,12 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
 
             if (h.id) {
                 that.changeToFolder(h.id.join("/")).fail(function() {
-                    that.handled = true;
-                    //TODO show error message that folder was not found?
-                    that.hideProgress();
-                    that.openInitialFolder();
+                    this.handled = true;
+                    utils.invokeLater(function() {
+                        //TODO show error message that folder was not found?
+                        that.hideProgress();
+                        that.openInitialFolder();                        
+                    });
                 });
             } else
                 that.openInitialFolder();
@@ -701,7 +703,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 that.hideProgress();
                 //301 resource not found
                 if (error.code == 301) {
-                    that.handled = true;
+                    this.handled = true;
                     dialogs.error({
                         message: loc.get('mainviewRetrieveFileResourceNotFound', [url])
                     });
