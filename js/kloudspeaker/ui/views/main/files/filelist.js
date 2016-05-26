@@ -6,6 +6,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'klo
         t.$hc = $headerContainer;
         t.listId = 'kloudspeaker-filelist-' + id;
         t.cols = [];
+        t.colsById = {};
         t.sortCol = false;
         t.sortOrderAsc = true;
         t.colWidths = {};
@@ -23,6 +24,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'klo
 
             var colSpec = $.extend({}, col, columns[colId]);
             t.cols.push(colSpec);
+            t.colsById[colId] = colSpec;
         }
 
         this.init = function(p) {
@@ -88,7 +90,17 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'klo
             });
             t.items = [];
             t.data = {};
-            t.onSortClick(t.cols[0]);
+
+            var sortDefined = false;
+            if (settings["file-view"]["default-sort"] && settings["file-view"]["default-sort"].col) {
+                var sortColId = settings["file-view"]["default-sort"].col;
+                var sortColAsc = !!settings["file-view"]["default-sort"].asc;
+                if (t.colsById[sortColId]) {
+                    sortDefined = true;
+                    t.setSort(t.colsById[sortColId], sortColAsc);
+                }
+            }
+            if (!sortDefined) t.onSortClick(t.cols[0]);
         };
 
         this.updateColWidths = function() {
@@ -100,17 +112,21 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'klo
         };
 
         this.onSortClick = function(col) {
-            if (col.id != t.sortCol.id) {
-                t.sortCol = col;
-                t.sortOrderAsc = true;
-            } else {
-                t.sortOrderAsc = !t.sortOrderAsc;
-            }
+            var sortAsc = true;
+            if (col.id == t.sortCol.id)
+                sortAsc = !t.sortOrderAsc;
+            t.setSort(col, sortAsc);
+        };
+
+        this.setSort = function(col, asc) {
+            t.sortCol = col;
+            t.sortOrderAsc = asc;
+            
             t.refreshSortIndicator();
             utils.invokeLater(function() {
                 t.content(t.items, t.data);
             });
-        };
+        }
 
         this.sortItems = function() {
             var s = t.sortCol.sort;

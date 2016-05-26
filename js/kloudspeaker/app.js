@@ -9,7 +9,7 @@ define([], function() {
             "default": "en",
             "options": ["en"]
         },
-        "defaultView": "/files/",
+        "default-view": "/files/",
         "view-url": true,
         "app-element-id": "kloudspeaker",
         "service-path": "backend/",
@@ -27,6 +27,7 @@ define([], function() {
                     width: 150
                 }
             },
+            "default-sort": null,
             "actions": false
         },
         "html5-uploader": {
@@ -148,7 +149,7 @@ define([], function() {
             if (app.activeView && app.activeView.destroy) app.activeView.destroy();
             app.activeView = false;
             app.activeViewId = null;
-            app.openView(app.pageParams.v || settings.defaultView);
+            app.openView(app.pageParams.v || settings["default-view"]);
         };
 
         app.openView = function(viewId) {
