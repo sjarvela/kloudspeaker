@@ -124,13 +124,17 @@ class Authentication {
 	public function login($username, $pw) {
 		$user = $this->env->configuration()->findUser($username, $this->env->settings()->setting("email_login"), time());
 		if (!$user) {
-			syslog(LOG_NOTICE, "Failed Kloudspeaker login attempt from [" . $this->env->request()->ip() . "], user [" . $username . "]");
+			$msg = "Failed Kloudspeaker login attempt from [" . $this->env->request()->ip() . "], user [" . $username . "]";
+			Logging::logError($msg);
+			syslog(LOG_NOTICE, $msg);
 			$this->env->events()->onEvent(SessionEvent::failedLogin($username, $this->env->request()->ip()));
 			throw new ServiceException("AUTHENTICATION_FAILED");
 		}
 		$auth = $this->env->configuration()->getUserAuth($user["id"]);
 		if (!$this->auth($user, $auth, $pw)) {
-			syslog(LOG_NOTICE, "Failed Kloudspeaker login attempt from [" . $this->env->request()->ip() . "], user [" . $username . "]");
+			$msg = "Failed Kloudspeaker login attempt from [" . $this->env->request()->ip() . "], user [" . $username . "]";
+			Logging::logError($msg);
+			syslog(LOG_NOTICE, $msg);
 			$this->env->events()->onEvent(SessionEvent::failedLogin($username, $this->env->request()->ip()));
 			throw new ServiceException("AUTHENTICATION_FAILED");
 
