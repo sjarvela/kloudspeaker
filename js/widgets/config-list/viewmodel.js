@@ -94,6 +94,7 @@ define(['kloudspeaker/localization', 'kloudspeaker/utils', 'durandal/composition
         var that = this;
         var firstSortable = null;
         var cols = (typeof(this.settings.cols) === 'function') ? this.settings.cols() : this.settings.cols;
+        that._colsById = {};
 
         _.each(cols, function(col) {
             var $th;
@@ -114,6 +115,7 @@ define(['kloudspeaker/localization', 'kloudspeaker/utils', 'durandal/composition
                 $th.append("<span class='sort-indicator'></span>").addClass("sortable");
                 if (!firstSortable) firstSortable = col;
             }
+            that._colsById[col.id] = col;
 
             $th.appendTo(that.$thead);
         });
@@ -140,7 +142,11 @@ define(['kloudspeaker/localization', 'kloudspeaker/utils', 'durandal/composition
                 if ((typeof(col.enabled) === 'undefined') || col.enabled(row)) {
                     html = col.icon ? '<i class="fa fa-' + (typeof(col.icon) === 'function' ? col.icon(row) : col.icon) + '"></i>' : (col.content ? col.content : '');
                     if (col.formatter) html = col.formatter(item, v);
-                    if (html) $("<a title='" + col.title + "'></a>").html(html).appendTo($cell.empty().addClass("action"));
+                    if (html) {
+                        var title = col.title;
+                        if (!title && col.titleKey) title = texts.get(col.titleKey);
+                        $("<a title='" + title + "'></a>").html(html).appendTo($cell.empty().addClass("action"));
+                    }
                 }
                 /*} else if (col.type == "input") {
                     var $s = $cell[0].ctrl;
@@ -234,6 +240,18 @@ define(['kloudspeaker/localization', 'kloudspeaker/utils', 'durandal/composition
     ctor.prototype._updateContent = function(newRows) {        
         var that = this;
         if (!that.$tbody) return;
+
+        if (this.settings.sort && !this.settings.remote) {
+            var col = that._colsById[that.settings.sort.id];
+            if (col) {
+                newRows = newRows.sort(function(a, b) {
+                    var valA = col.sortValue ? col.sortValue(a) : a[that.settings.sort.id];
+                    var valB = col.sortValue ? col.sortValue(b) : b[that.settings.sort.id];
+                    var r = ((valA < valB) ? -1 : ( valA > valB ? 1 : 0)) * (that.settings.sort.asc ? 1 : -1);
+                    return r;
+                });
+            }
+        }
 
         that.$tbody.empty();
 
