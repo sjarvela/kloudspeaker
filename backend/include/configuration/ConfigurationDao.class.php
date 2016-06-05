@@ -405,6 +405,20 @@ class ConfigurationDao {
 		return TRUE;
 	}
 
+	public function getUserFolder($userId, $folderId) {
+		$folderTable = $this->db->table("folder");
+		$userFolderTable = $this->db->table("user_folder");
+
+		$userIds = array($userId);
+		foreach ($this->getUsersGroups($userId) as $g) {
+			$userIds[] = $g['id'];
+		}
+
+		$userQuery = sprintf("(uf.user_id in (%s))", $this->db->arrayString($userIds));
+
+		return $this->db->query(sprintf("SELECT f.id as id, f.type as type, uf.name as name, f.name as default_name, f.path as path FROM " . $userFolderTable . " uf, " . $folderTable . " f WHERE %s AND f.id = uf.folder_id AND f.id = %s", $userQuery, $this->db->string($folderId)))->firstRow();
+	}
+
 	public function getUserFolders($userId, $includeGroupFolders = FALSE) {
 		$folderTable = $this->db->table("folder");
 		$userFolderTable = $this->db->table("user_folder");
