@@ -51,7 +51,7 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/permissions
 
     mfs.download = function(item) {
         var df = $.Deferred();
-        mfs._validated(mfs._download, [item], "download").done(df.resolve).fail(df.reject);
+        mfs._validated(mfs._download, [item], "download", loc.get("actionDeniedDownload", item.name)).done(df.resolve).fail(df.reject);
         return df;
     }
 
