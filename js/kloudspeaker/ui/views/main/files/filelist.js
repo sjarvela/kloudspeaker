@@ -11,21 +11,19 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'klo
         t.sortOrderAsc = true;
         t.colWidths = {};
 
-        for (var colId in columns) {
-            if (columns[colId] === false) continue;
+        _.each(columns, function(c) {
+            var colId = c.id;
 
             var col = filelistSpec.columns[colId];
             if (!col) {
-                if (columns[colId].content) {
-                    t.cols.push(columns[colId]);
-                }
-                continue;
+                if (!c.content) return;
+            } else {
+                col = $.extend({}, col, c);
             }
 
-            var colSpec = $.extend({}, col, columns[colId]);
-            t.cols.push(colSpec);
-            t.colsById[colId] = colSpec;
-        }
+            t.cols.push(col);
+            t.colsById[colId] = col;
+        });
 
         this.init = function(p) {
             t.p = p;
@@ -92,15 +90,26 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'klo
             t.data = {};
 
             var sortDefined = false;
-            if (settings["file-view"]["default-sort"] && settings["file-view"]["default-sort"].col) {
-                var sortColId = settings["file-view"]["default-sort"].col;
-                var sortColAsc = !!settings["file-view"]["default-sort"].asc;
-                if (t.colsById[sortColId]) {
+            if (settings["file-view"]["default-sort"]) {
+                var ds = settings["file-view"]["default-sort"];
+                var sortColId, sortColAsc = true;
+
+                if (_.isObject(ds)) {
+                    sortColId = settings["file-view"]["default-sort"].col;
+                    sortColAsc = !!settings["file-view"]["default-sort"].asc;
+                } else {
+                    if (_.isString(ds)) sortColId = ds;
+                }
+
+                if (sortColId && t.colsById[sortColId]) {
                     sortDefined = true;
                     t.setSort(t.colsById[sortColId], sortColAsc);
                 }
             }
-            if (!sortDefined) t.onSortClick(t.cols[0]);
+            if (!sortDefined)
+                t.onSortClick(_.find(t.cols, function(c) {
+                    return !!c.sort;
+                }));
         };
 
         this.updateColWidths = function() {
@@ -121,7 +130,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'klo
         this.setSort = function(col, asc) {
             t.sortCol = col;
             t.sortOrderAsc = asc;
-            
+
             t.refreshSortIndicator();
             utils.invokeLater(function() {
                 t.content(t.items, t.data);

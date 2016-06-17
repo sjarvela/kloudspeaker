@@ -367,7 +367,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                     utils.invokeLater(function() {
                         //TODO show error message that folder was not found?
                         that.hideProgress();
-                        that.openInitialFolder();                        
+                        that.openInitialFolder();
                     });
                 });
             } else
@@ -456,7 +456,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                     service.post('filesystem/' + that._currentFolder.id + "/fileinfo", {
                         files: [name]
                     }).done(function(r) {
-                        if (!r || !r[name]) df.resolve(false);  //don't resume
+                        if (!r || !r[name]) df.resolve(false); //don't resume
                         else if (r[name].size >= size) df.resolve(false); //file is already bigger, don't resume
                         else df.resolve(r[name].size);
                     });
@@ -1143,11 +1143,47 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
         that.initList = function() {
             var $h = $("#kloudspeaker-folderview-header-items").empty();
             if (that.isListView()) {
-                var cols = settings["file-view"]["list-view-columns"];
+                var colSettings = settings["file-view"]["list-view-columns"];
                 if (that._currentFolderType && that._customFolderTypes[that._currentFolderType] && that._customFolderTypes[that._currentFolderType].getFileListCols) {
-                    cols = that._customFolderTypes[that._currentFolderType].getFileListCols();
+                    colSettings = that._customFolderTypes[that._currentFolderType].getFileListCols();
                 }
-                that.itemWidget = new FileList('kloudspeaker-folderview-items', $h, 'main', that._filelist, cols);
+
+                if (!that._filelistCols) {
+                    var cols = [];
+                    if (_.isArray(colSettings)) {
+                        _.each(colSettings, function(c) {
+                            if (_.isObject(c)) cols.push(c);
+                            else cols.push({ id: c });
+                        });
+                    } else {
+                        var keys = _.without(_.keys(colSettings), 'col_order');
+                        _.each(keys, function(cid) {
+                            if (!cid) return;
+                            var c = colSettings[cid];
+                            if (!c) return;
+                            c.id = cid;
+                            cols.push(c);
+                        });
+
+                        if (colSettings.col_order) {
+                            keys = keys.sort(function(ak, bk) {
+                                var ai = colSettings.col_order.indexOf(ak);
+                                if (ai < 0) ai = keys.length;
+                                var bi = colSettings.col_order.indexOf(bk);
+                                if (bi < 0) bi = keys.length;
+                                return ai - bi;
+                            });
+                            cols = cols.sort(function(a, b) {
+                                var ai = keys.indexOf(a.id);
+                                var bi = keys.indexOf(b.id);
+                                return ai - bi;
+                            });
+                        }
+                    }
+                    that._filelistCols = cols;
+                }
+
+                that.itemWidget = new FileList('kloudspeaker-folderview-items', $h, 'main', that._filelist, that._filelistCols);
             } else {
                 var thumbs = features.hasFeature('thumbnails');
                 that.itemWidget = new IconView('kloudspeaker-folderview-items', $h, 'main', that._viewStyle == 1 ? 'iconview-small' : 'iconview-large', thumbs);
