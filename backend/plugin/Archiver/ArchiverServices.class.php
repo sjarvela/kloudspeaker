@@ -165,7 +165,7 @@ class ArchiverServices extends ServicesBase {
 			$name = $items[0]->name();
 		}
 
-		$this->env->filesystem()->assertRights($items, FilesystemController::PERMISSION_LEVEL_READ, "download compressed");
+		$this->env->filesystem()->validateDownload($items, "download compressed");
 
 		$a = $this->archiveManager()->compress($items);
 		$id = uniqid();

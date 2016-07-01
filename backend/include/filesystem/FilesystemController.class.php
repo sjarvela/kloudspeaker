@@ -1107,9 +1107,15 @@ class FilesystemController {
 		return $new;
 	}
 
-	public function validateDownload($file) {
-		$this->assertRights($file, self::PERMISSION_LEVEL_READ, "download");
-		$this->validateAction(FileEvent::DOWNLOAD, $file, array("size" => $file->size()));
+	public function validateDownload($f, $ac = "download") {
+		if (!is_array($f)) $files = array($f);
+		else $files = $f;
+
+		foreach ($files as $file) {
+			$this->assertRights($file, self::PERMISSION_LEVEL_READ, $ac);
+		}
+		
+		$this->validateAction(FileEvent::DOWNLOAD, $files);
 	}
 
 	public function download($file, $mobile, $range = NULL) {
