@@ -19,24 +19,25 @@ class PDFMarker extends MarkerBase {
 
 		if ($this->getSetting("img_file", NULL) != NULL) {
 			$file = $this->getSetting("img_file");
-			$imgProp = array(
+			$imgProp = $this->extend_props($watermarkText, array(
 				"size" => getimagesize($file),
 				"file" => $file,
-			);
+			));
 		} else if ($this->getSetting("rotation", NULL) != NULL) {
 			$font = $this->getSetting("img_font", dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Arial.ttf');
 			if ($font == NULL) {
 				throw new ServiceException("INVALID_CONFIGURATION", "Image generation requires font file defined with 'img_font'");
 			}
 
-			$imgProp = array(
+			$imgProp = $this->extend_props($watermarkText, array(
 				"size" => $this->getSetting("img_size", array(800, 200)),
 				"font" => $font,
 				"font_size" => $this->getSetting("img_font_size", 50),
 				"color" => $this->getSetting("color", array(0, 0, 0)),
 				"alpha" => $this->getSetting("alpha", 50),
 				"rotation" => $this->getSetting("rotation", 45),
-			);
+			));
+
 			$imageGenerator = $this->env->imageGenerator();
 			$imgFile = $imageGenerator->createText($watermarkText, $imgProp["size"], $imgProp["font"], $imgProp["font_size"], $imgProp["color"], $imgProp["alpha"], $imgProp["rotation"]);
 			$imgProp["file"] = $imgFile;
@@ -48,8 +49,20 @@ class PDFMarker extends MarkerBase {
 		return TRUE;
 	}
 
+	private function extend_props($watermarkText, $props) {
+		if (function_exists("get_watermark_props")) {
+			$result = get_watermark_props($watermarkText, $props);
+			if ($result != NULL) {
+				foreach ($props as $key => $value) {
+					if (array_key_exists($key, $result)) $props[$key] = $result[$key];
+				}
+			}
+		}
+		return $props;
+	}
+
 	private function getProperties($src, $text, $imgProp = NULL) {
-		return array(
+		return $this->extend_props($text, array(
 			"src" => $src,
 			"text" => $text,
 			"img" => $imgProp,
@@ -59,7 +72,7 @@ class PDFMarker extends MarkerBase {
 			"height" => $this->getSetting("height", 10),
 			"bottomOffset" => $this->getSetting("bottomOffset", -30),
 			"margins" => $this->getSetting("margins", array(0, 0)),
-		);
+		));
 	}
 }
 
