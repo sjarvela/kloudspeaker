@@ -61,14 +61,13 @@ import { I18N } from 'aurelia-i18n';
 let logger = LogManager.getLogger('app');
 
 @
-inject(app_config, Session, Permissions, Filesystem, EventAggregator, ServiceBase, Views, Plugins, Localization, DragAndDrop, I18N)
+inject(app_config, Session, Permissions, Filesystem, EventAggregator, ServiceBase, Views, Plugins, Localization, DragAndDrop)
 export class App {
     activeView = null;
 
-    constructor(appConfig, session, permissions, fs, events, service, views, plugins, localization, dnd, i18n) {
+    constructor(appConfig, session, permissions, fs, events, service, views, plugins, localization, dnd) {
         let that = this;
 
-        this.i18n = i18n;
         this.appConfig = appConfig;
         this.session = session;
         this.events = events;
@@ -195,18 +194,18 @@ export class App {
         logger.debug("Activate app");
 
         return new Promise(function(resolve) {
-            that.i18n.setLocale('en').then(() => {
-                that.service.initialize(that.session);
-                that.dnd.initialize({});
+            //that.i18n.setLocale('en').then(() => {
+            that.service.initialize(that.session);
+            that.dnd.initialize({});
 
-                setupLegacy(that.appConfig, that.session, that.permissions, that.fs, that.service, that.plugins, that.events, that.views, that.localization).then(() => {
-                    that.session.initialize().then(s => {
-                        that._initialize(s).then(() => {
-                            resolve();
-                        });
-                    })
-                });
+            setupLegacy(that.appConfig, that.session, that.permissions, that.fs, that.service, that.plugins, that.events, that.views, that.localization).then(() => {
+                that.session.initialize().then(s => {
+                    that._initialize(s).then(() => {
+                        resolve();
+                    });
+                })
             });
+            //});
         });
     }
 
@@ -330,7 +329,7 @@ function setupLegacy(cfg, session, permissions, fs, service, plugins, events, vi
         });
         var loc = {
             get: function(key) {
-                return 'text-' + key; //TODO
+                return localization.get(key);
             },
             registerPluginResource: function(pid) {
                 logger.debug("TODO registerPluginResource:" + pid);
