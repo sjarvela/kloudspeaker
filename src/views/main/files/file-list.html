@@ -1,7 +1,9 @@
 <template>
-    <div class="file-list">
+	<require from="kloudspeaker/dnd-attribute"></require>
+
+    <div class="file-list" ks-draggable="type:filesystemitem; cls:file-list-item">
         <template repeat.for="item of items">
-            <div class="file-list-item">
+            <div class="file-list-item" draggable="true">
                 <div repeat.for="col of cols" class="col col-${col.id}" click.delegate="onClick(item, col, $event)">
                     <div class="quickactions" if.bind="col.id == 'quickaction'">
                         qa

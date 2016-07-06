@@ -1,5 +1,6 @@
 <template>
 	<require from="./files/file-list"></require>
+	<require from="./files/file-icon-list"></require>
 
 	<div if.bind="model && model.filesHeader">
 		<compose view-model.bind="model" view="${model.filesHeader ? (model.filesHeader + '.html') : 'views/empty.html'}"></compose>
@@ -7,6 +8,6 @@
 
     <div class="files-view">
     	<file-list if.bind="viewType == 'list'" items.bind="items" info-item.bind="infoItem" data-select="onSelect"></file-list>
-    	<div if.bind="viewType == 'icon'">icon</div>
+    	<file-icon-list if.bind="viewType == 'icon'" items.bind="items" info-item.bind="infoItem" data-select="onSelect"></file-icon-list>
     </div>
 </template>

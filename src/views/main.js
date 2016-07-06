@@ -58,7 +58,8 @@ export class MainView {
         that.subViews = null;
         that.activeSubView = null;
 
-        if (!vl || vl.length === 0) return;
+        //TODO inactive?
+        if (!vl || vl.length < 2 || vl[0].view.name != 'main') return;
         
         that.activeView = vl[1].view;
         that.activeViewModel = vl[1].model;

@@ -1,0 +1,12 @@
+<template>
+    <div class="file-icon-list">
+        <template repeat.for="item of items">
+            <div class="file-list-item ${infoItem.id == item.id ? 'info-open_' : ''}" click.delegate="onClick(item, $event)">
+                ${item.name}
+            </div>
+            <div class="info-container" if.bind="infoItem.id == item.id">
+                <compose model.bind="infoItem" view-model="./item-info"></compose>
+            </div>
+        </template>
+    </div>
+</template>

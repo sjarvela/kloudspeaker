@@ -55,6 +55,14 @@ export class FileList {
         return 'folder';
     }
 
+    canDrag(item) {
+        logger.debug('can drag', item);
+    }
+
+    canDrop(item) {
+        logger.debug('can drop', item);
+    }
+
     getColValue(item, col) {
         if (col.id == 'name') {
             var name = item.name;

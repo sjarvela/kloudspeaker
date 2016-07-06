@@ -15,7 +15,7 @@
       .files-view .file-list .file-list-item .col.col-name {
         flex-grow: 3; }
       .files-view .file-list .file-list-item .col.col-quickaction, .files-view .file-list .file-list-item .col.col-icon {
-        max-width: 20px; }
+        max-width: 40px; }
   .files-view .file-list .info-container {
     float: left;
     clear: both;
@@ -23,3 +23,16 @@
     .files-view .file-list .info-container .info-content-selector {
       float: left;
       padding: 10px; }
+
+.files-view .file-icon-list .file-list-item {
+  float: left;
+  width: 50px;
+  height: 50px;
+  padding: 8px;
+  border: 1px solid gray;
+  overflow: hidden;
+  display: inline-block; }
+
+.files-view .file-icon-list .info-container {
+  float: left;
+  width: 100%; }
