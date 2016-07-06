@@ -266,12 +266,12 @@ define(['kloudspeaker/session', 'kloudspeaker/localization', 'kloudspeaker/ui/co
     };
 
     dh.custom = function(spec) {
-        var center = function($d) {
+        /*var center = function($d) {
             $d.css("margin-left", -$d.outerWidth() / 2);
             $d.css("margin-top", -$d.outerHeight() / 2);
             $d.css("top", "50%");
             $d.css("left", "50%");
-        };
+        };*/
         var s = spec;
         if (s['title-key']) s.title = loc.get(s['title-key']);
 
@@ -309,7 +309,7 @@ define(['kloudspeaker/session', 'kloudspeaker/localization', 'kloudspeaker/ui/co
                 dh._activeDialog = false;
             },
             center: function() {
-                center($dlg);
+                //center($dlg);
             },
             setTitle: function(t) {
                 $dlg.find(".modal-header > h3").text(t);
@@ -348,11 +348,11 @@ define(['kloudspeaker/session', 'kloudspeaker/localization', 'kloudspeaker/ui/co
                 h.close();
             }
         });
-        var onResize = function() {
+        /*var onResize = function() {
             center($dlg);
             var h = Math.min($dlg.innerHeight() - heightAdjust, maxHeight);
             $body.css("height", h);
-        }
+        }*/
 
         var _onDialogReady = function() {
                 if (spec.cls) $dlg.addClass(spec.cls);
@@ -364,10 +364,10 @@ define(['kloudspeaker/session', 'kloudspeaker/localization', 'kloudspeaker/ui/co
                     }).appendTo($footer.find(".buttons").empty());
                 }
                 $dlg.modal('show');
-                heightAdjust = $header.outerHeight() + $footer.outerHeight() + magicNr;
-                maxHeight = $(window).height() - 50;
+                //heightAdjust = $header.outerHeight() + $footer.outerHeight() + magicNr;
+                //maxHeight = $(window).height() - 50;
 
-                if (spec.resizable) {
+                /*if (spec.resizable) {
                     $body.css({
                         "max-height": "none",
                         "max-width": "none"
@@ -391,7 +391,7 @@ define(['kloudspeaker/session', 'kloudspeaker/localization', 'kloudspeaker/ui/co
                     $dlg.css({
                         "max-height": maxHeight + "px"
                     });
-                }
+                }*/
 
                 var $f = $dlg.find("input[autofocus]");
                 if ($f.length > 0) $f.focus();
