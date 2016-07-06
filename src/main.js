@@ -22,6 +22,9 @@ import {
 }
 from 'aurelia-templating';
 
+import { I18N } from 'aurelia-i18n';
+import Backend from 'i18next-xhr-backend';
+
 String.prototype.replaceAll = function(search, replacement) {
     return this.replace(new RegExp(search, 'g'), replacement);
 };
@@ -32,7 +35,21 @@ export function configure(aurelia) {
     aurelia.use
         .standardConfiguration()
         .developmentLogging()
-        .plugin('aurelia-dialog');
+        //.plugin('aurelia-ui-virtualization')
+        .plugin('aurelia-dialog')
+        .plugin('aurelia-i18n', (instance) => {
+            instance.i18next.use(Backend);
+
+            return instance.setup({
+                backend: {
+                    loadPath: 'locales/{{lng}}/{{ns}}.json',
+                },
+                lng: 'en',
+                attributes: ['t', 'i18n'],
+                fallbackLng: 'en',
+                debug: false
+            });
+        });
 
     /*ViewLocator.prototype.convertOriginToViewUrl = (origin) => {
         let moduleId = origin.moduleId;
@@ -40,7 +57,9 @@ export function configure(aurelia) {
         return "view.html";
     };*/
 
-    aurelia.start().then(() => aurelia.setRoot());
+    aurelia.start().then(() => {
+        aurelia.setRoot();
+    });
 }
 
 function setup(aurelia) {
@@ -155,7 +174,7 @@ class CustomView {
         console.log(n);
         var $e = $(n);
         if (this.instructions.viewModel.__viewType == 'custom-tmpl') {
-        	var that = this;
+            var that = this;
             require(['text!' + this.module + ".html"], function(tmpl) {
                 $e.empty().html(tmpl);
                 var $c = $('<div class="klouspeaker-legacy-view"></div>').appendTo($e);
@@ -166,9 +185,9 @@ class CustomView {
             var $c = $('<div class="klouspeaker-legacy-view"></div>').appendTo($e);
             if (this.instructions.viewModel.attached) this.instructions.viewModel.attached($e, $c);
         } else {
-        	var that = this;
+            var that = this;
             require(['kloudspeaker/ui', 'text!' + this.module + ".html"], function(ui, tmpl) {
-            	that.$c = $('<div class="klouspeaker-legacy-view"></div>').appendTo($e.empty());
+                that.$c = $('<div class="klouspeaker-legacy-view"></div>').appendTo($e.empty());
                 that.$c.html(tmpl);
                 ui.viewmodel(that.$c, that.instructions.viewModel);
             });
@@ -186,8 +205,8 @@ class CustomView {
     unbind() {
         console.log('unbind');
         if (this.$c) {
-        	ko.utils.domNodeDisposal.removeNode(this.$c[0]);
-        	this.$c = false;
+            ko.utils.domNodeDisposal.removeNode(this.$c[0]);
+            this.$c = false;
         }
     }
 }

@@ -23,6 +23,7 @@ System.config({
     "aurelia-fetch-client": "npm:aurelia-fetch-client@1.0.0-rc.1.0.0",
     "aurelia-framework": "npm:aurelia-framework@1.0.0-rc.1.0.1",
     "aurelia-history-browser": "npm:aurelia-history-browser@1.0.0-rc.1.0.0",
+    "aurelia-i18n": "npm:aurelia-i18n@1.0.0-rc.1.0.0",
     "aurelia-loader-default": "npm:aurelia-loader-default@1.0.0-rc.1.0.0",
     "aurelia-logging-console": "npm:aurelia-logging-console@1.0.0-rc.1.0.0",
     "aurelia-metadata": "npm:aurelia-metadata@1.0.0-rc.1.0.0",
@@ -41,7 +42,7 @@ System.config({
     "fetch": "github:github/fetch@0.11.1",
     "font-awesome": "npm:font-awesome@4.6.3",
     "i18next": "npm:i18next@2.5.1",
-    "i18next-xhr-backend": "npm:i18next-xhr-backend@0.5.5",
+    "i18next-xhr-backend": "npm:i18next-xhr-backend@0.6.0",
     "jquery": "github:components/jquery@2.2.1",
     "moment": "npm:moment@2.13.0",
     "requirejs": "npm:requirejs@2.2.0",
@@ -158,6 +159,18 @@ System.config({
     "npm:aurelia-history-browser@1.0.0-rc.1.0.0": {
       "aurelia-history": "npm:aurelia-history@1.0.0-rc.1.0.0",
       "aurelia-pal": "npm:aurelia-pal@1.0.0-rc.1.0.0"
+    },
+    "npm:aurelia-i18n@1.0.0-rc.1.0.0": {
+      "aurelia-binding": "npm:aurelia-binding@1.0.0-rc.1.0.2",
+      "aurelia-dependency-injection": "npm:aurelia-dependency-injection@1.0.0-rc.1.0.0",
+      "aurelia-event-aggregator": "npm:aurelia-event-aggregator@1.0.0-rc.1.0.0",
+      "aurelia-loader": "npm:aurelia-loader@1.0.0-rc.1.0.0",
+      "aurelia-logging": "npm:aurelia-logging@1.0.0-rc.1.0.0",
+      "aurelia-pal": "npm:aurelia-pal@1.0.0-rc.1.0.0",
+      "aurelia-templating": "npm:aurelia-templating@1.0.0-rc.1.0.0",
+      "aurelia-templating-resources": "npm:aurelia-templating-resources@1.0.0-rc.1.0.0",
+      "i18next": "npm:i18next@3.3.1",
+      "intl": "npm:intl@1.2.4"
     },
     "npm:aurelia-loader-default@1.0.0-rc.1.0.0": {
       "aurelia-loader": "npm:aurelia-loader@1.0.0-rc.1.0.0",
@@ -282,8 +295,14 @@ System.config({
     "npm:i18next@2.5.1": {
       "process": "github:jspm/nodelibs-process@0.1.2"
     },
+    "npm:i18next@3.3.1": {
+      "process": "github:jspm/nodelibs-process@0.1.2"
+    },
     "npm:inherits@2.0.1": {
       "util": "github:jspm/nodelibs-util@0.1.0"
+    },
+    "npm:intl@1.2.4": {
+      "process": "github:jspm/nodelibs-process@0.1.2"
     },
     "npm:os-browserify@0.1.2": {
       "os": "github:jspm/nodelibs-os@0.1.0"

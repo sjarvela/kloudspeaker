@@ -48,20 +48,27 @@ import {
 }
 from 'kloudspeaker/plugins';
 import {
+    DragAndDrop
+}
+from 'kloudspeaker/drag-and-drop';
+import {
     app_config
 }
 from 'app-config';
 
+import { I18N } from 'aurelia-i18n';
+
 let logger = LogManager.getLogger('app');
 
 @
-inject(app_config, Session, Permissions, Filesystem, EventAggregator, ServiceBase, Views, Plugins, Localization)
+inject(app_config, Session, Permissions, Filesystem, EventAggregator, ServiceBase, Views, Plugins, Localization, DragAndDrop, I18N)
 export class App {
     activeView = null;
 
-    constructor(appConfig, session, permissions, fs, events, service, views, plugins, localization) {
+    constructor(appConfig, session, permissions, fs, events, service, views, plugins, localization, dnd, i18n) {
         let that = this;
 
+        this.i18n = i18n;
         this.appConfig = appConfig;
         this.session = session;
         this.events = events;
@@ -71,6 +78,7 @@ export class App {
         this.permissions = permissions;
         this.service = service;
         this.localization = localization;
+        this.dnd = dnd;
 
         moment.locale('fi');
 
@@ -147,11 +155,9 @@ export class App {
         });
     }
 
-    attached() {
-    }
+    attached() {}
 
-    detached() {
-    }
+    detached() {}
 
     canActivate(params, routeConfig, navigationInstruction) {
         console.log("can activate");
@@ -189,14 +195,17 @@ export class App {
         logger.debug("Activate app");
 
         return new Promise(function(resolve) {
-            that.service.initialize(that.session);
+            that.i18n.setLocale('en').then(() => {
+                that.service.initialize(that.session);
+                that.dnd.initialize({});
 
-            setupLegacy(that.appConfig, that.session, that.permissions, that.fs, that.service, that.plugins, that.events, that.views, that.localization).then(() => {
-                that.session.initialize().then(s => {
-                    that._initialize(s).then(() => {
-                        resolve();
-                    });
-                })
+                setupLegacy(that.appConfig, that.session, that.permissions, that.fs, that.service, that.plugins, that.events, that.views, that.localization).then(() => {
+                    that.session.initialize().then(s => {
+                        that._initialize(s).then(() => {
+                            resolve();
+                        });
+                    })
+                });
             });
         });
     }
