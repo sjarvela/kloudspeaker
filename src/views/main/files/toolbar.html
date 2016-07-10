@@ -1,4 +1,11 @@
 <template>
+	<div class="hierarchy" if.bind="hierarchy.length > 1">
+		<div class="hierarchy-links" if.bind="hierarchy.length > 2">
+			<a repeat.for="h of hierarchy.slice(1, -1)" class="hierarchy-item btn btn-primary" href="${'#/main/files/' + h.id}">${h.name}</a>
+		</div>
+		<span class="current">${hierarchy[hierarchy.length-1].name}</span>
+	</div>
+
 	<button click.trigger="setViewType('list')">list</button>
 	<button click.trigger="setViewType('icon')">icon</button>
 	<input value.bind="searchValue">
