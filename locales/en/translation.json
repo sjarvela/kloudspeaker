@@ -1,7 +1,11 @@
 {
 	"main": {
 		"files": {
+			"title": "Files",
 			"search": "Search"
+		},
+		"config": {
+			"title": "Configuration"
 		}
 	}
 }

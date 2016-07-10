@@ -3,18 +3,18 @@
         <div class="navbar-brand">KS</div>
         <div class="app-menu dropdown">
             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                ${activeView.title || activeView.name} <span class="caret"></span>
+                ${(activeView.title || activeView.name) | localized} <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
-                <li repeat.for="v of mainViews"><a href="${'#/main/' + v.path}">${v.title || v.name}</a></li>
+                <li repeat.for="v of mainViews"><a href="${'#/main/' + v.path}">${(v.title || v.name) | localized}</a></li>
             </ul>
         </div>
         <div class="app-menu dropdown">
             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                ${activeSubView.title || activeSubView.name} <span class="caret"></span>
+                ${(activeSubView.title || activeSubView.name) | localized} <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
-                <li repeat.for="v of subViews"><a href="${'#/main/' + activeView.path + '/' + v.path}">${v.title || v.name}</a></li>
+                <li repeat.for="v of subViews"><a href="${'#/main/' + activeView.path + '/' + v.path}">${(v.title || v.name) | localized}</a></li>
             </ul>
         </div>
         <div class="nav-view-toolbar" if.bind="activeView && activeView.toolbarView && activeViewModel">

@@ -101,7 +101,7 @@ export class App {
         });
         views.register({
             parent: 'main',
-            title: 'Files',
+            title: 'i18n:main.files.title',
             route: ['files', 'files/:id'],
             name: 'files',
             moduleId: './main/files',
@@ -111,7 +111,7 @@ export class App {
         views.register({
             parent: 'main',
             //route: 'config',
-            title: 'Configuration',
+            title: 'i18n:main.config.title',
             name: 'config',
             moduleId: './main/config'
         });
@@ -126,12 +126,14 @@ export class App {
             parent: 'config',
             //route: 'account',
             name: 'account',
+            title: 'i18n:config.account.title',
             moduleId: './config/account!custom'
         });
         views.register({
             parent: 'config',
             //route: 'system',
             name: 'system',
+            title: 'i18n:config.system.title',
             viewType: 'custom',
             moduleId: './config/system',
             requiresAdmin: true
@@ -140,6 +142,7 @@ export class App {
             parent: 'config',
             //route: 'folders',
             name: 'folders',
+            title: 'i18n:config.folders.title',
             viewType: 'custom',
             moduleId: './config/folders',
             requiresAdmin: true

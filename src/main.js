@@ -37,6 +37,7 @@ export function configure(aurelia) {
         .developmentLogging()
         //.plugin('aurelia-ui-virtualization')
         .plugin('aurelia-dialog')
+        .globalResources('kloudspeaker/localizedValueConverter')
         .plugin('aurelia-i18n', (instance) => {
             instance.i18next.use(Backend);
 
