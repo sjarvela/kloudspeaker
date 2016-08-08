@@ -22,6 +22,9 @@
 		
 		static function register($eventHandler) {
 			$eventHandler->registerEventType(self::EVENT_TYPE_USER, self::USER_ADD, "User added");
+			$eventHandler->registerEventType(self::EVENT_TYPE_USER, self::USER_REMOVE, "User removed");
+			$eventHandler->registerEventType(self::EVENT_TYPE_USER, self::GROUP_ADD, "Group added");
+			$eventHandler->registerEventType(self::EVENT_TYPE_USER, self::GROUP_REMOVE, "Group removed");
 		}
 		
 		static function userAdded($id, $name, $email) {

@@ -677,7 +677,10 @@ class ConfigurationServices extends ServicesBase {
 				}
 			}
 
-			$this->env->configuration()->addFolder($folder['name'], $folder['path'], $folder['type']);
+			$id = $this->env->configuration()->addFolder($folder['name'], $folder['path'], $folder['type']);
+			$folder["id"] = $id;
+
+			$this->env->events()->onEvent(FolderEvent::folderAdded($folder));
 			$this->response()->success(TRUE);
 			return;
 		}
@@ -771,6 +774,7 @@ class ConfigurationServices extends ServicesBase {
 
 				$folder = $roots[$id];
 				$this->env->configuration()->removeFolder($id);
+				$this->env->events()->onEvent(FolderEvent::folderRemoved(array("id" => $id, "name" => $folder->name(), "path" => $folder->internalPath())));
 			}
 			$this->response()->success(TRUE);
 
@@ -792,7 +796,8 @@ class ConfigurationServices extends ServicesBase {
 
 		$this->env->configuration()->removeFolder($id);
 
-		$this->env->events()->onEvent(FileEvent::delete($folder));
+		//$this->env->events()->onEvent(FileEvent::delete($folder));
+		$this->env->events()->onEvent(FolderEvent::folderRemoved(array("id" => $id, "name" => $folder->name(), "path" => $folder->internalPath())));
 		$this->response()->success($this->getSessionFolderInfo());
 
 	}

@@ -15,6 +15,7 @@
 	require_once("include/Util.class.php");
 	require_once("include/configuration/ConfigurationDao.class.php");
 	require_once("include/configuration/UserEvent.class.php");
+	require_once("include/configuration/FolderEvent.class.php");
 
 	class KloudspeakerBackend {
 		private $environment;
@@ -40,6 +41,7 @@
 			}
 			
 			UserEvent::register($this->environment->events());
+			FolderEvent::register($this->environment->events());
 			
 			$this->environment->permissions()->registerPermission("change_password");
 			
