@@ -107,11 +107,7 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 		}
 
 		$extPos = strrpos($item->name(), '.');
-		if ($extPos > 0) {
-			return substr($item->name(), $extPos + 1);
-		}
-
-		return "";
+		return strtolower(substr($item->name(), $extPos + 1));
 	}
 
 	public function items($parent) {
@@ -127,9 +123,11 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 
 		$result = array();
 		foreach ($items as $i => $name) {
-			if ($name == "." or $name == ".." or (strcmp(substr($name, 0, 1), '.') == 0)) {
+			if ($name == "." or $name == "..") {
 				continue;
 			}
+
+			if (strcmp(substr($name, 0, 1), '.') == 0 and !$this->filesystemInfo->setting("show_hidden_files")) continue;
 
 			//if (in_array(strtolower($name), $ignored)) {
 			//	continue;
