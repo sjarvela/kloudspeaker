@@ -18,3 +18,5 @@ update_test.sh
 css/kloudspeaker.css.map
 
 .sass-cache/*
+
+.DS_Store
