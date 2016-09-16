@@ -31,6 +31,7 @@ define(['kloudspeaker/localization', 'kloudspeaker/utils', 'kloudspeaker/filesys
             this.format = function(ts) {
                 if (ts == null) return "";
                 if (typeof(ts) === 'string') ts = utils.parseInternalTime(ts);
+                if (typeof(ts) === 'number') ts = new Date(ts);
                 return ts.toString(fmt);
             };
         },
