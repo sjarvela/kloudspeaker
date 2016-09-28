@@ -23,7 +23,8 @@ class FilesystemController {
 
 	private $env;
 	private $metadata;
-	private $allowedUploadTypes;
+    private $allowedUploadTypes;
+    private $showHiddenFiles;
 	private $permissionCache = array();
 	private $folderCache = array();
 	private $filesystemIdCache = NULL;
@@ -56,10 +57,12 @@ class FilesystemController {
 
 		$this->allowedUploadTypes = $env->settings()->setting('allowed_file_upload_types');
 		$this->forbiddenUploadTypes = $env->settings()->setting('forbidden_file_upload_types');
-		$this->ignoredItems = $env->settings()->setting('ignored_items');
-	}
+        $this->ignoredItems = $env->settings()->setting('ignored_items');
+    }
 
-	public function initialize() {
+    public function initialize() {
+        $this -> showHiddenFiles = ($this->env->request()->hasParam("sh") and strcmp($this->env->request()->param("sh"), "1") == 0);
+
 		$this->registerFilesystem(LocalFilesystem::FS_TYPE, new LocalFilesystemFactory());
 
 		FileEvent::register($this->env->events());
@@ -679,6 +682,10 @@ class FilesystemController {
 
 		return $this->metadata->remove($item, "description");
 	}
+
+    public function showHiddenFiles() {
+        return $this -> showHiddenFiles;
+    }
 
 	private function allowedFileUploadTypes() {
 		$types = array();

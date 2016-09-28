@@ -5,6 +5,7 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/permissions
 
     var session = null;
     var mobile = false;   //TODO move somewhere?
+    var showHiddenFiles = false;
 
     events.addEventHandler(function(e) {
         if (e.type == 'session/start' || e.type == 'session/end') {
@@ -25,6 +26,14 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/permissions
         session = require('kloudspeaker/session');
         var app =  require('kloudspeaker/instance');
         mobile = app.mobile;    //TODO remove
+    };
+
+    mfs.showHiddenFiles = function(value) {
+        if(typeof value === 'undefined') {
+            return showHiddenFiles;
+        }
+
+        showHiddenFiles = value;
     };
 
     mfs.updateRoots = function(f, allRoots) {
@@ -89,7 +98,17 @@ define(['kloudspeaker/plugins', 'kloudspeaker/events', 'kloudspeaker/permissions
     };
 
     mfs.folderInfo = function(id, hierarchy, data) {
-        return service.post("filesystem/" + (id ? id : "roots") + "/info/" + (hierarchy ? "?h=1" : ""), {
+        var params = {};
+
+        if(hierarchy) {
+            params['h'] = 1;
+        }
+
+        if(showHiddenFiles) {
+            params['sh'] = 1;
+        }
+
+        return service.post("filesystem/" + (id ? id : "roots") + "/info/?" + $.param(params), {
             data: data
         }).done(function(r) {
             if (id)

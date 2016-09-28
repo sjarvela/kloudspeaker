@@ -23,10 +23,6 @@ class ConfigurationDao {
 		$this->env = $env;
 	}
 
-    public function db() {
-        return $this->db;
-    }
-
 	public function internalTimestampFormat() {
 		return "YmdHis";
 	}

@@ -127,7 +127,10 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 				continue;
 			}
 
-			if (strcmp(substr($name, 0, 1), '.') == 0 and !$this->filesystemInfo->setting("show_hidden_files")) continue;
+            $showHiddenFiles = $this -> filesystemInfo -> setting("show_hidden_files") && 
+                $this -> filesystemInfo -> showHiddenFiles(); 
+
+			if (strcmp(substr($name, 0, 1), '.') == 0 and !$showHiddenFiles) continue;
 
 			//if (in_array(strtolower($name), $ignored)) {
 			//	continue;

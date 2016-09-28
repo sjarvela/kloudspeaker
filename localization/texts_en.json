@@ -131,6 +131,7 @@
 		"actionDeleteItem": "Delete",
 		"actionDeleteMultiple": "Delete ",
 		"actionRenameItem": "Rename...",
+        "actionShowHidden": "Show hidden files/folders",
 
 		"actionCreateEmptyFileItem": "Create Empty File...",
 		"actionCreateEmptyFileTitle": "Create Empty File",
