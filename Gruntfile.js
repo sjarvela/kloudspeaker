@@ -197,7 +197,7 @@ module.exports = function(grunt) {
                     baseUrl: "js",
                     //mainConfigFile: "path/to/config.js",
                     include: ['text',
-                        'durandal/system', 'durandal/viewlocator', 'durandal/plugins/widget', 'durandal/composition', //durandal
+                        'durandal/system', 'durandal/viewLocator', 'durandal/plugins/widget', 'durandal/composition', //durandal
                     ],
                     out: "out/lib-modules.js",
                     paths: {
@@ -372,7 +372,7 @@ module.exports = function(grunt) {
     grunt.registerTask('dist-dav', ['clean', 'copy:dav', 'compress:dav']);
 
     // Full distribution task.
-    grunt.registerTask('dist', ['clean', 'requirejs:app', 'dist-js', 'dist-css', 'dist-backend', 'copy:dist', 'copy:dist_ver', 'compress:dist']);
+    grunt.registerTask('dist', ['clean', 'requirejs:libs', 'requirejs:app', 'dist-js', 'dist-css', 'dist-backend', 'copy:dist', 'copy:dist_ver', 'compress:dist']);
 
     // Default task.
     grunt.registerTask('default', ['dist']);
