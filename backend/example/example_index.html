@@ -2,57 +2,58 @@
 <html>
 
 <head>
-    <title>Example Kloudspeaker Page</title>
+    <title>Kloudspeaker</title>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/kloudspeaker.min.css">
-    <script type="text/javascript" language="javascript" src="js/kloudspeaker.min.js"></script>
-    <script type="text/javascript">
-    $(document).ready(function() {
-        require(['kloudspeaker/app'], function(app) {
-            app.init({
-                "language": {
-                    "default": "en"
-                },
-                "file-view": {
-                    "list-view-columns": [{
-                            id: "name",
-                            width: 250
+</head>
+<body>
+    <div id="kloudspeaker">
+        <div style="text-align: center;"><img src='css/images/wait.gif' alt='Loading...' /></div>
+    </div>
+</body>
+<script type="text/javascript" language="javascript" src="js/kloudspeaker.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    require(['kloudspeaker/app'], function(app) {
+        app.init({
+            "language": {
+                "default": "en"
+            },
+            "file-view": {
+                "list-view-columns": [{
+                        id: "name",
+                        width: 250
+                    },
+                    "size", {
+                        id: "file-modified",
+                        width: 150
+                    }
+                ]
+            },
+            "modules": {
+                load: ['kloudspeaker/ui/dropbox']
+            },
+            plugins: {
+                "itemdetails": {
+                    filetypes: {
+                        "jpg,tiff": {
+                            "metadata-created": {},
+                            "last-modified": {},
+                            "size": {},
+                            "exif": {},
                         },
-                        "size", {
-                            id: "file-modified",
-                            width: 150
-                        }
-                    ]
-                },
-                "modules": {
-                    load: ['kloudspeaker/ui/dropbox']
-                },
-                plugins: {
-                    "itemdetails": {
-                        filetypes: {
-                            "jpg,tiff": {
-                                "metadata-created": {},
-                                "last-modified": {},
-                                "size": {},
-                                "exif": {},
-                            },
-                            "*": {
-                                "metadata-created": {},
-                                "last-modified": {},
-                                "size": {}
-                            }
+                        "*": {
+                            "metadata-created": {},
+                            "last-modified": {},
+                            "size": {}
                         }
                     }
                 }
-            });
+            }
         });
     });
-    </script>
-</head>
-
-<body>
-    <div id="kloudspeaker"></div>
-</body>
-
+});
+</script>
 </html>
