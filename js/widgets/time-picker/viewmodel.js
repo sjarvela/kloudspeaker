@@ -9,7 +9,7 @@ define(['durandal/composition', 'knockout', 'jquery', 'kloudspeaker/localization
         var $input = $e.find("input");
 
         that.api = controls.datepicker($e, {
-            format: loc.get('shortDateTimeFormat'),
+            format: loc.get('shortDateTimeFormat').replace('HH', 'hh'),
             time: true,
             value: that.settings.value()
         });
