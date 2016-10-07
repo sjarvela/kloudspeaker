@@ -34,9 +34,10 @@ define(['kloudspeaker/filesystem', 'kloudspeaker/utils'], function(fs, utils) {
                     //generate array for template to iterate
                     for (var i = 0; i < level; i++) levels.push({});
                 }
-                var c = $("#kloudspeaker-tmpl-dialog-itemselector-item").tmpl(all, {
+                var c = $("#kloudspeaker-tmpl-itemdetails-tree-item").tmpl(all, {
                     cls: '',
-                    levels: levels
+                    levels: levels,
+                    info: model.data.by_id
                 });
                 if ($e) {
                     $e.after(c);
@@ -55,6 +56,7 @@ define(['kloudspeaker/filesystem', 'kloudspeaker/utils'], function(fs, utils) {
             model: model,
             activate: function(params) {
                 model.item = params.item;
+                model.data = params.data;
                 model.folders = params.data.folder_count > 0;
 
                 console.log('activate', params);
@@ -71,18 +73,6 @@ define(['kloudspeaker/filesystem', 'kloudspeaker/utils'], function(fs, utils) {
                     load($e, p);
                     return false;
                 });
-                /*$selector.on("click", ".kloudspeaker-itemselector-item", function(e) {
-                    var $e = $(this);
-                    var p = $(this).tmplItem().data;
-                    if (p.is_file && !spec.allowFiles) return;
-                    if (!p.is_file && !spec.allowFolders) return;
-
-                    if (spec.handler.canSelect(p)) {
-                        selectedItem = p;
-                        $(".kloudspeaker-itemselector-item").removeClass("selected");
-                        $e.addClass("selected");
-                    }
-                });*/
                 load(null, model.item);
             }
         };

@@ -166,6 +166,8 @@
 		"fileItemContextDataImageSizePixels": "{0} pixels",
 		"fileItemContextDataFolderFileCount": "Files",
 		"fileItemContextDataFolderFolderCount": "Folders",
+		"fileItemContextDataFolderHierarchy": "Hierarchy",
+		"fileItemContextDataFolderHierarchyNoFolders": "-",
 
 		"copyHereDialogTitle": "Copy Here",
 		"copyHereDialogMessage": "Enter the name for the copy:",
