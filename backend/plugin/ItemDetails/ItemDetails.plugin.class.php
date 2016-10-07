@@ -113,10 +113,6 @@ class ItemDetails extends PluginBase {
 			return $this->env->filesystem()->getFolderInfo($item)["folder_count"];
 		}
 
-		if (!$item->isFile() and strcmp($key, "folder-hierarchy") === 0) {
-			return $this->env->filesystem()->getFolderInfo($item, TRUE);
-		}
-
 		if (array_key_exists($key, $this->detailProviders)) {
 			$provider = $this->detailProviders[$key];
 			return $provider->getDetail($item, $key);
