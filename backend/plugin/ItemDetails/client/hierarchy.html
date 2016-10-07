@@ -1,3 +1,9 @@
 <div class="itemdetails-hierarchy-browser">
+    <!-- ko if: !model.folders -->
+    No folders
+    <!-- /ko -->
+
+    <!-- ko if: model.folders -->
     <div class="folder-tree"></div>
+    <!-- /ko -->
 </div>

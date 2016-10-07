@@ -35,7 +35,7 @@ define(['kloudspeaker/filesystem', 'kloudspeaker/utils'], function(fs, utils) {
                     for (var i = 0; i < level; i++) levels.push({});
                 }
                 var c = $("#kloudspeaker-tmpl-dialog-itemselector-item").tmpl(all, {
-                    cls: (level === 0 ? 'root' : ''),
+                    cls: '',
                     levels: levels
                 });
                 if ($e) {
@@ -55,6 +55,8 @@ define(['kloudspeaker/filesystem', 'kloudspeaker/utils'], function(fs, utils) {
             model: model,
             activate: function(params) {
                 model.item = params.item;
+                model.folders = params.data.folder_count > 0;
+
                 console.log('activate', params);
                 var matches = model.item.path.match(/\//g);
                 if (matches) parentLevel = matches.length + 1;
