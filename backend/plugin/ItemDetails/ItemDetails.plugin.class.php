@@ -101,6 +101,22 @@ class ItemDetails extends PluginBase {
 			return $this->getExif($item);
 		}
 
+		if (!$item->isFile() and strcmp($key, "folder-size") === 0) {
+			return $this->env->filesystem()->getFolderInfo($item)["size"];
+		}
+
+		if (!$item->isFile() and strcmp($key, "folder-file-count") === 0) {
+			return $this->env->filesystem()->getFolderInfo($item)["file_count"];
+		}
+
+		if (!$item->isFile() and strcmp($key, "folder-folder-count") === 0) {
+			return $this->env->filesystem()->getFolderInfo($item)["folder_count"];
+		}
+
+		if (!$item->isFile() and strcmp($key, "folder-hierarchy") === 0) {
+			return $this->env->filesystem()->getFolderInfo($item, TRUE);
+		}
+
 		if (array_key_exists($key, $this->detailProviders)) {
 			$provider = $this->detailProviders[$key];
 			return $provider->getDetail($item, $key);

@@ -1,9 +1,9 @@
-define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localization', 'kloudspeaker/events', 'kloudspeaker/ui/formatters', 'kloudspeaker/templates', 'kloudspeaker/dom', 'kloudspeaker/utils'], function(settings, plugins, loc, events, formatters, templates, dom, utils) {
+define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localization', 'kloudspeaker/events', 'kloudspeaker/ui/formatters', 'kloudspeaker/templates', 'kloudspeaker/dom', 'kloudspeaker/utils', 'kloudspeaker/ui'], function (settings, plugins, loc, events, formatters, templates, dom, utils, ui) {
     var that = {};
     that.formatters = {};
     that.typeConfs = false;
 
-    that.initialize = function() {
+    that.initialize = function () {
         var conf = (settings.plugins && settings.plugins.itemdetails) ? settings.plugins.itemdetails : false;
 
         if (conf) {
@@ -20,13 +20,13 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
             }
         }
 
-        events.on('localization/init', function() {
+        events.on('localization/init', function () {
             that.fileSizeFormatter = new formatters.ByteSize(new formatters.Number(2, false, loc.get('decimalSeparator')));
             that.timestampFormatter = new formatters.Timestamp(loc.get('shortDateTimeFormat'));
         });
     };
 
-    that.getApplicableSpec = function(item) {
+    that.getApplicableSpec = function (item) {
         var ext = (item.is_file && item.extension) ? item.extension.toLowerCase().trim() : "";
         if (ext.length === 0 || !that.typeConfs[ext]) {
             ext = item.is_file ? "[file]" : "[folder]";
@@ -36,9 +36,9 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
         return that.typeConfs[ext];
     }
 
-    that.renderItemContextDetails = function(el, item, $content, data) {
+    that.renderItemContextDetails = function (el, item, $content, data) {
         $content.addClass("loading");
-        templates.load("itemdetails-content", utils.noncachedUrl(plugins.url("ItemDetails", "content.html"))).done(function() {
+        templates.load("itemdetails-content", utils.noncachedUrl(plugins.url("ItemDetails", "content.html"))).done(function () {
             $content.removeClass("loading");
             that.renderItemDetails(el, item, {
                 element: $content.empty(),
@@ -47,17 +47,18 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
         });
     };
 
-    that.renderItemDetails = function(el, item, o) {
+    that.renderItemDetails = function (el, item, o) {
         var s = that.getApplicableSpec(item);
-        var groups = that.getGroups(s, o.data);
+        var groups = that.getGroups(s, o.data, item);
 
+        that._components = [];
         var result = [];
         for (var i = 0, j = groups.length; i < j; i++) {
             var g = groups[i];
             result.push({
                 key: g,
                 title: that.getGroupTitle(g),
-                rows: that.getGroupRows(g, s, o.data)
+                rows: that.getGroupRows(g, s, o.data, item)
             });
         }
 
@@ -72,16 +73,27 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
         dom.template("itemdetails-template", {
             groups: result
         }).appendTo(o.element);
+
+        if (that._components) {
+            utils.invokeLater(function () {
+                _.each(that._components, function (c) {
+                    ui.viewmodel(c.view, c.model, o.element.find(c.target)).done(function (m, $c) {
+                        if (c.onShow) c.onShow($c);
+                        if (m.onShow) m.onShow($c);
+                    });
+                });
+            });
+        }
     };
 
-    that.getGroups = function(s, d) {
+    that.getGroups = function (s, d, item) {
         var groups = [];
         for (var k in s) {
             var spec = s[k];
             var data = d[k];
-            if (!data) continue;
+            if (!utils.isDefined(data)) continue;
 
-            var g = 'file';
+            var g = item.is_file ? 'file' : 'folder';
             if (k == 'exif' || that.formatters[k]) g = k;
 
             if (groups.indexOf(g) < 0)
@@ -90,18 +102,19 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
         return groups;
     };
 
-    that.getGroupTitle = function(g) {
+    that.getGroupTitle = function (g) {
         if (that.formatters[g]) {
             var f = that.formatters[g];
             if (f.groupTitle) return f.groupTitle;
             if (f["group-title-key"]) return loc.get(f["group-title-key"]);
         }
         if (g == 'file') return loc.get('fileItemDetailsGroupFile');
+        if (g == 'folder') return loc.get('fileItemDetailsGroupFolder');
         if (g == 'exif') return loc.get('fileItemDetailsGroupExif');
         return '';
     };
 
-    that.getGroupRows = function(g, s, d) {
+    that.getGroupRows = function (g, s, d, item) {
         if (that.formatters[g])
             return that.formatters[g].getGroupRows(s[g], d[g]);
         if (g == 'exif') return that.getExifRows(s[g], d[g]);
@@ -116,19 +129,19 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
             if (!rowData && k == 'metadata-modified') {
                 rowData = d['metadata-created'];
             }
-            if (!rowData) {
+            if (!utils.isDefined(rowData)) {
                 continue;
             }
 
             rows.push({
                 title: that.getFileRowTitle(k, s[k]),
-                value: that.formatFileData(k, rowData)
+                value: that.formatFileData(k, rowData, item)
             });
         }
         return rows;
     };
 
-    that.getFileRowTitle = function(dataKey, rowSpec) {
+    that.getFileRowTitle = function (dataKey, rowSpec) {
         if (rowSpec.title) return rowSpec.title;
         if (rowSpec["title-key"]) return loc.get(rowSpec["title-key"]);
 
@@ -140,7 +153,10 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
         if (dataKey == 'image-size') return loc.get('fileItemContextDataImageSize');
         if (dataKey == 'metadata-created') return loc.get('fileItemContextDataCreated');
         if (dataKey == 'metadata-modified') return loc.get('fileItemContextDataLastModified');
-
+        if (dataKey == 'folder-size') return loc.get('fileItemContextDataFolderSize');
+        if (dataKey == 'folder-file-count') return loc.get('fileItemContextDataFolderFileCount');
+        if (dataKey == 'folder-folder-count') return loc.get('fileItemContextDataFolderFolderCount');
+        if (dataKey == 'folder-hierarchy') return loc.get('fileItemContextDataFolderHierarchy');
         /*if (that.specs[dataKey]) {
             var spec = that.specs[dataKey];
             if (spec.title) return spec.title;
@@ -149,12 +165,23 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
         return dataKey;
     };
 
-    that.formatFileData = function(key, data) {
-        if (key == 'size') return that.fileSizeFormatter.format(data);
+    that.formatFileData = function (key, data, item) {
+        if (key == 'size' || key == 'folder-size') return that.fileSizeFormatter.format(data);
         if (key == 'last-modified') return that.timestampFormatter.format(utils.parseInternalTime(data));
         if (key == 'image-size') return loc.get('fileItemContextDataImageSizePixels', [data]);
         if (key == 'metadata-created') return that.timestampFormatter.format(utils.parseInternalTime(data.at)) + "&nbsp;<i class='fa fa-user'/>&nbsp;" + (data.by ? data.by.name : "-");
         if (key == 'metadata-modified') return that.timestampFormatter.format(utils.parseInternalTime(data.at)) + "&nbsp;<i class='fa fa-user'/>&nbsp;" + (data.by ? data.by.name : "-");
+        if (key == 'folder-file-count' || key == 'folder-folder-count') return data;
+        if (key == 'folder-hierarchy') {
+            that._components.push({
+                target: ".folder-hierarchy",
+                model: ['kloudspeaker/itemdetails/hierarchy', {
+                    item: item,
+                    data: data
+                }]
+            });
+            return '<div class="folder-hierarchy"></div>';
+        }
 
         if (that.specs[key]) {
             var spec = that.specs[key];
@@ -164,7 +191,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
         return data;
     };
 
-    that.getExifRows = function(spec, data) {
+    that.getExifRows = function (spec, data) {
         var rows = [];
         for (var section in data) {
             var html = '';
@@ -188,7 +215,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
         return rows;
     };
 
-    that.formatExifValue = function(section, key, value) {
+    that.formatExifValue = function (section, key, value) {
         if (section == 'FILE' && key == 'SectionsFound') return false;
         //TODO format values?
         return value;
@@ -197,7 +224,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
     plugins.register({
         id: "plugin-itemdetails",
         initialize: that.initialize,
-        itemContextRequestData: function(item) {
+        itemContextRequestData: function (item) {
             if (!that.typeConfs) return false;
             var spec = that.getApplicableSpec(item);
             if (!spec) return false;
@@ -207,7 +234,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
                 data.push(k);
             return data;
         },
-        itemContextHandler: function(item, ctx, data) {
+        itemContextHandler: function (item, ctx, data) {
             if (!data || !that.typeConfs) return false;
             var spec = that.getApplicableSpec(item);
             if (!spec) return false;
@@ -215,7 +242,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
             return {
                 details: {
                     "title-key": "pluginItemDetailsContextTitle",
-                    "on-render": function(el, $content) {
+                    "on-render": function (el, $content) {
                         that.renderItemContextDetails(el, item, $content, data);
                     }
                 }

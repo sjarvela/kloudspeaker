@@ -26,6 +26,7 @@ class FilesystemController {
 	private $allowedUploadTypes;
 	private $permissionCache = array();
 	private $folderCache = array();
+	private $infoCache = array();
 	private $filesystemIdCache = NULL;
 	private $contextPlugins = array();
 	private $actionValidators = array();
@@ -706,6 +707,58 @@ class FilesystemController {
 		}
 
 		return $types;
+	}
+
+	public function getFolderInfo($folder, $hierarchy = FALSE) {
+		Logging::logDebug('get recursive folder info for ' . $folder->path());
+		$this->assertRights($folder, self::PERMISSION_LEVEL_READ, "info");
+
+		return $this->doGetFolderInfo($folder, $hierarchy);
+	}
+
+	private function doGetFolderInfo($folder, $hierarchy = FALSE) {
+		$cached = FALSE;
+		$id = $folder->id();
+		$hierarchyInfo = array();
+
+		if (array_key_exists($folder->id(), $this->infoCache)) {
+			$result = $this->infoCache[$id];
+			if (!$hierarchy) return $this->infoCache[$id];
+
+			$cached = TRUE;
+		} else {
+			$result = array(
+				"size" => 0,
+				"file_count" => 0,
+				"folder_count" => 0
+			);
+		}
+
+		foreach($folder->items() as $item) {
+			if ($item->isFile()) {
+				if (!$cached) {
+					$result["file_count"] = $result["file_count"] + 1;
+					$result["size"] = $result["size"] + $item->size();
+				}
+			} else {
+				$subresult = $this->doGetFolderInfo($item, $hierarchy);
+
+				if (!$cached) {
+					$result["file_count"] = $result["file_count"] + $subresult["file_count"];
+					$result["folder_count"] = $result["folder_count"] + $subresult["folder_count"] + 1;
+					$result["size"] = $result["size"] + $subresult["size"];
+				}
+				if ($hierarchy) $hierarchyInfo = array_merge($hierarchyInfo, $subresult["by_id"]);
+			}
+		}
+		$this->infoCache[$id] = $result;
+		Logging::logDebug('resolved folder info for ' . $folder->path()."=".Util::array2str($result));
+
+		if ($hierarchy) {
+			$hierarchyInfo[$id] = $result;
+			$result["by_id"] = $hierarchyInfo;
+		}
+		return $result;
 	}
 
 	public function rename($item, $name) {
