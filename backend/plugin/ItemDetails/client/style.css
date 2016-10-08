@@ -1,0 +1,12 @@
+.kloudspeaker-itemdetails-row-value .folder-hierarchy {
+    display: inline-block;
+}
+
+.kloudspeaker-itemdetails-row-value .folder-hierarchy .kloudspeaker-itemselector-folder-indicator-empty {
+    float: left;
+    display: inline-block;
+    margin-right: 2px;
+    width: 10px;
+    height: 20px;
+}
+

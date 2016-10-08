@@ -1,4 +1,6 @@
-define(['kloudspeaker/filesystem', 'kloudspeaker/utils'], function(fs, utils) {
+define(['kloudspeaker/filesystem', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/plugins'], function(fs, utils, dom, plugins) {
+    dom.importCss(plugins.url('ItemDetails', 'style.css'));
+
     return function() {
         var that = this;
         var model = {
@@ -59,13 +61,10 @@ define(['kloudspeaker/filesystem', 'kloudspeaker/utils'], function(fs, utils) {
                 model.data = params.data;
                 model.folders = params.data.folder_count > 0;
 
-                console.log('activate', params);
                 var matches = model.item.path.match(/\//g);
                 if (matches) parentLevel = matches.length + 1;
             },
             onShow: function(container) {
-                console.log('hierarchy');
-
                 $tree = container.find(".folder-tree");
                 $tree.on("click", ".kloudspeaker-itemselector-folder-indicator", function(e) {
                     var $e = $(this).parent();
