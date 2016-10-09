@@ -105,12 +105,24 @@ class ItemDetails extends PluginBase {
 			return $this->env->filesystem()->getFolderInfo($item)["size"];
 		}
 
+		if (!$item->isFile() and strcmp($key, "folder-size-recursive") === 0) {
+			return $this->env->filesystem()->getFolderInfo($item)["size_recursive"];
+		}
+
 		if (!$item->isFile() and strcmp($key, "folder-file-count") === 0) {
 			return $this->env->filesystem()->getFolderInfo($item)["file_count"];
 		}
 
+		if (!$item->isFile() and strcmp($key, "folder-file-count-recursive") === 0) {
+			return $this->env->filesystem()->getFolderInfo($item)["file_count_recursive"];
+		}
+
 		if (!$item->isFile() and strcmp($key, "folder-folder-count") === 0) {
 			return $this->env->filesystem()->getFolderInfo($item)["folder_count"];
+		}
+
+		if (!$item->isFile() and strcmp($key, "folder-folder-count-recursive") === 0) {
+			return $this->env->filesystem()->getFolderInfo($item)["folder_count_recursive"];
 		}
 
 		if (array_key_exists($key, $this->detailProviders)) {

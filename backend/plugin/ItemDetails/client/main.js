@@ -144,6 +144,9 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
         if (dataKey == 'folder-size') return loc.get('fileItemContextDataFolderSize');
         if (dataKey == 'folder-file-count') return loc.get('fileItemContextDataFolderFileCount');
         if (dataKey == 'folder-folder-count') return loc.get('fileItemContextDataFolderFolderCount');
+        if (dataKey == 'folder-size-recursive') return loc.get('fileItemContextDataFolderSizeRecursive');
+        if (dataKey == 'folder-file-count-recursive') return loc.get('fileItemContextDataFolderFileCountRecursive');
+        if (dataKey == 'folder-folder-count-recursive') return loc.get('fileItemContextDataFolderFolderCountRecursive');
 
         /*if (that.specs[dataKey]) {
             var spec = that.specs[dataKey];
@@ -154,12 +157,12 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
     };
 
     that.formatFileData = function (key, data, item) {
-        if (key == 'size' || key == 'folder-size') return that.fileSizeFormatter.format(data);
+        if (key == 'size' || key == 'folder-size' || key == 'folder-size-recursive') return that.fileSizeFormatter.format(data);
         if (key == 'last-modified') return that.timestampFormatter.format(utils.parseInternalTime(data));
         if (key == 'image-size') return loc.get('fileItemContextDataImageSizePixels', [data]);
         if (key == 'metadata-created') return that.timestampFormatter.format(utils.parseInternalTime(data.at)) + "&nbsp;<i class='fa fa-user'/>&nbsp;" + (data.by ? data.by.name : "-");
         if (key == 'metadata-modified') return that.timestampFormatter.format(utils.parseInternalTime(data.at)) + "&nbsp;<i class='fa fa-user'/>&nbsp;" + (data.by ? data.by.name : "-");
-        if (key == 'folder-file-count' || key == 'folder-folder-count') return data;
+        if (key == 'folder-file-count' || key == 'folder-folder-count' || key == 'folder-file-count-recursive' || key == 'folder-folder-count-recursive') return data;
 
         /*if (that.specs[key]) {
             var spec = that.specs[key];

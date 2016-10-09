@@ -157,7 +157,8 @@
 		"fileItemContextDataName": "Name",
 		"fileItemContextDataPath": "Path",
 		"fileItemContextDataSize": "File size",
-		"fileItemContextDataFolderSize": "Total size",
+		"fileItemContextDataFolderSize": "Folder size",
+		"fileItemContextDataFolderSizeRecursive": "Folder total size",
 		"fileItemContextDataExtension": "Extension",
 		"fileItemContextDataLastModified": "Last modified",
 		"fileItemContextDataCreated": "Created",
@@ -166,6 +167,8 @@
 		"fileItemContextDataImageSizePixels": "{0} pixels",
 		"fileItemContextDataFolderFileCount": "Files",
 		"fileItemContextDataFolderFolderCount": "Folders",
+		"fileItemContextDataFolderFileCountRecursive": "Total files",
+		"fileItemContextDataFolderFolderCountRecursive": "Total folders",
 
 		"copyHereDialogTitle": "Copy Here",
 		"copyHereDialogMessage": "Enter the name for the copy:",

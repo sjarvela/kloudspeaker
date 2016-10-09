@@ -729,8 +729,12 @@ class FilesystemController {
 		} else {
 			$result = array(
 				"size" => 0,
+				"size_recursive" => 0,
 				"file_count" => 0,
-				"folder_count" => 0
+				"folder_count" => 0,
+				"file_count_recursive" => 0,
+				"folder_count_recursive" => 0
+
 			);
 		}
 
@@ -738,15 +742,20 @@ class FilesystemController {
 			if ($item->isFile()) {
 				if (!$cached) {
 					$result["file_count"] = $result["file_count"] + 1;
-					$result["size"] = $result["size"] + $item->size();
+					$result["file_count_recursive"] = $result["file_count_recursive"] + 1;
+
+					$s = $item->size();
+					$result["size"] = $result["size"] + $s;
+					$result["size_recursive"] = $result["size_recursive"] + $s;
 				}
 			} else {
 				$subresult = $this->doGetFolderInfo($item, $hierarchy);
 
 				if (!$cached) {
-					$result["file_count"] = $result["file_count"] + $subresult["file_count"];
-					$result["folder_count"] = $result["folder_count"] + $subresult["folder_count"] + 1;
-					$result["size"] = $result["size"] + $subresult["size"];
+					$result["file_count_recursive"] = $result["file_count_recursive"] + $subresult["file_count_recursive"];
+					$result["folder_count"] = $result["folder_count"] + 1;
+					$result["folder_count_recursive"] = $result["folder_count_recursive"] + $subresult["folder_count_recursive"] + 1;
+					$result["size_recursive"] = $result["size_recursive"] + $subresult["size_recursive"];
 				}
 				if ($hierarchy) $hierarchyInfo = array_merge($hierarchyInfo, $subresult["by_id"]);
 			}
