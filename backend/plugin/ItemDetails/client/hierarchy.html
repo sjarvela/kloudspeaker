@@ -1,0 +1,26 @@
+<div class="itemdetails-hierarchy-browser">
+    <!-- ko if: !model.folders -->
+    <span data-i18n="fileItemContextDataFolderHierarchyNoFolders"></span>
+    <!-- /ko -->
+
+    <!-- ko if: model.folders -->
+    <div class="folder-tree"></div>
+    <!-- /ko -->
+</div>
+
+<script id="kloudspeaker-tmpl-itemdetails-tree-item" type="text/x-jquery-tmpl">
+    <div class="kloudspeaker-itemselector-item ${$item.cls} {{if $item.data.is_file}}file{{else}}folder{{/if}}">
+        <div class="kloudspeaker-itemselector-item-indentation">
+            {{each $item.levels}}
+            <div class="kloudspeaker-itemselector-item-indentation-step"></div>
+            {{/each}}
+        </div>
+        {{if $item.info[$item.data.id].folder_count > 0}}
+        <div class="kloudspeaker-itemselector-folder-indicator"><i class="fa fa-caret-right"></i></div>
+        {{/if}}
+        {{if $item.info[$item.data.id].folder_count == 0}}
+        <div class="kloudspeaker-itemselector-folder-indicator-empty"></div>
+        {{/if}}
+        <div class="kloudspeaker-itemselector-item-name">${name} (${$item.info[$item.data.id].folder_count})</div>
+    </div>
+</script>

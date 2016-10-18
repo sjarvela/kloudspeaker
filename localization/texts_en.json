@@ -169,6 +169,8 @@
 		"fileItemContextDataFolderFolderCount": "Folders",
 		"fileItemContextDataFolderFileCountRecursive": "Total files",
 		"fileItemContextDataFolderFolderCountRecursive": "Total folders",
+		"fileItemContextDataFolderHierarchy": "Hierarchy",
+		"fileItemContextDataFolderHierarchyNoFolders": "-",
 
 		"copyHereDialogTitle": "Copy Here",
 		"copyHereDialogMessage": "Enter the name for the copy:",
