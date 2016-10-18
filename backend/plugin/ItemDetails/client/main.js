@@ -48,10 +48,12 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
     };
 
     that.hideItemContextDetails = function (el, item, $content) {
-        if (that._components) {
-            ko.utils.domNodeDisposal.removeNode($content[0]);
+        /*if (that._components) {
+            _.each(that._components, function (c) {
+                ko.utils.domNodeDisposal.removeNode(c.$el[0]);
+            });
         }
-        that._components = [];
+        that._components = [];*/
     }
 
     that.renderItemDetails = function (el, item, o) {
@@ -85,6 +87,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
             utils.invokeLater(function () {
                 _.each(that._components, function (c) {
                     ui.viewmodel(c.view, c.model, o.element.find(c.target)).done(function (m, $c) {
+                        c.$el = $c;
                         if (c.onShow) c.onShow($c);
                         if (m.onShow) m.onShow($c);
                     });

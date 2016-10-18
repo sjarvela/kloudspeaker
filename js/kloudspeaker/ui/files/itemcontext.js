@@ -1,4 +1,4 @@
-define(['kloudspeaker/filesystem', 'kloudspeaker/plugins', 'kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/session', 'kloudspeaker/permissions', 'kloudspeaker/ui', 'kloudspeaker/dom', 'kloudspeaker/features', 'kloudspeaker/localization', 'kloudspeaker/ui/controls', 'kloudspeaker/utils'], function(fs, plugins, service, events, session, permissions, ui, dom, features, loc, controls, utils) {
+define(['kloudspeaker/filesystem', 'kloudspeaker/plugins', 'kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/session', 'kloudspeaker/permissions', 'kloudspeaker/ui', 'kloudspeaker/dom', 'kloudspeaker/features', 'kloudspeaker/localization', 'kloudspeaker/ui/controls', 'kloudspeaker/utils', 'knockout'], function(fs, plugins, service, events, session, permissions, ui, dom, features, loc, controls, utils, ko) {
     var ict = {};
     ict._activeItemContext = false;
 
@@ -8,6 +8,7 @@ define(['kloudspeaker/filesystem', 'kloudspeaker/plugins', 'kloudspeaker/service
         var $c = spec.viewport;
         var $t = spec.container;
         var folder = spec.folder;
+        var $content;
 
         var popupId = "mainview-itemcontext-" + item.id;
         if (ui.isActivePopup(popupId)) {
@@ -58,7 +59,7 @@ define(['kloudspeaker/filesystem', 'kloudspeaker/plugins', 'kloudspeaker/service
             $pop.find(".arrow").css("left", arrowPos + "px");
 
             $pop.find(".popover-title").append($('<button type="button" class="close">×</button>').click(api.close));
-            var $content = $el.find(".kloudspeaker-itemcontext-content");
+            $content = $el.find(".kloudspeaker-itemcontext-content");
 
             fs.itemDetails(item, plugins.getItemContextRequestData(item)).done(function(d) {
                 if (!d) {
@@ -75,6 +76,7 @@ define(['kloudspeaker/filesystem', 'kloudspeaker/plugins', 'kloudspeaker/service
                 ict.renderItemContext(api, $content, item, ctx);
             });
         }).bind("hidden", function() {
+            ko.utils.domNodeDisposal.removeNode($content[0]);
             $e.unbind("shown").unbind("hidden");
             ui.removeActivePopup(popupId);
         });
@@ -167,21 +169,21 @@ define(['kloudspeaker/filesystem', 'kloudspeaker/plugins', 'kloudspeaker/service
             var $selectors = $("#kloudspeaker-itemcontext-details-selectors");
             var $content = $("#kloudspeaker-itemcontext-details-content");
             var contents = {};
-            var currentDetailsPlugin = false;
+            var currentDetailsPluginId = false;
             var onSelectDetails = function(id) {
                 $(".kloudspeaker-itemcontext-details-selector").removeClass("active");
                 $("#kloudspeaker-itemcontext-details-selector-" + id).addClass("active");
                 $content.find(".kloudspeaker-itemcontext-plugin-content").hide();
 
-                if (currentDetailsPlugin) {
-                    if (currentDetailsPlugin.details["on-hide"]) currentDetailsPlugin.details["on-hide"](cApi, $c);
+                if (currentDetailsPluginId && pl[currentDetailsPluginId].details["on-hide"]) {
+                    pl[currentDetailsPluginId].details["on-hide"](cApi, contents[currentDetailsPluginId]);
                 }
 
-                currentDetailsPlugin = pl[id];
+                currentDetailsPluginId = id;
                 var $c = contents[id] ? contents[id] : false;
                 if (!$c) {
                     $c = $('<div class="kloudspeaker-itemcontext-plugin-content"></div>');
-                    currentDetailsPlugin.details["on-render"](cApi, $c, ctx);
+                    pl[id].details["on-render"](cApi, $c, ctx);
                     contents[id] = $c;
                     $content.append($c);
                 }
