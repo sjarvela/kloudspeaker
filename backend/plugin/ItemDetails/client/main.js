@@ -47,10 +47,18 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
         });
     };
 
+    that.hideItemContextDetails = function (el, item, $content) {
+        if (that._components) {
+            ko.utils.domNodeDisposal.removeNode($content[0]);
+        }
+        that._components = [];
+    }
+
     that.renderItemDetails = function (el, item, o) {
         var s = that.getApplicableSpec(item);
         var groups = that.getGroups(s, o.data, item);
 
+        that._components = [];
         var result = [];
         for (var i = 0, j = groups.length; i < j; i++) {
             var g = groups[i];
@@ -72,6 +80,17 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
         dom.template("itemdetails-template", {
             groups: result
         }).appendTo(o.element);
+
+        if (that._components) {
+            utils.invokeLater(function () {
+                _.each(that._components, function (c) {
+                    ui.viewmodel(c.view, c.model, o.element.find(c.target)).done(function (m, $c) {
+                        if (c.onShow) c.onShow($c);
+                        if (m.onShow) m.onShow($c);
+                    });
+                });
+            });
+        }
     };
 
     that.getGroups = function (s, d, item) {
@@ -147,7 +166,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
         if (dataKey == 'folder-size-recursive') return loc.get('fileItemContextDataFolderSizeRecursive');
         if (dataKey == 'folder-file-count-recursive') return loc.get('fileItemContextDataFolderFileCountRecursive');
         if (dataKey == 'folder-folder-count-recursive') return loc.get('fileItemContextDataFolderFolderCountRecursive');
-
+        if (dataKey == 'folder-hierarchy') return loc.get('fileItemContextDataFolderHierarchy');
         /*if (that.specs[dataKey]) {
             var spec = that.specs[dataKey];
             if (spec.title) return spec.title;
@@ -163,6 +182,16 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
         if (key == 'metadata-created') return that.timestampFormatter.format(utils.parseInternalTime(data.at)) + "&nbsp;<i class='fa fa-user'/>&nbsp;" + (data.by ? data.by.name : "-");
         if (key == 'metadata-modified') return that.timestampFormatter.format(utils.parseInternalTime(data.at)) + "&nbsp;<i class='fa fa-user'/>&nbsp;" + (data.by ? data.by.name : "-");
         if (key == 'folder-file-count' || key == 'folder-folder-count' || key == 'folder-file-count-recursive' || key == 'folder-folder-count-recursive') return data;
+        if (key == 'folder-hierarchy') {
+            that._components.push({
+                target: ".folder-hierarchy",
+                model: ['kloudspeaker/itemdetails/hierarchy', {
+                    item: item,
+                    data: data
+                }]
+            });
+            return '<div class="folder-hierarchy"></div>';
+        }
 
         /*if (that.specs[key]) {
             var spec = that.specs[key];
@@ -225,6 +254,9 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
                     "title-key": "pluginItemDetailsContextTitle",
                     "on-render": function (el, $content) {
                         that.renderItemContextDetails(el, item, $content, data);
+                    },
+                    "on-hide": function (el, $content) {
+                        that.hideItemContextDetails(el, item, $content);
                     }
                 }
             };

@@ -167,15 +167,21 @@ define(['kloudspeaker/filesystem', 'kloudspeaker/plugins', 'kloudspeaker/service
             var $selectors = $("#kloudspeaker-itemcontext-details-selectors");
             var $content = $("#kloudspeaker-itemcontext-details-content");
             var contents = {};
+            var currentDetailsPlugin = false;
             var onSelectDetails = function(id) {
                 $(".kloudspeaker-itemcontext-details-selector").removeClass("active");
                 $("#kloudspeaker-itemcontext-details-selector-" + id).addClass("active");
                 $content.find(".kloudspeaker-itemcontext-plugin-content").hide();
 
+                if (currentDetailsPlugin) {
+                    if (currentDetailsPlugin.details["on-hide"]) currentDetailsPlugin.details["on-hide"](cApi, $c);
+                }
+
+                currentDetailsPlugin = pl[id];
                 var $c = contents[id] ? contents[id] : false;
                 if (!$c) {
                     $c = $('<div class="kloudspeaker-itemcontext-plugin-content"></div>');
-                    pl[id].details["on-render"](cApi, $c, ctx);
+                    currentDetailsPlugin.details["on-render"](cApi, $c, ctx);
                     contents[id] = $c;
                     $content.append($c);
                 }
