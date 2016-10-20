@@ -9,7 +9,7 @@
 </div>
 
 <script id="kloudspeaker-tmpl-itemdetails-tree-item" type="text/x-jquery-tmpl">
-    <div class="kloudspeaker-itemselector-item ${$item.cls} {{if $item.data.is_file}}file{{else}}folder{{/if}}">
+    <div class="kloudspeaker-itemselector-item ${$item.cls} {{if $item.data.is_file}}file{{else}}folder{{/if}}" data-item-id="${$item.data.id}" data-item-parent-id="${$item.parent_id}">
         <div class="kloudspeaker-itemselector-item-indentation">
             {{each $item.levels}}
             <div class="kloudspeaker-itemselector-item-indentation-step"></div>

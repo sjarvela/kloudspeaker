@@ -19,9 +19,7 @@ define(['kloudspeaker/filesystem', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kl
                 $tree.removeClass("loading");
                 loaded[parent ? parent.id : "root"] = true;
 
-                var all = r.files ? (r.folders.concat(r.files)) : r.folders;
-
-                if (!all || all.length === 0) {
+                if (!r.folders || r.folders.length === 0) {
                     if ($e) $e.find(".kloudspeaker-itemselector-folder-indicator").empty();
                     return;
                 }
@@ -36,10 +34,11 @@ define(['kloudspeaker/filesystem', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kl
                     //generate array for template to iterate
                     for (var i = 0; i < level; i++) levels.push({});
                 }
-                var c = $("#kloudspeaker-tmpl-itemdetails-tree-item").tmpl(all, {
+                var c = $("#kloudspeaker-tmpl-itemdetails-tree-item").tmpl(r.folders, {
                     cls: '',
                     levels: levels,
-                    info: model.data.by_id
+                    info: model.data.by_id,
+                    parent_id: parent.id
                 });
                 if ($e) {
                     $e.after(c);
@@ -48,8 +47,8 @@ define(['kloudspeaker/filesystem', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kl
                 } else {
                     $tree.append(c);
                 }
-                if (!parent && all.length == 1) {
-                    load($(c[0]), all[0]);
+                if (!parent && r.folders.length == 1) {
+                    load($(c[0]), r.folders[0]);
                 }
             });
         };
@@ -66,10 +65,23 @@ define(['kloudspeaker/filesystem', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kl
             },
             onShow: function(container) {
                 $tree = container.find(".folder-tree");
-                $tree.on("click", ".kloudspeaker-itemselector-folder-indicator", function(e) {
-                    var $e = $(this).parent();
+                $tree.on("click", ".kloudspeaker-itemselector-item.folder", function(e) {
+                    var $e = $(this);
                     var p = $e.tmplItem().data;
-                    load($e, p);
+                    if (loaded[p.id]) {
+                        var $arrow = $e.find(".kloudspeaker-itemselector-folder-indicator").find("i");
+                        var open = $arrow.hasClass("fa-caret-down");
+                        var $children = $tree.find(".kloudspeaker-itemselector-item[data-item-parent-id="+p.id+"]");
+                        if (open) {
+                            $arrow.removeClass("fa-caret-down").addClass("fa-caret-right");
+                            $children.hide();
+                        } else {
+                            $arrow.removeClass("fa-caret-right").addClass("fa-caret-down");
+                            $children.show();
+                        }
+                    } else {
+                        load($e, p);
+                    }
                     return false;
                 });
                 load(null, model.item);
