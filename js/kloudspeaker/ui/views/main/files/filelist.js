@@ -40,7 +40,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'klo
             dom.template("kloudspeaker-tmpl-filelist-headercol", t.cols, {
                 title: function(c) {
                     var k = c['title-key'];
-                    if (!k) return "";
+                    if (!k) return c.title || "";
 
                     return loc.get(k);
                 }
