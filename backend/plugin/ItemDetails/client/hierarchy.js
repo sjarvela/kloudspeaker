@@ -41,9 +41,10 @@ define(['kloudspeaker/filesystem', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kl
                     parent_id: parent.id
                 });
                 if ($e) {
-                    $e.after(c);
+                    
                     $e.addClass("loaded");
-                    if ($e) $e.find(".kloudspeaker-itemselector-folder-indicator").find("i").removeClass("fa fa-caret-right").addClass("fa fa-caret-down");
+                    if ($e) $e.children(".kloudspeaker-itemselector-folder-indicator").children("i").removeClass("fa fa-caret-right").addClass("fa fa-caret-down");
+                    $e.append(c);
                 } else {
                     $tree.append(c);
                 }
@@ -69,7 +70,7 @@ define(['kloudspeaker/filesystem', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kl
                     var $e = $(this);
                     var p = $e.tmplItem().data;
                     if (loaded[p.id]) {
-                        var $arrow = $e.find(".kloudspeaker-itemselector-folder-indicator").find("i");
+                        var $arrow = $e.children(".kloudspeaker-itemselector-folder-indicator").children("i");
                         var open = $arrow.hasClass("fa-caret-down");
                         var $children = $tree.find(".kloudspeaker-itemselector-item[data-item-parent-id="+p.id+"]");
                         if (open) {
