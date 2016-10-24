@@ -226,5 +226,14 @@ class Util {
 
 		return $list;
 	}
+
+	static function map($array, $p) {
+		$result = array();
+		foreach ($array as $item) {
+			$v = $item[$p];
+			$result[$v] = $item;
+		}
+		return $result;
+	}
 }
 ?>

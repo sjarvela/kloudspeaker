@@ -59,6 +59,11 @@ class PluginController {
 		return $this->plugins;
 	}
 
+	public function get($id = NULL) {
+		if ($id == NULL) return $this->getPlugins();
+		return $this->getPlugin($id);
+	}
+
 	public function getPlugin($id) {
 		return $this->plugins[$id];
 	}
