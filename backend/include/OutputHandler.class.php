@@ -71,6 +71,7 @@
 			'jpg' => 'image/jpeg',
 			"doc" => "application/msword",
 			"html" => "text/html",
+			"svg" => "image/svg+xml",
 			"docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 			"xls" => "application/vnd.ms-excel",
 			"xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

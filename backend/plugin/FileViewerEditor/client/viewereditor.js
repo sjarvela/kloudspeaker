@@ -12,6 +12,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils', 'kloudspeaker/ui', 'knock
         this.loading = ko.observable(true);
         this.editMode = ko.observable(false);
         this.zoomable = ko.observable(false);
+        this.zoomableReal = ko.observable(false);
         this.zoom = 100;
 
         this.viewing = ko.computed(function() {
@@ -127,6 +128,16 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils', 'kloudspeaker/ui', 'knock
                             contentInfo.originalWidth = img[0].width;
                             onContentReady(contentInfo);
                         });
+                    } else if ( data.result.type == 'object/svg') {
+                        contentInfo.zoomable = $l.children('object');
+                        contentInfo.centered = true;
+                        loaded = false;
+                        contentInfo.zoomable[0].addEventListener("load", function() {
+                            if (loaded) return;
+                            loaded = true;
+                            contentInfo.originalHeight = false;
+                            onContentReady(contentInfo);    
+                        });
                     } else {
                         if (data.result['resized_element_id']) {
                             contentInfo.resized = $("#" + data.result['resized_element_id']);
@@ -159,9 +170,11 @@ define(['kloudspeaker/settings', 'kloudspeaker/utils', 'kloudspeaker/ui', 'knock
             this.$vicc = $("<div class='viewer-item-container " + info.cls + "'></div>").append(this.$vic);
 
             this.$c.empty().append(this.$vicc);
-            if (this.itemInfo().zoomable && this.itemInfo().originalHeight < this.$c.height()) {
+            if (this.itemInfo().zoomable && this.itemInfo().originalHeight !== false && this.itemInfo().originalHeight < this.$c.height()) {
                 this.zoomBase = 'real';
             }
+            this.zoomableReal(this.itemInfo().zoomable && this.itemInfo().originalHeight !== false);
+            
             this._onResize();
         }
 

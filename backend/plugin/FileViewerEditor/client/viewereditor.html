@@ -24,7 +24,7 @@
         </div>
         <div class="hover-tools" data-bind="css : { visible: (!loading() && zoomable()) }">
             <button type="button" class="btn" data-bind="click: zoomIn, clickBubble: false" data-i18n="[title]fileViewerEditor.zoomIn"><i class="fa fa-search-minus"></i></button>
-            <button type="button" class="btn" data-bind="click: zoomReal, clickBubble: false" data-i18n="[title]fileViewerEditor.zoomReal"><i class="fa fa-sign-in"></i></button>
+            <button type="button" class="btn" data-bind="click: zoomReal, clickBubble: false, visible: zoomableReal()" data-i18n="[title]fileViewerEditor.zoomReal"><i class="fa fa-sign-in"></i></button>
             <button type="button" class="btn" data-bind="click: zoomFit, clickBubble: false" data-i18n="[title]fileViewerEditor.zoomFit"><i class="fa fa-arrows-alt"></i></button>
             <button type="button" class="btn" data-bind="click: zoomOut, clickBubble: false" data-i18n="[title]fileViewerEditor.zoomOut"><i class="fa fa-search-plus"></i></button>
         </div>
