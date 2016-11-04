@@ -21,6 +21,8 @@
         {{if $item.info[$item.data.id].folder_count == 0}}
         <div class="kloudspeaker-itemselector-folder-indicator-empty"></div>
         {{/if}}
-        <div class="kloudspeaker-itemselector-item-name">${name} (${$item.info[$item.data.id].folder_count})</div>
+        <div class="kloudspeaker-itemselector-item-name">${name}
+        {{if !!$item.folder_info}} (${$item.info[$item.data.id][$item.folder_info]}){{/if}}
+        </div>
     </div>
 </script>

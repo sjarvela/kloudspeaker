@@ -145,7 +145,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
 
             rows.push({
                 title: that.getFileRowTitle(k, s[k]),
-                value: that.formatFileData(k, rowData, item)
+                value: that.formatFileData(k, rowData, item, s[k])
             });
         }
         return rows;
@@ -178,7 +178,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
         return dataKey;
     };
 
-    that.formatFileData = function (key, data, item) {
+    that.formatFileData = function (key, data, item, conf) {
         if (key == 'size' || key == 'folder-size' || key == 'folder-size-recursive') return that.fileSizeFormatter.format(data);
         if (key == 'last-modified') return that.timestampFormatter.format(utils.parseInternalTime(data));
         if (key == 'image-size') return loc.get('fileItemContextDataImageSizePixels', [data]);
@@ -190,7 +190,8 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
                 target: ".folder-hierarchy",
                 model: ['kloudspeaker/itemdetails/hierarchy', {
                     item: item,
-                    data: data
+                    data: data,
+                    conf: conf
                 }]
             });
             return '<div class="folder-hierarchy"></div>';

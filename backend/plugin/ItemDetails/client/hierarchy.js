@@ -5,6 +5,7 @@ define(['kloudspeaker/filesystem', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kl
         var that = this;
         var model = {
             item: null,
+            folderInfo: null
         };
 
         var $tree = false;
@@ -38,7 +39,8 @@ define(['kloudspeaker/filesystem', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kl
                     cls: '',
                     levels: levels,
                     info: model.data.by_id,
-                    parent_id: parent.id
+                    parent_id: parent.id,
+                    folder_info: model.folderInfo
                 });
                 if ($e) {
                     
@@ -60,6 +62,7 @@ define(['kloudspeaker/filesystem', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kl
                 model.item = params.item;
                 model.data = params.data;
                 model.folders = params.data.folder_count > 0;
+                model.folderInfo = params.conf ? params.conf["folder-info"] : null;
 
                 var matches = model.item.path.match(/\//g);
                 if (matches) parentLevel = matches.length + 1;
