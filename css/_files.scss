@@ -281,10 +281,18 @@ html.touch .kloudspeaker-filelist-col-go-into-folder {
     clear: none;
     display: block;
     float: left;
-    width: 200px;
-    height: 185px;
     cursor: pointer;
     margin: 6px;
+    width: 200px;
+    text-align: center;
+}
+
+.kloudspeaker-iconview-item-fa {
+    height: 185px;
+}
+
+.kloudspeaker-iconview-item img {
+    max-height: 185px;
 }
 
 .kloudspeaker-iconview-item.hover {
@@ -308,7 +316,14 @@ html.touch .kloudspeaker-filelist-col-go-into-folder {
 
 .kloudspeaker-iconview.iconview-small .kloudspeaker-iconview-item {
     width: 100px;
+}
+
+.kloudspeaker-iconview.iconview-small .kloudspeaker-iconview-item-fa {
     height: 100px;
+}
+
+.kloudspeaker-iconview.iconview-small .kloudspeaker-iconview-item img {
+    max-height: 100px;
 }
 
 .kloudspeaker-iconview {

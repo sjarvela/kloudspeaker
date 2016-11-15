@@ -974,6 +974,11 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
                 icon: 'fa fa-refresh'
             }, opt).appendTo($c).click(that.refresh);
+
+            // HIDDEN FILES
+            that._toggleShowingHiddenBtn = dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
+                icon: 'fa fa-eye'
+            }, opt).appendTo($c).click(that._onToggleShowingHidden);
         };
 
         that._getViewItems = function() {
@@ -1019,6 +1024,20 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
 
             cb(addDefaultActions(utils.cleanupActions(result)));
         };
+
+        that._onToggleShowingHidden = function() {
+            if(fs.showHiddenFiles()) {
+                $(that._toggleShowingHiddenBtn).find(".fa").removeClass("fa-eye-slash");
+                $(that._toggleShowingHiddenBtn).find(".fa").addClass("fa-eye");
+                fs.showHiddenFiles(false);
+            } else {
+                $(that._toggleShowingHiddenBtn).find(".fa").removeClass("fa-eye");
+                $(that._toggleShowingHiddenBtn).find(".fa").addClass("fa-eye-slash");
+                fs.showHiddenFiles(true);
+            }
+
+            that.refresh();
+        }
 
         that._onToggleSelect = function() {
             that._selectMode = !that._selectMode;
