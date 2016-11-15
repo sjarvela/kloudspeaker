@@ -266,6 +266,22 @@
 			<i class="kloudspeaker-filelist-item-sel unselected fa fa-square-o"></i>
 			<i class="kloudspeaker-filelist-item-sel selected fa fa-check-square-o"></i>
 		</div>
+		{{if $item.hierarchy}}
+			<div class="kloudspeaker-filelist-hierarchy-indent">
+				{{each(i) $item.itemLevel($data)}}
+				<div class="hierarchy-level"></div>
+				{{/each}}
+			</div>
+			<div class="kloudspeaker-filelist-col hierarchy-toggle">
+				{{if !$data.is_file}}
+					{{if $item.foldersExpanded[id]}}
+					<i class="fa fa-caret-down"></i>
+					{{else}}
+					<i class="fa fa-caret-right"></i>
+					{{/if}}
+				{{/if}}
+			</div>			
+		{{/if}}
 		<div class="kloudspeaker-filelist-col kloudspeaker-filelist-col-icon">
 			<div class="kloudspeaker-filelist-item-icon"></div>
 		</div>

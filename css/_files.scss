@@ -194,6 +194,19 @@
     font-size: 16px;
     padding: 2px 0 0 2px;
 }
+.kloudspeaker-filelist-col.hierarchy-toggle {
+    min-width: 10px;
+}
+
+.kloudspeaker-filelist-hierarchy-indent {
+    float: left;
+    height: 1px;
+}
+
+.kloudspeaker-filelist-hierarchy-indent > .hierarchy-level {
+    width: 10px;
+    float: left;
+}
 
 .kloudspeaker-filelist.select .kloudspeaker-filelist-col-sel,
 .kloudspeaker-filelist-header-cols.select .kloudspeaker-filelist-col-sel {

@@ -1,5 +1,5 @@
-define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/localization', 'kloudspeaker/service', 'kloudspeaker/request', 'kloudspeaker/features', 'kloudspeaker/events', 'kloudspeaker/permissions', 'kloudspeaker/plugins', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views/main/files/filelist', 'kloudspeaker/ui/views/main/files/iconview', 'kloudspeaker/ui/uploader', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/dom', 'kloudspeaker/utils', 'kloudspeaker/ui'], function(app, settings, session, loc, service, request, features, events, permissions, plugins, fs, FileList, IconView, uploader, dnd, formatters, controls, dialogs, dom, utils, ui) {
-    return function() {
+define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/localization', 'kloudspeaker/service', 'kloudspeaker/request', 'kloudspeaker/features', 'kloudspeaker/events', 'kloudspeaker/permissions', 'kloudspeaker/plugins', 'kloudspeaker/filesystem', 'kloudspeaker/ui/views/main/files/filelist', 'kloudspeaker/ui/views/main/files/iconview', 'kloudspeaker/ui/uploader', 'kloudspeaker/ui/dnd', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/controls', 'kloudspeaker/ui/dialogs', 'kloudspeaker/dom', 'kloudspeaker/utils', 'kloudspeaker/ui'], function (app, settings, session, loc, service, request, features, events, permissions, plugins, fs, FileList, IconView, uploader, dnd, formatters, controls, dialogs, dom, utils, ui) {
+    return function () {
         var that = this;
         that.viewId = "files";
 
@@ -17,7 +17,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
 
         that._filelist = {
             columns: [],
-            addColumn: function(c) {
+            addColumn: function (c) {
                 that._filelist.columns[c.id] = c;
             }
         };
@@ -26,37 +26,37 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
         that._filelist.addColumn({
             "id": "name",
             "title-key": "fileListColumnTitleName",
-            "sort": function(i1, i2, sort, data) {
+            "sort": function (i1, i2, sort, data) {
                 return i1.name.toLowerCase().localeCompare(i2.name.toLowerCase()) * sort;
             },
-            "content": function(item, data) {
+            "content": function (item, data) {
                 return item.name;
             },
-            "value-title": function(item, data) {
+            "value-title": function (item, data) {
                 return item.name;
             }
         });
         that._filelist.addColumn({
             "id": "path",
             "title-key": "fileListColumnTitlePath",
-            "sort": function(i1, i2, sort, data) {
+            "sort": function (i1, i2, sort, data) {
                 var p1 = fs.rootsById[i1.root_id].name + i1.path;
                 var p2 = fs.rootsById[i2.root_id].name + i2.path;
                 return p1.toLowerCase().localeCompare(p2.toLowerCase()) * sort;
             },
-            "content": function(item, data) {
+            "content": function (item, data) {
                 return '<span class="item-path-root">' + fs.rootsById[item.root_id].name + '</span>: <span class="item-path-val">' + item.path + '</span>';
             }
         });
         that._filelist.addColumn({
             "id": "type",
             "title-key": "fileListColumnTitleType",
-            "sort": function(i1, i2, sort, data) {
+            "sort": function (i1, i2, sort, data) {
                 var e1 = i1.is_file ? (i1.extension || '') : '';
                 var e2 = i2.is_file ? (i2.extension || '') : '';
                 return e1.toLowerCase().localeCompare(e2.toLowerCase()) * sort;
             },
-            "content": function(item, data) {
+            "content": function (item, data) {
                 return item.is_file ? (item.extension || '') : '';
             }
         });
@@ -64,12 +64,12 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             "id": "size",
             "title-key": "fileListColumnTitleSize",
             "min-width": 75,
-            "sort": function(i1, i2, sort, data) {
+            "sort": function (i1, i2, sort, data) {
                 var s1 = (i1.is_file ? parseInt(i1.size, 10) : 0);
                 var s2 = (i2.is_file ? parseInt(i2.size, 10) : 0);
                 return (s1 - s2) * sort;
             },
-            "content": function(item, data) {
+            "content": function (item, data) {
                 return item.is_file ? that._formatters.byteSize.format(item.size) : '';
             }
         });
@@ -78,15 +78,15 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             "request-id": "core-file-modified",
             "title-key": "fileListColumnTitleLastModified",
             "width": 180,
-            "sort": function(i1, i2, sort, data) {
+            "sort": function (i1, i2, sort, data1, data2) {
                 if (!i1.is_file && !i2.is_file) return 0;
                 if (!data || !data["core-file-modified"]) return 0;
 
-                var ts1 = data["core-file-modified"][i1.id] ? data["core-file-modified"][i1.id] * 1 : 0;
-                var ts2 = data["core-file-modified"][i2.id] ? data["core-file-modified"][i2.id] * 1 : 0;
+                var ts1 = data1["core-file-modified"][i1.id] ? data1["core-file-modified"][i1.id] * 1 : 0;
+                var ts2 = data2["core-file-modified"][i2.id] ? data2["core-file-modified"][i2.id] * 1 : 0;
                 return ((ts1 > ts2) ? 1 : -1) * sort;
             },
-            "content": function(item, data) {
+            "content": function (item, data) {
                 if (!item.id || !item.is_file || !data || !data["core-file-modified"] || !data["core-file-modified"][item.id]) return "";
                 return that._formatters.timestamp.format(utils.parseInternalTime(data["core-file-modified"][item.id]));
             }
@@ -95,15 +95,15 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             "id": "item-description",
             "request-id": "item-metadata",
             "title-key": "fileListColumnTitleDescription",
-            "sort": function(i1, i2, sort, data) {
+            "sort": function (i1, i2, sort, data1, data2) {
                 if (!i1.is_file && !i2.is_file) return 0;
                 if (!data || !data["item-metadata"]) return 0;
 
-                var d1 = (data["item-metadata"][i1.id] && data["item-metadata"][i1.id].description) ? data["item-metadata"][i1.id].description : '';
-                var d2 = (data["item-metadata"][i2.id] && data["item-metadata"][i2.id].description) ? data["item-metadata"][i2.id].description : '';
+                var d1 = (data1["item-metadata"][i1.id] && data1["item-metadata"][i1.id].description) ? data1["item-metadata"][i1.id].description : '';
+                var d2 = (data2["item-metadata"][i2.id] && data2["item-metadata"][i2.id].description) ? data2["item-metadata"][i2.id].description : '';
                 return ((d1 > d2) ? 1 : -1) * sort;
             },
-            "content": function(item, data) {
+            "content": function (item, data) {
                 if (!item.id || !data || !data["item-metadata"] || !data["item-metadata"][item.id]) return "";
                 var md = data["item-metadata"][item.id];
                 if (!md.description) return "";
@@ -117,15 +117,15 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             "id": "go-into-folder",
             "title": "",
             "width": 25,
-            "sort": function(i1, i2, sort, data) {
+            "sort": function (i1, i2, sort, data) {
                 return 0;
             },
-            "content": function(item, data) {
+            "content": function (item, data) {
                 if (item.is_file) return "";
                 return '<div class="go-into-folder"><i class="fa fa-level-down"></i></div>';
             },
-            "on-init": function(list) {
-                list.$i.delegate(".go-into-folder", "click", function(e) {
+            "on-init": function (list) {
+                list.$i.delegate(".go-into-folder", "click", function (e) {
                     var item = list.getItemForElement($(this));
                     if (!item || item.is_file) return;
                     that.changeToFolder(item);
@@ -134,7 +134,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             }
         });
 
-        that.init = function(mainview) {
+        that.init = function (mainview) {
             that._mainview = mainview;
             that.title = loc.get('mainviewMenuTitle');
             that.icon = "file-o";
@@ -146,7 +146,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
 
             // TODO add module registration
             that.addCustomFolderType("search", {
-                onSelectFolder: function(f) {
+                onSelectFolder: function (f) {
                     var df = $.Deferred();
                     if (!f) return df.resolve({
                         type: "search",
@@ -160,7 +160,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                     service.post("filesystem/search", {
                         text: text,
                         rq_data: that.getDataRequest()
-                    }).done(function(r) {
+                    }).done(function (r) {
                         var items = [];
                         for (var id in r.matches) {
                             items.push(r.matches[id].item);
@@ -180,7 +180,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                     return df.promise();
                 },
 
-                onRenderFolderView: function(f, fi, $h, $tb) {
+                onRenderFolderView: function (f, fi, $h, $tb) {
                     dom.template("kloudspeaker-tmpl-main-searchresults", {
                         folder: f,
                         info: fi
@@ -192,12 +192,12 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                     that.addCommonFileviewActions($fa);
                 },
 
-                onItemListRendered: function(f, fi, items) {
+                onItemListRendered: function (f, fi, items) {
                     // tooltips
-                    var matchList = function(l) {
+                    var matchList = function (l) {
                         var r = "";
                         var first = true;
-                        $.each(l, function(i, li) {
+                        $.each(l, function (i, li) {
                             if (!first) r = r + ", ";
                             r = r + loc.get('mainViewSearchResultTooltipMatchType_' + li.type);
                             first = false;
@@ -205,7 +205,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                         return r;
                     };
                     var matchesTitle = loc.get('mainViewSearchResultTooltipMatches');
-                    $(".kloudspeaker-filelist-item").each(function() {
+                    $(".kloudspeaker-filelist-item").each(function () {
                         var $i = $(this);
                         var item = $i.tmplItem().data;
                         var title = fs.rootsById[item.root_id].name + '/' + item.path + ', ' + matchesTitle + matchList(fi.info.matches[item.id].matches);
@@ -217,7 +217,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 }
             });
 
-            $.each(plugins.getFileViewPlugins(), function(i, p) {
+            $.each(plugins.getFileViewPlugins(), function (i, p) {
                 if (p.fileViewHandler.onInit) p.fileViewHandler.onInit(that);
 
                 if (!p.fileViewHandler.filelistColumns) return;
@@ -228,7 +228,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                     that._filelist.addColumn(cols[j]);
             });
 
-            _.each(ui._fileViewHandlers, function(h) {
+            _.each(ui._fileViewHandlers, function (h) {
                 if (h.onInit) h.onInit(that);
 
                 if (!h.filelistColumns) return;
@@ -239,32 +239,32 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                     that._filelist.addColumn(cols[j]);
             });
 
-            require([settings['file-view']['item-context-module']], function(ic) {
+            require([settings['file-view']['item-context-module']], function (ic) {
                 that.itemContext = ic;
             });
         }
 
-        that.deinit = function() {
+        that.deinit = function () {
             events.removeEventHandler('fileview');
         }
 
-        that.addCustomFolderType = function(id, h) {
+        that.addCustomFolderType = function (id, h) {
             that._customFolderTypes[id] = h;
         }
 
-        that.onResize = function() {}
+        that.onResize = function () {}
 
-        that.onActivate = function(h) {
+        that.onActivate = function (h) {
             dom.template("kloudspeaker-tmpl-fileview").appendTo(h.content);
             that.showProgress();
             // TODO expose file urls
 
             var navBarItems = [];
-            $.each(fs.roots, function(i, f) {
+            $.each(fs.roots, function (i, f) {
                 navBarItems.push({
                     title: f.name,
                     obj: f,
-                    callback: function() {
+                    callback: function () {
                         that.changeToFolder(f);
                     }
                 })
@@ -272,21 +272,21 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             that.rootNav = h.addNavBar({
                 title: loc.get("mainViewRootsTitle"),
                 items: navBarItems,
-                onRender: dnd ? function($nb, $items, objs) {
+                onRender: dnd ? function ($nb, $items, objs) {
                     dnd.enableDrop($items, {
-                        canDrop: function($e, e, obj) {
+                        canDrop: function ($e, e, obj) {
                             if (!obj || obj.type != 'filesystemitem') return false;
                             var item = obj.payload;
                             var me = objs($e);
                             return that.canDragAndDrop(me, item);
                         },
-                        dropType: function($e, e, obj) {
+                        dropType: function ($e, e, obj) {
                             if (!obj || obj.type != 'filesystemitem') return false;
                             var item = obj.payload;
                             var me = objs($e);
                             return that.dropType(me, item);
                         },
-                        onDrop: function($e, e, obj) {
+                        onDrop: function ($e, e, obj) {
                             if (!obj || obj.type != 'filesystemitem') return;
                             var item = obj.payload;
                             var me = objs($e);
@@ -314,11 +314,11 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             that._scrollInThreshold = 0;
             $(window).bind('scroll', that._updateScroll);
 
-            $.each(plugins.getFileViewPlugins(), function(i, p) {
+            $.each(plugins.getFileViewPlugins(), function (i, p) {
                 if (p.fileViewHandler.onActivate)
                     p.fileViewHandler.onActivate(app.getElement(), h);
             });
-            _.each(ui._fileViewHandlers, function(fvh) {
+            _.each(ui._fileViewHandlers, function (fvh) {
                 if (fvh.onActivate)
                     fvh.onActivate(app.getElement(), h);
             });
@@ -329,7 +329,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             }
 
             var subviews = [];
-            _.each(fs.roots, function(r) {
+            _.each(fs.roots, function (r) {
                 subviews.push({
                     title: r.name,
                     icon: 'folder',
@@ -337,7 +337,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 });
             })
 
-            h.mainview.showSubviewList(subviews, function(f) {
+            h.mainview.showSubviewList(subviews, function (f) {
                 that.changeToFolder(f.item);
             });
 
@@ -345,10 +345,10 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             if (params.path) {
                 fs.findFolder({
                     path: params.path
-                }, that.getDataRequest()).done(function(r) {
+                }, that.getDataRequest()).done(function (r) {
                     var folder = r.folder;
                     that.changeToFolder(folder);
-                }).fail(function(e) {
+                }).fail(function (e) {
                     if (e.code == 203) {
                         dialogs.error({
                             message: loc.get('mainviewFolderNotFound', params.path)
@@ -362,9 +362,9 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             }
 
             if (h.id) {
-                that.changeToFolder(h.id.join("/")).fail(function() {
+                that.changeToFolder(h.id.join("/")).fail(function () {
                     this.handled = true;
-                    utils.invokeLater(function() {
+                    utils.invokeLater(function () {
                         //TODO show error message that folder was not found?
                         that.hideProgress();
                         that.openInitialFolder();
@@ -374,16 +374,16 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 that.openInitialFolder();
         };
 
-        that.onRestoreView = function(id) {
+        that.onRestoreView = function (id) {
             that.changeToFolder(id.join("/"), true);
         };
 
-        that._getUploadHandler = function(c) {
+        that._getUploadHandler = function (c) {
             return {
-                isUploadAllowed: function(files) {
+                isUploadAllowed: function (files) {
                     if (!files) return false;
                     var allowed = true;
-                    $.each(files, function(i, f) {
+                    $.each(files, function (i, f) {
                         var fn = files[i].name;
                         if (!fn) return;
 
@@ -404,17 +404,17 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                     }
                     return allowed;
                 },
-                start: function(files, ready, cancel) {
-                    that.uploadProgress.show(loc.get(files.length > 1 ? "mainviewUploadProgressManyMessage" : "mainviewUploadProgressOneMessage", files.length), function() {
+                start: function (files, ready, cancel) {
+                    that.uploadProgress.show(loc.get(files.length > 1 ? "mainviewUploadProgressManyMessage" : "mainviewUploadProgressOneMessage", files.length), function () {
                         ready();
                     }, cancel);
                 },
-                progress: function(pr, br) {
+                progress: function (pr, br) {
                     var speed = "";
                     if (br) speed = that._formatters.uploadSpeed.format(br / 1024);
                     that.uploadProgress.set(pr, speed);
                 },
-                finished: function() {
+                finished: function () {
                     if (c) c.close();
                     that.uploadProgress.hide();
                     dialogs.notification({
@@ -423,7 +423,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                     });
                     that.refresh();
                 },
-                aborted: function(f) {
+                aborted: function (f) {
                     if (c) c.close();
                     that.uploadProgress.hide();
                     dialogs.notification({
@@ -432,7 +432,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                     });
                     that.refresh();
                 },
-                failed: function(f, e) {
+                failed: function (f, e) {
                     if (c) c.close();
                     that.uploadProgress.hide();
                     if (e && e.code == 109 && e.data && e.data.items) {
@@ -449,13 +449,13 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                         });
                     }
                 },
-                fileStatus: function(name, size) {
+                fileStatus: function (name, size) {
                     if (!settings["resume-upload"] || !name || !that._currentFolder || that._currentFolder.type) return;
 
                     var df = $.Deferred();
                     service.post('filesystem/' + that._currentFolder.id + "/fileinfo", {
                         files: [name]
-                    }).done(function(r) {
+                    }).done(function (r) {
                         if (!r || !r[name]) df.resolve(false); //don't resume
                         else if (r[name].size >= size) df.resolve(false); //file is already bigger, don't resume
                         else df.resolve(r[name].size);
@@ -465,7 +465,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             };
         };
 
-        that._updateScroll = function() {
+        that._updateScroll = function () {
             if (settings["file-view"]["header-scroll"] === false) return;
             if (typeof settings["file-view"]["header-scroll"] == "function") {
                 settings["file-view"]["header-scroll"]();
@@ -482,34 +482,34 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             else $("#kloudspeaker-folderview").removeClass("detached");
         };
 
-        that.openInitialFolder = function() {
+        that.openInitialFolder = function () {
             if (fs.roots.length === 0) that.showNoRoots();
             else if (fs.roots.length == 1) that.changeToFolder(fs.roots[0]);
             else that.changeToFolder(null);
         };
 
-        that.onDeactivate = function() {
+        that.onDeactivate = function () {
             $(window).unbind('scroll');
 
             if (that._dndUploader) that._dndUploader.destroy();
 
-            $.each(plugins.getFileViewPlugins(), function(i, p) {
+            $.each(plugins.getFileViewPlugins(), function (i, p) {
                 if (p.fileViewHandler.onDeactivate)
                     p.fileViewHandler.onDeactivate();
             });
-            _.each(ui._fileViewHandlers, function(fvh) {
+            _.each(ui._fileViewHandlers, function (fvh) {
                 if (fvh.onDeactivate)
                     fvh.onDeactivate();
             });
         };
 
-        that.initViewTools = function($t) {
+        that.initViewTools = function ($t) {
             dom.template("kloudspeaker-tmpl-fileview-tools").appendTo($t);
 
             ui.process($t, ["radio"], that);
             that.controls["kloudspeaker-fileview-style-options"].set(that._viewStyle);
 
-            var onSearch = function() {
+            var onSearch = function () {
                 var val = $("#kloudspeaker-fileview-search-input").val();
                 if (!val || val.length === 0) return;
                 $("#kloudspeaker-fileview-search-input").val("");
@@ -518,24 +518,24 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                     id: encodeURIComponent(val)
                 });
             };
-            $("#kloudspeaker-fileview-search-input").keyup(function(e) {
+            $("#kloudspeaker-fileview-search-input").keyup(function (e) {
                 if (e.which == 13) onSearch();
             });
             $("#kloudspeaker-fileview-search > button").click(onSearch);
         };
 
-        that.getDataRequest = function() {
+        that.getDataRequest = function () {
             var rq = (!that._currentFolder || !that._currentFolder.type) ? {
                 'parent-metadata': {}
             } : {};
-            $.each(plugins.getFileViewPlugins(), function(i, p) {
+            $.each(plugins.getFileViewPlugins(), function (i, p) {
                 if (p.fileViewHandler.getDataRequest)
                     rq = $.extend(rq, p.fileViewHandler.getDataRequest(that._currentFolder));
             });
             return $.extend(rq, that.itemWidget.getDataRequest ? that.itemWidget.getDataRequest() : {});
         };
 
-        that.updateData = function(hcb) {
+        that.updateData = function (hcb) {
             var res = hcb(that._currentFolderData.data);
             if (!res) return;
             if (res === true) that._updateUI();
@@ -547,11 +547,11 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             }
         };
 
-        that.getCurrentFolder = function() {
+        that.getCurrentFolder = function () {
             return that._currentFolder;
         };
 
-        that.onEvent = function(e) {
+        that.onEvent = function (e) {
             if (!e.type.startsWith('filesystem/')) return;
 
             if (e.type == "filesystem/item-update") {
@@ -575,17 +575,17 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             that.refresh();
         };
 
-        that.onRadioChanged = function(groupId, valueId, i) {
+        that.onRadioChanged = function (groupId, valueId, i) {
             if (groupId == "kloudspeaker-fileview-style-options") that.onViewStyleChanged(valueId, i);
         };
 
-        that.onViewStyleChanged = function(id, i) {
+        that.onViewStyleChanged = function (id, i) {
             that._viewStyle = i;
             that.initList();
             that.refresh();
         };
 
-        that.showNoRoots = function() {
+        that.showNoRoots = function () {
             //TODO show message, for admin instruct opening admin tool?
             that._currentFolder = false;
             that._currentFolderData = {
@@ -594,20 +594,20 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             that._updateUI();
         };
 
-        that.showProgress = function() {
+        that.showProgress = function () {
             $("#kloudspeaker-folderview-items").addClass("loading");
         };
 
-        that.hideProgress = function() {
+        that.hideProgress = function () {
             $("#kloudspeaker-folderview-items").removeClass("loading");
         };
 
-        that.changeToFolder = function(f, noStore) {
+        that.changeToFolder = function (f, noStore) {
             var id = f;
             if (!id) {
                 if (fs.roots)
                     id = fs.roots[0].id;
-            } else if (typeof(id) != "string") id = that._getFolderPublicId(id);
+            } else if (typeof (id) != "string") id = that._getFolderPublicId(id);
 
             if (!noStore) app.storeView("files/" + (id ? id : ""));
 
@@ -627,15 +627,15 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             return that._onSelectFolder(id, oldType);
         };
 
-        that._getFolderPublicId = function(f) {
+        that._getFolderPublicId = function (f) {
             if (!f) return "";
             if (f.type && that._customFolderTypes[f.type])
                 return f.type + "/" + f.id;
             return f.id;
         };
 
-        that._onSelectFolder = function(id, oldType) {
-            var onFail = function() {
+        that._onSelectFolder = function (id, oldType) {
+            var onFail = function () {
                 that.hideProgress();
             };
             ui.hideActivePopup();
@@ -649,7 +649,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             if (that._currentFolderType) {
                 return that._customFolderTypes[that._currentFolderType].onSelectFolder(idParts[1]).done(that._setFolder).fail(onFail);
             } else if (!id || idParts.length == 1) {
-                return fs.folderInfo(id ? idParts[0] : null, true, that.getDataRequest()).done(function(r) {
+                return fs.folderInfo(id ? idParts[0] : null, true, that.getDataRequest()).done(function (r) {
                     var folder = r.folder;
                     if (folder && folder.id == folder.root_id && fs.rootsById[folder.id]) folder = fs.rootsById[folder.id];
                     var data = r;
@@ -665,12 +665,12 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             }
         };
 
-        that.refresh = function() {
+        that.refresh = function () {
             if (!that._currentFolder) return;
             that._onSelectFolder(that._getFolderPublicId(that._currentFolder));
         };
 
-        that._setFolder = function(folder, data) {
+        that._setFolder = function (folder, data) {
             var rootFolder = (folder && fs.rootsById[folder.root_id]) ? fs.rootsById[folder.root_id] : null;
             that._mainview.setActiveSubview(rootFolder ? {
                 icon: 'folder',
@@ -680,26 +680,27 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             that._currentFolder = folder;
             that._currentFolderType = (folder && folder.type) ? folder.type : null;
             that._currentFolderData = data;
+            that._currentFolderData.subfolders = {};
 
             that.hideProgress();
             that._updateUI();
         };
 
-        that._canWrite = function() {
+        that._canWrite = function () {
             if (!that._currentFolder) return false;
             return permissions.hasFilesystemPermission(that._currentFolder, "filesystem_item_access", "rw", true);
         }
 
-        that.onRetrieveUrl = function(url) {
+        that.onRetrieveUrl = function (url) {
             if (!that._currentFolder) return;
 
             that.showProgress();
             service.post("filesystem/" + that._currentFolder.id + "/retrieve", {
                 url: url
-            }).done(function(r) {
+            }).done(function (r) {
                 that.hideProgress();
                 that.refresh();
-            }).fail(function(error) {
+            }).fail(function (error) {
                 that.hideProgress();
                 //301 resource not found
                 if (error.code == 301) {
@@ -711,21 +712,21 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             });
         };
 
-        that.dragType = function() {
+        that.dragType = function () {
             if (that._currentFolder && that._currentFolder.type && that._customFolderTypes[that._currentFolder.type]) {
                 if (that._customFolderTypes[that._currentFolder.type].dragType) return that._customFolderTypes[that._currentFolder.type].dragType();
             }
             return "filesystemitem";
         };
 
-        that.dropType = function(to, i) {
+        that.dropType = function (to, i) {
             var single = false;
             if (!utils.isArray(i)) single = i;
             else if (i.length == 1) single = i[0];
 
             if (settings["file-view"] && settings["file-view"]["drop-type"]) {
                 var dt = settings["file-view"]["drop-type"];
-                var t = typeof(dt);
+                var t = typeof (dt);
                 if (t == 'function') return dt(to, i);
                 else if (t == 'object') {
                     if (single && dt.single) return dt.single;
@@ -737,7 +738,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             return copy ? "copy" : "move";
         };
 
-        that.canDragAndDrop = function(to, itm) {
+        that.canDragAndDrop = function (to, itm) {
             var single = false;
             if (!utils.isArray(itm)) single = itm;
             else if (itm.length == 1) single = itm[0];
@@ -758,7 +759,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             return can;
         };
 
-        that.onDragAndDrop = function(to, itm) {
+        that.onDragAndDrop = function (to, itm) {
             var copy = (that.dropType(to, itm) == 'copy');
             //console.log((copy ? "copy " : "move ") +itm.name+" to "+to.name);
 
@@ -766,9 +767,9 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             else fs.move(itm, to);
         };
 
-        that._updateUI = function() {
+        that._updateUI = function () {
             var opt = {
-                title: function() {
+                title: function () {
                     return that.data.title ? that.data.title : loc.get(that.data['title-key']);
                 }
             };
@@ -801,14 +802,14 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                     if (that._canWrite()) {
                         dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
                             icon: 'fa fa-folder'
-                        }, opt).appendTo($tb).click(function() {
+                        }, opt).appendTo($tb).click(function () {
                             controls.dynamicBubble({
                                 element: $(this),
                                 content: dom.template("kloudspeaker-tmpl-main-createfolder-bubble"),
                                 handler: {
-                                    onRenderBubble: function(b) {
+                                    onRenderBubble: function (b) {
                                         var $i = $("#kloudspeaker-mainview-createfolder-name-input");
-                                        var onCreate = function() {
+                                        var onCreate = function () {
                                             var name = $i.val();
                                             if (!name) return;
 
@@ -816,7 +817,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                                             fs.createFolder(that._currentFolder, name);
                                         };
                                         $("#kloudspeaker-mainview-createfolder-button").click(onCreate);
-                                        $i.bind('keypress', function(e) {
+                                        $i.bind('keypress', function (e) {
                                             if ((e.keyCode || e.which) == 13) onCreate();
                                         }).focus();
                                     }
@@ -826,12 +827,12 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                         });
                         if (uploader) dom.template("kloudspeaker-tmpl-fileview-foldertools-action", {
                             icon: 'fa fa-upload'
-                        }, opt).appendTo($tb).click(function() {
+                        }, opt).appendTo($tb).click(function () {
                             controls.dynamicBubble({
                                 element: $(this),
                                 content: dom.template("kloudspeaker-tmpl-main-addfile-bubble"),
                                 handler: {
-                                    onRenderBubble: function(b) {
+                                    onRenderBubble: function (b) {
                                         uploader.initUploadWidget($("#kloudspeaker-mainview-addfile-upload"), {
                                             url: fs.getUploadUrl(that._currentFolder),
                                             handler: that._getUploadHandler(b)
@@ -840,13 +841,13 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                                         if (!features.hasFeature('retrieve_url')) {
                                             $("#kloudspeaker-mainview-addfile-retrieve").remove();
                                         }
-                                        var onRetrieve = function() {
+                                        var onRetrieve = function () {
                                             var val = $("#kloudspeaker-mainview-addfile-retrieve-url-input").val();
                                             if (!val || val.length < 4 || val.substring(0, 4).toLowerCase().localeCompare('http') !== 0) return false;
                                             b.close();
                                             that.onRetrieveUrl(val);
                                         };
-                                        $("#kloudspeaker-mainview-addfile-retrieve-url-input").bind('keypress', function(e) {
+                                        $("#kloudspeaker-mainview-addfile-retrieve-url-input").bind('keypress', function (e) {
                                             if ((e.keyCode || e.which) == 13) onRetrieve();
                                         });
                                         $("#kloudspeaker-mainview-addfile-retrieve-button").click(onRetrieve);
@@ -867,10 +868,10 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                         items: false,
                         hideDelay: 0,
                         style: 'submenu',
-                        onShow: function(drp, items) {
+                        onShow: function (drp, items) {
                             if (items) return;
 
-                            that.getItemActions(that._currentFolder, function(a) {
+                            that.getItemActions(that._currentFolder, function (a) {
                                 if (!a) {
                                     drp.hide();
                                     return;
@@ -910,10 +911,10 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 controls.editableLabel({
                     element: $dsc,
                     hint: loc.get('mainviewDescriptionHint'),
-                    onedit: function(desc) {
+                    onedit: function (desc) {
                         service.put("filesystem/" + that._currentFolder.id + "/description/", {
                             description: desc
-                        }).done(function() {
+                        }).done(function () {
                             events.dispatch("filesystem/item-update", {
                                 item: that._currentFolder,
                                 property: 'description',
@@ -939,10 +940,10 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             that.hideProgress();
         };
 
-        that.addCommonFileviewActions = function($c) {
+        that.addCommonFileviewActions = function ($c) {
             //TODO kaikki action-luonnit omaan luokkaan
             var opt = {
-                title: function() {
+                title: function () {
                     return that.data.title ? that.data.title : loc.get(that.data['title-key']);
                 }
             };
@@ -959,8 +960,8 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 items: false,
                 hideDelay: 0,
                 style: 'submenu',
-                onShow: function(drp) {
-                    that._getSelectionActions(function(a) {
+                onShow: function (drp) {
+                    that._getSelectionActions(function (a) {
                         if (!a) {
                             drp.hide();
                             return;
@@ -976,14 +977,14 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             }, opt).appendTo($c).click(that.refresh);
         };
 
-        that._getViewItems = function() {
+        that._getViewItems = function () {
             //if (that._currentFolder && that._currentFolder.type && that._customFolderTypes[that._currentFolder.type])
             //  return
             return that._currentFolderData.items;
         };
 
-        that._getSelectionActions = function(cb) {
-            var addDefaultActions = function(list) {
+        that._getSelectionActions = function (cb) {
+            var addDefaultActions = function (list) {
                 var result = list || [];
                 if (result.length > 0)
                     result.unshift({
@@ -991,13 +992,13 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                     });
                 result.unshift({
                     "title-key": "mainViewFileViewSelectNone",
-                    callback: function() {
+                    callback: function () {
                         that._updateSelect([]);
                     }
                 });
                 result.unshift({
                     "title-key": "mainViewFileViewSelectAll",
-                    callback: function() {
+                    callback: function () {
                         that._updateSelect(that._getViewItems());
                     }
                 });
@@ -1005,7 +1006,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             };
 
             if (that._currentFolder && that._currentFolder.type && that._customFolderTypes[that._currentFolder.type] && that._customFolderTypes[that._currentFolder.type].getSelectionActions) {
-                that._customFolderTypes[that._currentFolder.type].getSelectionActions(that._selectMode && that._selectedItems.length > 0 ? that._selectedItems : []).done(function(a) {
+                that._customFolderTypes[that._currentFolder.type].getSelectionActions(that._selectMode && that._selectedItems.length > 0 ? that._selectedItems : []).done(function (a) {
                     cb(addDefaultActions(a));
                 });
                 return;
@@ -1020,12 +1021,12 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             cb(addDefaultActions(utils.cleanupActions(result)));
         };
 
-        that._onToggleSelect = function() {
+        that._onToggleSelect = function () {
             that._selectMode = !that._selectMode;
             that._updateSelect();
         };
 
-        that._updateSelect = function(sel) {
+        that._updateSelect = function (sel) {
             if (sel !== undefined) {
                 that._selectedItems = sel;
                 that._selectMode = true;
@@ -1038,10 +1039,10 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             if (that._selectMode) that.itemWidget.setSelection(that._selectedItems);
         };
 
-        that._getRootItems = function() {
+        that._getRootItems = function () {
             var rootItems = [];
-            var rootCb = function(r) {
-                return function() {
+            var rootCb = function (r) {
+                return function () {
                     that.changeToFolder(r);
                 };
             };
@@ -1055,7 +1056,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             return rootItems;
         };
 
-        that.setupHierarchy = function(h, $t) {
+        that.setupHierarchy = function (h, $t) {
             var items = h;
             var p = $t.append(dom.template("kloudspeaker-tmpl-fileview-folder-hierarchy", {
                 items: items
@@ -1068,26 +1069,26 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 style: 'submenu'
             });
 
-            var $hi = $(".kloudspeaker-folder-hierarchy-item").click(function() {
+            var $hi = $(".kloudspeaker-folder-hierarchy-item").click(function () {
                 var folder = $(this).tmplItem().data;
                 that.changeToFolder(folder);
             });
 
             if (dnd) {
                 dnd.enableDrop($hi.find("a"), {
-                    canDrop: function($e, e, obj) {
+                    canDrop: function ($e, e, obj) {
                         if (!obj || obj.type != 'filesystemitem') return false;
                         var itm = obj.payload;
                         var me = $e.parent().tmplItem().data;
                         return that.canDragAndDrop(me, itm);
                     },
-                    dropType: function($e, e, obj) {
+                    dropType: function ($e, e, obj) {
                         if (!obj || obj.type != 'filesystemitem') return false;
                         var itm = obj.payload;
                         var me = $e.tmplItem().data;
                         return that.dropType(me, itm);
                     },
-                    onDrop: function($e, e, obj) {
+                    onDrop: function ($e, e, obj) {
                         if (!obj || obj.type != 'filesystemitem') return;
                         var itm = obj.payload;
                         var me = $e.parent().tmplItem().data;
@@ -1097,20 +1098,20 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             }
         };
 
-        that.isListView = function() {
+        that.isListView = function () {
             return that._viewStyle === 0;
         };
 
-        that._handleCustomAction = function(action, item, t) {
+        that._handleCustomAction = function (action, item, t) {
             if (!settings["file-view"] || !settings["file-view"].actions) return false;
             var actions = settings["file-view"].actions;
-            if (!actions[action] || (typeof(actions[action]) !== "function")) return false;
+            if (!actions[action] || (typeof (actions[action]) !== "function")) return false;
 
             var ctx = that._getCtxObj(item, t);
             var response = actions[action](item, ctx);
             if (!response) return false;
 
-            if (typeof(response) == "string") {
+            if (typeof (response) == "string") {
                 if (response == "open_popup") that.itemContext.open(ctx);
                 else if (response == "open_menu") that.showActionMenu(item, ctx.element);
                 else if (!item.is_file && response == "go_into_folder") that.changeToFolder(item);
@@ -1118,7 +1119,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             return true;
         };
 
-        that._getCtxObj = function(item, target) {
+        that._getCtxObj = function (item, target) {
             return {
                 fileview: that,
                 item: item,
@@ -1134,13 +1135,13 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             };
         }
 
-        that._handleCustomFolderTypeAction = function(ac, item, t) {
+        that._handleCustomFolderTypeAction = function (ac, item, t) {
             if (!that._currentFolder || !that._currentFolder.type || !that._customFolderTypes[that._currentFolder.type] || !that._customFolderTypes[that._currentFolder.type].handleAction) return false;
             var ctx = that._getCtxObj(item, t)
             return that._customFolderTypes[that._currentFolder.type].handleAction(ac, item, t, ctx);
         }
 
-        that.initList = function() {
+        that.initList = function () {
             var $h = $("#kloudspeaker-folderview-header-items").empty();
             if (that.isListView()) {
                 var colSettings = settings["file-view"]["list-view-columns"];
@@ -1151,13 +1152,15 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 if (!that._filelistCols) {
                     var cols = [];
                     if (_.isArray(colSettings)) {
-                        _.each(colSettings, function(c) {
+                        _.each(colSettings, function (c) {
                             if (_.isObject(c)) cols.push(c);
-                            else cols.push({ id: c });
+                            else cols.push({
+                                id: c
+                            });
                         });
                     } else {
                         var keys = _.without(_.keys(colSettings), 'col_order');
-                        _.each(keys, function(cid) {
+                        _.each(keys, function (cid) {
                             if (!cid) return;
                             var c = colSettings[cid];
                             if (!c) return;
@@ -1166,14 +1169,14 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                         });
 
                         if (colSettings.col_order) {
-                            keys = keys.sort(function(ak, bk) {
+                            keys = keys.sort(function (ak, bk) {
                                 var ai = colSettings.col_order.indexOf(ak);
                                 if (ai < 0) ai = keys.length;
                                 var bi = colSettings.col_order.indexOf(bk);
                                 if (bi < 0) bi = keys.length;
                                 return ai - bi;
                             });
-                            cols = cols.sort(function(a, b) {
+                            cols = cols.sort(function (a, b) {
                                 var ai = keys.indexOf(a.id);
                                 var bi = keys.indexOf(b.id);
                                 return ai - bi;
@@ -1195,7 +1198,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 canDrop: that.canDragAndDrop,
                 dropType: that.dropType,
                 onDrop: that.onDragAndDrop,
-                onClick: function(item, t, e, $col) {
+                onClick: function (item, t, e, $col) {
                     if (that._handleCustomFolderTypeAction("onClick", item, t)) return;
                     if (that._handleCustomAction("onClick", item, t)) return;
 
@@ -1204,7 +1207,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                         var col = that._filelist.columns[t];
                         if (col["on-click"]) {
                             col["on-click"].apply({
-                                showBubble: function(spec) {
+                                showBubble: function (spec) {
                                     controls.dynamicBubble({
                                         element: $col,
                                         title: spec.title,
@@ -1233,42 +1236,62 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
 
                     if (showContext) that.itemContext.open(ctx);
                 },
-                onDblClick: function(item) {
+                onDblClick: function (item) {
                     if (that._handleCustomFolderTypeAction("onDblClick", item)) return;
                     if (that._handleCustomAction("onDblClick", item)) return;
                     if (item.is_file) return;
                     that.changeToFolder(item);
                 },
-                onRightClick: function(item, t, e) {
+                onRightClick: function (item, t, e) {
                     if (that._handleCustomFolderTypeAction("onRightClick", item, t)) return;
                     if (that._handleCustomAction("onRightClick", item, t)) return;
                     that.showActionMenu(item, that.itemWidget.getItemContextElement(item));
                 },
-                onContentRendered: function(items, data) {
+                onContentRendered: function (items, data) {
                     if (that._currentFolder && that._currentFolder.type && that._customFolderTypes[that._currentFolder.type]) {
                         if (that._customFolderTypes[that._currentFolder.type].onItemListRendered)
                             that._customFolderTypes[that._currentFolder.type].onItemListRendered(that._currentFolder, that._currentFolderData, items);
                     }
                 },
-                getSelectedItems: function() {
+                getSelectedItems: function () {
                     if (!that._selectMode || that._selectedItems.length === 0) return false;
                     return that._selectedItems;
                 },
-                onSelectUnselect: function(item) {
+                onSelectUnselect: function (item) {
                     if (that._selectedItems.indexOf(item) >= 0) that._selectedItems.remove(item);
                     else that._selectedItems.push(item);
                     that.itemWidget.setSelection(that._selectedItems);
+                },
+                onExpandFolder: function (item, e) {
+                    utils.invokeLater(that._updateList);
+                },
+                getFolderInfo: function (f) {
+                    var fid = _.isString(f) ? f : f.id;
+                    if (that._currentFolderData.subfolders[fid]) return $.Deferred().resolve(that._currentFolderData.subfolders[fid]);
+
+                    return fs.folderInfo(fid, true, that.getDataRequest()).pipe(function (r) {
+                        var result = r;
+                        var items = result.folders.slice(0).concat(r.files);
+                        result.items = items;
+                        that._currentFolderData.subfolders[fid] = result;
+                        return result;
+                    });
+                },
+                getItemData: function(i) {
+                    if (i.parent_id == that._currentFolderData.folder.id)
+                        return that._currentFolderData.data;
+                    return that._currentFolderData.subfolders[i.parent_id].data;
                 }
             });
         };
 
-        that._updateList = function() {
+        that._updateList = function () {
             that._items = that._currentFolderData.items;
             that._itemsById = utils.mapByKey(that._items, "id");
             if (that._selectedItems) {
                 var existing = [];
                 var ids = {};
-                $.each(that._selectedItems, function(i, itm) {
+                $.each(that._selectedItems, function (i, itm) {
                     var newItem = that._itemsById[itm.id];
                     if (!newItem || ids[itm.id]) return;
                     existing.push(newItem);
@@ -1277,21 +1300,21 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                 that._selectedItems = existing;
             }
             //$("#kloudspeaker-folderview-items").css("top", $("#kloudspeaker-folderview-header").outerHeight()+"px");
-            that.itemWidget.content(that._items, that._currentFolderData.data);
+            that.itemWidget.content(that._items, that._currentFolderData);
             if (that._selectMode) that.itemWidget.setSelection(that._selectedItems);
         };
 
-        that.showActionMenu = function(item, c) {
+        that.showActionMenu = function (item, c) {
             c.addClass("open");
             var popup = controls.popupmenu({
                 element: c,
-                onHide: function() {
+                onHide: function () {
                     c.removeClass("open");
                     that.itemWidget.removeHover();
                 }
             });
 
-            that.getItemActions(item, function(a) {
+            that.getItemActions(item, function (a) {
                 if (!a) {
                     popup.hide();
                     return;
@@ -1300,15 +1323,15 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             });
         };
 
-        that.getItemActions = function(item, cb) {
+        that.getItemActions = function (item, cb) {
             if (that._currentFolder && that._currentFolder.type && that._customFolderTypes[that._currentFolder.type] && that._customFolderTypes[that._currentFolder.type].getItemActions) {
-                that._customFolderTypes[that._currentFolder.type].getItemActions(item).done(function(a) {
+                that._customFolderTypes[that._currentFolder.type].getItemActions(item).done(function (a) {
                     cb(a);
                 });
                 return;
             }
 
-            fs.itemDetails(item, plugins.getItemContextRequestData(item)).done(function(d) {
+            fs.itemDetails(item, plugins.getItemContextRequestData(item)).done(function (d) {
                 if (!d) {
                     cb([]);
                     return;
@@ -1323,7 +1346,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             });
         };
 
-        var UploadProgress = function($e) {
+        var UploadProgress = function ($e) {
             var t = this;
             this._h = $e.height();
             t._$title = $e.find(".title");
@@ -1332,27 +1355,27 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             t._$cancelBtn = $e.find(".close");
 
             return {
-                show: function(title, cb, cancelCb) {
+                show: function (title, cb, cancelCb) {
                     $e.css("bottom", (0 - t._h) + "px");
                     t._$title.text(title ? title : "");
                     t._$speed.text("");
                     t._$bar.css("width", "0%");
-                    t._$cancelBtn.unbind("click").bind("click", function() {
+                    t._$cancelBtn.unbind("click").bind("click", function () {
                         cancelCb();
                     });
                     $e.show().animate({
                         "bottom": "0"
                     }, 500, cb);
                 },
-                set: function(progress, speed) {
+                set: function (progress, speed) {
                     t._$bar.css("width", progress + "%");
                     t._$speed.text(speed ? speed : "");
                 },
-                hide: function(cb) {
-                    setTimeout(function() {
+                hide: function (cb) {
+                    setTimeout(function () {
                         $e.animate({
                             "bottom": (0 - t._h) + "px"
-                        }, 500, function() {
+                        }, 500, function () {
                             t._$bar.css("width", "0%");
                             $e.hide();
                             if (cb) cb();
