@@ -138,12 +138,11 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'klo
             t.refreshSortIndicator();
             if (!nocontent)
                 utils.invokeLater(function () {
-                    t.content(t.items, t.data);
+                    t.content(t._items, t.data);
                 });
         }
 
         this.sortItems = function () {
-
             var _compare = function (ai, bi) {
                 var level_a = ai.level;
                 var level_b = bi.level;
@@ -209,7 +208,12 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'klo
                 parent: t.folder,
                 cols: t.cols,
                 itemLevel: function (item) {
+                    if (!t.folder) return 0;
                     return new Array(item.level - t.folder.level);
+                },
+                itemIndent: function (item) {
+                    if (!t.folder) return 0;
+                    return (item.level - t.folder.level) * 10;
                 },
                 typeClass: function (item) {
                     var c = item.is_file ? 'item-file' : 'item-folder';
@@ -223,6 +227,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'klo
                 itemColStyle: function (item, col) {
                     var style = "min-width:" + (col["min-width"] || t.minColWidth) + "px";
                     if (col.width) style = style + ";width:" + col.width + "px";
+                    if (col.id == 'name' && !!t.folder && t.hierarchy) style = style + ";margin-right:-" + ((item.level - t.folder.level) * 10) + "px";
                     return style;
                 },
                 itemColTitle: function (item, col) {
@@ -230,7 +235,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'klo
                     if (col["value-title"]) title = col["value-title"](item, t.p.getItemData(item));
                     return title;
                 },
-                hierarchy: t.hierarchy,
+                hierarchy: !!t.folder && t.hierarchy,
                 foldersExpanded: t.foldersExpanded
             }).appendTo(t.$i.empty());
 
@@ -324,6 +329,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'klo
         this.content = function (items, d) {
             var that = this;
 
+            t._items = items;
             t.items = [];
             t.itemsById = {};
             t.data = d;
@@ -333,14 +339,21 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'klo
                 return Math.max(0, i.is_file ? l : l - 1);
             }
 
-            d.folder.level = _getLevel(d.folder);
+            if (d.folder)
+                d.folder.level = _getLevel(d.folder);
 
             t.folder = d.folder;
 
             //prefetch subfolders
             var dfl = [];
             _.each(utils.getKeys(t.foldersExpanded), function (fid) {
-                dfl.push(t.p.getFolderInfo(fid));
+                var df = $.Deferred();
+                t.p.getFolderInfo(fid).done(df.resolve).fail(function () {
+                    this.handled = true;
+                    delete t.foldersExpanded[fid];
+                    df.resolve();
+                })
+                dfl.push(df);
             });
 
             utils.all(dfl).done(function () {

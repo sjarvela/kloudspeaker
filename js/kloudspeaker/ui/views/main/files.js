@@ -1203,6 +1203,10 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                     if (that._handleCustomAction("onClick", item, t)) return;
 
                     var ctx = that._getCtxObj(item, t);
+                    var data = that._currentFolderData.data;
+                    if (that._currentFolderData.folder && item.parent_id != that._currentFolderData.folder.id)
+                        data = that._currentFolderData.subfolders[item.parent_id].data;
+
                     if (that.isListView() && t != 'icon') {
                         var col = that._filelist.columns[t];
                         if (col["on-click"]) {
@@ -1216,7 +1220,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                                         container: $("#kloudspeaker-filelist-main")
                                     });
                                 }
-                            }, [item, that._currentFolderData.data, ctx]);
+                            }, [item, data, ctx]);
                             return;
                         }
                     }
@@ -1277,8 +1281,8 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                         return result;
                     });
                 },
-                getItemData: function(i) {
-                    if (i.parent_id == that._currentFolderData.folder.id)
+                getItemData: function (i) {
+                    if (!that._currentFolderData.folder || i.parent_id == that._currentFolderData.folder.id)
                         return that._currentFolderData.data;
                     return that._currentFolderData.subfolders[i.parent_id].data;
                 }

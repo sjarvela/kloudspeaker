@@ -267,10 +267,7 @@
 			<i class="kloudspeaker-filelist-item-sel selected fa fa-check-square-o"></i>
 		</div>
 		{{if $item.hierarchy}}
-			<div class="kloudspeaker-filelist-hierarchy-indent">
-				{{each(i) $item.itemLevel($data)}}
-				<div class="hierarchy-level"></div>
-				{{/each}}
+			<div class="kloudspeaker-filelist-hierarchy-indent" style="padding-left: ${$item.itemIndent($data)}px">
 			</div>
 			<div class="kloudspeaker-filelist-col hierarchy-toggle">
 				{{if !$data.is_file}}
