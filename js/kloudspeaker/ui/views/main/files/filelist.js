@@ -1,4 +1,4 @@
-define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'kloudspeaker/dom', 'kloudspeaker/localization', 'kloudspeaker/utils', 'jquery'], function (app, settings, dnd, dom, loc, utils, $) {
+define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'kloudspeaker/dom', 'kloudspeaker/localization', 'kloudspeaker/utils', 'kloudspeaker/core/file-sort', 'jquery'], function (app, settings, dnd, dom, loc, utils, fileSort, $) {
     return function (container, $headerContainer, id, filelistSpec, columns) {
         var t = this;
         t.minColWidth = 25;
@@ -143,47 +143,15 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'klo
         }
 
         this.sortItems = function () {
-            var _compare = function (ai, bi) {
-                var level_a = ai.level;
-                var level_b = bi.level;
-
-                /*console.log("COMPARE");
-                console.log(ai);
-                console.log(level_a);
-                console.log(bi);
-                console.log(level_b);*/
-
-                if (level_a != level_b) {
-                    var r;
-                    if (ai.id == bi.parent_id) r = -1;
-                    else if (bi.id == ai.parent_id) r = 1;
-                    else r = level_a > level_b ? _compare(t.itemsById[ai.parent_id], bi) : _compare(ai, t.itemsById[bi.parent_id]);
-
-                    //console.log("diff level => " + r);
-                    return r;
-                }
-                if (ai.parent_id != bi.parent_id) {
-                    r = _compare(t.itemsById[ai.parent_id], t.itemsById[bi.parent_id]);
-                    //console.log("diff parent => " + r);
-                    return r;
-                }
-
-                var r = t.sortCol.sort(ai, bi, t.sortOrderAsc ? 1 : -1, t.p.getItemData(ai), t.p.getItemData(bi));
-                //console.log("same folder => " + r);
-                return r;
-            };
-
-            //var s = t.sortCol.sort;
-            t.items.sort(_compare);
-            /*function (a, b) {
-
-
-                           console.log(a);
-                           console.log(level_a);
-                           console.log(b);
-                           console.log(level_b);
-                           
-                       });*/
+            t.items = fileSort.sort(t.items, function(ai, bi) {
+                var v = t.sortCol.sort(ai, bi, t.sortOrderAsc ? 1 : -1, t.p.getItemData(ai), t.p.getItemData(bi));
+                //console.log("sortFn=" + v);
+                return v;
+            }, function(ai, bi) {
+                var v = ai.id.toLowerCase().localeCompare(bi.id.toLowerCase()) * (t.sortOrderAsc ? 1 : -1);
+                //console.log("def_sortFn=" + v);
+                return v;
+            }, t.itemsById);
         };
 
         this.refreshSortIndicator = function () {
@@ -343,6 +311,13 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'klo
                 d.folder.level = _getLevel(d.folder);
 
             t.folder = d.folder;
+            t.hierarchy = false;
+            var hv = settings["file-view"]["list-view-hierarchy"];
+            if (hv && _.isFunction(hv)) {
+                t.hierarchy = hv(t.folder);
+            } else {
+                t.hierarchy = !!hv;
+            }
 
             //prefetch subfolders
             var dfl = [];
@@ -379,8 +354,6 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'klo
         };
 
         this.updateItems = function (i) {
-            //t.data = data;
-
             $.each(i, function (ind, item) {
                 var $i = t.$i.find("#kloudspeaker-filelist-item-" + item.id);
                 if ($i.length === 0) return;

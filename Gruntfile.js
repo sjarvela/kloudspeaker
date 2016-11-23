@@ -4,16 +4,16 @@
  * Copyright 2015- Samuli Järvelä
  * Released under GPL License.
  *
- * License: http://www.kloudspekaer.org/license.php
+ * License: http://www.kloudspeaker.org/license.php
  */
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
     'use strict';
 
     // Force use of Unix newlines
     grunt.util.linefeed = '\n';
 
-    RegExp.quote = function(string) {
+    RegExp.quote = function (string) {
         return string.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&');
     };
 
@@ -286,7 +286,7 @@ module.exports = function(grunt) {
                 src: 'backend/include/Version.info.php',
                 dest: 'dist/backend/include/Version.info.php',
                 options: {
-                    process: function(content, srcpath) {
+                    process: function (content, srcpath) {
                         return "<?php $VERSION=\"" + pkg.version + "\"; $REVISION=" + pkg.revision + "; ?>";
                     }
                 }
@@ -347,6 +347,32 @@ module.exports = function(grunt) {
                 //bootstrap: 'tests/php/phpunit.php',
                 colors: true
             }
+        },
+
+        test: {
+            options: {
+                baseUrl: '../js',
+                template: 'js/test/index.template.html',
+                runner: 'test/index.html',
+                files: 'js/test/spec/**/*.js'
+            },
+
+            all: {
+                options: {
+                    baseUrl: '../js'
+                }
+            }
+        },
+
+        mocha: {
+            options: {
+                reporter: 'Spec',
+                run: false
+            },
+
+            test: {
+                src: 'test/index.html'
+            }
         }
 
     });
@@ -372,7 +398,7 @@ module.exports = function(grunt) {
     grunt.registerTask('dist-dav', ['clean', 'copy:dav', 'compress:dav']);
 
     // Full distribution task.
-    grunt.registerTask('dist', ['clean', 'requirejs:app', 'dist-js', 'dist-css', 'dist-backend', 'copy:dist', 'copy:dist_ver', 'compress:dist']);
+    grunt.registerTask('dist', ['clean', 'test', 'requirejs:app', 'dist-js', 'dist-css', 'dist-backend', 'copy:dist', 'copy:dist_ver', 'compress:dist']);
 
     // Default task.
     grunt.registerTask('default', ['dist']);
@@ -381,4 +407,24 @@ module.exports = function(grunt) {
     // grunt change-version-number --oldver=A.B.C --newver=X.Y.Z
     // This can be overzealous, so its changes should always be manually reviewed!
     //grunt.registerTask('change-version-number', 'sed');
+
+    grunt.registerMultiTask('test', 'Run JS Unit tests', function () {
+        // Get the options for the current target
+        var options = this.options();
+        // In the options for the task you can configure which spec files should be
+        // run. We use this to create a list of file names which we can insert into
+        // the {{ tests }} placeholder in our HTML template
+        var tests = grunt.file.expand(options.files).map(function (file) {
+            return '../' + file;
+        });
+
+        // build the template by replacing the placeholders for their actual values
+        var template = grunt.file.read(options.template).replace('{{ tests }}', JSON.stringify(tests)).replace('{{ baseUrl }}', JSON.stringify(options.baseUrl));
+
+        // write template to tests directory
+        grunt.file.write(options.runner, template);
+
+        // Run the tests.
+        grunt.task.run('mocha:test');
+    });
 };

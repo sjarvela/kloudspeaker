@@ -40,6 +40,10 @@
         "grunt-jscs-checker": "~0.3.0",
         "grunt-sed": "~0.1.1",
         "grunt-phpunit": "*",
+        "requirejs": "*",
+        "mocha": "*",
+        "grunt-mocha": "*",
+        "expect.js": "*",
         "load-grunt-tasks": "~0.3.0"
     },
     "peerDependencies": {

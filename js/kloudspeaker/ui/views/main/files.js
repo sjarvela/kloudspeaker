@@ -80,14 +80,13 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
             "width": 180,
             "sort": function (i1, i2, sort, data1, data2) {
                 if (!i1.is_file && !i2.is_file) return 0;
-                if (!data || !data["core-file-modified"]) return 0;
 
-                var ts1 = data1["core-file-modified"][i1.id] ? data1["core-file-modified"][i1.id] * 1 : 0;
-                var ts2 = data2["core-file-modified"][i2.id] ? data2["core-file-modified"][i2.id] * 1 : 0;
+                var ts1 = (data1["core-file-modified"] && data1["core-file-modified"][i1.id]) ? data1["core-file-modified"][i1.id] * 1 : 0;
+                var ts2 = (data2["core-file-modified"] && data2["core-file-modified"][i2.id]) ? data2["core-file-modified"][i2.id] * 1 : 0;
                 return ((ts1 > ts2) ? 1 : -1) * sort;
             },
             "content": function (item, data) {
-                if (!item.id || !item.is_file || !data || !data["core-file-modified"] || !data["core-file-modified"][item.id]) return "";
+                if (!item.id || !data || !data["core-file-modified"] || !data["core-file-modified"][item.id]) return "";
                 return that._formatters.timestamp.format(utils.parseInternalTime(data["core-file-modified"][item.id]));
             }
         });
