@@ -407,6 +407,8 @@ define([], function() {
 
         all: function(list) {
             var df = $.Deferred();
+            if (!list || list.length === 0) return df.resolve();
+            
             $.when.apply($, list).done(function() { df.resolve(); });
             return df;
         },
