@@ -254,6 +254,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/plugins', 'kloudspeaker/localizat
             if (!spec) return false;
 
             return {
+                index: -1,
                 details: {
                     "title-key": "pluginItemDetailsContextTitle",
                     "on-render": function (el, $content) {

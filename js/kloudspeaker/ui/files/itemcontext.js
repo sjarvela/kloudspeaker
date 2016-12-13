@@ -195,19 +195,31 @@ define(['kloudspeaker/filesystem', 'kloudspeaker/plugins', 'kloudspeaker/service
                 var s = $(this).tmplItem().data;
                 onSelectDetails(s.id);
             };
-            for (var id in pl) {
+            var list = [];
+            _.each(utils.getKeys(pl), function(id) {
                 var plugin = pl[id];
-                if (!plugin.details) continue;
+                plugin.id = id;
+                if (!plugin.details) return;
 
-                if (!firstPlugin) firstPlugin = id;
+                list.push(plugin);
+            });
+            list.sort(function(a, b) {
+                var ai = _.isNumber(a.index) ? a.index : 0;
+                var bi = _.isNumber(b.index) ? b.index : 0;
+                var r = ai - bi;
+                if (r === 0) return a.id.localeCompare(b.id);
+                return r;
+            });
+            _.each(list, function(plugin) {
+                if (!firstPlugin) firstPlugin = plugin.id;
 
                 var title = plugin.details.title ? plugin.details.title : (plugin.details["title-key"] ? loc.get(plugin.details["title-key"]) : id);
                 var selector = dom.template("kloudspeaker-tmpl-main-itemcontext-details-selector", {
-                    id: id,
+                    id: plugin.id,
                     title: title,
                     data: plugin
                 }).appendTo($selectors).click(selectorClick);
-            }
+            });
 
             if (firstPlugin) onSelectDetails(firstPlugin);
         }
