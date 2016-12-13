@@ -377,8 +377,9 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'klo
                 t.p.onSelectUnselect(itm);
                 return;
             }
+
             // hierarchy
-            if (i === 1) {
+            if (t.hierarchy && i === 1) {
                 if (t.foldersExpanded[itm.id]) {
                     t.foldersExpanded[itm.id] = false;
                     t.p.onExpandFolder(itm, false);
@@ -388,7 +389,9 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'klo
                 }
                 return;
             }
-            var colId = (i === 2 ? "icon" : t.cols[i - 3].id);
+            if (t.hierarchy) i--;
+
+            var colId = (i === 1 ? "icon" : t.cols[i - 2].id);
             if (left)
                 t.p.onClick(itm, colId, $item, $col);
             else
