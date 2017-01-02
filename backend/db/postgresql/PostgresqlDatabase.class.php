@@ -70,7 +70,7 @@
 		}
 		
 		public function connect($selectDb = TRUE) {
-			$db = pg_connect("host=".$this->host." dbname=".$this->database." user=".$this->user". password=".$this->pw);
+			$db = pg_connect("host=".$this->host." dbname=".$this->database." user=".$this->user." password=".$this->pw);
 			if (!$db) throw new ServiceException("INVALID_CONFIGURATION", "Could not connect to database (host=".$this->host.", user=".$this->user.", password=".$this->pw."), error: ".pg_last_error());
 			$this->db = $db;
 		}
