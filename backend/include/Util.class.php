@@ -19,6 +19,7 @@ class Util {
 	public static function inBytes($a) {
 		$amount = trim($a);
 		$last = strtolower($amount[strlen($amount) - 1]);
+		$amount = substr($amount, 0, -1);
 
 		switch ($last) {
 			case 'g':
