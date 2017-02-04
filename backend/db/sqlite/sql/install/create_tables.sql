@@ -32,7 +32,7 @@ CREATE TABLE folder (
   type char(32) NOT NULL
 );
 CREATE TABLE item_id (
-  id char(13) NOT NULL,
+  id char(32) NOT NULL,
   path char(255) NOT NULL,
   level smallint NOT NULL,
   PRIMARY KEY (id)

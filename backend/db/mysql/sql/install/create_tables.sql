@@ -39,7 +39,7 @@ CREATE TABLE `{TABLE_PREFIX}folder` (
 ) ENGINE = '{ENGINE}' COLLATE utf8_general_ci COMMENT = 'Kloudspeaker published folders';
 
 CREATE TABLE `{TABLE_PREFIX}item_id` (
-  `id` char(13) NOT NULL UNIQUE,
+  `id` char(32) NOT NULL UNIQUE,
   `path` char(255) NOT NULL UNIQUE,
   `level` smallint NOT NULL,
   INDEX i_item_level (`level`),
