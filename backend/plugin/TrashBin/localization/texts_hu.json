@@ -1,0 +1,21 @@
+{
+	"locale" : "hu",
+	"texts": {
+		"pluginTrashBinViewTitle" : "Kuka",
+		"pluginTrashBinOpenAction" : "Megnyitás",
+		"pluginTrashBinEmptyAction" : "A kuka üres…",
+		"pluginTrashBinRestoreAction" : "Visszaállítás",
+		"pluginTrashBinDeleteAction" : "Törlés",
+		"pluginTrashBinOriginalPathCol" : "Eredeti hely",
+		"pluginTrashBinTrashedCol" : "Kukázva",
+		"pluginTrashBinDeleteSingleMessage" : "„{0}” véglegesen törölhető?",
+		"pluginTrashBinDeleteMultiMessage" : "Véglegesen törölhetők a fájlok/mappák: {0}?",
+		"pluginTrashBinEmptyTitle" : "Üres kuka",
+		"pluginTrashBinEmptyConfirmation" : "Biztos, hogy véglegesen törölhető az összes fájl és mappa a kukából?",
+		"pluginTrashBinRestoreFailedParentMissing" : "A fájlt/mappát nem lehet helyreállítani, mivel az eredeti helye nem létezik már",
+		"pluginTrashBinRestoreFailedItemExists" : "A fájlt/mappát nem lehet helyreállítani, mivel az eredeti helyén ugyanilyen névvel van már ott elem.",
+		"pluginTrashBinRestoreFailed" : "A fájlt/mappát nem lehet visszaállítani",
+
+		"pluginTrashbinManageTitle": "Kukák kezelése"
+	}
+}
