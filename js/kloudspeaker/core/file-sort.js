@@ -6,8 +6,12 @@ define(['kloudspeaker/utils'],
                 if (!itemsById) itemsById = utils.mapByKey(list, 'id');
 
                 var _compare = function (ai, bi) {
-                    var level_a = ai.level;
-                    var level_b = bi.level;
+                    if (!ai && !bi) return 0;
+                    if (!ai) return 1;
+                    if (!bi) return -1;
+
+                    var level_a = ai.level || 0;
+                    var level_b = bi.level || 0;
                     var r;
 
                     /*console.log("COMPARE");
