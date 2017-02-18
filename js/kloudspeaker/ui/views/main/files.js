@@ -172,6 +172,7 @@ define(['kloudspeaker/instance', 'kloudspeaker/settings', 'kloudspeaker/session'
                             text: text,
                             items: items,
                             data: r.data,
+                            no_hierarchy: true,
                             info: r
                         };
                         df.resolve(fo, data);

@@ -1,7 +1,7 @@
 define(['kloudspeaker/utils'],
     function (utils) {
         return {
-            sort: function (list, sortFn, fallbackSortFn, _itemsById) {
+            sort: function (list, sortFn, fallbackSortFn, _itemsById, nohierarchy) {
                 var itemsById = _itemsById;
                 if (!itemsById) itemsById = utils.mapByKey(list, 'id');
 
@@ -10,8 +10,8 @@ define(['kloudspeaker/utils'],
                     if (!ai) return 1;
                     if (!bi) return -1;
 
-                    var level_a = ai.level || 0;
-                    var level_b = bi.level || 0;
+                    var level_a = !nohierarchy ? ai.level : 0;
+                    var level_b = !nohierarchy ? bi.level : 0;
                     var r;
 
                     /*console.log("COMPARE");
@@ -34,7 +34,7 @@ define(['kloudspeaker/utils'],
                         //console.log("diff level => " + r);
                         return r;
                     }
-                    if (ai.parent_id != bi.parent_id) {
+                    if (!nohierarchy && ai.parent_id != bi.parent_id) {
                         r = _compare(itemsById[ai.parent_id], itemsById[bi.parent_id]);
                         //console.log("diff parent => " + r);
                         return r;
