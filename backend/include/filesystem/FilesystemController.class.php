@@ -459,6 +459,7 @@ class FilesystemController {
 			"max_upload_total_size" => Util::inBytes(ini_get("post_max_size")),
 			"allowed_file_upload_types" => $this->allowedFileUploadTypes(),
 			"forbidden_file_upload_types" => $this->forbiddenFileUploadTypes(),
+			"supported_thumbnail_types" => $this->env->thumbnailGenerator()->getSupportedThumbnailTypes()
 		);
 
 		$this->itemIdProvider()->loadRoots();

@@ -45,6 +45,9 @@ class FileViewerEditorServices extends ServicesBase {
 				if (is_array($item)) {
 					$this->env->plugins()->getPlugin("FileViewerEditor")->getController()->handleCustomItemContent($item);
 				} else {
+					if ($this->env->plugins()->getPlugin("FileViewerEditor")->getController()->handleItemContent($item))
+						return;
+					
 					if (isset($_SERVER['HTTP_RANGE'])) {
 						$this->env->filesystem()->view($item, $_SERVER['HTTP_RANGE']);
 					} else {
