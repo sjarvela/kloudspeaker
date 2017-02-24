@@ -717,26 +717,47 @@ class FilesystemController {
 	}
 
 	private function doGetFolderInfo($folder, $hierarchy = FALSE) {
-		$cached = FALSE;
+		$now = time();
 		$id = $folder->id();
+		$cacheTime = $this->setting_or_default("folder_info_cache_time", 3600);
+		$cached = FALSE;
+		if (array_key_exists($id, $this->infoCache)) {
+			$result = $this->infoCache[$id];			
+			$cached = TRUE;
+			Logging::logDebug("Found from cache");
+		} else if ($cacheTime > 0) {
+			$result = $this->metadata->get($folder, "folder_info");
+			if ($result != NULL) {
+				$result = json_decode($result, TRUE);
+
+				$age = $now - $result["_time"];
+				if ($age <= $cacheTime) {
+					Logging::logDebug("Found from cache, age = ".$age);
+					$cached = TRUE;
+				} else {
+					Logging::logDebug("Found from cache, expired ".$age."/".$cacheTime);
+				}
+			} else {
+				Logging::logDebug("Not found from cache");
+			}
+		}
+
+		if ($cached and !$hierarchy) return $result;
+
 		$hierarchyInfo = array();
 
-		if (array_key_exists($folder->id(), $this->infoCache)) {
-			$result = $this->infoCache[$id];
-			if (!$hierarchy) return $this->infoCache[$id];
-
-			$cached = TRUE;
-		} else {
+		if ($result == NULL)
 			$result = array(
 				"size" => 0,
 				"size_recursive" => 0,
 				"file_count" => 0,
 				"folder_count" => 0,
 				"file_count_recursive" => 0,
-				"folder_count_recursive" => 0
-
+				"folder_count_recursive" => 0,
+				"_time" => $now
 			);
-		}
+
+		$this->idProvider->load($folder, $hierarchy);
 
 		foreach($folder->items() as $item) {
 			if ($item->isFile()) {
@@ -761,7 +782,10 @@ class FilesystemController {
 			}
 		}
 		$this->infoCache[$id] = $result;
-		Logging::logDebug('resolved folder info for ' . $folder->path()."=".Util::array2str($result));
+		if ($cacheTime > 0 and !$cached)
+			$this->metadata->set($folder, "folder_info", json_encode($result, TRUE));
+		if (Logging::isDebug())
+			Logging::logDebug('Resolved folder info for ' . $folder->path()."=".Util::array2str($result));
 
 		if ($hierarchy) {
 			$hierarchyInfo[$id] = $result;
@@ -1557,6 +1581,12 @@ class FilesystemController {
 
 	public function setting($setting) {
 		return $this->env->settings()->setting($setting);
+	}
+
+	public function setting_or_default($setting, $dv) {
+		if ($this->env->settings()->hasSetting($setting))
+			return $this->env->settings()->setting($setting);
+		return $dv;
 	}
 
 	public function log() {
