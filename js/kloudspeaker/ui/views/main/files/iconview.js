@@ -1,4 +1,4 @@
-define(['kloudspeaker/settings', 'kloudspeaker/service', 'kloudspeaker/ui/dnd', 'kloudspeaker/dom'], function(settings, service, dnd, dom) {
+define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/service', 'kloudspeaker/ui/dnd', 'kloudspeaker/dom'], function(settings, session, service, dnd, dom) {
     return function(container, $headerContainer, id, cls, thumbs) {
         var t = this;
         t.$c = $("#" + container);
@@ -20,7 +20,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/service', 'kloudspeaker/ui/dnd', 
             t.items = items;
             t.data = data;
 
-            var supportedThumbs = ["jpg", "png", "gif", "jpeg"]; //TODO settings
+            var supportedThumbs = session.get().data.filesystem.supported_thumbnail_types;
 
             dom.template("kloudspeaker-tmpl-iconview-item", items, {
                 showThumb: function(item) {

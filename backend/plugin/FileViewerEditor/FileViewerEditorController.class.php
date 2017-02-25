@@ -72,6 +72,22 @@ class FileViewerEditorController {
 		return $this->handlers[$item["item_type"]]->handleViewerContent($item);
 	}
 
+	public function handleItemContent($item) {
+		if (!is_array($item) and !$item->isFile()) {
+			return FALSE;
+		}
+
+		$isCustom = (is_array($item));
+		$type = strtolower(is_array($item) ? $item["type"] : $item->extension());
+
+		$result = array();
+		if ($this->viewEnabled and $this->isViewAllowed($type)) {
+			$viewer = $this->getViewer($type);
+			return $viewer->handleItemContent($item);
+		}
+		return FALSE;
+	}
+
 	public function getItemContent($item) {
 		if (is_array($item)) {
 			$c = $this->handlers[$item["item_type"]]->getItemContent($item);
@@ -199,6 +215,10 @@ class FileViewerEditorController {
 
 	public function request() {
 		return $this->plugin->env()->request();
+	}
+
+	public function env() {
+		return $this->plugin->env();
 	}
 
 	public function getViewServiceUrl($item, $p, $fullUrl = TRUE) {

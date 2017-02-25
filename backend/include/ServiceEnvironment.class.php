@@ -170,6 +170,11 @@ class ServiceEnvironment {
 		return $this->imageGenerator;
 	}
 
+	public function thumbnailGenerator() {
+		require_once "include/Thumbnail.class.php";
+		return new Thumbnail($this);
+	}
+
 	public function formatter() {
 		return new Formatter($this);
 	}
