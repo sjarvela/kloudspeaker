@@ -20,3 +20,5 @@ css/kloudspeaker.css.map
 .sass-cache/*
 
 .DS_Store
+
+server.log

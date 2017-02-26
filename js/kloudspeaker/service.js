@@ -26,13 +26,13 @@ define(['kloudspeaker/settings', 'kloudspeaker/events', 'kloudspeaker/localizati
 
     st.url = function(u, full) {
         if (u.startsWith('http')) return u;
-        var url = settings["service-path"] + "r.php";
-        var path = u;
+        var url = settings["service-path"];
+        //var path = u;
 
-        if (_serviceParam) path = "?sp=" + path.replace('?', '&');
-        else path = "/" + path;
+        //if (_serviceParam) path = "?sp=" + path.replace('?', '&');
+        //else path = "/" + path;
 
-        url = url + path;
+        url = url + u;
         if (!full) return url;
         return _baseUrl + url;
     };

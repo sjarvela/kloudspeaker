@@ -12,7 +12,7 @@ define([], function() {
         "default-view": "/files/",
         "view-url": true,
         "app-element-id": "kloudspeaker",
-        "service-path": "backend/",
+        "service-path": "api/",
         "service-param": false,
         "file-view": {
             "item-context-module" : 'kloudspeaker/ui/files/itemcontext',

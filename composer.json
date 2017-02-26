@@ -1,0 +1,9 @@
+{
+    "config": {
+        "vendor-dir": "api/vendor"
+    },
+    "require": {
+        "slim/slim": "^3.0",
+        "monolog/monolog": "^1.22"
+    }
+}
