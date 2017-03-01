@@ -4,6 +4,9 @@
     },
     "require": {
         "slim/slim": "^3.0",
-        "monolog/monolog": "^1.22"
+        "monolog/monolog": "^1.22",
+        "dflydev/fig-cookies": "^1.0",
+        "slim/pdo": "^1.10",
+        "akrabat/rka-ip-address-middleware": "^0.5.0"
     }
 }

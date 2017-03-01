@@ -13,7 +13,12 @@ class ComposerStaticInit10f60feacd4b433130bc50b1d3195a1a
     public static $prefixLengthsPsr4 = array (
         'S' => 
         array (
+            'Slim\\PDO\\' => 9,
             'Slim\\' => 5,
+        ),
+        'R' => 
+        array (
+            'RKA\\Middleware\\' => 15,
         ),
         'P' => 
         array (
@@ -33,12 +38,24 @@ class ComposerStaticInit10f60feacd4b433130bc50b1d3195a1a
         array (
             'FastRoute\\' => 10,
         ),
+        'D' => 
+        array (
+            'Dflydev\\FigCookies\\' => 19,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
+        'Slim\\PDO\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/slim/pdo/src/PDO',
+        ),
         'Slim\\' => 
         array (
             0 => __DIR__ . '/..' . '/slim/slim/Slim',
+        ),
+        'RKA\\Middleware\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/akrabat/rka-ip-address-middleware/src',
         ),
         'Psr\\Log\\' => 
         array (
@@ -63,6 +80,10 @@ class ComposerStaticInit10f60feacd4b433130bc50b1d3195a1a
         'FastRoute\\' => 
         array (
             0 => __DIR__ . '/..' . '/nikic/fast-route/src',
+        ),
+        'Dflydev\\FigCookies\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/dflydev/fig-cookies/src/Dflydev/FigCookies',
         ),
     );
 

@@ -71,7 +71,7 @@ define(['kloudspeaker/settings', 'kloudspeaker/session', 'kloudspeaker/service',
                 target: "kloudspeaker-login-main"
             });
             session.authenticate(username, password, remember).fail(function(e) {
-                if (e.code == 107) this.handled = true;
+                if (e.code == -100) this.handled = true;
                 that.showLoginError();
             });
         }

@@ -14,7 +14,7 @@ define(['kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/permissions
         });
     };
     var onStart = function(s) {
-        var user = s.authenticated ? {
+        /*var user = s.authenticated ? {
             id: s.user_id,
             name: s.username,
             type: s.user_type,
@@ -23,10 +23,12 @@ define(['kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/permissions
             permissions: s.permissions,
             auth: s.user_auth,
             hasPermission: permissions.hasPermission    //shortcut
-        } : null;
+        } : null;*/
+        var user = s.user;
+        if (user) user.hasPermission = permissions.hasPermission;    //shortcut
 
         session = {
-            id: s.session_id,
+            id: s.id,
             user: user,
             features: s.features,
             plugins: s.plugins,

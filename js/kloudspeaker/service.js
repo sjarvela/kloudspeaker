@@ -91,18 +91,23 @@ define(['kloudspeaker/settings', 'kloudspeaker/events', 'kloudspeaker/localizati
                 var data = false;
 
                 if (xhr.responseText && xhr.responseText.startsWith('{')) error = JSON.parse($.trim(xhr.responseText));
-                if (!error) error = {
-                    code: 999
-                }; //unknown
+                if (!error) {
+                    error = {
+                        code: 0
+                    };
+                } else {
+                    error.code = error.error.code;
+                }
 
                 var failContext = {
                     handled: false
                 }
 
-                if (error.code == 100 && s.user) {
+                if (error.code == -100 && s.user) {
                     session.end(true);
                     failContext.handled = true;
                 }
+
                 // push default handler to end of callback list
                 setTimeout(function() {
                     df.fail(function(err) {
