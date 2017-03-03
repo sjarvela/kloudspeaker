@@ -720,8 +720,9 @@ class FilesystemController {
 	private function doGetFolderInfo($folder, $hierarchy = FALSE) {
 		$now = time();
 		$id = $folder->id();
-		$cacheTime = $this->setting_or_default("folder_info_cache_time", 3600);
+		$cacheTime = $this->setting("folder_info_cache_time");
 		$cached = FALSE;
+		$result = NULL;
 		if (array_key_exists($id, $this->infoCache)) {
 			$result = $this->infoCache[$id];			
 			$cached = TRUE;
@@ -735,8 +736,10 @@ class FilesystemController {
 				if ($age <= $cacheTime) {
 					Logging::logDebug("Found from cache, age = ".$age);
 					$cached = TRUE;
+					$this->infoCache[$id] = $result;
 				} else {
 					Logging::logDebug("Found from cache, expired ".$age."/".$cacheTime);
+					$result = NULL;
 				}
 			} else {
 				Logging::logDebug("Not found from cache");
@@ -1582,12 +1585,6 @@ class FilesystemController {
 
 	public function setting($setting) {
 		return $this->env->settings()->setting($setting);
-	}
-
-	public function setting_or_default($setting, $dv) {
-		if ($this->env->settings()->hasSetting($setting))
-			return $this->env->settings()->setting($setting);
-		return $dv;
 	}
 
 	public function log() {

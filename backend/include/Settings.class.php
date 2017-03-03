@@ -65,6 +65,7 @@ class Settings {
 		"no_dev_urandom" => FALSE,
 		"client_page" => NULL,
 		"ignored_items" => FALSE,
+		"folder_info_cache_time" => 3600
 	);
 
 	function __construct($settings) {
