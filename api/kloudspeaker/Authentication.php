@@ -1,13 +1,13 @@
 <?php
 namespace Kloudspeaker;
 
-class Auth {
+class Authentication {
     public function __construct($container) {
         $this->container = $container;
     }
 
     public function authenticate($username, $password) {
-		$user = $this->container->users->find($username, $this->container->app_settings->setting("email_login", FALSE), time());
+		$user = $this->container->users->find($username, $this->container->configuration->get("email_login", FALSE), time());
 		if (!$user) throw new NotAuthenticatedException("Authentication failed");
 
         $authModule = $this->getAuthenticationModule($user["auth"]);
@@ -15,7 +15,7 @@ class Auth {
             $msg = "Failed Kloudspeaker login attempt from [" . $this->container->request->getAttribute('ip_address') . "], user [" . $username . "]";
             $this->container->logger->error($msg);
             syslog(LOG_NOTICE, $msg);
-            //$this->env->events()->onEvent(SessionEvent::failedLogin($username, $this->env->request()->ip()));
+            //TODO $this->env->events()->onEvent(SessionEvent::failedLogin($username, $this->env->request()->ip()));
             throw new NotAuthenticatedException("Authentication failed");
         }
         

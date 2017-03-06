@@ -1,4 +1,5 @@
 <?php
+$container->logger->debug("route");
 
 function getSessionInfo($c) {
 	$user = $c->session->getUser();
@@ -10,7 +11,7 @@ function getSessionInfo($c) {
     ];
 };
 
-$app->get('/session/info/', function ($request, $response, $args) {
+$app->get('/session/', function ($request, $response, $args) {
     $this->out->success(getSessionInfo($this));
 });
 
@@ -21,10 +22,15 @@ $app->post('/session/authenticate/', function ($request, $response, $args) {
 
 	$this->logger->debug("Auth", ["user" => $username]);
 
-	$user = $this->auth->authenticate($username, $password);
+	$user = $this->authentication->authenticate($username, $password);
 	if ($user) {
 		$this->session->start($user);
 		return $this->out->success(getSessionInfo($this));		
 	}
 	return $this->out->error("Authentication failed");
+});//->add(AuthRoute::class);
+
+$app->post('/session/end/', function ($request, $response, $args) {
+	$this->session->end();
+	return $this->out->success(getSessionInfo($this));
 });//->add(AuthRoute::class);

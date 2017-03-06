@@ -7,24 +7,37 @@ class PDODatabase {
         $this->db = new \PDO($dsn, $username, $pw);
     }
 
-    public function select(array $columns = array('*')) {
-        return new SelectStatementBuilder($this->logger, $this->db, $columns);
+    public function startTransaction() {
+        $this->db->startTransaction();
+    }
+
+    public function commit() {
+        $this->db->commit();
+    }
+
+    public function rollback() {
+        $this->db->rollback();
+    }
+
+    public function select($from, array $columns = array('*')) {
+        return new SelectStatementBuilder($this->logger, $this->db, $from, $columns);
+    }
+
+    public function insert($into, array $values) {
+        return new InsertStatementBuilder($this->logger, $this->db, $into, $values);
     }
 }
 
 class SelectStatementBuilder {
-    public function __construct($logger, $db, $cols) {
+    public function __construct($logger, $db, $from, $cols) {
         $this->logger = $logger;
         $this->db = $db;
         $this->cols = $cols;
         $this->joins = [];
+        $this->values = [];
+        $this->from = $from;
         $this->where = NULL;
         $this->orderBy = NULL;
-    }
-
-    public function from($from) {
-        $this->from = $from;
-        return $this;
     }
 
     public function leftJoin($table, $join) {
@@ -32,10 +45,21 @@ class SelectStatementBuilder {
         return $this;
     }
 
-    public function where($w) {
+    public function where($w, $val = "__undefined__", $operator = '=') {
+        $ws = $w;
+        if ($val !== "__undefined__") {
+            //TODO check $w does not have operator
+            if (\Kloudspeaker\Utils::startsWith($val, ":")) {
+                $ws = $w." ".$operator." ".$val;
+            } else {
+                $this->values[$w] = $val;
+                $ws = $w." ".$operator." :".$w;
+            }
+        }
+
         if ($this->where == NULL)
             $this->where = new WhereClauseBuilder($this);
-        return $this->where->and($w);
+        return $this->where->and($ws);
     }
 
     public function orderBy($o) {
@@ -56,25 +80,96 @@ class SelectStatementBuilder {
 
     public function execute($values = NULL) {
         $q = $this->build();
-        $this->logger->debug("DB :".$q);
 
         if ($values) {
+            $this->values = array_merge($this->values, $values);
+        }
+
+        if (count($this->values) > 0) {
+            $this->logger->debug("DB :".$q, $this->values);
+
             $stmt = $this->db->prepare($q);
-            foreach ($values as $key => $value) {
-                $stmt->bindParam(':'.$key, $value);
+            foreach ($this->values as $key => $value) {
+                $stmt->bindValue(':'.$key, $value);
             }
             $result = $stmt;
             if (!$stmt->execute())
                 $result = FALSE;
         } else {
+            $this->logger->debug("DB :".$q);
             $result = $this->db->query($q);
         }
         
         if (!$result) {
             $this->logger->error("DB QUERY FAILED:".$q." ".implode(" ", $this->db->errorInfo()));
-            throw new \KloudspeakerException("Error executing db query");
+            throw new DatabaseException("Error executing db query");
         }
         return new SelectResult($result);
+    }
+
+    public function toString() {
+        return $this->build();
+    }
+}
+
+class InsertStatementBuilder {
+    public function __construct($logger, $db, $into, $values, $values2 = NULL) {
+        $this->logger = $logger;
+        $this->db = $db;
+        $this->into = $into;
+
+        if ($values2 == NULL) {
+            if (!Utils::isAssocArray($values)) {
+                $this->cols = $values;
+                $this->values = [];
+            } else {
+                //TODO validate
+                $cols = [];
+                $vals = [];
+                foreach ($values as $key => $value) {
+                    $cols[] = $key;
+                    $vals[] = $value;
+                }
+                $this->cols = $cols;
+                $this->values = [$vals];
+            }
+        } else {
+            //TODO validate
+            $this->cols = $values;
+            $this->values = $values2;
+        }
+    }
+
+    public function values($values) {
+        $this->values[] = $values;
+    }
+
+    private function build() {
+        $q = "INSERT INTO " . $this->into . "(" . implode(", ", $this->cols) . ") VALUES (" . Utils::strList('?', count($this->cols), ', ') . ")";
+        return $q;
+    }
+
+    public function execute() {
+        if (!$this->values or count($this->values) === 0) throw new DatabaseException("Invalid query, missing values");
+
+        $q = $this->build();
+        $this->logger->debug("DB :".$q);
+
+        $this->db->startTransaction();
+        $stmt = $this->db->prepare($q);
+        foreach ($this->values as $row) {
+            $field = 1;
+            foreach ($this->cols as $col) {
+                $stmt->bindValue($field, $value);
+                $field = $field + 1;
+            }
+            if (!$stmt->execute()) {
+                $this->logger->error("DB QUERY FAILED: ".$q." ".\Kloudspeaker\Utils::array2str($this->db->errorInfo()));
+                throw new DatabaseException("Error executing db query");
+            }
+        }
+        $this->db->commit();
+        return TRUE;
     }
 
     public function toString() {
@@ -108,6 +203,10 @@ class WhereClauseBuilder {
 
     public function done() {
         return $this->stmt;
+    }
+
+    public function execute($values = NULL) {
+        return $this->done()->execute($values);
     }
 }
 
@@ -234,5 +333,11 @@ class SelectResult {
     }
 
     public function free() {
+    }
+}
+
+class DatabaseException extends \Kloudspeaker\KloudspeakerException {
+    public function __construct($msg) {
+        parent::__construct($msg, \Kloudspeaker\Errors::InvalidRequest);
     }
 }

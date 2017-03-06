@@ -7,7 +7,7 @@ define(['kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/permissions
         init();
     }
     var init = function() {
-        service.get("session/info/").fail(function() {
+        service.get("session/").fail(function() {
             ui.showError();
         }).done(function(s) {
             onStart(s);

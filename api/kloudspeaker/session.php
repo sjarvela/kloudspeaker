@@ -15,26 +15,58 @@ class Session {
     }
 
     public function initialize($request) {
+        //TODO get from header
 		$this->id = $this->container->cookie->get('kloudspeaker-session');
+        $time = time();
 
-        if ($this->id) {
+        if (!$this->id) return;
+
         $this->container->logger->debug("Session init ".$this->id);
-            $sessionData = $this->container->sessions->get($this->id);
-            if ($sessionData) {
 
+        $sessionData = $this->container->sessions->get($this->id, $this->getLastValidSessionTime($time));
+
+        if ($sessionData) {
+            // load user data
+            if ($this->session["user_id"] != 0) {
+                $this->user = $this->container->users->get($this->session["user_id"]);
+                if (!$this->user) {
+                    // user expired
+                    $this->end();
+                    return;
+                }
             } else {
-                $this->id = NULL;
+                // TODO anonymous session
+                $this->end();
+                return;
             }
+        } else {
+            $this->end();
+            return;
         }
+
+        // user found, extend session time
+        $this->container->sessions->updateSessionTime($this->id, $time);
     }
 
-    public function start($user) {
+    public function start($user, $data) {
         $this->id = uniqid(TRUE);
         $this->user = $user;
-        $this->container->cookie->set('kloudspeaker-session', [
-            "value" => $this->id,
-            "path" => "/"
-        ]);
+        $ip = $this->env->request()->ip();
+
+        $time = time();
+        $this->container->sessions->add($this->id, $this->user["id"], $ip, $time);
+        if ($data and count($data) > 0) {
+            $this->container->sessions->addData($this->id, $data);
+        }
+
+        $this->setCookie($this->id);
+    }
+
+    public function end() {
+        $this->id = NULL;
+        $this->user = NULL;
+        $this->setCookie(NULL);
+        $this->removeAllExpiredSessions();
     }
 
     public function isLoggedIn() {
@@ -48,4 +80,30 @@ class Session {
     public function getUser() {
     	return $this->user;
     }
+
+    public function removeAllExpiredSessions() {
+        $this->container->sessions->removeAllSessionBefore($this->getLastValidSessionTime(time()));
+    }
+
+    private function getLastValidSessionTime($from = NULL) {
+        $removed = $this->container->configuration->get("session_time", 7200);
+        if (!$from) {
+            return time() - $removed;
+        }
+
+        return $from - $removed;
+    }
+
+    private function setCookie($val) {
+        $offset = 60 * 60 * 24 * 30 * 12 * 10;  // 10 years
+        if (!$val) $offset = -3600;
+
+        //TODO remove cookie if null
+        $this->container->cookie->set('kloudspeaker-session', [
+            "value" => $val,
+            "path" => "/",
+            'expires' => date('Y-m-d H:i:s', time() + $offset)
+        ]);
+    }
+
 }

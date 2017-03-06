@@ -15,7 +15,7 @@ class UserRepository {
     public function find($name, $allowEmail = FALSE, $expiration = FALSE) {
         $cols = ['id', 'name', 'lower(user_type) as user_type', 'lower(lang) as lang', 'email', 'lower(user_auth.type) as auth'];
 
-        $q = $this->db->select($cols)->from('user')->leftJoin('user_auth', 'user.id = user_auth.user_id');
+        $q = $this->db->select('user', $cols)->leftJoin('user_auth', 'user.id = user_auth.user_id');
         $w = $q->where('(expiration is null or expiration > :expiration)')->and('is_group = 0');
 
         if ($allowEmail)
@@ -44,6 +44,7 @@ class UserRepository {
 
     public function getUserAuth($userId) {
         $this->logger->debug("get auth ".$userId);
-        return $this->db->select(['user_id', 'lower(type) as type', 'hash', 'salt', 'hint'])->from('user_auth')->where('user_id = :user_id')->done()->execute(['user_id' => $userId])->firstRow();
+
+        return $this->db->select('user_auth', ['user_id', 'lower(type) as type', 'hash', 'salt', 'hint'])->where('user_id', $userId)->execute()->firstRow();
     }
 }
