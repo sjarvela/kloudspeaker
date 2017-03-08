@@ -8,15 +8,18 @@ class UserRepository {
         $this->timeFormatter = $container->formatters->getTimeFormatter();
     }
 
-    private function toUser($props) {
-        return new \Kloudspeaker\Model\User($props['id'], $props['name'], $props['user_type'], $props['lang'], $props['email'], $props['auth']);
-    }
+    //private function toUser($props) {
+    //    return new \Kloudspeaker\Model\User($props['id'], $props['name'], $props['user_type'], $props['lang'], $props['email'], $props['auth']);
+    //}
 
     public function find($name, $allowEmail = FALSE, $expiration = FALSE) {
         $cols = ['id', 'name', 'lower(user_type) as user_type', 'lower(lang) as lang', 'email', 'lower(user_auth.type) as auth'];
 
         $q = $this->db->select('user', $cols)->leftJoin('user_auth', 'user.id = user_auth.user_id');
-        $w = $q->where('(expiration is null or expiration > :expiration)')->and('is_group = 0');
+        $w = $q->where('is_group = 0');
+
+        if ($expiration)
+            $w->and('(expiration is null or expiration > :expiration)');
 
         if ($allowEmail)
             $w->and('(name = :name or email = :name)');
@@ -36,6 +39,26 @@ class UserRepository {
 
         if ($matches > 1) {
             $this->logger->error("Duplicate user found with name", ["name" => $name]);
+            return NULL;
+        }
+
+        return $result->firstRow();
+    }
+
+    public function get($id, $expiration = FALSE) {
+        $cols = ['id', 'name', 'lower(user_type) as user_type', 'lower(lang) as lang', 'email', 'lower(user_auth.type) as auth'];
+
+        $q = $this->db->select('user', $cols)->leftJoin('user_auth', 'user.id = user_auth.user_id');
+        $w = $q->where('is_group = 0')->and('id', $id);
+
+        if ($expiration)
+            $w->new()->isNull('expiration')->or('expiration', $this->timeFormatter->formatTimestampInternal($expiration), '>');
+
+        $result = $q->execute();
+        $matches = $result->count();
+
+        if ($matches === 0) {
+            $this->logger->error("No user found with id", ["id" => $id]);
             return NULL;
         }
 

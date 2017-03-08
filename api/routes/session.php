@@ -1,4 +1,5 @@
 <?php
+$container = $app->getContainer();
 $container->logger->debug("route");
 
 function getSessionInfo($c) {

@@ -23,12 +23,13 @@ class Session {
 
         $this->container->logger->debug("Session init ".$this->id);
 
-        $sessionData = $this->container->sessions->get($this->id, $this->getLastValidSessionTime($time));
+        $session = $this->container->sessions->get($this->id, $this->getLastValidSessionTime($time));
 
-        if ($sessionData) {
+        if ($session) {
+            $this->container->logger->debug("Session ", $session);
             // load user data
-            if ($this->session["user_id"] != 0) {
-                $this->user = $this->container->users->get($this->session["user_id"]);
+            if ($session["user_id"] != 0) {
+                $this->user = $this->container->users->get($session["user_id"], time());
                 if (!$this->user) {
                     // user expired
                     $this->end();
@@ -48,10 +49,10 @@ class Session {
         $this->container->sessions->updateSessionTime($this->id, $time);
     }
 
-    public function start($user, $data) {
+    public function start($user, array $data = NULL) {
         $this->id = uniqid(TRUE);
         $this->user = $user;
-        $ip = $this->env->request()->ip();
+        $ip = $this->container->request->getAttribute('ip_address');
 
         $time = time();
         $this->container->sessions->add($this->id, $this->user["id"], $ip, $time);

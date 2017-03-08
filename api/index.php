@@ -8,7 +8,7 @@ if (!file_exists("../configuration.php")) {
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-require 'vendor/autoload.php';
+require 'vendor/auto/autoload.php';
 require 'Kloudspeaker/Api.php';
 require 'Kloudspeaker/Configuration.php';
 require 'Kloudspeaker/Utils.php';
@@ -16,7 +16,7 @@ require 'Kloudspeaker/legacy/Legacy.php';
 require 'Kloudspeaker/Authentication.php';
 require 'Kloudspeaker/Features.php';
 require 'Kloudspeaker/Session.php';
-require 'Kloudspeaker/DB.php';
+require 'Kloudspeaker/Database/DB.php';
 require 'Kloudspeaker/Settings.php';
 require 'Kloudspeaker/Formatters.php';
 require 'Kloudspeaker/Repository/UserRepository.php';
@@ -33,15 +33,10 @@ if (!isset($CONFIGURATION)) {
 }
 
 $config = new Configuration($CONFIGURATION, ["version" => $VERSION, "revision" => $REVISION]);
-
-$legacy = new \KloudspeakerLegacy($config);
 $app = new Api($config);
-$app->initialize($legacy);
-
-$container = $app->getContainer();
-$legacy->initialize($app, $container);
+$app->initialize(new \KloudspeakerLegacy($config));
 
 // routes
-require 'routes/Session.php';
+require 'Routes/Session.php';
 
 $app->run();

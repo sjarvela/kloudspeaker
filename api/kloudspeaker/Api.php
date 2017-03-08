@@ -111,8 +111,9 @@ class Api extends \Slim\App {
         };
 
         $container['db'] = function ($container) use ($config) {
-            $db = $config->get("db");
-            return new \Kloudspeaker\DB\PDODatabase($container->logger, $db["dsn"], $db["user"], $db["password"]);
+            $dbConfig = $config->get("db");
+            $db = new \PDO($dbConfig["dsn"], $dbConfig["user"], $dbConfig["password"]);
+            return new \Kloudspeaker\Database\Database($db, $container->logger);
         };
 
         $container['cookie'] = function($c){
@@ -126,6 +127,7 @@ class Api extends \Slim\App {
             return new \Kloudspeaker\Auth\PasswordAuth($c);
         };
 
+        $legacy->initialize($this);
     }
 }
 

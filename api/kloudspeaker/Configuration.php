@@ -13,7 +13,7 @@ class Configuration {
         
         if ($_SERVER["SERVER_PORT"] != "80") $host .= ":".$_SERVER["SERVER_PORT"];
         
-        if (Utils::startsWith($_SERVER["SERVER_PROTOCOL"], "HTTPS/")) $host = "https://".$host;
+        if (Utils::strStartsWith($_SERVER["SERVER_PROTOCOL"], "HTTPS/")) $host = "https://".$host;
         else $host = "http://".$host;
 
         return $host;
@@ -21,7 +21,7 @@ class Configuration {
 
     public function getRootPath() {
         $path = $_SERVER["SCRIPT_NAME"];
-        if (Utils::endsWith($path, "index.php")) $path = substr($path, 0, -9);
+        if (Utils::strEndsWith($path, "index.php")) $path = substr($path, 0, -9);
 
         return $this->getHost().$path;
     }

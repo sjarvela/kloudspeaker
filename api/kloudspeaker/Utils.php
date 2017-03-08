@@ -12,18 +12,27 @@ namespace Kloudspeaker;
  */
 
 class Utils {
-	public static function startsWith($haystack, $needle) {
+	public static function strStartsWith($haystack, $needle) {
 	     $length = strlen($needle);
 	     return (substr($haystack, 0, $length) === $needle);
 	}
 
-	public static function endsWith($haystack, $needle) {
+	public static function strEndsWith($haystack, $needle) {
 	    $length = strlen($needle);
 	    if ($length == 0) {
 	        return true;
 	    }
 
 	    return (substr($haystack, -$length) === $needle);
+	}
+
+	public static function strList($s, $count, $delimiter = ",") {
+		$r = "";
+		for ($i=0; $i < $count; $i++) { 
+			$r .= $s;
+			if ($i < $count-1) $r .= $delimiter;
+		}
+		return $r;
 	}
 
 	public static function escapePathRegex($p, $double = TRUE) {

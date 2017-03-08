@@ -19,7 +19,7 @@ class KloudspeakerLegacy {
 		$this->config = $config;
 	}
 
-	public function initialize($app, $container) {
+	public function initialize($app) {
 		$this->app = $app;
 		$this->container = $app->getContainer();
 		\Logging::initialize($this->container->logger, $this->config->isDebug());

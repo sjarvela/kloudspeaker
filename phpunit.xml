@@ -1,0 +1,7 @@
+<phpunit debug="true">
+  <testsuites>
+    <testsuite name="kloudspeaker">
+      <directory>api/tests/</directory>
+    </testsuite>
+  </testsuites>
+</phpunit>

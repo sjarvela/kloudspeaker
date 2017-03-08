@@ -11,7 +11,7 @@ class SessionRepository {
         return $this->db->select('session', ['id', 'user_id', 'ip', 'time', 'last_access'])->where('id', $id)->done()->execute()->firstRow();
     }
 
-    public function addSession($id, $userId, $ip, $time) {
+    public function add($id, $userId, $ip, $time) {
         $this->db->insert('session', ['id' => $id, 'user_id' => $userId, 'ip' => $ip, 'time' => $time, 'last_access' => $time])->execute();
     }
 

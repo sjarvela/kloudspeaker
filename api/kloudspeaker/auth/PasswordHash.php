@@ -1,7 +1,7 @@
 <?php
 namespace Kloudspeaker\Auth;
 
-require_once "vendor/phpass/PasswordHash.php";
+require_once "vendor/static/phpass/PasswordHash.php";
 
 /**
  * PasswordHash.class.php
