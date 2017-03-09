@@ -94,6 +94,20 @@ class DBTest extends TestCase {
         $this->assertEquals('baz', $this->mockDB->prepare->bind[3]);
     }
 
+    public function testDelete() {
+        $this->db()->delete("foo")->where("id", "1")->execute();
+        $this->assertEquals('DELETE FROM foo WHERE (id = ?)', $this->mockDB->prepare->query);
+        $this->assertEquals('1', $this->mockDB->prepare->bind[1]);
+    }
+
+    public function testUpdate() {
+        $this->db()->update("foo", ["foo1" => "bar", "foo2" => "baz"])->where("id", "1")->execute();
+        $this->assertEquals('UPDATE foo SET foo1 = ?, foo2 = ? WHERE (id = ?)', $this->mockDB->prepare->query);
+        $this->assertEquals('bar', $this->mockDB->prepare->bind[1]);
+        $this->assertEquals('baz', $this->mockDB->prepare->bind[2]);
+        $this->assertEquals('1', $this->mockDB->prepare->bind[3]);
+    }
+
     private function db() {
         $this->mockDB = new MockDB();
         $logger = new TestLogger();

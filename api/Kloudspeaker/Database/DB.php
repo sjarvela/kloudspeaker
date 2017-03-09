@@ -151,19 +151,20 @@ class InsertStatementBuilder {
 
 class UpdateStatementBuilder extends WhereStatementBuilder {
     public function __construct($logger, $db, $table, $values) {
-        parent::__construct();
-        $this->logger = $logger;
+        parent::__construct($logger);
         $this->db = $db;
         $this->table = $table;
-        $this->values = $values;
+        $this->updateValues = $values;
     }
 
     public function build(&$bound) {
         $q = "UPDATE " . $this->table . " SET ";
         $i = 1;
-        $c = count($this->values);
-        foreach ($this->values as $key => $value) {
-            $q .= $key . " = :" . $key . ($i === $c ? " " : ", ");
+        $c = count($this->updateValues);
+        foreach ($this->updateValues as $key => $value) {
+            $fk = $this->addFieldValue($key, $value);
+            $bound[] = $fk;
+            $q .= $key . " = ?" . ($i === $c ? "" : ", ");
             $i = $i + 1;
         }
         $q .= $this->buildWhere($bound);
@@ -171,32 +172,8 @@ class UpdateStatementBuilder extends WhereStatementBuilder {
     }
 
     public function execute($values = NULL) {
-        $q = $this->build();
-
-        if ($values) {
-            $this->values = array_merge($this->values, $values);
-        }
-
-        if (count($this->values) > 0) {
-            $this->logger->debug("DB :".$q, $this->values);
-
-            $stmt = $this->db->prepare($q);
-            foreach ($this->values as $key => $value) {
-                $stmt->bindValue(':'.$key, $value);
-            }
-            $result = $stmt;
-            if (!$stmt->execute())
-                $result = FALSE;
-        } else {
-            $this->logger->debug("DB :".$q);
-            $result = $this->db->query($q);
-        }
-        
-        if (!$result) {
-            $this->logger->error("DB QUERY FAILED:".$q." ".implode(" ", $this->db->errorInfo()));
-            throw new DatabaseException("Error executing db query");
-        }
-        return TRUE;    //TODO affect count
+        $this->doExecute($values);
+        return TRUE;    //TODO affected count
     }
 
     public function toString() {
