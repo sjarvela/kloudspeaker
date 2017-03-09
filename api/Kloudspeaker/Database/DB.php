@@ -27,8 +27,8 @@ class Database implements IDatabase {
         return new SelectStatementBuilder($this->logger, $this->db, $from, $columns);
     }
 
-    public function insert($into, array $values) {
-        return new InsertStatementBuilder($this->logger, $this->db, $into, $values);
+    public function insert($into, array $set1, array $set2 = NULL) {
+        return new InsertStatementBuilder($this->logger, $this->db, $into, $set1, $set2);
     }
 
     public function update($table, array $values) {
@@ -82,65 +82,94 @@ class SelectStatementBuilder extends WhereStatementBuilder {
 }
 
 class InsertStatementBuilder {
-    public function __construct($logger, $db, $into, $values, $values2 = NULL) {
+    public function __construct($logger, $db, $into, array $set1, array $set2 = NULL) {
         $this->logger = $logger;
         $this->db = $db;
         $this->into = $into;
 
-        if ($values2 == NULL) {
-            if (!\Kloudspeaker\Utils::isAssocArray($values)) {
-                $this->cols = $values;
+        if ($set2 == NULL) {
+            if (!\Kloudspeaker\Utils::isAssocArray($set1)) {
+                // set1 is regular array -> cols
+                $this->cols = $set1;
                 $this->values = [];
             } else {
-                //TODO validate
+                // set1 is associative array -> value list
                 $cols = [];
-                $vals = [];
-                foreach ($values as $key => $value) {
+                foreach ($set1 as $key => $value) {
                     $cols[] = $key;
-                    $vals[] = $value;
                 }
                 $this->cols = $cols;
-                $this->values = [$vals];
+                $this->values = [$set1];
             }
         } else {
-            //TODO validate
-            $this->cols = $values;
-            $this->values = $values2;
+            // set1 is cols, set2 is values
+            $this->cols = $set1;
+
+            if (\Kloudspeaker\Utils::isAssocArray($set1))
+                throw new DatabaseException("Invalid query, set1 must be column list");
+            
+            if (\Kloudspeaker\Utils::isAssocArray($set2)) {
+                // if set2 is associative array, single value set
+                $this->values = [$set2];
+            } else {
+                // if set2 is regular array, each object in list assumed to be value set
+                foreach ($set2 as $i) {
+                    if (!\Kloudspeaker\Utils::isAssocArray($i))
+                        throw new DatabaseException("Invalid query, set2 values must be associative arrays");
+                }
+                $this->values = $set2;
+            }
         }
     }
 
     public function values($values) {
-        $this->values[] = $values;
+        if (\Kloudspeaker\Utils::isAssocArray($values)) {
+            // if values is associative array, single value set
+            $this->values[] = $values;
+        } else {
+            // if values is regular array, each object in list assumed to be value set
+            $this->values = array_merge($this->values, $values);
+        }
+        return $this;
     }
 
-    public function build() {
-        $q = "INSERT INTO " . $this->into . "(" . implode(", ", $this->cols) . ") VALUES (" . \Kloudspeaker\Utils::strList('?', count($this->cols), ', ') . ")";
-        return $q;
+    public function build($count) {
+        $set = "(" . \Kloudspeaker\Utils::strList('?', count($this->cols), ', ') . ")";
+
+        return "INSERT INTO " . $this->into . " (" . implode(", ", $this->cols) . ") VALUES ".\Kloudspeaker\Utils::strList($set, $count, ", ");
     }
 
-    public function execute() {
-        if (!$this->values or count($this->values) === 0) throw new DatabaseException("Invalid query, missing values");
+    public function execute($values = NULL) {
+        $v = $this->values;
+        if ($values) {
+            if (\Kloudspeaker\Utils::isAssocArray($values))
+                $v[] = $values;
+            else
+                $v = array_merge($v, $values);
+        }
+        if (!$v or count($v) === 0) throw new DatabaseException("Invalid query, missing values");
 
-        $q = $this->build();
-        #$this->logger->debug("DB :".$q, ["cols" => $this->cols, "values" => $this->values]);
+        $q = $this->build(count($v));
 
-        $this->db->beginTransaction();
+        $this->logger->debug("DB insert", ["query" => $q, "cols" => $this->cols, "values" => $v]);
+
+        //$this->db->beginTransaction();
         $stmt = $this->db->prepare($q);
-        foreach ($this->values as $row) {
-            $this->logger->debug("INSERT ", $row);
 
-            $field = 1;
+        $field = 1;
+        foreach ($v as $row) {
+            $this->logger->debug("INSERT ", $row);
             foreach ($this->cols as $col) {
                 #$this->logger->debug("BIND ".$field, [$row[$field]]);
-                $stmt->bindValue($field, $row[$field-1]);
+                $stmt->bindValue($field, $row[$col]);
                 $field = $field + 1;
             }
-            if (!$stmt->execute()) {
-                $this->logger->error("DB QUERY FAILED: ".$q." ".\Kloudspeaker\Utils::array2str($this->db->errorInfo()));
-                throw new DatabaseException("Error executing db query");
-            }
         }
-        $this->db->commit();
+        if (!$stmt->execute()) {
+            $this->logger->error("DB QUERY FAILED: ".$q." ".\Kloudspeaker\Utils::array2str($this->db->errorInfo()));
+            throw new DatabaseException("Error executing db query");
+        }
+        //$this->db->commit();
         return TRUE;    //TODO affected count
     }
 

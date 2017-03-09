@@ -9,8 +9,19 @@ require "api/Kloudspeaker/Database/DB.php";
 require "api/Kloudspeaker/Utils.php";
 
 class MockDB {
+    public $transaction = FALSE;
+    public $commit = FALSE;
+
     public $query = NULL;
     public $prepare = NULL;
+
+    public function beginTransaction() {
+        $this->transaction = TRUE;
+    }
+
+    public function commit() {
+        $this->commit = TRUE;
+    }
 
     public function query($sql) {
         $this->query = $sql;
@@ -28,6 +39,7 @@ class MockDB {
 }
 
 class MockStatement {
+    public $count = 0;
     public $query;
     public $bind = [];
 
@@ -40,6 +52,7 @@ class MockStatement {
     }
 
     public function execute() {
+        $this->count = $this->count + 1;
         return TRUE;    
     }
 }
@@ -106,6 +119,58 @@ class DBTest extends TestCase {
         $this->assertEquals('bar', $this->mockDB->prepare->bind[1]);
         $this->assertEquals('baz', $this->mockDB->prepare->bind[2]);
         $this->assertEquals('1', $this->mockDB->prepare->bind[3]);
+    }
+
+    public function testInsert() {
+        $this->db()->insert("foo", ["foo1" => "bar", "foo2" => "baz"])->execute();
+        $this->assertEquals('INSERT INTO foo (foo1, foo2) VALUES (?, ?)', $this->mockDB->prepare->query);
+        $this->assertEquals('bar', $this->mockDB->prepare->bind[1]);
+        $this->assertEquals('baz', $this->mockDB->prepare->bind[2]);
+    }
+
+    public function testInsertMultiple() {
+        $this->db()->insert("foo", ["foo1", "foo2"], [["foo1" => "bar", "foo2" => "baz"], ["foo1" => "bar2", "foo2" => "baz2"]])->execute();
+        $this->assertEquals('INSERT INTO foo (foo1, foo2) VALUES (?, ?), (?, ?)', $this->mockDB->prepare->query);
+        $this->assertEquals('bar', $this->mockDB->prepare->bind[1]);
+        $this->assertEquals('baz', $this->mockDB->prepare->bind[2]);
+        $this->assertEquals('bar2', $this->mockDB->prepare->bind[3]);
+        $this->assertEquals('baz2', $this->mockDB->prepare->bind[4]);
+    }
+
+    public function testInsertAddDynamic() {
+        $this->db()->insert("foo", ["foo1", "foo2"], [["foo1" => "bar", "foo2" => "baz"]])->values(["foo1" => "bar2", "foo2" => "baz2"])->execute();
+        $this->assertEquals('INSERT INTO foo (foo1, foo2) VALUES (?, ?), (?, ?)', $this->mockDB->prepare->query);
+        $this->assertEquals('bar', $this->mockDB->prepare->bind[1]);
+        $this->assertEquals('baz', $this->mockDB->prepare->bind[2]);
+        $this->assertEquals('bar2', $this->mockDB->prepare->bind[3]);
+        $this->assertEquals('baz2', $this->mockDB->prepare->bind[4]);
+    }
+
+    public function testInsertAddMultipleDynamic() {
+        $this->db()->insert("foo", ["foo1", "foo2"], [["foo1" => "bar", "foo2" => "baz"]])->values([["foo1" => "bar2", "foo2" => "baz2"], ["foo1" => "bar3", "foo2" => "baz3"]])->execute();
+        $this->assertEquals('INSERT INTO foo (foo1, foo2) VALUES (?, ?), (?, ?), (?, ?)', $this->mockDB->prepare->query);
+        $this->assertEquals('bar', $this->mockDB->prepare->bind[1]);
+        $this->assertEquals('baz', $this->mockDB->prepare->bind[2]);
+        $this->assertEquals('bar2', $this->mockDB->prepare->bind[3]);
+        $this->assertEquals('baz2', $this->mockDB->prepare->bind[4]);
+        $this->assertEquals('bar3', $this->mockDB->prepare->bind[5]);
+        $this->assertEquals('baz3', $this->mockDB->prepare->bind[6]);
+    }
+
+    public function testInsertWithExecute() {
+        $this->db()->insert("foo", ["foo1", "foo2"])->execute(["foo1" => "bar", "foo2" => "baz"]);
+        $this->assertEquals('INSERT INTO foo (foo1, foo2) VALUES (?, ?)', $this->mockDB->prepare->query);
+        $this->assertEquals('bar', $this->mockDB->prepare->bind[1]);
+        $this->assertEquals('baz', $this->mockDB->prepare->bind[2]);
+    }
+
+    public function testInsertWithExecuteMultiple() {
+        $this->db()->insert("foo", ["foo1", "foo2"])->execute([["foo1" => "bar", "foo2" => "baz"], ["foo1" => "bar2", "foo2" => "baz2"]]);
+        $this->assertEquals('INSERT INTO foo (foo1, foo2) VALUES (?, ?), (?, ?)', $this->mockDB->prepare->query);
+        $this->assertEquals('bar', $this->mockDB->prepare->bind[1]);
+        $this->assertEquals('baz', $this->mockDB->prepare->bind[2]);
+        $this->assertEquals('bar2', $this->mockDB->prepare->bind[3]);
+        $this->assertEquals('baz2', $this->mockDB->prepare->bind[4]);
     }
 
     private function db() {
