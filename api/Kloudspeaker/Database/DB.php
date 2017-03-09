@@ -1,11 +1,12 @@
 <?php
 namespace Kloudspeaker\Database;
 
-interface IDatabase {
+class Database {
+    const TYPE_STRING = \PDO::PARAM_STR;
+    const TYPE_INT = \PDO::PARAM_INT;
+    const TYPE_BOOL = \PDO::PARAM_BOOL;
+    const TYPE_DATETIME = "datetime";
 
-}
-
-class Database implements IDatabase {
     public function __construct($db, $logger) {
         $this->logger = $logger;
         $this->db = $db;
@@ -81,7 +82,7 @@ class SelectStatementBuilder extends WhereStatementBuilder {
     }
 }
 
-class InsertStatementBuilder {
+class InsertStatementBuilder extends BoundStatementBuilder {
     public function __construct($logger, $db, $into, array $set1, array $set2 = NULL) {
         $this->logger = $logger;
         $this->db = $db;
@@ -152,16 +153,13 @@ class InsertStatementBuilder {
         $q = $this->build(count($v));
 
         $this->logger->debug("DB insert", ["query" => $q, "cols" => $this->cols, "values" => $v]);
-
-        //$this->db->beginTransaction();
         $stmt = $this->db->prepare($q);
 
         $field = 1;
         foreach ($v as $row) {
-            $this->logger->debug("INSERT ", $row);
             foreach ($this->cols as $col) {
-                #$this->logger->debug("BIND ".$field, [$row[$field]]);
-                $stmt->bindValue($field, $row[$col]);
+                //bindTypedValue($stmt, $p, $field, $val)
+                $this->bindTypedValue($stmt, $field, $col, $row[$col]);
                 $field = $field + 1;
             }
         }
@@ -169,7 +167,6 @@ class InsertStatementBuilder {
             $this->logger->error("DB QUERY FAILED: ".$q." ".\Kloudspeaker\Utils::array2str($this->db->errorInfo()));
             throw new DatabaseException("Error executing db query");
         }
-        //$this->db->commit();
         return TRUE;    //TODO affected count
     }
 
@@ -192,7 +189,7 @@ class UpdateStatementBuilder extends WhereStatementBuilder {
         $c = count($this->updateValues);
         foreach ($this->updateValues as $key => $value) {
             $fk = $this->addFieldValue($key, $value);
-            $bound[] = $fk;
+            $bound[] = ["field" => $key, "key" => $fk];
             $q .= $key . " = ?" . ($i === $c ? "" : ", ");
             $i = $i + 1;
         }
@@ -253,6 +250,10 @@ class WhereGroup implements IWhereItem {
         $this->children[] = new WhereItem($this, $field, $operator, $and, $valKey);
     }
 
+    public function addItem($item) {
+        $this->children[] = $item;
+    }
+
     public function isEmpty() {
         return count($this->children) === 0;
     }
@@ -284,12 +285,36 @@ class WhereItem implements IWhereItem {
     }
 
     public function build(&$bound, $first = FALSE) {
-        $bound[] = $this->valKey;
-        return ($first ? "" : ($this->and ? " AND " : " OR ")) . $this->field . " " . $this->operator . " ?"; 
+        if ($this->operator === "__null__") {
+            $op = "is null";
+        } else {
+            $op = $this->operator . " ?";
+            $bound[] = ["field" => $this->field, "key" => $this->valKey];
+            //TODO validate operator =<>
+        }
+        
+        return ($first ? "" : ($this->and ? " AND " : " OR ")) . $this->field . " " . $op; 
     }
 }
 
-abstract class WhereStatementBuilder {
+abstract class BoundStatementBuilder {
+    protected $types = [];
+
+    public function types($types) {
+        $this->types = $types;
+        return $this;
+    }
+
+    protected function bindTypedValue($stmt, $p, $field, $val) {
+        $type = Database::TYPE_STRING;
+        if (array_key_exists($field, $this->types))
+            $type = $this->types[$field];
+
+        $stmt->bindValue($p, $val, $type);
+    }
+}
+
+abstract class WhereStatementBuilder extends BoundStatementBuilder {
     const VALUE_UNDEFINED = "__undefined__";
 
     public function __construct($logger) {
@@ -339,12 +364,16 @@ abstract class WhereStatementBuilder {
 
             $stmt = $this->db->prepare($q);
             $i = 1;
-            foreach ($bound as $key) {
-                $stmt->bindValue($i, $v[$key]);
+            foreach ($bound as $b) {
+                //$type = Database::TYPE_STRING;
+                //if (array_key_exists($b["field"], $this->types))
+                //    $type = $this->types[$b["field"]];
+                //$stmt->bindValue($i, $v[$b["key"]], $type);
+                $this->bindTypedValue($stmt, $i, $b["field"], $v[$b["key"]]);
                 $i = $i + 1;
             }
 
-            $this->logger->debug("DB prepared statement:", ["query" => $q, "bound" => $bound, "values" => $v]);
+            $this->logger->debug("DB prepared statement:", ["query" => $q, "bound" => $bound, "values" => $v, "types" => $this->types]);
             
             $result = $stmt;
             if (!$stmt->execute())
@@ -358,6 +387,7 @@ abstract class WhereStatementBuilder {
             $this->logger->error("DB QUERY FAILED:".$q." ".implode(" ", $this->db->errorInfo()));
             throw new DatabaseException("Error executing db query");
         }
+        return $result;
     }
 }
 
@@ -374,6 +404,16 @@ class WhereGroupBuilder  {
 
     public function or($field, $val = "__undefined__", $operator = "=") {
         $this->group->add($field, $operator, FALSE, $this->stmt->addFieldValue($field, $val));
+        return $this;
+    }
+
+    public function andIsNull($field) {
+        $this->group->add($field, "__null__", TRUE, NULL);
+        return $this;
+    }
+
+    public function orIsNull($field) {
+        $this->group->add($field, "__null__", FALSE, NULL);
         return $this;
     }
 
@@ -405,14 +445,14 @@ class WhereGroupBuilder  {
 
     public function andGroup($field, $val = "__undefined__", $operator = "=") {
         $g = new WhereGroup($this->group);
-        $p->add($g);
+        $this->group->addItem($g);
         $g->add($field, $operator, TRUE, $this->stmt->addFieldValue($field, $val));
         return new WhereGroupBuilder($this->stmt, $g);
     }
 
     public function orGroup($field, $val = "__undefined__", $operator = "=") {
         $g = new WhereGroup($this->group, FALSE);
-        $p->add($g);
+        $this->group->addItem($g);
         $g->add($field, $operator, FALSE, $this->stmt->addFieldValue($field, $val));
         return new WhereGroupBuilder($this->stmt, $g);
     }

@@ -22,3 +22,5 @@ css/kloudspeaker.css.map
 .DS_Store
 
 server.log
+
+api.log

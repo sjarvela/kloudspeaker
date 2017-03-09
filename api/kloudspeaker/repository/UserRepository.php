@@ -49,10 +49,12 @@ class UserRepository {
         $cols = ['id', 'name', 'lower(user_type) as user_type', 'lower(lang) as lang', 'email', 'lower(user_auth.type) as auth'];
 
         $q = $this->db->select('user', $cols)->leftJoin('user_auth', 'user.id = user_auth.user_id');
-        $w = $q->where('is_group = 0')->and('id', $id);
+        //TODO boolean support
+        $w = $q->where('is_group', '0')->and('id', $id);
 
+        //TODO custom timestamp support
         if ($expiration)
-            $w->new()->isNull('expiration')->or('expiration', $this->timeFormatter->formatTimestampInternal($expiration), '>');
+            $w->andWhere('expiration', $this->timeFormatter->formatTimestampInternal($expiration), '>')->orIsNull('expiration');
 
         $result = $q->execute();
         $matches = $result->count();

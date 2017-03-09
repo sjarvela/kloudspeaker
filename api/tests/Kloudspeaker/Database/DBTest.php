@@ -2,11 +2,12 @@
 
 namespace Kloudspeaker;
 
-use PHPUnit\Framework\TestCase;
-
 require "api/Kloudspeaker/Api.php";
 require "api/Kloudspeaker/Database/DB.php";
 require "api/Kloudspeaker/Utils.php";
+
+use PHPUnit\Framework\TestCase;
+use \Kloudspeaker\Database\Database as Database;
 
 class MockDB {
     public $transaction = FALSE;
@@ -42,13 +43,15 @@ class MockStatement {
     public $count = 0;
     public $query;
     public $bind = [];
+    public $bindTypes = [];
 
     public function __construct($sql) {
         $this->query = $sql;
     }
 
-    public function bindValue($key, $val) {
+    public function bindValue($key, $val, $type) {
         $this->bind[$key] = $val;
+        $this->bindTypes[$key] = $type;
     }
 
     public function execute() {
@@ -77,6 +80,21 @@ class DBTest extends TestCase {
         $this->assertEquals('1', $this->mockDB->prepare->bind[1]);
     }
 
+    public function testSelectWhereTypeInt() {
+        $this->db()->select("foo", ["id", "bar"])->types(["bar" => Database::TYPE_INT])->where("id", "1")->and("bar", 2)->execute();
+        $this->assertEquals('SELECT id, bar FROM foo WHERE (id = ? AND bar = ?)', $this->mockDB->prepare->query);
+        $this->assertEquals('1', $this->mockDB->prepare->bind[1]);
+        $this->assertEquals(\PDO::PARAM_STR, $this->mockDB->prepare->bindTypes[1]);
+        $this->assertEquals(2, $this->mockDB->prepare->bind[2]);
+        $this->assertEquals(\PDO::PARAM_INT, $this->mockDB->prepare->bindTypes[2]);
+    }
+
+    public function testSelectLeftJoin() {
+        $this->db()->select("foo", ["id", "bar"])->leftJoin('bar', 'foo.id = bar.b_id')->where("id", "1")->execute();
+        $this->assertEquals('SELECT id, bar FROM foo LEFT OUTER JOIN bar on foo.id = bar.b_id WHERE (id = ?)', $this->mockDB->prepare->query);
+        $this->assertEquals('1', $this->mockDB->prepare->bind[1]);
+    }
+
     public function testSelectWhereAnd() {
         $this->db()->select("foo", ["id", "bar"])->where("id", "1")->and("foo", "bar")->execute();
         $this->assertEquals('SELECT id, bar FROM foo WHERE (id = ? AND foo = ?)', $this->mockDB->prepare->query);
@@ -89,6 +107,18 @@ class DBTest extends TestCase {
         $this->assertEquals('SELECT id, bar FROM foo WHERE (id = ? OR foo = ?)', $this->mockDB->prepare->query);
         $this->assertEquals('1', $this->mockDB->prepare->bind[1]);
         $this->assertEquals('bar', $this->mockDB->prepare->bind[2]);
+    }
+
+    public function testSelectWhereOrNull() {
+        $this->db()->select("foo", ["id", "bar"])->where("id", "1")->orIsNull("foo")->execute();
+        $this->assertEquals('SELECT id, bar FROM foo WHERE (id = ? OR foo is null)', $this->mockDB->prepare->query);
+        $this->assertEquals('1', $this->mockDB->prepare->bind[1]);
+    }
+
+    public function testSelectWhereAndNull() {
+        $this->db()->select("foo", ["id", "bar"])->where("id", "1")->andIsNull("foo")->execute();
+        $this->assertEquals('SELECT id, bar FROM foo WHERE (id = ? AND foo is null)', $this->mockDB->prepare->query);
+        $this->assertEquals('1', $this->mockDB->prepare->bind[1]);
     }
 
     public function testSelectWhereAndBetweenGroups() {
@@ -107,6 +137,22 @@ class DBTest extends TestCase {
         $this->assertEquals('baz', $this->mockDB->prepare->bind[3]);
     }
 
+    public function testSelectInnerAndGroup() {
+        $this->db()->select("foo", ["id", "bar"])->where("id", "1")->andGroup("foo", "bar")->or("foo", "baz")->execute();
+        $this->assertEquals('SELECT id, bar FROM foo WHERE (id = ? AND (foo = ? OR foo = ?))', $this->mockDB->prepare->query);
+        $this->assertEquals('1', $this->mockDB->prepare->bind[1]);
+        $this->assertEquals('bar', $this->mockDB->prepare->bind[2]);
+        $this->assertEquals('baz', $this->mockDB->prepare->bind[3]);
+    }
+
+    public function testSelectInnerOrGroup() {
+        $this->db()->select("foo", ["id", "bar"])->where("id", "1")->orGroup("foo", "bar")->or("foo", "baz")->execute();
+        $this->assertEquals('SELECT id, bar FROM foo WHERE (id = ? OR (foo = ? OR foo = ?))', $this->mockDB->prepare->query);
+        $this->assertEquals('1', $this->mockDB->prepare->bind[1]);
+        $this->assertEquals('bar', $this->mockDB->prepare->bind[2]);
+        $this->assertEquals('baz', $this->mockDB->prepare->bind[3]);
+    }
+
     public function testDelete() {
         $this->db()->delete("foo")->where("id", "1")->execute();
         $this->assertEquals('DELETE FROM foo WHERE (id = ?)', $this->mockDB->prepare->query);
@@ -119,6 +165,19 @@ class DBTest extends TestCase {
         $this->assertEquals('bar', $this->mockDB->prepare->bind[1]);
         $this->assertEquals('baz', $this->mockDB->prepare->bind[2]);
         $this->assertEquals('1', $this->mockDB->prepare->bind[3]);
+    }
+
+    public function testUpdateWithTypeInt() {
+        $this->db()->update("foo", ["foo1" => "bar", "foo2" => 3])->types(["foo2" => Database::TYPE_INT])->where("id", "1")->and("foo2", 2)->execute();
+        $this->assertEquals('UPDATE foo SET foo1 = ?, foo2 = ? WHERE (id = ? AND foo2 = ?)', $this->mockDB->prepare->query);
+        $this->assertEquals('bar', $this->mockDB->prepare->bind[1]);
+        $this->assertEquals(\PDO::PARAM_STR, $this->mockDB->prepare->bindTypes[1]);
+        $this->assertEquals(3, $this->mockDB->prepare->bind[2]);
+        $this->assertEquals(\PDO::PARAM_INT, $this->mockDB->prepare->bindTypes[2]);
+        $this->assertEquals('1', $this->mockDB->prepare->bind[3]);
+        $this->assertEquals(\PDO::PARAM_STR, $this->mockDB->prepare->bindTypes[3]);
+        $this->assertEquals(2, $this->mockDB->prepare->bind[4]);
+        $this->assertEquals(\PDO::PARAM_INT, $this->mockDB->prepare->bindTypes[4]);
     }
 
     public function testInsert() {
