@@ -17,21 +17,18 @@ class UserRepository {
     public function find($name, $allowEmail = FALSE, $expiration = FALSE) {
         $cols = ['id', 'name', 'lower(user_type) as user_type', 'lower(lang) as lang', 'email', 'lower(user_auth.type) as auth'];
 
-        $q = $this->db->select('user', $cols)->leftJoin('user_auth', 'user.id = user_auth.user_id');
-        $w = $q->where('is_group = 0');
+        $q = $this->db->select('user', $cols)->types(["expiration" => Database::TYPE_DATETIME_INTERNAL, "is_group" => Database::TYPE_INT])->leftJoin('user_auth', 'user.id = user_auth.user_id');
+        $w = $q->where('is_group', 0);
 
         if ($expiration)
-            $w->and('(expiration is null or expiration > :expiration)');
+            $w->andWhere('expiration', $expiration, '>')->orIsNull('expiration');
 
         if ($allowEmail)
-            $w->and('(name = :name or email = :name)');
+            $w->andWhere('name', $name)->or('email', $name);
         else
-            $w->and('name = :name');
+            $w->andWhere('name', $name);
 
-        $result = $q->execute([
-            'expiration' => $this->timeFormatter->formatTimestampInternal($expiration),
-            'name' => $name
-        ]);
+        $result = $q->execute();
         $matches = $result->count();
 
         if ($matches === 0) {
@@ -50,13 +47,13 @@ class UserRepository {
     public function get($id, $expiration = FALSE) {
         $cols = ['id', 'name', 'lower(user_type) as user_type', 'lower(lang) as lang', 'email', 'lower(user_auth.type) as auth'];
 
-        $q = $this->db->select('user', $cols)->types(["is_group" => Database::TYPE_INT])->leftJoin('user_auth', 'user.id = user_auth.user_id');
+        $q = $this->db->select('user', $cols)->types(["expiration" => Database::TYPE_DATETIME_INTERNAL, "is_group" => Database::TYPE_INT])->leftJoin('user_auth', 'user.id = user_auth.user_id');
         //TODO boolean support
         $w = $q->where('is_group', 0)->and('id', $id);
 
         //TODO custom timestamp support
         if ($expiration)
-            $w->andWhere('expiration', $this->timeFormatter->formatTimestampInternal($expiration), '>')->orIsNull('expiration');
+            $w->andWhere('expiration', $expiration, '>')->orIsNull('expiration');
 
         $result = $q->execute();
         $matches = $result->count();

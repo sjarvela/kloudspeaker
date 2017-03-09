@@ -30,6 +30,7 @@ class Session {
             // load user data
             if ($session["user_id"] != 0) {
                 $this->user = $this->container->users->get($session["user_id"], time());
+                $this->container->logger->debug("User ", $this->user);
                 if (!$this->user) {
                     // user expired
                     $this->end();

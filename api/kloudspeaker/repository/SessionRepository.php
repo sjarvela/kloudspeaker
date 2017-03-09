@@ -10,7 +10,7 @@ class SessionRepository {
     }
 
     public function get($id, $lastValid = NULL) {
-        return $this->db->select('session', ['id', 'user_id', 'ip', 'time', 'last_access'])->where('id', $id)->done()->execute()->firstRow();
+        return $this->db->select('session', ['id', 'user_id', 'ip', 'time', 'last_access'])->types(["last_access" => Database::TYPE_DATETIME, "time" => Database::TYPE_DATETIME])->where('id', $id)->done()->execute()->firstRow();
     }
 
     public function add($id, $userId, $ip, $time) {

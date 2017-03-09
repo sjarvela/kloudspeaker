@@ -6,6 +6,7 @@ class Database {
     const TYPE_INT = \PDO::PARAM_INT;
     const TYPE_BOOL = \PDO::PARAM_BOOL;
     const TYPE_DATETIME = "datetime";
+    const TYPE_DATETIME_INTERNAL = "datetime_internal";
 
     public function __construct($db, $logger) {
         $this->logger = $logger;
@@ -74,7 +75,7 @@ class SelectStatementBuilder extends WhereStatementBuilder {
     }
 
     public function execute($values = NULL) {        
-        return new SelectResult($this->doExecute($values));
+        return new SelectResult($this->doExecute($values), $this->types);
     }
 
     public function toString() {
@@ -158,7 +159,6 @@ class InsertStatementBuilder extends BoundStatementBuilder {
         $field = 1;
         foreach ($v as $row) {
             foreach ($this->cols as $col) {
-                //bindTypedValue($stmt, $p, $field, $val)
                 $this->bindTypedValue($stmt, $field, $col, $row[$col]);
                 $field = $field + 1;
             }
@@ -314,6 +314,9 @@ abstract class BoundStatementBuilder {
         if ($type === Database::TYPE_DATETIME) {
             $type = Database::TYPE_STRING;
             $v = date("Y-m-d H:i:s", $val);
+        } else if ($type === Database::TYPE_DATETIME_INTERNAL) {
+            $type = Database::TYPE_INT;
+            $v = $val != NULL ? intval(date("YmdHis", $val)) : NULL;
         }
         //TODO validate value type
 
@@ -477,8 +480,9 @@ class SelectResult {
     private $result;
     private $rows = NULL;
 
-    public function __construct($result) {
+    public function __construct($result, $types = NULL) {
         $this->result = $result;
+        $this->types = $types;
     }
 
     public function count() {
@@ -499,7 +503,22 @@ class SelectResult {
             return $this->rows;
         }
 
-        $this->rows = $this->result->fetchAll(\PDO::FETCH_BOTH);
+        $rows = $this->result->fetchAll(\PDO::FETCH_BOTH);
+        $this->rows = [];
+        if ($this->types and count($this->types) > 0) {
+            foreach ($rows as $row) {
+                foreach ($this->types as $field => $type) {
+                    if ($type === Database::TYPE_DATETIME) {
+                        $row[$field] = $row[$field] != NULL ? strtotime($row[$field]) : NULL;
+                    } else if ($type === Database::TYPE_DATETIME_INTERNAL) {
+                        $row[$field] = $row[$field] != NULL ? strtotime($row[$field], "YmdHis") : NULL;
+                    }
+                }
+                $this->rows[] = $row;
+            }
+        } else {
+            $this->rows = $rows;
+        }
         return $this->rows;
     }
 
