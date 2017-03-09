@@ -1,6 +1,8 @@
 <?php
 namespace Kloudspeaker\Repository;
 
+use \Kloudspeaker\Database\Database as Database;
+
 class UserRepository {
     public function __construct($container) {
         $this->logger = $container->logger;
@@ -48,9 +50,9 @@ class UserRepository {
     public function get($id, $expiration = FALSE) {
         $cols = ['id', 'name', 'lower(user_type) as user_type', 'lower(lang) as lang', 'email', 'lower(user_auth.type) as auth'];
 
-        $q = $this->db->select('user', $cols)->leftJoin('user_auth', 'user.id = user_auth.user_id');
+        $q = $this->db->select('user', $cols)->types(["is_group" => Database::TYPE_INT])->leftJoin('user_auth', 'user.id = user_auth.user_id');
         //TODO boolean support
-        $w = $q->where('is_group', '0')->and('id', $id);
+        $w = $q->where('is_group', 0)->and('id', $id);
 
         //TODO custom timestamp support
         if ($expiration)

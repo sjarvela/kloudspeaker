@@ -310,7 +310,14 @@ abstract class BoundStatementBuilder {
         if (array_key_exists($field, $this->types))
             $type = $this->types[$field];
 
-        $stmt->bindValue($p, $val, $type);
+        $v = $val;
+        if ($type === Database::TYPE_DATETIME) {
+            $type = Database::TYPE_STRING;
+            $v = date("Y-m-d H:i:s", $val);
+        }
+        //TODO validate value type
+
+        $stmt->bindValue($p, $v, $type);
     }
 }
 

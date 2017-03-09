@@ -1,6 +1,8 @@
 <?php
 namespace Kloudspeaker\Repository;
 
+use \Kloudspeaker\Database\Database as Database;
+
 class SessionRepository {
     public function __construct($container) {
         $this->logger = $container->logger;
@@ -12,7 +14,7 @@ class SessionRepository {
     }
 
     public function add($id, $userId, $ip, $time) {
-        $this->db->insert('session', ['id' => $id, 'user_id' => $userId, 'ip' => $ip, 'time' => $time, 'last_access' => $time])->execute();
+        $this->db->insert('session', ['id' => $id, 'user_id' => $userId, 'ip' => $ip, 'time' => $time, 'last_access' => $time])->types(["last_access" => Database::TYPE_DATETIME, "time" => Database::TYPE_DATETIME])->execute();
     }
 
     public function addData($id, $data) {
@@ -30,11 +32,11 @@ class SessionRepository {
     }
 
     public function updateSessionTime($id, $time) {
-        $this->db->update("session", ['last_access' => $time])->where("id", $id)->execute();
+        $this->db->update("session", ['last_access' => $time])->types(["last_access" => Database::TYPE_DATETIME, "time" => Database::TYPE_DATETIME])->where("id", $id)->execute();
     }
 
     public function removeAllSessionBefore($time) {
-        $ids = $this->db->select('session', ['id'])->where('last_access', $time, '<')->execute()->values("id");
+        $ids = $this->db->select('session', ['id'])->types(["last_access" => Database::TYPE_DATETIME, "time" => Database::TYPE_DATETIME])->where('last_access', $time, '<')->execute()->values("id");
         if (count($ids) == 0) {
             return;
         }

@@ -80,13 +80,22 @@ class DBTest extends TestCase {
         $this->assertEquals('1', $this->mockDB->prepare->bind[1]);
     }
 
-    public function testSelectWhereTypeInt() {
+    public function testSelectWhereWithTypeInt() {
         $this->db()->select("foo", ["id", "bar"])->types(["bar" => Database::TYPE_INT])->where("id", "1")->and("bar", 2)->execute();
         $this->assertEquals('SELECT id, bar FROM foo WHERE (id = ? AND bar = ?)', $this->mockDB->prepare->query);
         $this->assertEquals('1', $this->mockDB->prepare->bind[1]);
         $this->assertEquals(\PDO::PARAM_STR, $this->mockDB->prepare->bindTypes[1]);
         $this->assertEquals(2, $this->mockDB->prepare->bind[2]);
         $this->assertEquals(\PDO::PARAM_INT, $this->mockDB->prepare->bindTypes[2]);
+    }
+
+    public function testSelectWhereWithTypeDatetime() {
+        $this->db()->select("foo", ["id", "bar"])->types(["bar" => Database::TYPE_DATETIME])->where("id", "1")->and("bar", strtotime('2016/03/09 23:12:01'))->execute();
+        $this->assertEquals('SELECT id, bar FROM foo WHERE (id = ? AND bar = ?)', $this->mockDB->prepare->query);
+        $this->assertEquals('1', $this->mockDB->prepare->bind[1]);
+        $this->assertEquals(\PDO::PARAM_STR, $this->mockDB->prepare->bindTypes[1]);
+        $this->assertEquals('2016-03-09 23:12:01', $this->mockDB->prepare->bind[2]);
+        $this->assertEquals(\PDO::PARAM_STR, $this->mockDB->prepare->bindTypes[2]);
     }
 
     public function testSelectLeftJoin() {
