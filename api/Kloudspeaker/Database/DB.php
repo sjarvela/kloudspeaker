@@ -285,8 +285,14 @@ class WhereItem implements IWhereItem {
     }
 
     public function build(&$bound, $first = FALSE) {
-        if ($this->operator === "__null__") {
+        if ($this->operator === "isnull") {
             $op = "is null";
+        } else if ($this->operator === "in") {
+            if (!is_array($this->valKey)) throw new DatabaseException("Invalid query, key not list");
+            $op = "in (" . \Kloudspeaker\Utils::strList('?', count($this->valKey), ', ') . ")";
+            foreach ($this->valKey as $key) {
+                $bound[] = ["field" => $this->field, "key" => $key];
+            }
         } else {
             $op = $this->operator . " ?";
             $bound[] = ["field" => $this->field, "key" => $this->valKey];
@@ -333,6 +339,16 @@ abstract class WhereStatementBuilder extends BoundStatementBuilder {
         $this->values = [];
     }
 
+    public function addFieldValues($field, array $values) {
+        $keys = [];
+        foreach ($values as $val) {
+            $key = $field.':'.count($this->values);
+            $this->values[$key] = $val;
+            $keys[] = $key;
+        }
+        return $keys;
+    }
+
     public function addFieldValue($field, $val) {
         $key = ($val !== WhereStatementBuilder::VALUE_UNDEFINED ? $field.':'.count($this->values) : $field);
         if ($val !== WhereStatementBuilder::VALUE_UNDEFINED)
@@ -343,6 +359,13 @@ abstract class WhereStatementBuilder extends BoundStatementBuilder {
     public function where($field, $val = "__undefined__", $operator = "=", $and = TRUE) {
         $g = new WhereGroup(NULL, $and);
         $g->add($field, $operator, $and, $this->addFieldValue($field, $val));
+        $this->where[] = $g;
+        return new WhereGroupBuilder($this, $g);
+    }
+
+    public function whereIn($field, array $values, $and = TRUE) {
+        $g = new WhereGroup(NULL, $and);
+        $g->add($field, "in", $and, $this->addFieldValues($field, $values));
         $this->where[] = $g;
         return new WhereGroupBuilder($this, $g);
     }
@@ -375,10 +398,6 @@ abstract class WhereStatementBuilder extends BoundStatementBuilder {
             $stmt = $this->db->prepare($q);
             $i = 1;
             foreach ($bound as $b) {
-                //$type = Database::TYPE_STRING;
-                //if (array_key_exists($b["field"], $this->types))
-                //    $type = $this->types[$b["field"]];
-                //$stmt->bindValue($i, $v[$b["key"]], $type);
                 $this->bindTypedValue($stmt, $i, $b["field"], $v[$b["key"]]);
                 $i = $i + 1;
             }
@@ -417,13 +436,23 @@ class WhereGroupBuilder  {
         return $this;
     }
 
+    public function andIn($field, array $values) {
+        $this->group->add($field, "in", TRUE, $this->stmt->addFieldValues($field, $values));
+        return $this;
+    }
+
+    public function orIn($field, array $values) {
+        $this->group->add($field, "in", FALSE, $this->stmt->addFieldValues($field, $values));
+        return $this;
+    }
+
     public function andIsNull($field) {
-        $this->group->add($field, "__null__", TRUE, NULL);
+        $this->group->add($field, "isnull", TRUE, NULL);
         return $this;
     }
 
     public function orIsNull($field) {
-        $this->group->add($field, "__null__", FALSE, NULL);
+        $this->group->add($field, "isnull", FALSE, NULL);
         return $this;
     }
 

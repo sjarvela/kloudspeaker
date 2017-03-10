@@ -2,9 +2,9 @@
 
 namespace Kloudspeaker;
 
-require "api/Kloudspeaker/Api.php";
-require "api/Kloudspeaker/Database/DB.php";
-require "api/Kloudspeaker/Utils.php";
+require_once "api/Kloudspeaker/Api.php";
+require_once "api/Kloudspeaker/Database/DB.php";
+require_once "api/Kloudspeaker/Utils.php";
 
 use PHPUnit\Framework\TestCase;
 use \Kloudspeaker\Database\Database as Database;
@@ -116,6 +116,32 @@ class DBTest extends TestCase {
         $this->assertEquals('SELECT id, bar FROM foo WHERE (id = ? OR foo = ?)', $this->mockDB->prepare->query);
         $this->assertEquals('1', $this->mockDB->prepare->bind[1]);
         $this->assertEquals('bar', $this->mockDB->prepare->bind[2]);
+    }
+
+    public function testSelectWhereIn() {
+        $this->db()->select("foo", ["id", "bar"])->whereIn("id", ["1", "2", "3"])->execute();
+        $this->assertEquals('SELECT id, bar FROM foo WHERE (id in (?, ?, ?))', $this->mockDB->prepare->query);
+        $this->assertEquals('1', $this->mockDB->prepare->bind[1]);
+        $this->assertEquals('2', $this->mockDB->prepare->bind[2]);
+        $this->assertEquals('3', $this->mockDB->prepare->bind[3]);
+    }
+
+    public function testSelectWhereAndIn() {
+        $this->db()->select("foo", ["id", "bar"])->where('foo', 'bar')->andIn("id", ["1", "2", "3"])->execute();
+        $this->assertEquals('SELECT id, bar FROM foo WHERE (foo = ? AND id in (?, ?, ?))', $this->mockDB->prepare->query);
+        $this->assertEquals('bar', $this->mockDB->prepare->bind[1]);
+        $this->assertEquals('1', $this->mockDB->prepare->bind[2]);
+        $this->assertEquals('2', $this->mockDB->prepare->bind[3]);
+        $this->assertEquals('3', $this->mockDB->prepare->bind[4]);
+    }
+
+    public function testSelectWhereOrIn() {
+        $this->db()->select("foo", ["id", "bar"])->where('foo', 'bar')->orIn("id", ["1", "2", "3"])->execute();
+        $this->assertEquals('SELECT id, bar FROM foo WHERE (foo = ? OR id in (?, ?, ?))', $this->mockDB->prepare->query);
+        $this->assertEquals('bar', $this->mockDB->prepare->bind[1]);
+        $this->assertEquals('1', $this->mockDB->prepare->bind[2]);
+        $this->assertEquals('2', $this->mockDB->prepare->bind[3]);
+        $this->assertEquals('3', $this->mockDB->prepare->bind[4]);
     }
 
     public function testSelectWhereOrNull() {
