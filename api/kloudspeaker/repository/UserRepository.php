@@ -7,7 +7,6 @@ class UserRepository {
     public function __construct($container) {
         $this->logger = $container->logger;
         $this->db = $container->db;
-        $this->timeFormatter = $container->formatters->getTimeFormatter();
     }
 
     //private function toUser($props) {
@@ -15,7 +14,7 @@ class UserRepository {
     //}
 
     public function find($name, $allowEmail = FALSE, $expiration = FALSE) {
-        $cols = ['id', 'name', 'lower(user_type) as user_type', 'lower(lang) as lang', 'email', 'lower(user_auth.type) as auth'];
+        $cols = ['id', 'name', 'lower(user_type) as user_type', 'lower(lang) as lang', 'email', 'lower(user_auth.type) as auth, expiration'];
 
         $q = $this->db->select('user', $cols)->types(["expiration" => Database::TYPE_DATETIME_INTERNAL, "is_group" => Database::TYPE_INT])->leftJoin('user_auth', 'user.id = user_auth.user_id');
         $w = $q->where('is_group', 0);
@@ -45,13 +44,12 @@ class UserRepository {
     }
 
     public function get($id, $expiration = FALSE) {
-        $cols = ['id', 'name', 'lower(user_type) as user_type', 'lower(lang) as lang', 'email', 'lower(user_auth.type) as auth'];
+        $cols = ['id', 'name', 'lower(user_type) as user_type', 'lower(lang) as lang', 'email', 'lower(user_auth.type) as auth, expiration'];
 
         $q = $this->db->select('user', $cols)->types(["expiration" => Database::TYPE_DATETIME_INTERNAL, "is_group" => Database::TYPE_INT])->leftJoin('user_auth', 'user.id = user_auth.user_id');
         //TODO boolean support
         $w = $q->where('is_group', 0)->and('id', $id);
 
-        //TODO custom timestamp support
         if ($expiration)
             $w->andWhere('expiration', $expiration, '>')->orIsNull('expiration');
 

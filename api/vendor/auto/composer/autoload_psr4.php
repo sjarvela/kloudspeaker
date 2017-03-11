@@ -8,6 +8,7 @@ $baseDir = dirname(dirname(dirname($vendorDir)));
 return array(
     'phpDocumentor\\Reflection\\' => array($vendorDir . '/phpdocumentor/reflection-common/src', $vendorDir . '/phpdocumentor/type-resolver/src', $vendorDir . '/phpdocumentor/reflection-docblock/src'),
     'Webmozart\\Assert\\' => array($vendorDir . '/webmozart/assert/src'),
+    'Symfony\\Component\\Yaml\\' => array($vendorDir . '/symfony/yaml'),
     'Slim\\PDO\\' => array($vendorDir . '/slim/pdo/src/PDO'),
     'Slim\\' => array($vendorDir . '/slim/slim/Slim'),
     'RKA\\Middleware\\' => array($vendorDir . '/akrabat/rka-ip-address-middleware/src'),

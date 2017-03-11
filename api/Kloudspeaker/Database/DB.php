@@ -537,6 +537,10 @@ class SelectResult {
         if ($this->types and count($this->types) > 0) {
             foreach ($rows as $row) {
                 foreach ($this->types as $field => $type) {
+                    //TODO optimize field loop
+                    if (!array_key_exists($field, $row))
+                        continue;
+
                     if ($type === Database::TYPE_DATETIME) {
                         $row[$field] = $row[$field] != NULL ? strtotime($row[$field]) : NULL;
                     } else if ($type === Database::TYPE_DATETIME_INTERNAL) {

@@ -4,7 +4,7 @@ namespace Kloudspeaker;
 
 require_once "api/Kloudspeaker/Api.php";
 require_once "api/Kloudspeaker/Database/DB.php";
-require_once "api/Kloudspeaker/Utils.php";
+require_once "api/tests/Kloudspeaker/TestLogger.php";
 
 use PHPUnit\Framework\TestCase;
 use \Kloudspeaker\Database\Database as Database;
@@ -271,11 +271,5 @@ class DBTest extends TestCase {
         $this->mockDB = new MockDB();
         $logger = new TestLogger();
         return new \Kloudspeaker\Database\Database($this->mockDB, $logger);
-    }
-}
-
-class TestLogger {
-    public function debug($msg, $o) {
-        echo $msg . " " . \Kloudspeaker\Utils::array2str($o) . "\n";
     }
 }

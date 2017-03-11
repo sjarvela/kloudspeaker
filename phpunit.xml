@@ -1,7 +1,13 @@
 <phpunit debug="true">
-  <testsuites>
-    <testsuite name="kloudspeaker">
-      <directory>api/tests/</directory>
-    </testsuite>
-  </testsuites>
+    <testsuites>
+        <testsuite name="kloudspeaker">
+            <directory>api/tests/</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <var name="DB_DSN" value="mysql:dbname=ks_unit;host=localhost" />
+        <var name="DB_USER" value="ks_unit" />
+        <var name="DB_PASSWD" value="ks_unit" />
+        <var name="DB_DBNAME" value="ks_unit" />
+    </php>
 </phpunit>

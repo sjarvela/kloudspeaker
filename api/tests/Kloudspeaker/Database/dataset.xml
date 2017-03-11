@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<dataset>
+    <table name="user">
+		<column>id</column>
+		<column>name</column>
+		<column>lang</column>
+		<column>description</column>
+		<column>user_type</column>
+		<column>email</column>
+		<column>auth</column>
+		<column>is_group</column>
+		<column>expiration</column>
+		<row>
+			<value>1</value>
+			<value>Admin</value>
+			<value>en</value>
+			<value></value>
+			<value>a</value>
+			<value>admin@mail.com</value>
+			<null/>
+			<value>0</value>
+			<null/>
+		</row>
+	</table>
+</dataset>
