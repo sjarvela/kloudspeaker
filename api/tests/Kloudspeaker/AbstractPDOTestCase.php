@@ -22,6 +22,14 @@ abstract class AbstractPDOTestCase extends TestCase {
     public $logger;
     public $db;
 
+    protected function setup() {
+        $this->logger = new TestLogger();
+
+        $conn = $this->getConnection();
+        $this->setupDB(self::$pdo);
+        $this->db = new \Kloudspeaker\Database\Database(self::$pdo, $this->logger);
+    }
+
     final public function getConnection() {
         if ($this->conn === null) {
             if (self::$pdo == null) {
@@ -39,24 +47,16 @@ abstract class AbstractPDOTestCase extends TestCase {
     	foreach ($TABLES as $table) {
     		$pdo->exec("DROP TABLE IF EXISTS `$table`;");
     	}
-    	$createSql = file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . '/../backend/db/mysql/sql/install/create_tables.sql');
+        $script = dirname(__FILE__) . '/../../../backend/db/mysql/sql/install/create_tables.sql';
+    	$createSql = file_get_contents($script);
+        if (!$createSql) throw new Exception("Script not found ".$script);
+
     	$createSql = str_replace("{ENGINE}", "InnoDB", str_replace("{TABLE_PREFIX}", "", $createSql));
-    	//echo $createSql;
     	$pdo->exec($createSql);
 
 		$ds = $this->getDataSet();
 		$this->getDatabaseTester()->setDataSet($ds);
 		$this->getDatabaseTester()->onSetUp();
-    }
-
-    protected function createDB() {
-    	$this->logger = new TestLogger();
-
-    	$conn = $this->getConnection();
-    	//echo \Kloudspeaker\Utils::array2str($ds->getTableNames());
-    	$this->setupDB(self::$pdo);
-
-    	$this->db = new \Kloudspeaker\Database\Database(self::$pdo, $this->logger);
     }
 
     abstract function getDataSet();
