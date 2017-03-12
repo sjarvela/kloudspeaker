@@ -23,6 +23,7 @@ require 'Kloudspeaker/Repository/UserRepository.php';
 require 'Kloudspeaker/Repository/SessionRepository.php';
 require 'Kloudspeaker/Auth/PasswordAuth.php';
 require 'Kloudspeaker/Auth/PasswordHash.php';
+require 'Routes/Session.php';
 
 include "../configuration.php";
 include "Version.info.php";
@@ -37,6 +38,6 @@ $app = new Api($config);
 $app->initialize(new \KloudspeakerLegacy($config));
 
 // routes
-require 'Routes/Session.php';
+$app->initializeDefaultRoutes();
 
 $app->run();

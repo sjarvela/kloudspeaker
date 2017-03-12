@@ -2,9 +2,10 @@
 
 namespace Kloudspeaker;
 
-require_once "api/Kloudspeaker/Api.php";
-require_once "api/Kloudspeaker/Database/DB.php";
-require_once "api/tests/Kloudspeaker/TestLogger.php";
+require_once "Kloudspeaker/Api.php";
+require_once "Kloudspeaker/Database/DB.php";
+
+require_once "tests/Kloudspeaker/TestLogger.php";
 
 use PHPUnit\Framework\TestCase;
 use \Kloudspeaker\Database\Database as Database;

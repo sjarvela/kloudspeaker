@@ -3,24 +3,25 @@ namespace Kloudspeaker;
 
 class Configuration {
 
-    public function __construct($configValues, $version) {
+    public function __construct($configValues, $version, $serverProps = NULL) {
         $this->configValues = $configValues;
         $this->version = $version;
+        $this->serverProps = $serverProps != NULL ? $serverProps : $_SERVER;
     }
 
     public function getHost() {
-        $host = $_SERVER["SERVER_NAME"];
+        $host = $this->serverProps["SERVER_NAME"];
         
-        if ($_SERVER["SERVER_PORT"] != "80") $host .= ":".$_SERVER["SERVER_PORT"];
+        if ($this->serverProps["SERVER_PORT"] != "80") $host .= ":".$this->serverProps["SERVER_PORT"];
         
-        if (Utils::strStartsWith($_SERVER["SERVER_PROTOCOL"], "HTTPS/")) $host = "https://".$host;
+        if (Utils::strStartsWith($this->serverProps["SERVER_PROTOCOL"], "HTTPS/")) $host = "https://".$host;
         else $host = "http://".$host;
 
         return $host;
     }
 
     public function getRootPath() {
-        $path = $_SERVER["SCRIPT_NAME"];
+        $path = $this->serverProps["SCRIPT_NAME"];
         if (Utils::strEndsWith($path, "index.php")) $path = substr($path, 0, -9);
 
         return $this->getHost().$path;

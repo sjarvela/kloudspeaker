@@ -2,17 +2,17 @@
 namespace Kloudspeaker;
 
 class Api extends \Slim\App {
-    public function __construct($config) {
+    public function __construct($config, $slimConfig = []) {
         parent::__construct([
-            'settings' => [
+            'settings' => array_merge([
                 'determineRouteBeforeAppMiddleware' => true,
-                'displayErrorDetails' => true
-            ]
+                'displayErrorDetails' => true                
+            ], $slimConfig)
         ]);
         $this->config = $config;
     }
 
-    public function initialize($legacy) {
+    public function initialize($legacy, $overwrite = NULL) {
         $config = $this->config;
 
         $this->add(new \RKA\Middleware\IpAddress(true));
@@ -74,7 +74,10 @@ class Api extends \Slim\App {
             return new AppResponse();
         };
 
-        $container['logger'] = function($c) use ($config) {
+        $container['logger'] = function($c) use ($config, $overwrite) {
+            if ($overwrite != NULL and array_key_exists("logger", $overwrite))
+                return $overwrite["logger"];
+
             $logger = new \Monolog\Logger('kloudspeaker');
             $logLevel = $config->isDebug() ? \Monolog\Logger::DEBUG : \Monolog\Logger::INFO;
             $fileHandler = new \Monolog\Handler\StreamHandler("../api.log", $logLevel);
@@ -129,6 +132,15 @@ class Api extends \Slim\App {
 
         $legacy->initialize($this);
     }
+
+     public function initializeDefaultRoutes() {
+        $this->loadRoute("\Kloudspeaker\Route\Session");
+     }
+
+     public function loadRoute($classname) {
+        $cls = new $classname();
+        $cls->initialize($this);
+     }
 }
 
 abstract class Errors {

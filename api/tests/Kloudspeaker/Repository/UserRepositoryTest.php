@@ -2,8 +2,8 @@
 
 namespace Kloudspeaker\Repository;
 
-require_once "api/tests/Kloudspeaker/AbstractPDOTestCase.php";
-require_once "api/Kloudspeaker/Repository/UserRepository.php";
+require_once "tests/Kloudspeaker/AbstractPDOTestCase.php";
+require_once "Kloudspeaker/Repository/UserRepository.php";
 
 class UserRepositoryTest extends \Kloudspeaker\AbstractPDOTestCase {
 
@@ -11,7 +11,7 @@ class UserRepositoryTest extends \Kloudspeaker\AbstractPDOTestCase {
         parent::setup();
         $this->userRepository = new UserRepository($this);
     }
-    
+
     public function getDataSet() {
         return $this->createXmlDataSet(dirname(__FILE__) . '/../dataset.xml');
     }
