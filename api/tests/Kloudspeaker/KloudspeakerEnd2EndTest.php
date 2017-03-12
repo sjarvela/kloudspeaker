@@ -72,22 +72,27 @@ class KloudspeakerEnd2EndTest extends \Kloudspeaker\AbstractPDOTestCase {
 
     public function testSessionUnauthorized() {
         $res = $this->req('GET', '/session/');
-        $this->assertEquals('{"success":true,"result":{"id":null,"user":null,"features":[]}}', $res->getBody());
+        $this->assertEquals('{"success":true,"result":{"id":null,"user":null,"features":[]}}', $res->text());
     }
 
     public function testLoginFailureInvalidUser() {
         $res = $this->req('POST', '/session/authenticate/', "username=foo&password=bar");
-        $this->assertEquals('{"success":false,"error":{"code":-100,"msg":"Authentication failed","result":null}}', (string)$res->getBody());
+        $this->assertEquals('{"success":false,"error":{"code":-100,"msg":"Authentication failed","result":null}}', $res->text());
     }
 
     public function testLoginFailureInvalidPassword() {
         $res = $this->req('POST', '/session/authenticate/', "username=Admin&password=bar");
-        $this->assertEquals('{"success":false,"error":{"code":-100,"msg":"Authentication failed","result":null}}', (string)$res->getBody());
+        $this->assertEquals('{"success":false,"error":{"code":-100,"msg":"Authentication failed","result":null}}', $res->text());
     }
 
     public function testLoginSuccess() {
-        $res = $this->req('POST', '/session/authenticate/', "username=Admin&password=YWRtaW4=");
-        $this->assertEquals('', (string)$res->getBody());
+        //pw = admin (base64)
+        $res = $this->req('POST', '/session/authenticate/', "username=Admin&password=YWRtaW4=")->obj();
+        $this->assertTrue($res["success"]);
+
+        $user = $res["result"]["user"];
+        $this->assertEquals('1', $user["id"]);
+        $this->assertEquals('Admin', $user["name"]);
     }
 
     private function req($method, $path, $query=NULL, $data = NULL) {
@@ -130,15 +135,21 @@ class KloudspeakerEnd2EndTest extends \Kloudspeaker\AbstractPDOTestCase {
         $app->initializeDefaultRoutes();
 
         ob_clean();
-        return $app->run();
+        return new ResponseReader($app->run());
     }
 }
 
-class TestRequestBody extends Body {
+class ResponseReader {
 
-    public function __construct($str = "") {
+    public function __construct($res) {
+        $this->res = $res;
+    }
 
+    public function text() {
+        return ((string)$this->res->getBody());
+    }
 
-        parent::__construct($stream);
+    public function obj() {
+        return json_decode($this->text(), TRUE);
     }
 }

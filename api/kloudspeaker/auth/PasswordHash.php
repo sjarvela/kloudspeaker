@@ -18,9 +18,8 @@ class PasswordHash {
 
 	private $serverSalt;
 
-	public function __construct($hashSalt = "KLOUDSPEAKER_SERVER_SALT", $noDevUrandom = FALSE) {
-		$this->serverSalt = $hashSalt;//$settings->setting("server_hash_salt");
-		//($settings->setting("no_dev_urandom") or $settings->setting("no_udev_random"));
+	public function __construct($hashSalt, $noDevUrandom) {
+		$this->serverSalt = $hashSalt;
 		$this->hasher = new \PasswordHash(self::$hash_cost_log2, self::$hash_portable, $noDevUrandom);
 	}
 

@@ -22,4 +22,20 @@
 			<null/>
 		</row>
 	</table>
+    <table name="user_auth">
+		<column>user_id</column>
+		<column>type</column>
+		<column>salt</column>
+		<column>hash</column>
+		<column>a1hash</column>
+		<column>hint</column>
+		<row>
+			<value>1</value>
+			<value></value>
+			<value>5895f2be8f6929.07889719</value>
+			<value>$2a$08$dxGsEoOt32SSm2mcC23CFeukYPs447xGy44BAl1gfg0DYPwdOqc8e</value>
+			<value>2d15e5f950d6fd99382379d3d9ae0bea</value>
+			<value></value>
+		</row>
+	</table>
 </dataset>
