@@ -21,6 +21,28 @@
 			<value>0</value>
 			<null/>
 		</row>
+		<row>
+			<value>2</value>
+			<value>u1</value>
+			<value>en</value>
+			<value></value>
+			<null/>
+			<value>u1@mail.com</value>
+			<null/>
+			<value>0</value>
+			<null/>
+		</row>
+		<row>
+			<value>3</value>
+			<value>expired</value>
+			<value>en</value>
+			<value></value>
+			<null/>
+			<value>expired@mail.com</value>
+			<null/>
+			<value>0</value>
+			<value>20100101010101</value>
+		</row>
 	</table>
     <table name="user_auth">
 		<column>user_id</column>
@@ -35,6 +57,22 @@
 			<value>5895f2be8f6929.07889719</value>
 			<value>$2a$08$dxGsEoOt32SSm2mcC23CFeukYPs447xGy44BAl1gfg0DYPwdOqc8e</value>
 			<value>2d15e5f950d6fd99382379d3d9ae0bea</value>
+			<value></value>
+		</row>
+		<row>
+			<value>2</value>
+			<value></value>
+			<value>58c63f16e2ea10.17926914</value>
+			<value>$2a$08$rv0bShPkyV23hvc3Uj7Q1ujmaPo5ywVwdQXmepUZLD8OijOX4Ojfe</value>
+			<value>fc26ef1c49ef64baea0da1c9256849ca</value>
+			<value></value>
+		</row>
+		<row>
+			<value>3</value>
+			<value></value>
+			<value>58c63f7a1066f6.01118285</value>
+			<value>$2a$08$p.7iQRpWsgwqGMV12xRlKeWd6ZjianiAlPJOiplxgbQaUIJ3HW7oi</value>
+			<value>2005beb467ab7a5bd5f8d34bee8ab91b</value>
 			<value></value>
 		</row>
 	</table>

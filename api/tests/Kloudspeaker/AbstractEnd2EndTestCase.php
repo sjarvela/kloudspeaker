@@ -41,7 +41,7 @@ use Slim\Router;
 use Slim\Tests\Mocks\MockAction;
 
 
-class KloudspeakerEnd2EndTest extends \Kloudspeaker\AbstractPDOTestCase {
+abstract class AbstractEnd2EndTestCase extends \Kloudspeaker\AbstractPDOTestCase {
 
     protected function setup() {
         parent::setup();
@@ -70,32 +70,7 @@ class KloudspeakerEnd2EndTest extends \Kloudspeaker\AbstractPDOTestCase {
         return $this->createXmlDataSet(dirname(__FILE__) . '/dataset.xml');
     }
 
-    public function testSessionUnauthorized() {
-        $res = $this->req('GET', '/session/');
-        $this->assertEquals('{"success":true,"result":{"id":null,"user":null,"features":[]}}', $res->text());
-    }
-
-    public function testLoginFailureInvalidUser() {
-        $res = $this->req('POST', '/session/authenticate/', "username=foo&password=bar");
-        $this->assertEquals('{"success":false,"error":{"code":-100,"msg":"Authentication failed","result":null}}', $res->text());
-    }
-
-    public function testLoginFailureInvalidPassword() {
-        $res = $this->req('POST', '/session/authenticate/', "username=Admin&password=bar");
-        $this->assertEquals('{"success":false,"error":{"code":-100,"msg":"Authentication failed","result":null}}', $res->text());
-    }
-
-    public function testLoginSuccess() {
-        //pw = admin (base64)
-        $res = $this->req('POST', '/session/authenticate/', "username=Admin&password=YWRtaW4=")->obj();
-        $this->assertTrue($res["success"]);
-
-        $user = $res["result"]["user"];
-        $this->assertEquals('1', $user["id"]);
-        $this->assertEquals('Admin', $user["name"]);
-    }
-
-    private function req($method, $path, $query=NULL, $data = NULL) {
+    protected function req($method, $path, $query=NULL, $data = NULL) {
         $app = $this->api;
 
         // Prepare request and response objects
