@@ -7,23 +7,23 @@ require_once 'AbstractEnd2EndTestCase.php';
 class SessionTest extends \Kloudspeaker\AbstractEnd2EndTestCase {
 
     public function testSessionUnauthorized() {
-        $res = $this->req('GET', '/session/');
+        $res = $this->rq('GET', '/session/');
         $this->assertEquals('{"success":true,"result":{"id":null,"user":null,"features":[]}}', $res->text());
     }
 
     public function testLoginFailureInvalidUser() {
-        $res = $this->req('POST', '/session/authenticate/', "username=foo&password=bar");
+        $res = $this->rq('POST', '/session/authenticate/', "username=foo&password=bar");
         $this->assertEquals('{"success":false,"error":{"code":-100,"msg":"Authentication failed","result":null}}', $res->text());
     }
 
     public function testLoginFailureInvalidPassword() {
-        $res = $this->req('POST', '/session/authenticate/', "username=Admin&password=bar");
+        $res = $this->rq('POST', '/session/authenticate/', "username=Admin&password=bar");
         $this->assertEquals('{"success":false,"error":{"code":-100,"msg":"Authentication failed","result":null}}', $res->text());
     }
 
     public function testLoginAdmin() {
         //pw = admin (base64)
-        $res = $this->req('POST', '/session/authenticate/', "username=Admin&password=YWRtaW4=")->obj();
+        $res = $this->rq('POST', '/session/authenticate/', "username=Admin&password=YWRtaW4=")->obj();
         $this->assertTrue($res["success"]);
 
         $user = $res["result"]["user"];
@@ -33,7 +33,7 @@ class SessionTest extends \Kloudspeaker\AbstractEnd2EndTestCase {
 
     public function testLoginRegularUser() {
         //pw = u1 (base64)
-        $res = $this->req('POST', '/session/authenticate/', "username=u1&password=dTE=")->obj();
+        $res = $this->rq('POST', '/session/authenticate/', "username=u1&password=dTE=")->obj();
         $this->assertTrue($res["success"]);
 
         $user = $res["result"]["user"];
@@ -43,7 +43,7 @@ class SessionTest extends \Kloudspeaker\AbstractEnd2EndTestCase {
 
     public function testLoginExpiredUser() {
         //pw = admin (base64)
-        $res = $this->req('POST', '/session/authenticate/', "username=expired&password=ZXhwaXJlZA==");
+        $res = $this->rq('POST', '/session/authenticate/', "username=expired&password=ZXhwaXJlZA==");
         $this->assertEquals('{"success":false,"error":{"code":-100,"msg":"Authentication failed","result":null}}', $res->text());
     }
 }

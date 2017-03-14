@@ -58,44 +58,90 @@ abstract class AbstractEnd2EndTestCase extends \Kloudspeaker\AbstractPDOTestCase
             "SERVER_PROTOCOL" => "HTTP",
             "SCRIPT_NAME" => "index.php"
         ]);
-        $this->api = new Api($this->config, [
-            "addContentLengthHeader" => FALSE
-        ]);
-        $this->api->initialize(new \KloudspeakerLegacy($this->config), [
-            "logger" => new TestLogger()
-        ]);
     }
     
     public function getDataSet() {
         return $this->createXmlDataSet(dirname(__FILE__) . '/dataset.xml');
     }
 
-    protected function req($method, $path, $query=NULL, $data = NULL) {
-        $app = $this->api;
+    protected function app() {
+        return new AppBuilder($this->config);
+    }
+
+    protected function rq($method, $path, $query=NULL, $data = NULL) {
+        return $this->app()->run($method, $path, $query, $data);
+    }
+
+    protected function initializeApp($app) {}
+}
+
+class AppBuilder {
+    public function __construct($config) {
+        $this->config = $config;
+        $this->method = "GET";
+        $this->path = "/";
+        $this->query = NULL;
+        $this->data = NULL;
+        $this->plugins = [];
+    }
+
+    public function req($method, $path, $query=NULL, $data = NULL) {
+        $this->method = $method;
+        $this->path = $path;
+        $this->query = $query;
+        $this->data = $data;
+        return $this;
+    }
+
+    public function plugin($p) {
+        $this->plugins[] = $p;
+        return $this;
+    }
+
+    public function run($method = NULL, $path = NULL, $query=NULL, $data = NULL) {
+        $m = $this->method;
+        if ($method != NULL) $m = $method;
+        $p = $this->path;
+        if ($path != NULL) $p = $path;
+        $q = $this->query;
+        if ($query != NULL) $q = $query;
+        $d = $this->data;
+        if ($data != NULL) $d = $data;
+
+        $app = new Api($this->config, [
+            "addContentLengthHeader" => FALSE
+        ]);
+        $app->initialize(new \KloudspeakerLegacy($this->config), [
+            "logger" => new TestLogger()
+        ]);
+        $app->initializeDefaultRoutes();
+        foreach ($this->plugins as $pl) {
+            $app->addPlugin($pl);
+        }
 
         // Prepare request and response objects
         $env = Environment::mock([
             'SCRIPT_NAME' => '/index.php',
-            'REQUEST_URI' => $path,
-            'REQUEST_METHOD' => $method,
+            'REQUEST_URI' => $p,
+            'REQUEST_METHOD' => $m,
         ]);
         $uri = Uri::createFromEnvironment($env);
-        if ($query != NULL)
-            $uri = $uri->withQuery($query);
+        if ($q != NULL)
+            $uri = $uri->withQuery($q);
         $headers = Headers::createFromEnvironment($env);
         $cookies = [];
         $serverParams = $env->all();
         
-        if ($data != NULL) {
+        if ($d != NULL) {
             $stream = fopen('php://memory','r+');
-            fwrite($stream, json_encode($data));
+            fwrite($stream, json_encode($d));
             rewind($stream);
             $body = new Body($stream);
         } else {
             $body = new RequestBody();
         }
 
-        $req = new Request($method, $uri, $headers, $cookies, $serverParams, $body);
+        $req = new Request($m, $uri, $headers, $cookies, $serverParams, $body);
         $res = new Response();
 
         $container = $app->getContainer();
@@ -105,9 +151,6 @@ abstract class AbstractEnd2EndTestCase extends \Kloudspeaker\AbstractPDOTestCase
         $container['response'] = function ($c) use ($res) {
             return $res;
         };
-
-        // routes
-        $app->initializeDefaultRoutes();
 
         ob_clean();
         return new ResponseReader($app->run());
@@ -126,5 +169,9 @@ class ResponseReader {
 
     public function obj() {
         return json_decode($this->text(), TRUE);
+    }
+
+    public function status() {
+        return $this->res->getStatusCode();
     }
 }

@@ -141,6 +141,12 @@ class Api extends \Slim\App {
         $cls = new $classname();
         $cls->initialize($this);
      }
+
+     public function addPlugin($p) {
+        if (is_callable($p)) {
+            $p($this);
+        }
+     }
 }
 
 abstract class Errors {
