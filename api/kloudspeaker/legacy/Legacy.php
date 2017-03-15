@@ -171,6 +171,14 @@ class LegacyEnvironment {
 		return $this->commands;
 	}
 }
+class Request {
+	const METHOD_GET = 'get';
+	const METHOD_HEAD = 'head';
+	const METHOD_PUT = 'put';
+	const METHOD_POST = 'post';
+	const METHOD_DELETE = 'delete';
+}
+
 class LegacyAuthentication {
 	public function __construct($container) {
 		$this->container = $container;
@@ -246,7 +254,7 @@ class LegacyApp {
 
 	public function setup() {
 		$this->environment->addService("authentication", "AuthenticationServices");
-		$this->environment->addService("session", "SessionServices");
+		//$this->environment->addService("session", "SessionServices");
 		$this->environment->addService("configuration", "ConfigurationServices");
 		$this->environment->addService("filesystem", "FilesystemServices");
 		$this->environment->addService("events", "EventServices");

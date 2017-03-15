@@ -45,19 +45,6 @@ abstract class AbstractEnd2EndTestCase extends \Kloudspeaker\AbstractPDOTestCase
 
     protected function setup() {
         parent::setup();
-        $this->config = new Configuration([
-            "debug" => TRUE,
-            "db" => [
-                "dsn" => $GLOBALS['DB_DSN'],
-                "user" => $GLOBALS['DB_USER'],
-                "password" => $GLOBALS['DB_PASSWD']
-            ]
-        ], ["version" => "0.0.0", "revision" => "0"], [
-            "SERVER_NAME" => "test",
-            "SERVER_PORT" => 80,
-            "SERVER_PROTOCOL" => "HTTP",
-            "SCRIPT_NAME" => "index.php"
-        ]);
     }
     
     public function getDataSet() {
@@ -65,24 +52,33 @@ abstract class AbstractEnd2EndTestCase extends \Kloudspeaker\AbstractPDOTestCase
     }
 
     protected function app() {
-        return new AppBuilder($this->config);
+        return new AppBuilder(array_merge($this->config(),[
+            "debug" => TRUE,
+            "db" => [
+                "dsn" => $GLOBALS['DB_DSN'],
+                "user" => $GLOBALS['DB_USER'],
+                "password" => $GLOBALS['DB_PASSWD']
+            ]
+        ]));
     }
 
     protected function rq($method, $path, $query=NULL, $data = NULL) {
         return $this->app()->run($method, $path, $query, $data);
     }
 
-    protected function initializeApp($app) {}
+    protected function config() {
+        return [];
+    }
 }
 
 class AppBuilder {
-    public function __construct($config) {
-        $this->config = $config;
+    public function __construct($c) {
+        $this->config = $c;
         $this->method = "GET";
         $this->path = "/";
         $this->query = NULL;
         $this->data = NULL;
-        $this->plugins = [];
+        $this->modules = [];
     }
 
     public function req($method, $path, $query=NULL, $data = NULL) {
@@ -93,8 +89,13 @@ class AppBuilder {
         return $this;
     }
 
-    public function plugin($p) {
-        $this->plugins[] = $p;
+    public function config($c) {
+        $this->config = array_merge($this->config, $c);
+        return $this;
+    }
+
+    public function module($p) {
+        $this->modules[] = $p;
         return $this;
     }
 
@@ -108,15 +109,23 @@ class AppBuilder {
         $d = $this->data;
         if ($data != NULL) $d = $data;
 
-        $app = new Api($this->config, [
+        $config = new Configuration($this->config, ["version" => "0.0.0", "revision" => "0"], [
+            "SERVER_NAME" => "test",
+            "SERVER_PORT" => 80,
+            "SERVER_PROTOCOL" => "HTTP",
+            "SCRIPT_NAME" => "index.php"
+        ]);
+        $app = new Api($config, [
             "addContentLengthHeader" => FALSE
         ]);
-        $app->initialize(new \KloudspeakerLegacy($this->config), [
+        $app->initialize(new \KloudspeakerLegacy($config), [
             "logger" => new TestLogger()
         ]);
+        
         $app->initializeDefaultRoutes();
-        foreach ($this->plugins as $pl) {
-            $app->addPlugin($pl);
+
+        foreach ($this->modules as $ml) {
+            $app->addModule($ml);
         }
 
         // Prepare request and response objects

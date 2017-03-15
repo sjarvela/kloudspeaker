@@ -130,23 +130,58 @@ class Api extends \Slim\App {
             return new \Kloudspeaker\Auth\PasswordAuth($c);
         };
 
+        $load = $config->get('load_modules', []);
+        foreach ($load as $lm) {
+            $this->loadModule($lm);
+        }
+
         $legacy->initialize($this);
     }
 
      public function initializeDefaultRoutes() {
-        $this->loadRoute("\Kloudspeaker\Route\Session");
+        $this->loadModule("Routes/Session:\Kloudspeaker\Route\Session");
      }
 
-     public function loadRoute($classname) {
-        $cls = new $classname();
-        $cls->initialize($this);
+     public function loadModule($m) {
+        $file = NULL;
+        $cls = $m;
+        if (strpos($m, ":") !== FALSE) {
+            $parts = explode(":", $m);
+            $file = $parts[0];
+            if (!Utils::strEndsWith($file, ".php"))
+                $file .= ".php";
+            $cls = $parts[1];
+        }
+        if ($file != NULL and strlen($file) > 0)
+            require_once $file;
+
+        $cls = new $cls();
+        $this->addModule($cls);
      }
 
-     public function addPlugin($p) {
-        if (is_callable($p)) {
-            $p($this);
+    public function addModule($m) {
+        $setup = new ModuleSetup($this);
+
+        if (is_callable($m)) {
+            $m($setup);
+        } elseif (is_object($m)) {
+            $m->initialize($setup);
         }
      }
+}
+
+class ModuleSetup {
+    public function __construct($app) {
+        $this->app = $app;
+    }
+
+    public function route($name, $cb) {
+        //TODO validate
+        $n = $name;
+        if (!Utils::strStartsWith($name, "/")) $n = '/'.$n;
+        
+        $this->app->group($n, $cb);
+    }
 }
 
 abstract class Errors {

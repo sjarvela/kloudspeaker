@@ -23,7 +23,7 @@ require 'Kloudspeaker/Repository/UserRepository.php';
 require 'Kloudspeaker/Repository/SessionRepository.php';
 require 'Kloudspeaker/Auth/PasswordAuth.php';
 require 'Kloudspeaker/Auth/PasswordHash.php';
-require 'Routes/Session.php';
+//require 'Routes/Session.php';
 
 include "../configuration.php";
 include "Version.info.php";
