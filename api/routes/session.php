@@ -7,12 +7,18 @@ class Session {
 
     private function getSessionInfo($c) {
         $user = $c->session->getUser();
-        //$this->logger->debug("session", ["user" => $user]);
-        return [
+        $info = [
             "id" => $c->session->getId(),
             "user" => $user,
-            "features" => []
+            "features" => $c->features->get(),
+            "plugins" => $c->plugins->getSessionInfo()
         ];
+        if ($user != NULL) $info = array_merge(
+            $info,
+            $c->filesystem->getSessionInfo(),
+            $c->permissions->getSessionInfo()
+        );
+        return $info;
     }
 
     //TODO group
@@ -31,9 +37,9 @@ class Session {
 
                 $this->logger->debug("Auth", ["user" => $username]);
 
-                $user = $this->authentication->authenticate($username, $password);
-                if ($user) {
-                    $this->session->start($user);
+                $result = $this->authentication->authenticate($username, $password);
+                if (!$result) {
+                    $this->session->start($result["user"], $result["info"]);
                     return $this->out->success($t->getSessionInfo($this));      
                 }
                 return $this->out->error("Authentication failed");

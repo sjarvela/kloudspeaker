@@ -19,6 +19,7 @@ require 'Kloudspeaker/Session.php';
 require 'Kloudspeaker/Database/DB.php';
 require 'Kloudspeaker/Settings.php';
 require 'Kloudspeaker/Formatters.php';
+require 'Kloudspeaker/Plugins.php';
 require 'Kloudspeaker/Repository/UserRepository.php';
 require 'Kloudspeaker/Repository/SessionRepository.php';
 require 'Kloudspeaker/Auth/PasswordAuth.php';

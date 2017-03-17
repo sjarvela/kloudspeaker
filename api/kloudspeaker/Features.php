@@ -12,7 +12,7 @@ class Features {
         "retrieve_url" => FALSE,
         "folder_protection" => FALSE,
         "thumbnails" => FALSE,
-        "guest_mode" => FALSE,
+        //"guest_mode" => FALSE,
     );
 
     public function __construct($config) {
@@ -32,20 +32,20 @@ class Features {
         $this->features[$name] = FALSE;
     }
 
-    public function isFeatureEnabled($feature) {
-        if (!array_key_exists($feature, $this->features))
+    public function isFeatureEnabled($name) {
+        if (!array_key_exists($name, $this->features))
             return FALSE;
-        return $this->features[$feature];
+        return $this->features[$name];
     }
 
-    public function assertFeature($feature) {
-        if (!$this->isFeatureEnabled($feature)) {
-            throw new KloudspeakerException("Required feature not enabled: " . $feature, Errors::FeatureNotEnabled);
+    public function assertFeature($name) {
+        if (!$this->isFeatureEnabled($name)) {
+            throw new KloudspeakerException("Required feature not enabled: " . $name, Errors::FeatureNotEnabled);
         }
-
     }
 
-    public function getFeatures() {
+    public function get($n = NULL) {
+        if ($n != NULL) return $this->isFeatureEnabled($name);
         return $this->features;
     }
 }

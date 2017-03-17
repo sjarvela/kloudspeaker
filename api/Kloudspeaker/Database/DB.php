@@ -40,6 +40,21 @@ class Database {
     public function delete($from) {
         return new DeleteStatementBuilder($this->logger, $this->db, $from);
     }
+
+    public function query($q) {
+        $this->logger->debug("DB query", ["query" => $q]);
+        $result = $this->db->query($q);
+        
+        if (!$result) {
+            $this->logger->error("DB QUERY FAILED:".$q." ".implode(" ", $this->db->errorInfo()));
+            throw new DatabaseException("Error executing db query");
+        }
+        return new SelectResult($result);
+    }
+
+    public function db() {
+        return $this->db;
+    }
 }
 
 class SelectStatementBuilder extends WhereStatementBuilder {

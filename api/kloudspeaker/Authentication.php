@@ -19,7 +19,7 @@ class Authentication {
             throw new NotAuthenticatedException("Authentication failed");
         }
         
-		return $user;
+		return ["user" => $user, "info" => [ "auth" => $authModule->getInfo(), "time" => time() ]];
     }
 
     private function getAuthenticationModule($type) {

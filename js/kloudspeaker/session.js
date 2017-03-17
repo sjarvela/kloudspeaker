@@ -25,7 +25,13 @@ define(['kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/permissions
             hasPermission: permissions.hasPermission    //shortcut
         } : null;*/
         var user = s.user;
-        if (user) user.hasPermission = permissions.hasPermission;    //shortcut
+        if (user) {
+            user.hasPermission = permissions.hasPermission;    //shortcut
+            user.admin = (user.user_type == 'a');
+            //user.id = s.user_id;
+            //user.auth = s.user_auth;
+            user.type = user.user_type;
+        }
 
         session = {
             id: s.id,

@@ -12,32 +12,42 @@ class Api extends \Slim\App {
         $this->config = $config;
     }
 
+    private function doRespond($response) {
+        $container = $this->getContainer();
+        $out = $container->out;
+
+        if ($out->error) {
+            $container->logger->error("ERROR", $this->out->error["error"]);
+            return $response->withJson(["success" => FALSE, "error" => $out->error["error"]], $out->error["http_code"]);
+        }
+        if ($container->out->result)
+            return $response->withJson(["success" => TRUE, "result" => $out->result])->withHeader('Set-Cookie', $container->cookie->toHeaders());
+
+        return $response;
+    }
+
     public function initialize($legacy, $overwrite = NULL) {
         $config = $this->config;
 
         $this->add(new \RKA\Middleware\IpAddress(true));
 
-        $this->add(function ($request, $response, $next) use ($legacy) {
+        $t = $this;
+
+        $this->add(function ($request, $response, $next) use ($legacy, $t) {
+            $this->session->initialize($request);
+
             $route = $request->getAttribute('route');
             
             if (empty($route)) {
-                if ($legacy->handleRequest($request)) {
-                    $this->logger->debug("LEGACY");
-                    return;
-                }
+                if ($legacy->handleRequest($request))
+                    return $t->doRespond($response);
+
                 throw new KloudspeakerException("Route not found", Errors::InvalidRequest);
             }
 
-            $this->session->initialize($request);
-
             $next($request, $response);
 
-            if ($this->out->error) {
-                $this->logger->error("ERROR", $this->out->error["error"]);
-                return $response->withJson(["success" => FALSE, "error" => $this->out->error["error"]], $this->out->error["http_code"]);
-            }
-            if ($this->out->result)
-                return $response->withJson(["success" => TRUE, "result" => $this->out->result])->withHeader('Set-Cookie', $this->cookie->toHeaders());
+            return $t->doRespond($response);
         });
 
         $container = $this->getContainer();
@@ -60,7 +70,7 @@ class Api extends \Slim\App {
                 } else if (is_a($exception, "ServiceException")) {
                     //legacy
                     $httpCode = $exception->getHttpCode();
-                    $error = ["code" => $exception->getErrorCode(), "msg" => $exception->getMessage(), "result" => $exception->getResult()];
+                    $error = ["code" => $exception->getErrorCode(), "msg" => $exception->type() . "/" . $exception->getMessage(), "result" => $exception->getResult()];
                     $c['logger']->error("Application Exception", ["error" => $error, "trace" => $exception->getTraceAsString()]);
                 } else {
                     $c['logger']->error("Unknown Exception", ["code" => $exception->getCode(), "msg" => $exception->getMessage(), "trace" => $exception->getTraceAsString()]);
@@ -111,6 +121,18 @@ class Api extends \Slim\App {
 
         $container['features'] = function ($container) use ($config) {
             return new \Kloudspeaker\Features($config);
+        };
+
+        $container['plugins'] = function ($container) use ($config) {
+            return new \Kloudspeaker\Plugins($container);
+        };
+
+        $container['filesystem'] = function ($container) use ($legacy) {
+            return $legacy->env()->filesystem();
+        };
+
+        $container['permissions'] = function ($container) use ($legacy) {
+            return $legacy->env()->permissions();
         };
 
         $container['db'] = function ($container) use ($config) {
@@ -179,7 +201,7 @@ class ModuleSetup {
         //TODO validate
         $n = $name;
         if (!Utils::strStartsWith($name, "/")) $n = '/'.$n;
-        
+
         $this->app->group($n, $cb);
     }
 }

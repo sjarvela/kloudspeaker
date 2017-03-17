@@ -19,10 +19,7 @@ class PasswordAuth {
         return ($this->hash->isEqual($pw, $auth["hash"], $auth["salt"]));
     }
 
-    private function getAuthenticationModule($type) {
-        $t = "pw";
-        //TODO default from config
-        if ($type != NULL) $t = strtolower($type);
-        return $this->container['auth_'.$t];
+    public function getInfo() {
+        return [ "type" => "pw" ];
     }
 }

@@ -72,7 +72,7 @@ class Session {
     }
 
     public function isLoggedIn() {
-    	return $this->user != NULL;
+    	return ($this->user != NULL);
     }
 
     public function getId() {
@@ -81,6 +81,11 @@ class Session {
 
     public function getUser() {
     	return $this->user;
+    }
+
+    public function isAdmin() {
+        if ($this->user == NULL) return FALSE;
+        return strcasecmp($this->user["user_type"], 'a') == 0;
     }
 
     public function removeAllExpiredSessions() {
