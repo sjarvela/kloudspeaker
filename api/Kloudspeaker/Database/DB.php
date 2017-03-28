@@ -178,11 +178,12 @@ class InsertStatementBuilder extends BoundStatementBuilder {
                 $field = $field + 1;
             }
         }
-        if (!$stmt->execute()) {
+        $result = $stmt->execute();
+        if (!$result) {
             $this->logger->error("DB QUERY FAILED: ".$q." ".\Kloudspeaker\Utils::array2str($this->db->errorInfo()));
             throw new DatabaseException("Error executing db query");
         }
-        return TRUE;    //TODO affected count
+        return $result->rowCount();
     }
 
     public function toString() {
@@ -234,8 +235,8 @@ class DeleteStatementBuilder extends WhereStatementBuilder {
     }
 
     public function execute($values = NULL) {
-        $this->doExecute($values);
-        return TRUE;    //TODO affected count
+        $result = $this->doExecute($values);
+        return $result->rowCount();
     }
 
     public function toString() {

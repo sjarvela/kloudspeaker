@@ -204,6 +204,7 @@ class FilesystemServices extends ServicesBase {
 
 	private function processPostFile($item) {
 		if (count($this->path) != 2) {
+			Logging::logDebug(Util::array2str($this->path));
 			throw $this->invalidRequestException();
 		}
 

@@ -45,6 +45,7 @@ class KloudspeakerLegacy {
 	public function handleRequest($request) {
         $path = $this->config->getRootPath();
         $url = $request->getUri();
+
         $this->container->logger->debug($path.":".$url);
 
         $legacyRequest = Request::get(substr($url, strlen($path)));
@@ -76,6 +77,7 @@ class LegacyEnvironment {
 
 	public function __construct($container) {
 		$this->container = $container;
+
 		$this->app = new LegacyApp($this);
 		$this->db = new LegacyDb($container->db);
 		$this->configuration = new ConfigurationDao($this->db);
@@ -254,6 +256,77 @@ class LegacyEnvironment {
 
 		return Util::convertCharset($s, $cs, $encode);
 	}
+
+	public function getServiceUrl($id, $path, $full = FALSE) {
+		$url = '';
+		if ($full) {
+			$url = $this->getHost();
+		}
+
+		$url .= "/" . $id;
+		foreach ($path as $p) {
+			$url .= "/" . $p;
+		}
+
+		return $url . "/";
+	}
+
+	public function getPluginBaseUrl() {
+		return $this->getResourceUrl("plugin/");
+	}
+
+	public function getPluginUrl($pluginId, $path = NULL, $file = FALSE) {
+		return $this->getPluginBaseUrl() . $pluginId . "/" . ($path != NULL ? $path . ($file ? "" : "/"):"");
+	}
+
+	public function getClientUrl($path) {
+		$url = $this->getHost() . $_SERVER['SCRIPT_NAME'];
+		$url = substr($url, 0, strpos($url, "backend"));
+		$page = $this->settings()->setting("client_page");
+		if ($page != NULL) {
+			$url .= $page;
+		}
+		return $url . $path;
+	}
+
+	public function getResourceUrl($path) {
+		return $this->getRootUrl() . $path;
+	}
+
+	public function getCommonResourcesUrl() {
+		return $this->getRootUrl() . 'resources/';
+	}
+
+	private function getHost() {
+		/*if (!$this->settings->hasSetting("host_public_address")) {
+			if (!isset($_SERVER['HTTP_REFERER'])) {
+				throw new ServiceException("Cannot resolve host");
+			}
+
+			$protocol = substr($_SERVER['HTTP_REFERER'], 0, strpos($_SERVER['HTTP_REFERER'], ":"));
+			$start = strlen($protocol) + 3;
+			$end = strpos($_SERVER['HTTP_REFERER'], "/", $start);
+			if ($end > 0) {
+				$host = substr($_SERVER['HTTP_REFERER'], $start, $end - $start);
+			} else {
+				$host = substr($_SERVER['HTTP_REFERER'], $start);
+			}
+
+			return $protocol . "://" . $host;
+		}
+
+		return $this->settings->setting("host_public_address");*/
+		return $this->container->configuration->getRootPath();
+	}
+
+	private function getRootUrl() {
+		$root = substr($_SERVER['SCRIPT_NAME'], 0, strlen($_SERVER['SCRIPT_NAME']) - strlen(self::ENTRY_SCRIPT));
+		return $this->getHost() . $root;
+	}
+
+	public function getScriptRootPath() {
+		return substr($_SERVER['SCRIPT_FILENAME'], 0, strlen($_SERVER['SCRIPT_FILENAME']) - strlen(self::ENTRY_SCRIPT));
+	}
 }
 
 class LegacyDb {
@@ -272,6 +345,13 @@ class LegacyDb {
 
 	public function query($q) {
 		return $this->db->query($q);
+	}
+
+	public function update($query) {
+		$result = $this->db->query($query);
+		$affected = $result->affected();
+		$result->free();
+		return $affected;
 	}
 
 	public function arrayString($a, $quote = FALSE) {
@@ -351,6 +431,10 @@ class LegacySession {
 		return $user != NULL ? $user["id"] : NULL;
 	}
 
+	public function isActive() {
+		return $this->container->session->getId() != NULL;
+	}
+
 	public function hasUserGroups() {
 		//TODO
 		return FALSE;
@@ -359,6 +443,10 @@ class LegacySession {
 	public function userGroups() {
 		//TODO
 		return [];
+	}
+
+	public function getSessionInfo() {
+		
 	}
 }
 
@@ -518,7 +606,7 @@ class Request {
 		}
 
 		$params = self::getParams($method);
-		$parts = explode("/", $uri);
+		$parts = explode("/", rtrim($uri, "/"));
 
 		$data = self::getData($method, $raw, $params);
 
