@@ -34,7 +34,7 @@ class Authentication {
 				return;
 			}
 
-			if ((isset($_SERVER["REMOTE_USER"]) and strcasecmp($this->env->session()->username(), $_SERVER["REMOTE_USER"]) == 0)) or (isset($_SERVER["REDIRECT_REMOTE_USER"]) and strcasecmp($this->env->session()->username(), $_SERVER["REDIRECT_REMOTE_USER"]) == 0)) {
+			if (((isset($_SERVER["REMOTE_USER"]) and strcasecmp($this->env->session()->username(), $_SERVER["REMOTE_USER"]) == 0)) or (isset($_SERVER["REDIRECT_REMOTE_USER"]) and strcasecmp($this->env->session()->username(), $_SERVER["REDIRECT_REMOTE_USER"]) == 0)) {
 				return;
 			}
 
