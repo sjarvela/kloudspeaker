@@ -2,10 +2,34 @@
 
 class ImageGenerator {
 	private $env;
+	private $imagick;
 
 	function __construct($env) {
 		$this->env = $env;
 		//$this->fontPath = $this->env->settings()->setting("fonts_dir"); //dirname(__FILE__) . DIRECTORY_SEPARATOR;
+		$this->imagick = class_exists("Imagick");
+	}
+
+	public function isTypeSupported($type) {
+		if (strcasecmp("tiff", $type) === 0) return $this->imagick;
+		return FALSE;
+	}
+
+	public function convertToPng($src, $type, $sendToOutput = FALSE) {
+		if ($type == "tiff") {
+			$img = new Imagick();
+			$img->readImage($src);
+			$img->setImageFormat("png24");
+
+			if ($sendToOutput) {
+				header("Content-type: image/png");
+				echo $img;
+				$img->clear();
+				$img->destroy();
+				return;
+			}
+			return $img;
+		}
 	}
 
 	public function createText($text, $size, $font, $fontSize, $textColor, $textAlpha, $rotation) {

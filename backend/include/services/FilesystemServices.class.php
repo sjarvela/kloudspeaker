@@ -141,24 +141,23 @@ class FilesystemServices extends ServicesBase {
 					throw $this->invalidRequestException();
 				}
 
-				if (!in_array(strtolower($item->extension()), array("gif", "png", "jpg", "jpeg"))) {
+				$thumbnail = $this->env->thumbnailGenerator();
+
+				if (!in_array(strtolower($item->extension()), $thumbnail->getSupportedThumbnailTypes())) {
 					throw $this->invalidRequestException("Thumbnail not allowed for ".$item->name());
 				}
 
-				if ($this->env->settings()->setting("enable_thumbnails")) {
-					$this->env->filesystem()->assertRights($item, FilesystemController::PERMISSION_LEVEL_READ, "read");
+				$this->env->filesystem()->assertRights($item, FilesystemController::PERMISSION_LEVEL_READ, "read");
 
-					require_once "include/Thumbnail.class.php";
-					$maxWidth = 400;
-					$maxHeight = 400;
-					if ($this->env->request()->hasParam("mw") and $this->env->request()->hasParam("mh")) {
-						$maxWidth = intval($this->env->request()->param("mw"));
-						$maxHeight = intval($this->env->request()->param("mh"));
-					}
-					$t = new Thumbnail();
-					if ($t->generate($item, $maxWidth, $maxHeight)) {
-						die();
-					}
+				$maxWidth = 400;
+				$maxHeight = 400;
+				if ($this->env->request()->hasParam("mw") and $this->env->request()->hasParam("mh")) {
+					$maxWidth = intval($this->env->request()->param("mw"));
+					$maxHeight = intval($this->env->request()->param("mh"));
+				}
+
+				if ($thumbnail->generate($item, $maxWidth, $maxHeight)) {
+					die();
 				}
 
 				$this->env->filesystem()->view($item);

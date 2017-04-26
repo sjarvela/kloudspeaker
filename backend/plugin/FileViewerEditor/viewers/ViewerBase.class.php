@@ -49,6 +49,10 @@
 		public function getItemContent($item) {
 			return $this->env->getItemContent($item);
 		}
+
+		public function handleItemContent($item) {
+			return FALSE;
+		}
 		
 		protected function invalidRequestException($details = NULL) {
 			return new ServiceException("INVALID_REQUEST", "Invalid ".get_class($this)." request: ".strtoupper($this->env->request()->method())." ".$this->env->request()->URI().($details != NULL ? (" ".$details): ""));

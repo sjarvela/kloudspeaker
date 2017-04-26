@@ -82,10 +82,14 @@ class ItemIdProvider {
 			return $id;
 		}
 
-		$id = uniqid("");
+		$id = $this->generateUniqueId();
 		$db->update(sprintf("INSERT INTO " . $db->table("item_id") . " (id, path, level) VALUES (%s,%s, %s)", $db->string($id, TRUE), $db->string($p, TRUE), $this->getLevel($path)));
 		$this->cache[$p] = $id;
 		return $id;
+	}
+
+	private function generateUniqueId() {
+		return str_replace(".", "", uniqid("", TRUE));
 	}
 
 	public function delete($item) {

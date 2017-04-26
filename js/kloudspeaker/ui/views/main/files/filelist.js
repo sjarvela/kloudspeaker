@@ -151,7 +151,7 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'klo
                 var v = ai.id.toLowerCase().localeCompare(bi.id.toLowerCase()) * (t.sortOrderAsc ? 1 : -1);
                 //console.log("def_sortFn=" + v);
                 return v;
-            }, t.itemsById);
+            }, t.itemsById, !t.hierarchy);
         };
 
         this.refreshSortIndicator = function () {
@@ -312,11 +312,13 @@ define(['kloudspeaker/app', 'kloudspeaker/settings', 'kloudspeaker/ui/dnd', 'klo
 
             t.folder = d.folder;
             t.hierarchy = false;
-            var hv = settings["file-view"]["list-view-hierarchy"];
-            if (hv && _.isFunction(hv)) {
-                t.hierarchy = hv(t.folder);
-            } else {
-                t.hierarchy = !!hv;
+            if (!d.no_hierarchy) {
+                var hv = settings["file-view"]["list-view-hierarchy"];
+                if (hv && _.isFunction(hv)) {
+                    t.hierarchy = hv(t.folder);
+                } else {
+                    t.hierarchy = !!hv;
+                }
             }
 
             //prefetch subfolders

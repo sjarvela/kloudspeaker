@@ -69,6 +69,8 @@
 			'mkv' => "video/divx",
 			'pdf' => "application/pdf",
 			'jpg' => 'image/jpeg',
+			'png' => 'image/png',
+			'tiff' => 'image/tiff',
 			"doc" => "application/msword",
 			"html" => "text/html",
 			"svg" => "image/svg+xml",
