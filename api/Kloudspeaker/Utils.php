@@ -106,6 +106,7 @@ class Utils {
 	}
 
 	static function isAssocArray($arr) {
+		if (!is_array($arr)) return FALSE;
 		return array_keys($arr) !== range(0, count($arr) - 1);
 	}
 

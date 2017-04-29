@@ -59,6 +59,10 @@ class MockStatement {
         $this->count = $this->count + 1;
         return TRUE;    
     }
+
+    public function rowCount() {
+        return 0;    
+    }
 }
 
 class DBTest extends TestCase {
@@ -250,6 +254,17 @@ class DBTest extends TestCase {
         $this->assertEquals('baz2', $this->mockDB->prepare->bind[4]);
         $this->assertEquals('bar3', $this->mockDB->prepare->bind[5]);
         $this->assertEquals('baz3', $this->mockDB->prepare->bind[6]);
+    }
+
+    public function testInsertAddMultipleDynamic2() {
+        $this->db()->insert("foo", ["foo1", "foo2", "foo3"])->values(["foo1" => "bar", "foo2" => "baz", "foo3" => "bax"])->values(["foo1" => "bar2", "foo2" => "baz2", "foo3" => "bax2"])->execute();
+        $this->assertEquals('INSERT INTO foo (foo1, foo2, foo3) VALUES (?, ?, ?), (?, ?, ?)', $this->mockDB->prepare->query);
+        $this->assertEquals('bar', $this->mockDB->prepare->bind[1]);
+        $this->assertEquals('baz', $this->mockDB->prepare->bind[2]);
+        $this->assertEquals('bax', $this->mockDB->prepare->bind[3]);
+        $this->assertEquals('bar2', $this->mockDB->prepare->bind[4]);
+        $this->assertEquals('baz2', $this->mockDB->prepare->bind[5]);
+        $this->assertEquals('bax2', $this->mockDB->prepare->bind[6]);
     }
 
     public function testInsertWithExecute() {

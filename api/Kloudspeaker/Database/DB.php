@@ -157,24 +157,22 @@ class InsertStatementBuilder extends BoundStatementBuilder {
     }
 
     public function execute($values = NULL) {
+        if ($values) $this->values($values);
+
         $v = $this->values;
-        if ($values) {
-            if (\Kloudspeaker\Utils::isAssocArray($values))
-                $v[] = $values;
-            else
-                $v = array_merge($v, $values);
-        }
         if (!$v or count($v) === 0) throw new DatabaseException("Invalid query, missing values");
 
         $q = $this->build(count($v));
 
         $this->logger->debug("DB insert", ["query" => $q, "cols" => $this->cols, "values" => $v]);
         $stmt = $this->db->prepare($q);
-
+        
         $field = 1;
         foreach ($v as $row) {
             foreach ($this->cols as $col) {
+                //$this->logger->debug("DB bind", ["col" => $col, "row" => $row, "field" => $field]);
                 $this->bindTypedValue($stmt, $field, $col, $row[$col]);
+
                 $field = $field + 1;
             }
         }
@@ -183,7 +181,7 @@ class InsertStatementBuilder extends BoundStatementBuilder {
             $this->logger->error("DB QUERY FAILED: ".$q." ".\Kloudspeaker\Utils::array2str($this->db->errorInfo()));
             throw new DatabaseException("Error executing db query");
         }
-        return $result->rowCount();
+        return $stmt->rowCount();
     }
 
     public function toString() {
@@ -518,6 +516,16 @@ class WhereGroupBuilder  {
 
     public function execute($values = NULL) {
         return $this->done()->execute($values);
+    }
+}
+
+class UpdateResult {
+    public function __construct($result) {
+        $this->result = $result;
+    }
+
+    public function affected() {
+        return $this->result->rowCount();
     }
 }
 

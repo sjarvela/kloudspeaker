@@ -18,9 +18,15 @@ class SessionRepository {
     }
 
     public function addData($id, $data) {
+        $this->logger->debug("session data ", $data);
         $insert = $this->db->insert('session_data', ["session_id", "name", "value"]);
-        foreach ($data as $k => $v)
-            $insert->values([$id, $k, $v]);
+        foreach ($data as $k => $v) {
+            $vs = $v;
+            if (is_array($v)) {
+                $vs = "[a=]".json_encode($v);
+            }
+            $insert->values(["session_id" => $id, "name" => $k, "value" => $vs]);
+        }
         $insert->execute();
     }
 

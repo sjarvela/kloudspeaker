@@ -38,7 +38,7 @@ class Session {
                 $this->logger->debug("Auth", ["user" => $username]);
 
                 $result = $this->authentication->authenticate($username, $password);
-                if (!$result) {
+                if ($result) {
                     $this->session->start($result["user"], $result["info"]);
                     return $this->out->success($t->getSessionInfo($this));      
                 }
