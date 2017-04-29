@@ -17,7 +17,7 @@ class Api extends \Slim\App {
         $out = $container->out;
 
         if ($out->error) {
-            $container->logger->error("ERROR", $this->out->error["error"]);
+            $container->logger->error("ERROR", ["error" => $out->error]);
             return $response->withJson(["success" => FALSE, "error" => $out->error["error"]], $out->error["http_code"]);
         }
         if ($container->out->result)

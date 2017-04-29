@@ -446,7 +446,7 @@ class LegacySession {
 	}
 
 	public function getSessionInfo() {
-		
+		return array();
 	}
 }
 
@@ -573,7 +573,6 @@ class LegacyPlugins {
 	public function setup() {
 
 	}
-
 }
 
 class Request {
