@@ -46,7 +46,7 @@ class KloudspeakerLegacy {
         $path = $this->config->getRootPath();
         $url = $request->getUri();
 
-        $this->container->logger->debug($path.":".$url);
+        //error_log($path.":".$url);
 
         $legacyRequest = Request::get(substr($url, strlen($path)));
         //$path = explode("/", );
@@ -113,11 +113,13 @@ class LegacyEnvironment {
 
 	public function getService($request) {
 		$path = $request->path();
+
 		if (count($path) === 0) {
 			throw new ServiceException("Empty request");
 		}
 
 		$id = $path[0];
+		error_log($id);
 		if (!array_key_exists($id, $this->services)) {
 			return NULL;
 		}
@@ -500,6 +502,10 @@ class LegacySettings {
 	public function setting($name) {
 		return $this->config->get($name, array_key_exists($name, self::$DEFAULT_VALUES) ? self::$DEFAULT_VALUES[$name] : NULL);
 	}
+
+    public function get($name, $defaultValue = "__undefined__") {
+        return $this->config->get($name, $defaultValue);
+    }
 }
 
 class LegacyResponse {
@@ -592,7 +598,7 @@ class Request {
 
 	public static function get($uri = "", $raw = FALSE) {
 		$method = isset($_SERVER['REQUEST_METHOD']) ? strtolower($_SERVER['REQUEST_METHOD']) : NULL;
-		$uri = $uri;
+		$uri = ltrim($uri, "/");
 		$ip = self::getIp();
 
 		if (isset($_SERVER['HTTP_KLOUDSPEAKER_HTTP_METHOD'])) {

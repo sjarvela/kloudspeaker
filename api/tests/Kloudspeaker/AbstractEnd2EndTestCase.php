@@ -57,7 +57,7 @@ abstract class AbstractEnd2EndTestCase extends \Kloudspeaker\AbstractPDOTestCase
     }
 
     protected function app() {
-        return new AppBuilder(array_merge($this->config(),[
+        return new AppBuilder(array_merge($this->config(), [
             "debug" => TRUE,
             "db" => [
                 "dsn" => $GLOBALS['DB_DSN'],
@@ -71,9 +71,18 @@ abstract class AbstractEnd2EndTestCase extends \Kloudspeaker\AbstractPDOTestCase
         return $this->app()->run($method, $path, $query, $data, $headers, $cookies);
     }
 
+    protected function get($path, $headers = NULL, $cookies = []) {
+        return $this->app()->run('GET', $path, NULL, NULL, $headers, $cookies);
+    }
+
+    protected function post($path, $headers = NULL, $cookies = []) {
+        return $this->app()->run('POST', $path, NULL, NULL, $headers, $cookies);
+    }
+
     protected function config() {
         return [
-            'now' => function() { return mktime(0, 0, 0, 1, 1, 2017); }
+            'now' => function() { return mktime(0, 0, 0, 1, 1, 2017); },
+            'relative_path_root' => dirname(__FILE__)."/../fs/"
         ];
     }
 }
@@ -131,10 +140,13 @@ class AppBuilder {
         $c = $this->cookies;
         if ($cookies != NULL) $c = $cookies;
 
+        $_SERVER["REQUEST_METHOD"] = $method;
+
         $config = new Configuration($this->config, ["version" => "0.0.0", "revision" => "0"], [
-            "SERVER_NAME" => "test",
+            "SERVER_NAME" => "localhost",
             "SERVER_PORT" => 80,
             "SERVER_PROTOCOL" => "HTTP",
+            "REQUEST_METHOD" => $method,
             "SCRIPT_NAME" => "index.php"
         ]);
         $app = new Api($config, [
@@ -180,7 +192,6 @@ class AppBuilder {
 
         $container = $app->getContainer();
         $container['cookie'] = function($container) use ($c) {
-            $container->logger->debug("Cookie T ".\Kloudspeaker\Utils::array2str($c));
             return new \Slim\Http\Cookies($c);
         };
         $container['request'] = function ($c) use ($req) {

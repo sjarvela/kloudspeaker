@@ -14,5 +14,5 @@ css/kloudspeaker.css.map
 .DS_Store
 server.log
 api.log
-configuration.php
+/configuration.php
 api/vendor/auto/**

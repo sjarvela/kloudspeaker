@@ -144,7 +144,6 @@ class Api extends \Slim\App {
         $container['cookie'] = function($c){
             $request = $c->get('request');
             $cp = $request->getCookieParams();
-            //$c->logger->debug("Cookie ".Utils::array2str($cp));
             return new \Slim\Http\Cookies($cp);
         };
 

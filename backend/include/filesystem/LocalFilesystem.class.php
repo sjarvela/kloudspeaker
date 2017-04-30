@@ -21,6 +21,10 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 		}
 
 		$this->rootPath = self::folderPath($def["path"]);
+		$relative = !(strpos($this->rootPath, "/") === 0 or strpos($this->rootPath, ":\\") === 1);
+		$relativeRoot = $this->filesystemInfo->env()->settings()->get("relative_path_root", NULL);
+
+		if ($relative and $relativeRoot != NULL) $this->rootPath = self::folderPath($relativeRoot) . DIRECTORY_SEPARATOR . $this->rootPath;
 	}
 
 	public function isWritable($item) {
@@ -33,7 +37,7 @@ class LocalFilesystem extends KloudspeakerFilesystem {
 
 	public function assert() {
 		if (!$this->exists()) {
-			throw new NonExistingFolderException("INVALID_CONFIGURATION", "Invalid folder definition, path does not exist [" . $this->id() . "]");
+			throw new NonExistingFolderException("INVALID_CONFIGURATION", "Invalid folder definition, path does not exist [" . $this->id() . ":" . $this->rootPath . "]");
 		}
 	}
 

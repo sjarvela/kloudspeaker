@@ -97,4 +97,57 @@
 			<value>:1</value>
 		</row>
 	</table>
+    <table name="folder">
+    	<column>id</column>
+		<column>type</column>
+		<column>name</column>
+		<column>path</column>
+		<row>
+			<value>1</value>
+			<value>local</value>
+			<value>folder 1</value>
+			<value>f1</value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>local</value>
+			<value>folder 2</value>
+			<value>f2</value>
+		</row>
+	</table>
+    <table name="user_folder">
+    	<column>user_id</column>
+		<column>folder_id</column>
+		<column>name</column>
+		<row>
+			<value>1</value>
+			<value>1</value>
+			<null/>
+		</row>
+		<row>
+			<value>1</value>
+			<value>2</value>
+			<value>user 1 folder 2</value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>2</value>
+			<value>user 2 folder 2</value>
+		</row>
+	</table>
+    <table name="item_id">
+    	<column>id</column>
+		<column>path</column>
+		<column>level</column>
+		<row>
+			<value>root1_id</value>
+			<value>1:/</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>root2_id</value>
+			<value>2:/</value>
+			<value>1</value>
+		</row>
+	</table>
 </dataset>
