@@ -8,7 +8,7 @@ class SessionTest extends \Kloudspeaker\AbstractEnd2EndTestCase {
 
     public function testSessionUnauthorized() {
         $res = $this->rq('GET', '/session/');
-        $this->assertEquals('{"success":true,"result":{"id":null,"user":null,"features":[]}}', $res->text());
+        $this->assertEquals('{"success":true,"result":{"id":null,"user":null,"features":{"limited_http_methods":false,"change_password":true,"descriptions":true,"user_groups":true,"mail_notification":false,"retrieve_url":false,"folder_protection":false,"thumbnails":false},"plugins":[]}}', $res->text());
     }
 
     public function testLoginFailureInvalidUser() {

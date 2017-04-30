@@ -12,6 +12,7 @@ require_once 'Kloudspeaker/Features.php';
 require_once 'Kloudspeaker/Session.php';
 require_once 'Kloudspeaker/Database/DB.php';
 require_once 'Kloudspeaker/Settings.php';
+require_once 'Kloudspeaker/Plugins.php';
 require_once 'Kloudspeaker/Formatters.php';
 require_once 'Kloudspeaker/Repository/UserRepository.php';
 require_once 'Kloudspeaker/Repository/SessionRepository.php';

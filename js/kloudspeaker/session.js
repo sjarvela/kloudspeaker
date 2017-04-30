@@ -64,7 +64,7 @@ define(['kloudspeaker/service', 'kloudspeaker/events', 'kloudspeaker/permissions
             kloudspeaker.session = false; //TODO remove
 
             if (!dontSend)
-                return service.post("session/logout").done(function(s) {
+                return service.post("session/end/").done(function(s) {
                     reset();
                 });
             reset();

@@ -8,7 +8,7 @@ class RestApiTest extends \Kloudspeaker\AbstractEnd2EndTestCase {
 
     public function testUnknownPath() {
         $res = $this->rq('GET', '/foo/');
-        $this->assertEquals('{"success":false,"error":{"code":0,"msg":"","result":null}}', $res->text());
+        $this->assertEquals('{"success":false,"error":{"code":-1,"msg":"Route not found","result":null}}', $res->text());
     }
 
     public function testLoadModuleFileAndClass() {

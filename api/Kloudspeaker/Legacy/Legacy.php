@@ -119,7 +119,7 @@ class LegacyEnvironment {
 
 		$id = $path[0];
 		if (!array_key_exists($id, $this->services)) {
-			throw new ServiceException("Unknown service '" . $id . "'");
+			return NULL;
 		}
 
 		$service = $this->createService($this->services[$id], $request, $id, array_slice($path, 1));
