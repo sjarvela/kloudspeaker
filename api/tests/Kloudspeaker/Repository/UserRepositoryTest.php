@@ -13,7 +13,7 @@ class UserRepositoryTest extends \Kloudspeaker\AbstractPDOTestCase {
     }
 
     public function getDataSet() {
-        return $this->createXmlDataSet(dirname(__FILE__) . '/../dataset.xml');
+        return $this->createXmlDataSet(dirname(__FILE__) . '/../datasets/default.xml');
     }
 
     public function testGetUser() {

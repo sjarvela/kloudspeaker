@@ -49,7 +49,11 @@ abstract class AbstractEnd2EndTestCase extends \Kloudspeaker\AbstractPDOTestCase
     }
     
     public function getDataSet() {
-        return $this->createXmlDataSet(dirname(__FILE__) . '/dataset.xml');
+        return $this->createXmlDataSet(dirname(__FILE__) . '/datasets/' . $this->getDataSetName());
+    }
+
+    public function getDataSetName() {
+        return 'default.xml';
     }
 
     protected function app() {
@@ -63,12 +67,14 @@ abstract class AbstractEnd2EndTestCase extends \Kloudspeaker\AbstractPDOTestCase
         ]));
     }
 
-    protected function rq($method, $path, $query=NULL, $data = NULL) {
-        return $this->app()->run($method, $path, $query, $data);
+    protected function rq($method, $path, $query=NULL, $data = NULL, $headers = NULL, $cookies = []) {
+        return $this->app()->run($method, $path, $query, $data, $headers, $cookies);
     }
 
     protected function config() {
-        return [];
+        return [
+            'now' => function() { return mktime(0, 0, 0, 1, 1, 2017); }
+        ];
     }
 }
 
@@ -79,14 +85,25 @@ class AppBuilder {
         $this->path = "/";
         $this->query = NULL;
         $this->data = NULL;
+        $this->headers = [];
+        $this->cookies = [];
         $this->modules = [];
     }
 
-    public function req($method, $path, $query=NULL, $data = NULL) {
+    public function header($name, $val) {
+        $this->headers[$name] = [$val];
+    }
+
+    public function cookie($name, $val) {
+        $this->cookies[$name] = [$val];
+    }
+
+    public function req($method, $path, $query=NULL, $data = NULL, $cookies = []) {
         $this->method = $method;
         $this->path = $path;
         $this->query = $query;
         $this->data = $data;
+        $this->cookies = $cookies;
         return $this;
     }
 
@@ -100,7 +117,7 @@ class AppBuilder {
         return $this;
     }
 
-    public function run($method = NULL, $path = NULL, $query=NULL, $data = NULL) {
+    public function run($method = NULL, $path = NULL, $query=NULL, $data = NULL, $headers = NULL, $cookies = []) {
         $m = $this->method;
         if ($method != NULL) $m = $method;
         $p = $this->path;
@@ -109,6 +126,10 @@ class AppBuilder {
         if ($query != NULL) $q = $query;
         $d = $this->data;
         if ($data != NULL) $d = $data;
+        $h = $this->headers;
+        if ($headers != NULL) $h = $headers;
+        $c = $this->cookies;
+        if ($cookies != NULL) $c = $cookies;
 
         $config = new Configuration($this->config, ["version" => "0.0.0", "revision" => "0"], [
             "SERVER_NAME" => "test",
@@ -138,8 +159,11 @@ class AppBuilder {
         $uri = Uri::createFromEnvironment($env);
         if ($q != NULL)
             $uri = $uri->withQuery($q);
-        $headers = Headers::createFromEnvironment($env);
-        $cookies = [];
+        $sheaders = Headers::createFromEnvironment($env);
+        if ($headers != NULL)
+            foreach ($headers as $key => $value) {
+                $sheaders->set($key, $value);
+            }
         $serverParams = $env->all();
         
         if ($d != NULL) {
@@ -151,10 +175,14 @@ class AppBuilder {
             $body = new RequestBody();
         }
 
-        $req = new Request($m, $uri, $headers, $cookies, $serverParams, $body);
+        $req = new Request($m, $uri, $sheaders, $c, $serverParams, $body);
         $res = new Response();
 
         $container = $app->getContainer();
+        $container['cookie'] = function($container) use ($c) {
+            $container->logger->debug("Cookie T ".\Kloudspeaker\Utils::array2str($c));
+            return new \Slim\Http\Cookies($c);
+        };
         $container['request'] = function ($c) use ($req) {
             return $req;
         };

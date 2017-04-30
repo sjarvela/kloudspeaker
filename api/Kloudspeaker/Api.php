@@ -152,6 +152,11 @@ class Api extends \Slim\App {
             return new \Kloudspeaker\Auth\PasswordAuth($c);
         };
 
+        $container['now'] = function($c) use ($config) {
+            if (array_key_exists('now', $config)) return $config['now']();
+            return time();
+        };
+
         $load = $config->get('load_modules', []);
         foreach ($load as $lm) {
             $this->loadModule($lm);

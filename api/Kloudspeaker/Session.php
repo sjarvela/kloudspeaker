@@ -15,21 +15,23 @@ class Session {
     }
 
     public function initialize($request) {
-        //TODO get from header
-		$this->id = $this->container->cookie->get('kloudspeaker-session');
-        $time = time();
+        $id = $request->getHeader('kloudspeaker-session');
+
+        if ($id and count($id) > 0) $this->id = $id[0];
+		else $this->id = $this->container->cookie->get('kloudspeaker-session');
 
         if (!$this->id) return;
 
         $this->container->logger->debug("Session init ".$this->id);
 
+        $time = $this->container->now;
         $session = $this->container->sessions->get($this->id, $this->getLastValidSessionTime($time));
 
         if ($session) {
             $this->container->logger->debug("Session ", $session);
             // load user data
             if ($session["user_id"] != 0) {
-                $this->user = $this->container->users->get($session["user_id"], time());
+                $this->user = $this->container->users->get($session["user_id"], $time);
                 $this->container->logger->debug("User ", $this->user);
                 if (!$this->user) {
                     // user expired
@@ -55,7 +57,7 @@ class Session {
         $this->user = $user;
         $ip = $this->container->request->getAttribute('ip_address');
 
-        $time = time();
+        $time = $this->container->now;
         $this->container->sessions->add($this->id, $this->user["id"], $ip, $time);
         if ($data and count($data) > 0) {
             $this->container->sessions->addData($this->id, $data);
