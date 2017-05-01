@@ -140,14 +140,29 @@
 		<column>path</column>
 		<column>level</column>
 		<row>
-			<value>root1_id</value>
+			<value>root1</value>
 			<value>1:/</value>
 			<value>1</value>
 		</row>
 		<row>
-			<value>root2_id</value>
+			<value>root1_text</value>
+			<value>1:/text.txt</value>
+			<value>2</value>
+		</row>
+		<row>
+			<value>root1_img</value>
+			<value>1:/img.png</value>
+			<value>2</value>
+		</row>
+		<row>
+			<value>root2</value>
 			<value>2:/</value>
 			<value>1</value>
+		</row>
+		<row>
+			<value>root1_sf1</value>
+			<value>1:/sf1/</value>
+			<value>2</value>
 		</row>
 	</table>
 </dataset>
