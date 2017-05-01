@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Kloudspeaker Installer</title>
+</head>
+<body>
+Foo
+
+{% if system.config_exists %}
+	{{ system.version }} {{ system.revision }}
+{% else %}
+	No config
+{% endif %}
+
+</body>
+</html>

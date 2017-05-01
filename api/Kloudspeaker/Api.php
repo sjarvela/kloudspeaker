@@ -53,12 +53,18 @@ class Api extends \Slim\App {
         $container = $this->getContainer();
 
         $container['phpErrorHandler'] = function ($c) {
+            if ($overwrite != NULL and array_key_exists("phpErrorHandler", $overwrite))
+                return $overwrite["phpErrorHandler"];
+
             return function ($request, $response, $error) use ($c) {
                 $c['logger']->error("PHP Error", ["error" => $error]);
                 return $c['response']->withJson(["success" => FALSE, "error" => $error = ["code" => Errors::Unknown, "msg" => "Unknown error"]], HttpCodes::INTERNAL_ERROR);
             };
         };
         $container['errorHandler'] = function ($c) {
+            if ($overwrite != NULL and array_key_exists("errorHandler", $overwrite))
+                return $overwrite["errorHandler"];
+
             return function ($request, $response, $exception) use ($c) {
                 $httpCode = HttpCodes::INTERNAL_ERROR;
                 $error = ["code" => Errors::Unknown, "msg" => "Unknown error"];
@@ -101,6 +107,10 @@ class Api extends \Slim\App {
 
         $container['session'] = function ($container) {
             return new \Kloudspeaker\Session($container);
+        };
+
+        $container['commands'] = function ($container) {
+            return new \Kloudspeaker\Command\CommandManager($container);
         };
 
         $container['authentication'] = function ($container) {

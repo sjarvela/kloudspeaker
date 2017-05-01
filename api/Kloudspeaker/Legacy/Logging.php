@@ -26,6 +26,10 @@ class Logging {
 	public static function getTrace() {
 		return self::$trace;
 	}
+
+	public static function debug($m) {
+		self::logDebug($m);
+	}
 	
 	public static function logDebug($m) {
 		if (self::$logger != NULL) {
@@ -39,6 +43,10 @@ class Logging {
 		if (self::$firebug) FB::log($m);
 		self::$trace[] = $s;
 	}
+
+	public static function info($m) {
+		self::logInfo($m);
+	}
 	
 	public static function logInfo($m) {
 		if (self::$logger != NULL) {
@@ -51,6 +59,10 @@ class Logging {
 
 		if (self::isDebug()) self::$trace[] = $s;
 	}
+
+	public static function error($m) {
+		self::logError($m);
+	}
 	
 	public static function logError($m) {
 		if (self::$logger != NULL) {
@@ -62,6 +74,10 @@ class Logging {
 		error_log("KLOUDSPEAKER ERROR: ".$s);
 		
 		if (self::isDebug()) self::$trace[] = $s;
+	}
+
+	public static function ex($e) {
+		self::logException($e);
 	}
 
 	public static function logException($e) {
