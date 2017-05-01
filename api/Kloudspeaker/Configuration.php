@@ -3,9 +3,8 @@ namespace Kloudspeaker;
 
 class Configuration {
 
-    public function __construct($configValues, $version, $serverProps = NULL) {
-        $this->configValues = $configValues;
-        $this->version = $version;
+    public function __construct($systemInfo, $serverProps = NULL) {
+        $this->systemInfo = $systemInfo;
         $this->serverProps = $serverProps != NULL ? $serverProps : $_SERVER;
     }
 
@@ -40,20 +39,20 @@ class Configuration {
     }
 
     public function get($name, $defaultValue = "__undefined__") {
-        if (!isset($this->configValues[$name])) {
+        if (!isset($this->systemInfo["config"][$name])) {
             if ($defaultValue === "__undefined__")
                throw new KloudspeakerException("Missing config value: ".$name, Errors::InvalidConfiguration);
 
             return $defaultValue;
         }
-        return $this->configValues[$name];
+        return $this->systemInfo["config"][$name];
     }
 
     public function is($name, $defaultValue = FALSE) {
-        return isset($this->configValues[$name]) ? $this->configValues[$name] : $defaultValue;
+        return isset($this->systemInfo["config"][$name]) ? $this->systemInfo["config"][$name] : $defaultValue;
     }
 
     public function has($name) {
-        return array_key_exists($name, $this->configValues);
+        return array_key_exists($name, $this->systemInfo["config"]);
     }
 }

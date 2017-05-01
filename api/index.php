@@ -1,26 +1,21 @@
 <?php
 namespace Kloudspeaker;
 
-if (!file_exists("../configuration.php")) {
-	die("{ success: false, error: { code: -1, msg: 'Configuration missing' } }");
-}
-
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-require 'vendor/auto/autoload.php';
-require 'autoload.php';
-//require 'Routes/Session.php';
+require 'system.php';
 
-include "../configuration.php";
-include "Version.info.php";
-global $CONFIGURATION, $VERSION, $REVISION;
+$systemInfo = getKloudspeakerSystemInfo();
 
-if (!isset($CONFIGURATION)) {
-	die("{ success: false, error: { code: ".Errors::InvalidConfiguration.", msg: 'Configuration missing' } }");
+if (!$systemInfo["config_exists"]) {
+	die("{ success: false, error: { code: -1, msg: 'Configuration missing' } }");
 }
 
-$config = new Configuration($CONFIGURATION, ["version" => $VERSION, "revision" => $REVISION]);
+require 'vendor/auto/autoload.php';
+require 'autoload.php';
+
+$config = new Configuration($systemInfo);
 $app = new Api($config);
 $app->initialize(new \KloudspeakerLegacy($config));
 

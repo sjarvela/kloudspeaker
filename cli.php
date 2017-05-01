@@ -6,6 +6,20 @@ require 'api/vendor/auto/autoload.php';
 require 'api/system.php';
 require 'api/Kloudspeaker/Utils.php';
 
+$systemInfo = getKloudspeakerSystemInfo();
+
+$logger = new \Monolog\Logger('kloudspeaker-cli');
+$logLevel = (isset($systemInfo["config"]["debug"]) and $systemInfo["config"]["debug"]) ? \Monolog\Logger::DEBUG : \Monolog\Logger::INFO;
+$logger->pushHandler(new \Monolog\Handler\StreamHandler('php://stdout', $logLevel));
+$logger->pushHandler(new \Monolog\Handler\StreamHandler("cli.log", $logLevel));
+
+function ln($s) {
+	global $logger;
+	if (is_array($s))
+		$s = Utils::array2str($s);
+	$logger->info($s);
+}
+
 class ErrorHandler {
 	public function php($errno, $errstr, $errfile, $errline, $errCtx) {
 		ln("PHP error #" . $errno . ", " . $errstr . " (" . $errfile . ":" . $errline . ")" . "\n" . Utils::array2str(debug_backtrace()));
@@ -23,7 +37,8 @@ class ErrorHandler {
 	        ln(["code" => $exception->getErrorCode(), "msg" => $exception->type() . "/" . $exception->getMessage(), "result" => $exception->getResult()]);
 	        //$c['logger']->error("Application Exception", ["error" => $error, "trace" => $exception->getTraceAsString()]);
 	    } else {
-	        ln(["code" => $exception->getCode(), "msg" => $exception->getMessage(), "trace" => $exception->getTraceAsString()]);
+	    	ln("Error: ".$exception->getMessage());
+	        ln(debug_backtrace());
 	    }
 		die();
 	}
@@ -34,67 +49,60 @@ class ErrorHandler {
 	}
 }
 
-function ln($s) {
-	if (is_array($s))
-		$s = Utils::array2str($s);
-	echo $s."\n";
-}
-
 $errorHandler = new ErrorHandler();
-//set_error_handler(array($errorHandler, 'php'));
-//set_exception_handler(array($errorHandler, 'exception'));
-//register_shutdown_function(array($errorHandler, 'fatal'));
+set_error_handler(array($errorHandler, 'php'));
+set_exception_handler(array($errorHandler, 'exception'));
+register_shutdown_function(array($errorHandler, 'fatal'));
 
 ln("Kloudspeaker CLI");
-
-$systemInfo = getKloudspeakerSystemInfo();
-
-ln(["version" => $systemInfo["version"], "revision" => $systemInfo["revision"]]);
 
 if (!$systemInfo["config_exists"]) {
 	ln("No configuration found");
 	exit(0);	
 }
 
+ln(["version" => $systemInfo["version"], "revision" => $systemInfo["revision"]]);
+
 set_include_path($systemInfo["root"].DIRECTORY_SEPARATOR.'api' . PATH_SEPARATOR . get_include_path());
 
 require 'autoload.php';
 require 'Setup/Installer.php';
 
-$config = new Configuration($systemInfo["config"], ["version" => $systemInfo["version"], "revision" => $systemInfo["revision"]]);
+$config = new Configuration($systemInfo);
 
 $app = new Api($config);
-$app->initialize(new \KloudspeakerLegacy($config));
+$app->initialize(new \KloudspeakerLegacy($config), [ "logger" => function() use ($logger) {
+    return $logger;
+}]);
 $container = $app->getContainer();
+
+$container['logger'] ;
+$logger = $container->logger;
 
 $installer = new \Kloudspeaker\Setup\Installer($container);
 $installer->initialize();
 
-try {
-	$opts = getOpts($argv);
-	if (count($opts["commands"]) === 0) {
-		ln("No options specified");
-		exit(0);
-	}
-
-	$command = $opts["commands"][0];
-	$options = $opts["options"];
-	
-	if ("list" == $command) {
-		ln($container->commands->get());
-		exit(0);
-	}
-
-	if (!$container->commands->exists($command)) {
-		ln("Command not found [$command]");
-		exit(0);
-	}
-
-	ln("Command [$command]");
-	$container->commands->execute($command, $options);
-} catch (Exception $e) {
-	globalExceptionHandler($e);
+$opts = getOpts($argv);
+if (count($opts["commands"]) === 0) {
+	ln("No options specified");
+	exit(0);
 }
+
+$command = $opts["commands"][0];
+$options = $opts["options"];
+
+if ("list" == $command) {
+	ln($container->commands->get());
+	exit(0);
+}
+
+if (!$container->commands->exists($command)) {
+	ln("Command not found [$command]");
+	exit(0);
+}
+
+ln("Command [$command]");
+$container->commands->execute($command, $options, function($m) { ln($m); });
 
 // TOOLS
 

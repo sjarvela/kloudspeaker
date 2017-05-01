@@ -92,7 +92,7 @@ class Api extends \Slim\App {
 
         $container['logger'] = function($c) use ($config, $overwrite) {
             if ($overwrite != NULL and array_key_exists("logger", $overwrite))
-                return $overwrite["logger"];
+                return $overwrite["logger"]();
 
             $logger = new \Monolog\Logger('kloudspeaker');
             $logLevel = $config->isDebug() ? \Monolog\Logger::DEBUG : \Monolog\Logger::INFO;
