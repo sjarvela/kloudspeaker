@@ -13,6 +13,15 @@ class Database {
         $this->db = $db;
     }
 
+    public function tableExists($table) {
+        try {
+            $result = $this->db->query("SELECT 1 FROM $table LIMIT 1");
+        } catch (Exception $e) {
+            return FALSE;
+        }
+        return $result !== FALSE;
+    }
+
     public function startTransaction() {
         $this->db->beginTransaction();
     }

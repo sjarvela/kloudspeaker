@@ -35,7 +35,7 @@ class KloudspeakerLegacy {
 		require_once "include/permissions/PermissionsController.class.php";
 		require_once "include/Formatter.class.php";
 		require_once "include/ResourceLoader.class.php";
-		require_once "include/commands/CommandsController.class.php";
+		//require_once "include/commands/CommandsController.class.php";
 		require_once "include/Util.class.php";
 
         $this->env = new LegacyEnvironment($this->container);
@@ -79,7 +79,7 @@ class LegacyEnvironment {
 		$this->container = $container;
 
 		$this->app = new LegacyApp($this);
-		$this->db = new LegacyDb($container->db);
+		$this->db = new LegacyDb($container);
 		$this->configuration = new ConfigurationDao($this->db);
 		$this->authentication = new LegacyAuthentication($container);
 		$this->session = new LegacySession($container);
@@ -91,7 +91,7 @@ class LegacyEnvironment {
 		$this->permissions = new Kloudspeaker_PermissionsController($this);
 		$this->plugins = new PluginController($this);
 		$this->resources = new ResourceLoader($this);
-		$this->commands = new Kloudspeaker_CommandsController($this);
+		$this->commands = $this->container->commands;
 
 		$this->configuration->initialize($this);
 		$this->filesystem->initialize();
@@ -332,8 +332,15 @@ class LegacyEnvironment {
 }
 
 class LegacyDb {
-	public function __construct($db) {
-		$this->db = $db;
+	public function __construct($container) {
+		$this->container = $container;
+		$this->db = NULL;
+	}
+
+	private function db() {
+		if ($this->db == NULL) 
+			$this->db = $this->container->db;
+		return $this->db;
 	}
 
 	public function type() {
@@ -346,11 +353,11 @@ class LegacyDb {
 	}
 
 	public function query($q) {
-		return $this->db->query($q);
+		return $this->db()->query($q);
 	}
 
 	public function update($query) {
-		$result = $this->db->query($query);
+		$result = $this->db()->query($query);
 		$affected = $result->affected();
 		$result->free();
 		return $affected;
@@ -380,7 +387,7 @@ class LegacyDb {
 			return 'NULL';
 		}
 
-		$r = $this->db->db()->quote($s);
+		$r = $this->db()->db()->quote($s);
 		if (!$quote) {
 			return trim($r, "'");
 		}
@@ -389,7 +396,7 @@ class LegacyDb {
 	}
 
 	public function lastId() {
-		return $this->db->lastInsertId();
+		return $this->db()->lastInsertId();
 	}
 }
 

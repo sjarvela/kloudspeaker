@@ -10,6 +10,7 @@ require_once 'Kloudspeaker/legacy/Legacy.php';
 require_once 'Kloudspeaker/Authentication.php';
 require_once 'Kloudspeaker/Features.php';
 require_once 'Kloudspeaker/Session.php';
+require_once 'Kloudspeaker/Database/DatabaseFactory.php';
 require_once 'Kloudspeaker/Database/DB.php';
 require_once 'Kloudspeaker/Settings.php';
 require_once 'Kloudspeaker/Plugins.php';
@@ -18,6 +19,7 @@ require_once 'Kloudspeaker/Repository/UserRepository.php';
 require_once 'Kloudspeaker/Repository/SessionRepository.php';
 require_once 'Kloudspeaker/Auth/PasswordAuth.php';
 require_once 'Kloudspeaker/Auth/PasswordHash.php';
+require_once 'Kloudspeaker/Command/CommandManager.php';
 require_once 'Routes/Session.php';
 
 require_once "tests/Kloudspeaker/AbstractPDOTestCase.php";
@@ -140,20 +142,20 @@ class AppBuilder {
         $c = $this->cookies;
         if ($cookies != NULL) $c = $cookies;
 
-        $_SERVER["REQUEST_METHOD"] = $method;
+        $_SERVER["REQUEST_METHOD"] = $m;
 
-        $config = new Configuration($this->config, ["version" => "0.0.0", "revision" => "0"], [
+        $config = new Configuration(["config" => $this->config, "version" => "0.0.0", "revision" => "0"], [
             "SERVER_NAME" => "localhost",
             "SERVER_PORT" => 80,
             "SERVER_PROTOCOL" => "HTTP",
-            "REQUEST_METHOD" => $method,
+            "REQUEST_METHOD" => $m,
             "SCRIPT_NAME" => "index.php"
         ]);
         $app = new Api($config, [
             "addContentLengthHeader" => FALSE
         ]);
         $app->initialize(new \KloudspeakerLegacy($config), [
-            "logger" => new TestLogger()
+            "logger" => function() { return new TestLogger(); }
         ]);
         
         $app->initializeDefaultRoutes();

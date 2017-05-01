@@ -6,6 +6,7 @@ require 'Kloudspeaker/legacy/Legacy.php';
 require 'Kloudspeaker/Authentication.php';
 require 'Kloudspeaker/Features.php';
 require 'Kloudspeaker/Session.php';
+require 'Kloudspeaker/Database/DatabaseFactory.php';
 require 'Kloudspeaker/Database/DB.php';
 require 'Kloudspeaker/Settings.php';
 require 'Kloudspeaker/Formatters.php';

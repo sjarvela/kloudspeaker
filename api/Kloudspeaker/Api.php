@@ -52,7 +52,7 @@ class Api extends \Slim\App {
 
         $container = $this->getContainer();
 
-        $container['phpErrorHandler'] = function ($c) {
+        $container['phpErrorHandler'] = function ($c) use ($overwrite) {
             if ($overwrite != NULL and array_key_exists("phpErrorHandler", $overwrite))
                 return $overwrite["phpErrorHandler"];
 
@@ -61,7 +61,7 @@ class Api extends \Slim\App {
                 return $c['response']->withJson(["success" => FALSE, "error" => $error = ["code" => Errors::Unknown, "msg" => "Unknown error"]], HttpCodes::INTERNAL_ERROR);
             };
         };
-        $container['errorHandler'] = function ($c) {
+        $container['errorHandler'] = function ($c) use ($overwrite) {
             if ($overwrite != NULL and array_key_exists("errorHandler", $overwrite))
                 return $overwrite["errorHandler"];
 
@@ -145,10 +145,12 @@ class Api extends \Slim\App {
             return $legacy->env()->permissions();
         };
 
+        $container['dbfactory'] = function ($container) use ($config) {
+            return new \Kloudspeaker\Database\DatabaseFactory($container);
+        };
+
         $container['db'] = function ($container) use ($config) {
-            $dbConfig = $config->get("db");
-            $db = new \PDO($dbConfig["dsn"], $dbConfig["user"], $dbConfig["password"]);
-            return new \Kloudspeaker\Database\Database($db, $container->logger);
+            return $container->dbfactory->createDb();
         };
 
         $container['cookie'] = function($c){
