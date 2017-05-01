@@ -255,17 +255,15 @@ class FilesystemServices extends ServicesBase {
 	}
 
 	private function processGetFolder($item) {
-		if (count($this->path) > 2) {
+		if (count($this->path) != 2) {
 			throw invalidRequestException();
 		}
 
-		if (count($this->path) == 1) {
-			$includeHierarchy = ($this->request->hasParam("h") and strcmp($this->request->param("h"), "1") == 0);
-			$this->response()->success($this->getFolderInfo($item, $includeHierarchy));
-			return;
-		}
-
 		switch (strtolower($this->path[1])) {
+			case 'info':
+				$includeHierarchy = ($this->request->hasParam("h") and strcmp($this->request->param("h"), "1") == 0);
+				$this->response()->success($this->getFolderInfo($item, $includeHierarchy));
+				break;
 			case 'files':
 				$items = $this->env->filesystem()->items($item);
 				$files = array();

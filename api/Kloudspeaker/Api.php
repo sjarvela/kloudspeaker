@@ -216,6 +216,7 @@ abstract class Errors {
     const InvalidRequest = -1;
     const InvalidConfiguration = -2;
     const FeatureNotEnabled = -3;
+    const InsufficientPermissions = -4;
 
     const NotAuthenticated = -100;
 }
@@ -267,6 +268,12 @@ class KloudspeakerException extends \Exception {
 class NotAuthenticatedException extends KloudspeakerException {
     public function __construct($message = "Not authenticated", $result = NULL) {
         parent::__construct($message, Errors::NotAuthenticated, HttpCodes::FORBIDDEN, $result);
+    }
+}
+
+class InsufficientPermissionsException extends KloudspeakerException {
+    public function __construct($message = "Insufficient permissions", $result = NULL) {
+        parent::__construct($message, Errors::InsufficientPermissions, HttpCodes::FORBIDDEN, $result);
     }
 }
 

@@ -803,7 +803,7 @@ class ServiceException extends Exception {
 	}
 
 	function getHttpCode() {
-    	if ($this->errorCode === \Kloudspeaker\Errors::NotAuthenticated)
+    	if ($this->errorCode === \Kloudspeaker\Errors::NotAuthenticated || $this->errorCode === \Kloudspeaker\Errors::InsufficientPermissions)
     		return \Kloudspeaker\HttpCodes::FORBIDDEN;
 		return \Kloudspeaker\HttpCodes::INTERNAL_ERROR;
 	}
@@ -812,6 +812,8 @@ class ServiceException extends Exception {
 		//TODO
 		if ($this->type == 'UNAUTHORIZED')
 			return \Kloudspeaker\Errors::NotAuthenticated;
+		else if ($this->type == 'INSUFFICIENT_PERMISSIONS')
+			return \Kloudspeaker\Errors::InsufficientPermissions;
 		return \Kloudspeaker\Errors::Unknown;
 	}
 

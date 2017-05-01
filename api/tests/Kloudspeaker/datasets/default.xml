@@ -164,5 +164,27 @@
 			<value>1:/sf1/</value>
 			<value>2</value>
 		</row>
+		<row>
+			<value>root1_sf1_text2</value>
+			<value>1:/sf1/text2.txt</value>
+			<value>3</value>
+		</row>
+		<row>
+			<value>root2_text3</value>
+			<value>2:/text3.txt</value>
+			<value>2</value>
+		</row>
+	</table>
+    <table name="permission">
+    	<column>name</column>
+    	<column>user_id</column>
+		<column>subject</column>
+		<column>value</column>
+		<row>
+			<value>filesystem_item_access</value>
+			<value>2</value>
+			<value></value>
+			<value>r</value>
+		</row>
 	</table>
 </dataset>
