@@ -165,6 +165,9 @@ class FilesystemServices extends ServicesBase {
 			case 'view':
 				$this->env->filesystem()->view($item);
 				die();
+			case 'info':
+				$this->response()->success($this->env->filesystem()->details($item));
+				break;
 			case 'details':
 				$this->response()->success($this->env->filesystem()->details($item));
 				break;

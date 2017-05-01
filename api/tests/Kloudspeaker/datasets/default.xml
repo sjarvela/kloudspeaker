@@ -174,6 +174,11 @@
 			<value>2:/text3.txt</value>
 			<value>2</value>
 		</row>
+		<row>
+			<value>root2_text4</value>
+			<value>2:/text4.txt</value>
+			<value>2</value>
+		</row>
 	</table>
     <table name="permission">
     	<column>name</column>
@@ -185,6 +190,12 @@
 			<value>2</value>
 			<value></value>
 			<value>r</value>
+		</row>
+		<row>
+			<value>filesystem_item_access</value>
+			<value>2</value>
+			<value>root2_text4</value>
+			<value>rw</value>
 		</row>
 	</table>
 </dataset>
