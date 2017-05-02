@@ -13,20 +13,28 @@ class Installer {
 	}
 
 	public function cmdInstall($opts) {
+		$result = [
+			"database_configuration" => FALSE,
+			"database_connection" => FALSE,
+			"database_version" => NULL
+		];
 		$this->logger->info("Running installer");
 
 		$this->logger->info("Checking database configuration...");
 		if (!$this->isDatabaseConfigured()) {
 			$this->logger->error("Database not configured");
-			return FALSE;
+			return $result;
 		}
+		$result["database_configuration"] = TRUE;
 
 		$this->logger->info("Checking database connection...");
 		$conn = $this->container->dbfactory->checkConnection();
 		if (!$conn["connection"]) {
 		    $this->logger->error("Cannot connect to database: ".$conn["reason"]);
-		    return FALSE;
+		    $result["database_connection_error"] = $conn["reason"];
+		    return $result;
 		}
+		$result["database_connection"] = TRUE;
 
 		$db = $this->container->db;
 
@@ -39,32 +47,31 @@ class Installer {
 
 				if (!$installedVersion or $installedVersion == NULL) {
 					$this->logger->info("No database version found");
-					return $this->migrate();
+					return array_merge($result, $this->migrate());
 				}
 
 				$this->logger->info("Installed version: $installedVersion");
 
-				//check installed version -> update?
-				return $this->update();
+				$result["database_version"] = $installedVersion;
+				return array_merge($result, $this->update());
 			} catch (Exception $e) {
 				$this->logger->info("Unable to resolve installed version: ".$e->getMessage());
-				return FALSE;
+				return $result;
 			}
-		} else {
-			return $this->install();
 		}
-		return TRUE;
+
+		return array_merge($result, $this->install());
 	}
 
-	public function install() {
-
-	}
-
-	public function update() {
+	private function install() {
 
 	}
 
-	public function migrate() {
+	private function update() {
+
+	}
+
+	private function migrate() {
 		$db = $this->container->db;
 
 		$fromVersion = $db->select('parameter', ['name', 'value'])->where('name', 'version')->done()->execute()->firstValue('value');

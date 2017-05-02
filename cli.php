@@ -102,7 +102,7 @@ if (!$container->commands->exists($command)) {
 }
 
 ln("Command [$command]");
-$result = $container->commands->execute($command, $options, function($m) { ln($m); });
+$result = $container->commands->execute($command, $options);
 ln("Result [$result]");
 
 // TOOLS
