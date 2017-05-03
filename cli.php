@@ -72,11 +72,14 @@ $app->initialize(new \KloudspeakerLegacy($config), [ "logger" => function() use 
 }]);
 $container = $app->getContainer();
 
-$container['logger'] ;
-$logger = $container->logger;
-
-$installer = new \Kloudspeaker\Setup\Installer($systemInfo, $container);
+$installer = new \Kloudspeaker\Setup\Installer($container);
 $installer->initialize();
+
+if ($container->configuration->is("dev")) {
+    require 'setup/DevTools.php';
+    $devTools = new \Kloudspeaker\Setup\DevTools($container);
+    $devTools->initialize();
+}
 
 $opts = getOpts($argv);
 if (count($opts["commands"]) === 0) {

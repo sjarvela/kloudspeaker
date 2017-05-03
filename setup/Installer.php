@@ -5,8 +5,7 @@ namespace Kloudspeaker\Setup;
 class Installer {
 	private $versions = NULL;
 
-	public function __construct($si, $c) {
-		$this->systemInfo = $si;
+	public function __construct($c) {
 		$this->container = $c;
 		$this->logger = $c->logger;
 	}
@@ -109,7 +108,7 @@ class Installer {
 
 	public function getVersionInfo() {
 		if ($this->versions == NULL)
-			$this->versions = json_decode(file_get_contents($this->systemInfo["root"] . '/setup/db/versions.json'), TRUE);
+			$this->versions = json_decode(file_get_contents($this->container->configuration->getInstallationRoot() . '/setup/db/versions.json'), TRUE);
 		return $this->versions;
 	}
 

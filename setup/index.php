@@ -45,8 +45,14 @@ $app->initialize(new \KloudspeakerLegacy($config), [ "logger" => function() use 
 $container = $app->getContainer();
 
 require 'Installer.php';
-$installer = new \Kloudspeaker\Setup\Installer($systemInfo, $container);
+$installer = new \Kloudspeaker\Setup\Installer($container);
 $installer->initialize();
+
+if ($container->configuration->is("dev")) {
+    require 'DevTools.php';
+    $devTools = new \Kloudspeaker\Setup\DevTools($container);
+    $devTools->initialize();
+}
 
 $webApp = new \Slim\App();
 $webAppContainer = $webApp->getContainer();

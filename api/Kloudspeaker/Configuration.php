@@ -14,6 +14,10 @@ class Configuration {
         return $this->systemInfo;
     }
 
+    public function getInstallationRoot() {
+        return $this->systemInfo["root"];
+    }
+
     public function getServerProperties() {
         return $this->serverProps;
     }
