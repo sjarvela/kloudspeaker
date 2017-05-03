@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Kloudspeaker Setup - {% block title %}{% endblock %}</title>
+
+        <link href="{{ path_for('root') }}resources/lib/bootstrap-4.0.0/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="{{ path_for('root') }}resources/css/setup.css" rel="stylesheet" type="text/css" />
+
+        <script type="text/javascript" src="{{ path_for('root') }}resources/lib/jquery-3.2.1/jquery-3.2.1.min.js"></script>
+        <script type="text/javascript" src="{{ path_for('root') }}resources/lib/tether-1.3.3/js/tether.min.js"></script>
+        <script type="text/javascript" src="{{ path_for('root') }}resources/lib/bootstrap-4.0.0/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div id="content">{% block content %}{% endblock %}</div>
+
+            <div id="log">
+                {% for l in log %}
+                    {{ l.time }} {{ l.message }}<br/>
+                {% endfor %}
+            </div>
+        </div>
+    </body>
+</html>

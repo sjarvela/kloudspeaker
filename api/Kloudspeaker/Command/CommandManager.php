@@ -3,6 +3,7 @@ namespace Kloudspeaker\Command;
 
 class CommandManager {
 	private $cmds = [];
+	private $cmdsByGroup = [];
 	
 	public function __construct($container) {
         $this->logger = $container->logger;
@@ -12,7 +13,13 @@ class CommandManager {
 		return $this->cmds;
 	}
 
-	public function register($cmd, $cb) {
+	public function register($cmd, $c) {
+		$cb = $c;	//obj
+
+		$parts = split(":", $cmd);
+		if (count($parts) == 2) {
+			$this->cmdsByGroup[$parts[0]]
+		}
 		$this->cmds[$cmd] = $cb;
 	}
 

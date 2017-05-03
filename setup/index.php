@@ -1,8 +1,8 @@
 <?php
 namespace Kloudspeaker;
 
-require 'api/vendor/auto/autoload.php';
-require 'api/system.php';
+require '../api/vendor/auto/autoload.php';
+require '../api/system.php';
 
 $systemInfo = getKloudspeakerSystemInfo();
 
@@ -44,39 +44,56 @@ $app->initialize(new \KloudspeakerLegacy($config), [ "logger" => function() use 
 }]);
 $container = $app->getContainer();
 
-require 'Setup/Installer.php';
-$installer = new \Kloudspeaker\Setup\Installer($container);
+require 'Installer.php';
+$installer = new \Kloudspeaker\Setup\Installer($systemInfo, $container);
 $installer->initialize();
 
 $webApp = new \Slim\App();
 $webAppContainer = $webApp->getContainer();
 
 $webAppContainer['view'] = function ($c) {
-    $view = new \Slim\Views\Twig('api/Setup/templates', [
+    $view = new \Slim\Views\Twig('resources/templates', [
         'cache' => false,
         'debug' => true
     ]);
     
-    $basePath = rtrim(str_ireplace('setup.php', '', $c['request']->getUri()->getBasePath()), '/');
-    $view->addExtension(new \Slim\Views\TwigExtension($c['router'], $basePath));
+    //$basePath = rtrim(str_ireplace('index.php', '', $c['request']->getUri()->getBasePath()), '/');
+    $view->addExtension(new \Slim\Views\TwigExtension($c['router'], $c['request']->getUri()->getBasePath()));
 
     return $view;
 };
 
-$webApp->get('/install', function ($request, $response, $args) use ($systemInfo, $ml, $container) {
+$webAppContainer['notFoundHandler'] = function ($c) {
+    return function ($request, $response) use ($c) {
+        return $c->view->render($response, 'notfound.html');
+    };
+};
+
+$webApp->get('/', function ($request, $response, $args) use ($systemInfo, $ml, $container) {
+    return $this->view->render($response, 'index.html', [
+        'system' => $systemInfo,
+        'log' => $ml->getEntries()
+    ]);
+})->setName('root');
+
+$webApp->get('/install/', function ($request, $response, $args) use ($systemInfo, $ml, $container, $installer) {
 	$cmd = "install";
 	$result = [];
 
 	if ($systemInfo["config_exists"])
-		$result = $container->commands->execute($cmd, []);
+		$check = $installer->checkInstallation();//$container->commands->execute($cmd, []);
 
-	$container->logger->debug(Utils::array2str($result));
+	$container->logger->debug(Utils::array2str($check));
 
     return $this->view->render($response, 'install.html', [
         'system' => $systemInfo,
-        'result' => $result,
+        'check' => $check,
         'log' => $ml->getEntries()
     ]);
 })->setName('install');
+
+$webApp->post('/install/', function ($request, $response, $args) use ($systemInfo, $ml, $container, $installer) {
+    echo "do install";
+});
 
 $webApp->run();

@@ -16,3 +16,6 @@ server.log
 api.log
 /configuration.php
 api/vendor/auto/**
+setup/setup.log
+
+cli.log

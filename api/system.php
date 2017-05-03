@@ -1,22 +1,22 @@
 <?php
-$KloudspeakerRoot = realpath(dirname(__FILE__)."/../");
-$KloudspeakerSystemInfo = [
-	"root" => $KloudspeakerRoot
+$KLOUDSPEAKER_ROOT = realpath(dirname(__FILE__)."/../");
+$KLOUDSPEAKER_SYSTEM_INFO = [
+	"root" => $KLOUDSPEAKER_ROOT
 ];
 
-if (!file_exists($KloudspeakerRoot."/configuration.php")) {	
-	$KloudspeakerSystemInfo = [
+if (!file_exists($KLOUDSPEAKER_ROOT."/configuration.php")) {	
+	$KLOUDSPEAKER_SYSTEM_INFO = [
 		"config_exists" => FALSE
 	];
 } else {
-	include $KloudspeakerRoot."/configuration.php";
-	include $KloudspeakerRoot."/api/Version.info.php";
+	include $KLOUDSPEAKER_ROOT."/configuration.php";
+	include $KLOUDSPEAKER_ROOT."/api/version.info.php";
 	global $CONFIGURATION, $VERSION, $REVISION;
 
 	if (!isset($CONFIGURATION)) {
-		$KloudspeakerSystemInfo["config_exists"] = FALSE;
+		$KLOUDSPEAKER_SYSTEM_INFO["config_exists"] = FALSE;
 	} else {
-		$KloudspeakerSystemInfo = array_merge($KloudspeakerSystemInfo, [
+		$KLOUDSPEAKER_SYSTEM_INFO = array_merge($KLOUDSPEAKER_SYSTEM_INFO, [
 			"config_exists" => TRUE,
 			"config" => $CONFIGURATION,
 			"version" => $VERSION,
@@ -26,7 +26,7 @@ if (!file_exists($KloudspeakerRoot."/configuration.php")) {
 }
 
 function getKloudspeakerSystemInfo() {
-	global $KloudspeakerSystemInfo;
-	return $KloudspeakerSystemInfo;
+	global $KLOUDSPEAKER_SYSTEM_INFO;
+	return $KLOUDSPEAKER_SYSTEM_INFO;
 }
 

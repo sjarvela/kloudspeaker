@@ -13,11 +13,15 @@ $logLevel = (isset($systemInfo["config"]["debug"]) and $systemInfo["config"]["de
 $logger->pushHandler(new \Monolog\Handler\StreamHandler('php://stdout', $logLevel));
 $logger->pushHandler(new \Monolog\Handler\StreamHandler("cli.log", $logLevel));
 
-function ln($s) {
+function ln() {
 	global $logger;
-	if (is_array($s))
-		$s = Utils::array2str($s);
-	$logger->info($s);
+
+	foreach (func_get_args() as $s) {
+		if (is_array($s))
+			$logger->info(Utils::array2str($s));
+		else
+			$logger->info($s);
+	}
 }
 
 class ErrorHandler {
@@ -28,17 +32,15 @@ class ErrorHandler {
 
 	public function exception($exception) {
 	    if (is_a($exception, "Kloudspeaker\KloudspeakerException")) {
-	        $httpCode = $exception->getHttpCode();
-	        ln(["code" => $exception->getErrorCode(), "msg" => $exception->getMessage(), "result" => $exception->getResult()]);
-	        //$c['logger']->error("Application Exception", ["error" => $error, "trace" => $exception->getTraceAsString()]);
+	    	ln("Kloudspeaker exception");
+	        ln(["code" => $exception->getErrorCode(), "msg" => $exception->getMessage(), "result" => $exception->getResult(), "trace" => $exception->getTraceAsString()]);
 	    } else if (is_a($exception, "ServiceException")) {
 	        //legacy
-	        $httpCode = $exception->getHttpCode();
-	        ln(["code" => $exception->getErrorCode(), "msg" => $exception->type() . "/" . $exception->getMessage(), "result" => $exception->getResult()]);
-	        //$c['logger']->error("Application Exception", ["error" => $error, "trace" => $exception->getTraceAsString()]);
+	        ln("Kloudspeaker exception");
+	        ln(["code" => $exception->getErrorCode(), "msg" => $exception->type() . "/" . $exception->getMessage(), "result" => $exception->getResult(), "trace" => $exception->getTraceAsString()]);
 	    } else {
-	    	ln("Error: ".$exception->getMessage());
-	        ln(debug_backtrace());
+	    	ln("Unknown exception: ".$exception->getMessage());
+	        ln(["msg" => $exception->getMessage(), "trace" => $exception->getTraceAsString()]);
 	    }
 		die();
 	}
@@ -66,7 +68,7 @@ ln(["version" => $systemInfo["version"], "revision" => $systemInfo["revision"]])
 set_include_path($systemInfo["root"].DIRECTORY_SEPARATOR.'api' . PATH_SEPARATOR . get_include_path());
 
 require 'autoload.php';
-require 'Setup/Installer.php';
+require 'setup/Installer.php';
 
 $config = new Configuration($systemInfo);
 
@@ -79,7 +81,7 @@ $container = $app->getContainer();
 $container['logger'] ;
 $logger = $container->logger;
 
-$installer = new \Kloudspeaker\Setup\Installer($container);
+$installer = new \Kloudspeaker\Setup\Installer($systemInfo, $container);
 $installer->initialize();
 
 $opts = getOpts($argv);
@@ -103,7 +105,8 @@ if (!$container->commands->exists($command)) {
 
 ln("Command [$command]");
 $result = $container->commands->execute($command, $options);
-ln("Result [$result]");
+
+ln("Result:", $result);
 
 // TOOLS
 
