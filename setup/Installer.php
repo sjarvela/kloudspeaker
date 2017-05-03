@@ -13,7 +13,7 @@ class Installer {
 
 	public function initialize() {
 		$this->container->commands->register('installer:check', [$this, 'checkInstallation']);
-		$this->container->commands->register('installer:install', [$this, 'cmdInstall']);
+		$this->container->commands->register('installer:perform', [$this, 'performInstallation']);
 	}
 
 	public function checkInstallation() {
@@ -21,6 +21,7 @@ class Installer {
 
 		$result = [
 			"system" => [
+				"configuration" => FALSE,
 				"database_configuration" => FALSE,
 				"database_connection" => FALSE,
 				"database_version" => NULL,
@@ -30,12 +31,19 @@ class Installer {
 			"available" => []
 		];
 
+		$this->logger->info("Checking configuration...");
+		if (!$this->container->configuration->getSystemInfo()["config_exists"]) {
+			$this->logger->error("Kloudspeaker not configured");
+			return $result;
+		}
+		$result["system"]["configuration"] = TRUE;
+
 		$this->logger->info("Checking database configuration...");
 		if (!$this->isDatabaseConfigured()) {
 			$this->logger->error("Database not configured");
 			return $result;
 		}
-		$result["database_configuration"] = TRUE;
+		$result["system"]["database_configuration"] = TRUE;
 
 		$this->logger->info("Checking database connection...");
 		$conn = $this->container->dbfactory->checkConnection();
@@ -71,7 +79,7 @@ class Installer {
 						$this->logger->info("Cannot migrate from this version, update to last 2.x version");
 						return $result;
 					}
-					$result["available"][] = ["type" => "system:migrate", "from" => $migrateFromVersion];
+					$result["available"][] = ["id" => "system:migrate", "from" => $migrateFromVersion];
 
 					//TODO check plugins
 					return $result;
@@ -82,7 +90,7 @@ class Installer {
 				$latestVersion = $this->getLatestVersion();
 				$latest = $installedVersion == $latestVersion;
 				if (!$latest) {
-					$result["available"][] = ["type" => "system:update", "from" => $installedVersion, "to" => $latestVersion];
+					$result["available"][] = ["id" => "system:update", "from" => $installedVersion, "to" => $latestVersion];
 				}
 				//TODO check plugins
 
@@ -93,7 +101,7 @@ class Installer {
 			}
 		} else {
 			// no table exist, assume empty database
-			$result["available"][] = ["type" => "system:install", "to" => $latestVersion];
+			$result["available"][] = ["id" => "system:install", "to" => $latestVersion];
 		}
 
 		return $result;
@@ -110,27 +118,44 @@ class Installer {
 		return $this->versions[count($this->versions)-1];
 	}
 
-	public function cmdInstall($opts) {
-		$this->logger->info("Running installer: ". \Kloudspeaker\Utils::array2str($opts));
-
+	public function performInstallation() {
 		$check = $this->checkInstallation();
-		if (count($check["available"]) == 0) return [
-			"check" => $check,
-			"success" => FALSE
-		];
+
+		if (count($check["available"]) == 0) {
+			return [
+				"check" => $check,
+				"reason" => "No actions available",
+				"success" => FALSE
+			];
+		}
+		$this->logger->info("Performing installation");
 		//do installation
-		return ["success" => TRUE];
+
+		$this->container->db->startTransaction();
+		$result = [];
+		try {
+			foreach ($check["available"] as $action) {
+				$actionResult = [];
+				if ($action["id"] == "system:migrate") $actionResult = $this->migrateSystem();
+				else throw new \Kloudspeaker\KloudspeakerException("Invalid install action: ".$action["id"]);
+			}
+			$this->container->db->commit();
+		} catch (Exception $e) {
+			$this->container->db->rollback();
+		}
+		$result["success"] = TRUE;
+		return $result;
 	}
 
-	private function install() {
+	private function installSystem() {
 
 	}
 
-	private function update() {
+	private function updateSystem() {
 
 	}
 
-	private function migrate() {
+	private function migrateSystem() {
 		$db = $this->container->db;
 
 		$fromVersion = $db->select('parameter', ['name', 'value'])->where('name', 'version')->done()->execute()->firstValue('value');

@@ -17,8 +17,8 @@ class Kloudspeaker_FilesystemCommands {
 	}
 
 	public function initialize() {
-		$this->env->commands()->register("copy", $this);
-		$this->env->commands()->register("upload", $this);
+		$this->env->commands()->register("filesystem:copy", $this);
+		$this->env->commands()->register("filesystem:upload", $this);
 	}
 
 	public function execute($cmd, $options) {

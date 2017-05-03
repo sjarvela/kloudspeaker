@@ -5,32 +5,35 @@
 {% block content %}
 	<h1>Installation</h1>
 
-	{% if system.config_exists %}
+	{% if result.system.configuration %}
 		Version: {{ system.version }}/{{ system.revision }}<br/>
 
-		{% if not check.database_configuration %}
+		{% if not result.system.database_configuration %}
 			{{ include('install/instructions_configuration.html') }}
 		{% else %}
-			Database connection:
-			{% if not check.database_connection %}
-				N
-				<div class="">{{check.database_connection_error}}</div>
+			{% if not result.system.database_connection %}
+				<div class="">{{result.system.database_connection_error}}</div>
 
 				{{ include('install/instructions_db_connection.html') }}
 			{% else %}
-				{% if not check.operation %}
+				{% if result.available is empty %}
 					Everything up-to-date
 				{% else %}
-					Install ({{ check.operation }}):
-					{{ system.db.dsn }}
-					{{ system.db.user }}
-					{{ system.db.password }}
+					Installation:
+					{{ system.config.db.dsn }}
+					{{ system.config.db.user }}
+					{{ system.config.db.password }}
+
+					{% for l in result.available %}
+						{{ l.id }}
+					{% endfor %}
+
 					<form method="post">
 						<input class="btn" name="action" value="Install" type="submit"></input>
 					</form>
 				{% endif %}
-			{% endif %}<br/>
-		{% endif %}<br/>
+			{% endif %}
+		{% endif %}
 	{% else %}
 		{{ include('install/instructions_configuration.html') }}
 	{% endif %}

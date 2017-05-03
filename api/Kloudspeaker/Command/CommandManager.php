@@ -3,23 +3,29 @@ namespace Kloudspeaker\Command;
 
 class CommandManager {
 	private $cmds = [];
-	private $cmdsByGroup = [];
+	private $cmdNames = [];
+	private $cmdNamesByGroup = [];
 	
 	public function __construct($container) {
         $this->logger = $container->logger;
     }
 
-	public function get() {
-		return $this->cmds;
+	public function get($name = NULL) {
+		if ($name == NULL)
+			return $this->cmdNames;
+		return array_key_exists($name, $this->cmdNamesByGroup) ? $this->cmdNamesByGroup[$name] : [];
 	}
 
 	public function register($cmd, $c) {
 		$cb = $c;	//obj
 
-		$parts = split(":", $cmd);
+		$parts = explode(":", $cmd);
 		if (count($parts) == 2) {
-			$this->cmdsByGroup[$parts[0]]
+			if (!array_key_exists($parts[0], $this->cmdNamesByGroup))
+				$this->cmdNamesByGroup[$parts[0]] = [];
+			$this->cmdNamesByGroup[$parts[0]][] = $parts[1];
 		}
+		$this->cmdNames[] = $cmd;
 		$this->cmds[$cmd] = $cb;
 	}
 

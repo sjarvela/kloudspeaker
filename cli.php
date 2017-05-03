@@ -26,7 +26,7 @@ function ln() {
 
 class ErrorHandler {
 	public function php($errno, $errstr, $errfile, $errline, $errCtx) {
-		ln("PHP error #" . $errno . ", " . $errstr . " (" . $errfile . ":" . $errline . ")" . "\n" . Utils::array2str(debug_backtrace()));
+		ln("PHP error #" . $errno . ", " . $errstr . " (" . $errfile . ":" . $errline . ")");
 		die();
 	}
 
@@ -47,7 +47,8 @@ class ErrorHandler {
 
 	public function fatal() {
 		$error = error_get_last();
-		if ($error !== NULL) ln($error);
+		//var_dump($error);
+		if ($error !== NULL) ln("FATAL ERROR", $error);
 	}
 }
 
@@ -56,14 +57,7 @@ set_error_handler(array($errorHandler, 'php'));
 set_exception_handler(array($errorHandler, 'exception'));
 register_shutdown_function(array($errorHandler, 'fatal'));
 
-ln("Kloudspeaker CLI");
-
-if (!$systemInfo["config_exists"]) {
-	ln("No configuration found");
-	exit(0);	
-}
-
-ln(["version" => $systemInfo["version"], "revision" => $systemInfo["revision"]]);
+ln("Kloudspeaker CLI", ["version" => $systemInfo["version"], "revision" => $systemInfo["revision"]]);
 
 set_include_path($systemInfo["root"].DIRECTORY_SEPARATOR.'api' . PATH_SEPARATOR . get_include_path());
 
@@ -93,8 +87,10 @@ if (count($opts["commands"]) === 0) {
 $command = $opts["commands"][0];
 $options = $opts["options"];
 
+ln($opts);
+
 if ("list" == $command) {
-	ln($container->commands->get());
+	ln($container->commands->get(count($opts["commands"]) > 1 ? $opts["commands"][1] : NULL));
 	exit(0);
 }
 

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Install{% endblock %}
+
+{% block content %}
+	<h1>Installation</h1>
+
+	{% if result.success %}
+		Yippee
+	{% else %}
+		Fail
+	{% endif %}
+{% endblock %}

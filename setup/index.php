@@ -77,23 +77,27 @@ $webApp->get('/', function ($request, $response, $args) use ($systemInfo, $ml, $
 })->setName('root');
 
 $webApp->get('/install/', function ($request, $response, $args) use ($systemInfo, $ml, $container, $installer) {
-	$cmd = "install";
-	$result = [];
+	$result = $container->commands->execute("installer:check", []);
 
-	if ($systemInfo["config_exists"])
-		$check = $installer->checkInstallation();//$container->commands->execute($cmd, []);
-
-	$container->logger->debug(Utils::array2str($check));
+	//$container->logger->debug(Utils::array2str($result));
 
     return $this->view->render($response, 'install.html', [
         'system' => $systemInfo,
-        'check' => $check,
+        'result' => $result,
         'log' => $ml->getEntries()
     ]);
 })->setName('install');
 
 $webApp->post('/install/', function ($request, $response, $args) use ($systemInfo, $ml, $container, $installer) {
-    echo "do install";
+    $result = $container->commands->execute("installer:perform", []);
+
+    //$container->logger->debug(Utils::array2str($result));
+
+    return $this->view->render($response, 'perform_install.html', [
+        'system' => $systemInfo,
+        'result' => $result,
+        'log' => $ml->getEntries()
+    ]);
 });
 
 $webApp->run();
