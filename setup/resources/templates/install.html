@@ -24,8 +24,14 @@
 					{{ system.config.db.user }}
 					{{ system.config.db.password }}
 
+					<hr/>
+
 					{% for l in result.available %}
 						{{ l.id }}
+						{% if l.id == "system:install" %}
+						{{ l.to.name }}
+						{% endif %}
+						<br/>
 					{% endfor %}
 
 					<form method="post">

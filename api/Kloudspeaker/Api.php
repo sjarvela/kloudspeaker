@@ -86,6 +86,10 @@ class Api extends \Slim\App {
             };
         };
 
+        $container['api'] = function($c) use ($t) {
+            return $t;
+        };
+
         $container['out'] = function($c) {
             return new AppResponse();
         };
@@ -172,6 +176,8 @@ class Api extends \Slim\App {
             $this->loadModule($lm);
         }
 
+        $container->plugins->initialize();
+
         $legacy->initialize($this);
     }
 
@@ -179,37 +185,59 @@ class Api extends \Slim\App {
         $this->loadModule("Routes/Session:\Kloudspeaker\Route\Session");
      }
 
-     public function loadModule($m) {
+     public function loadModule($m, $o = NULL) {
         $file = NULL;
         $cls = $m;
         if (strpos($m, ":") !== FALSE) {
             $parts = explode(":", $m);
             $file = $parts[0];
-            if (!Utils::strEndsWith($file, ".php"))
-                $file .= ".php";
             $cls = $parts[1];
+        } else if (strpos($m, "/") !== FALSE) {
+            $file = $m;
+            $cls = str_replace("/", "\\", $m);
+            if (!Utils::strStartsWith($cls, "\\"))
+                $cls = "\\".$cls;
         }
+
+        if ($file != NULL and !Utils::strEndsWith($file, ".php"))
+            $file .= ".php";
+
+        if (Utils::strEndsWith($cls, ".php"))
+            $cls = substr($cls, 0, -4);
+
+        $this->getContainer()->logger->debug("Loading module $m -> [$file]:$cls");
+
         if ($file != NULL and strlen($file) > 0)
             require_once $file;
 
-        $cls = new $cls();
-        $this->addModule($cls);
+        if ($o != NULL)
+            $cls = new $cls($this->getContainer(), $o);
+        else
+            $cls = new $cls($this->getContainer());
+
+        return $this->addModule($cls);
      }
 
     public function addModule($m) {
         $setup = new ModuleSetup($this);
 
         if (is_callable($m)) {
-            $m($setup);
+            return $m($setup);
         } elseif (is_object($m)) {
             $m->initialize($setup);
+            return $m;
         }
+        return NULL;
      }
 }
 
 class ModuleSetup {
     public function __construct($app) {
         $this->app = $app;
+    }
+
+    public function container() {
+        return $this->app->getContainer();
     }
 
     public function route($name, $cb) {

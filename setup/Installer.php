@@ -60,8 +60,10 @@ class Installer {
 			$this->logger->info("Old installation exists, checking database version");
 			$result["system"]["installation"] = TRUE;
 
+			$latestVersion = $this->getLatestVersion();
+
 			try {
-				$installedVersion = $db->select('parameter', ['name', 'value'])->where('name', 'database')->done()->execute()->firstValue('value');
+				$installedVersion = $this->getSystemInstalledVersion();
 
 				if (!$installedVersion or $installedVersion == NULL) {
 					$this->logger->info("No database version found");
@@ -73,12 +75,12 @@ class Installer {
 						return $result;
 					}
 
-					$this->logger->info("Migrating from version: $migrateFromVersion");
+					$this->logger->info("Old version detected: $migrateFromVersion");
 					if ($migrateFromVersion != "2_7_28") {
-						$this->logger->info("Cannot migrate from this version, update to last 2.x version");
+						$this->logger->error("Cannot migrate from this version, update to last 2.x version");
 						return $result;
 					}
-					$result["available"][] = ["id" => "system:migrate", "from" => $migrateFromVersion];
+					$result["available"][] = ["id" => "system:migrate", "from" => $migrateFromVersion, "to" => $latestVersion];
 
 					//TODO check plugins
 					return $result;
@@ -86,11 +88,11 @@ class Installer {
 
 				$this->logger->info("Installed version: $installedVersion");
 
-				$latestVersion = $this->getLatestVersion();
-				$latest = $installedVersion == $latestVersion;
+				$latest = ($installedVersion == $latestVersion["id"]);
 				if (!$latest) {
 					$result["available"][] = ["id" => "system:update", "from" => $installedVersion, "to" => $latestVersion];
 				}
+
 				//TODO check plugins
 
 				return $result;
@@ -100,21 +102,44 @@ class Installer {
 			}
 		} else {
 			// no table exist, assume empty database
-			$result["available"][] = ["id" => "system:install", "to" => $latestVersion];
+			$result["available"][] = ["id" => "system:install", "to" => $this->getLatestVersion()];
 		}
 
 		return $result;
 	}
 
+	public function getSystemInstalledVersion() {
+		return $this->container->db->select('parameter', ['name', 'value'])->where('name', 'database')->done()->execute()->firstValue('value');
+	}
+
+	public function getPluginInstalledVersion($id) {
+		return $this->container->db->select('parameter', ['name', 'value'])->where('name', "plugin_$id_version")->done()->execute()->firstValue('value');
+	}
+
 	public function getVersionInfo() {
 		if ($this->versions == NULL)
-			$this->versions = json_decode(file_get_contents($this->container->configuration->getInstallationRoot() . '/setup/db/versions.json'), TRUE);
+			$this->versions = json_decode($this->readFile('/setup/db/versions.json'), TRUE);
 		return $this->versions;
 	}
 
 	public function getLatestVersion() {
-		$this->getVersionInfo();	//make sure versions are read
-		return $this->versions[count($this->versions)-1];
+		$ver = $this->getVersionInfo();	//make sure versions are read
+		if (count($ver["versions"]) == 0) throw new \Kloudspeaker\KloudspeakerException("No version info found");
+		return $ver["versions"][count($ver["versions"])-1];
+	}
+
+	private function getAllInstallablePlugins() {
+		$result = [];
+		foreach ($this->container->plugins->get() as $p) {
+			/*if ($p->version() == NULL) {
+				continue;
+			}
+			$ps = $settings[$id];
+			$custom = (isset($ps["custom"]) and $ps["custom"] == TRUE);
+
+			$util->execPluginCreateTables($id, ($custom ? $customPath : NULL));*/
+		}
+		return $result;
 	}
 
 	public function performInstallation() {
@@ -128,14 +153,14 @@ class Installer {
 			];
 		}
 		$this->logger->info("Performing installation");
-		//do installation
 
 		$this->container->db->startTransaction();
 		$result = [];
 		try {
 			foreach ($check["available"] as $action) {
 				$actionResult = [];
-				if ($action["id"] == "system:migrate") $actionResult = $this->migrateSystem();
+				if ($action["id"] == "system:install") $actionResult = $this->installSystem();
+				else if ($action["id"] == "system:migrate") $actionResult = $this->migrateSystem();
 				else throw new \Kloudspeaker\KloudspeakerException("Invalid install action: ".$action["id"]);
 			}
 			$this->container->db->commit();
@@ -147,7 +172,17 @@ class Installer {
 	}
 
 	private function installSystem() {
+		$db = $this->container->db;
+		$db->script($this->readFile('/setup/db/create.sql'));
 
+		// add version info
+		$latestVersion = $this->getLatestVersion();
+		$db->insert('parameter', ['name' => 'database', 'value' => $latestVersion["id"]])->execute();
+
+		// install all plugins
+		foreach ($this->getAllInstallablePlugins() as $plugin) {
+			# code...
+		}
 	}
 
 	private function updateSystem() {
@@ -173,6 +208,10 @@ class Installer {
 		//TODO run migration job
 
 		return TRUE;
+	}
+
+	private function readFile($path) {
+		return file_get_contents($this->container->configuration->getInstallationRoot() . $path);
 	}
 
 	public function isDatabaseConfigured() {

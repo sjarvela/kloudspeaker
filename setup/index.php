@@ -1,13 +1,12 @@
 <?php
 namespace Kloudspeaker;
 
-require '../api/vendor/auto/autoload.php';
 require '../api/system.php';
-
 $systemInfo = getKloudspeakerSystemInfo();
 
 set_include_path($systemInfo["root"].DIRECTORY_SEPARATOR.'api' . PATH_SEPARATOR . get_include_path());
 
+require 'vendor/auto/autoload.php';
 require 'autoload.php';
 
 class MemoryLogger extends \Monolog\Handler\AbstractProcessingHandler {
@@ -57,6 +56,13 @@ if ($container->configuration->is("dev")) {
 $webApp = new \Slim\App();
 $webAppContainer = $webApp->getContainer();
 
+if ($systemInfo["error"] != NULL)
+    if (count($systemInfo["error"]) > 1) {
+        $e = $systemInfo["error"][1];
+        $logger->error(Utils::array2str(["msg" => $systemInfo["error"][0] . ": " . $e->getMessage(), "trace" => $e->getTraceAsString()]));
+    } else
+        $logger->error($systemInfo["error"][0]);
+
 $webAppContainer['view'] = function ($c) {
     $view = new \Slim\Views\Twig('resources/templates', [
         'cache' => false,
@@ -75,6 +81,17 @@ $webAppContainer['notFoundHandler'] = function ($c) {
     };
 };
 
+$webApp->add(function ($request, $response, $next) use ($systemInfo, $ml) {
+    if ($systemInfo["error"] != NULL)
+        return $this->view->render($response, 'error.html', [
+            'system' => $systemInfo,
+            'error' => $systemInfo["error"][0],
+            'log' => $ml->getEntries()
+        ]);
+
+    return $next($request, $response);
+});
+
 $webApp->get('/', function ($request, $response, $args) use ($systemInfo, $ml, $container) {
     return $this->view->render($response, 'index.html', [
         'system' => $systemInfo,
@@ -85,7 +102,7 @@ $webApp->get('/', function ($request, $response, $args) use ($systemInfo, $ml, $
 $webApp->get('/install/', function ($request, $response, $args) use ($systemInfo, $ml, $container, $installer) {
 	$result = $container->commands->execute("installer:check", []);
 
-	//$container->logger->debug(Utils::array2str($result));
+	$container->logger->debug(Utils::array2str($result));
 
     return $this->view->render($response, 'install.html', [
         'system' => $systemInfo,

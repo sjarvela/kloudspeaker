@@ -8,6 +8,8 @@ class Database {
     const TYPE_DATETIME = "datetime";
     const TYPE_DATETIME_INTERNAL = "datetime_internal";
 
+    private $tablePrefix = "";  //TODO
+
     public function __construct($db, $logger) {
         $this->logger = $logger;
         $this->db = $db;
@@ -48,6 +50,18 @@ class Database {
 
     public function delete($from) {
         return new DeleteStatementBuilder($this->logger, $this->db, $from);
+    }
+
+    public function script($s) {
+        $sql = str_replace('{TABLE_PREFIX}', (isset($this->tablePrefix) and $this->tablePrefix != '') ? $this->tablePrefix : '', $s);
+
+        $this->logger->debug("DB script", ["script" => $sql]);
+        $result = $this->db->query($sql);
+        if (!$result) {
+            $this->logger->error("DB SCRIPT FAILED: ".implode(" ", $this->db->errorInfo()));
+            throw new DatabaseException("Error executing db script");
+        }
+        return TRUE;
     }
 
     public function query($q) {

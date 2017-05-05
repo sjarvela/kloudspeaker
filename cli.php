@@ -3,24 +3,19 @@
 namespace Kloudspeaker;
 
 require 'api/vendor/auto/autoload.php';
-require 'api/system.php';
 require 'api/Kloudspeaker/Utils.php';
 
-$systemInfo = getKloudspeakerSystemInfo();
-
 $logger = new \Monolog\Logger('kloudspeaker-cli');
-$logLevel = (isset($systemInfo["config"]["debug"]) and $systemInfo["config"]["debug"]) ? \Monolog\Logger::DEBUG : \Monolog\Logger::INFO;
-$logger->pushHandler(new \Monolog\Handler\StreamHandler('php://stdout', $logLevel));
-$logger->pushHandler(new \Monolog\Handler\StreamHandler("cli.log", $logLevel));
+$logger->pushHandler(new \Monolog\Handler\StreamHandler('php://stdout', \Monolog\Logger::INFO));
 
 function ln() {
 	global $logger;
 
 	foreach (func_get_args() as $s) {
 		if (is_array($s))
-			$logger->info(Utils::array2str($s));
+			$logger != NULL ? $logger->info(Utils::array2str($s)) : var_dump($s);
 		else
-			$logger->info($s);
+			$logger != NULL ? $logger->info($s) : var_dump($s);
 	}
 }
 
@@ -40,6 +35,7 @@ class ErrorHandler {
 	        ln(["code" => $exception->getErrorCode(), "msg" => $exception->type() . "/" . $exception->getMessage(), "result" => $exception->getResult(), "trace" => $exception->getTraceAsString()]);
 	    } else {
 	    	ln("Unknown exception: ".$exception->getMessage());
+	    	//var_dump($exception);
 	        ln(["msg" => $exception->getMessage(), "trace" => $exception->getTraceAsString()]);
 	    }
 		die();
@@ -49,6 +45,7 @@ class ErrorHandler {
 		$error = error_get_last();
 		//var_dump($error);
 		if ($error !== NULL) ln("FATAL ERROR", $error);
+		exit();
 	}
 }
 
@@ -57,6 +54,24 @@ set_error_handler(array($errorHandler, 'php'));
 set_exception_handler(array($errorHandler, 'exception'));
 register_shutdown_function(array($errorHandler, 'fatal'));
 
+require 'api/system.php';
+$systemInfo = getKloudspeakerSystemInfo();
+
+$logLevel = (isset($systemInfo["config"]["debug"]) and $systemInfo["config"]["debug"]) ? \Monolog\Logger::DEBUG : \Monolog\Logger::INFO;
+$logger = new \Monolog\Logger('kloudspeaker-cli');
+$logger->pushHandler(new \Monolog\Handler\StreamHandler('php://stdout', $logLevel));
+$logger->pushHandler(new \Monolog\Handler\StreamHandler("cli.log", $logLevel));
+
+if ($systemInfo["error"] != NULL) {
+	ln("Kloudspeaker CLI");
+
+	if (count($systemInfo["error"]) > 1) {
+		$e = $systemInfo["error"][1];
+		$logger->error(Utils::array2str(["msg" => $systemInfo["error"][0] . ": " . $e->getMessage(), "trace" => $e->getTraceAsString()]));
+	} else
+		$logger->error($systemInfo["error"][0]);
+	exit();
+}
 ln("Kloudspeaker CLI", ["version" => $systemInfo["version"], "revision" => $systemInfo["revision"]]);
 
 set_include_path($systemInfo["root"].DIRECTORY_SEPARATOR.'api' . PATH_SEPARATOR . get_include_path());
@@ -77,7 +92,7 @@ $installer->initialize();
 
 if ($container->configuration->is("dev")) {
     require 'setup/DevTools.php';
-    $devTools = new \Kloudspeaker\Setup\DevTools($container);
+    $devTools = new \Kloudspeaker\Setup\DevTools($container, $installer);
     $devTools->initialize();
 }
 

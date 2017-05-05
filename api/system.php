@@ -1,20 +1,30 @@
 <?php
 $KLOUDSPEAKER_ROOT = realpath(dirname(__FILE__)."/../");
 $KLOUDSPEAKER_SYSTEM_INFO = [
-	"root" => $KLOUDSPEAKER_ROOT
+	"root" => $KLOUDSPEAKER_ROOT,
+	"error" => NULL
 ];
+$KLOUDSPEAKER_SYSTEM_ERROR = NULL;
 
-if (file_exists($KLOUDSPEAKER_ROOT."/configuration.php"))
-	include $KLOUDSPEAKER_ROOT."/configuration.php";
-global $CONFIGURATION;
+try {
+	if (file_exists($KLOUDSPEAKER_ROOT."/configuration.php"))
+		include $KLOUDSPEAKER_ROOT."/configuration.php";
+} catch (Exception $e) {
+	$KLOUDSPEAKER_SYSTEM_ERROR = ["Error in configuration.php", $e];
+} catch (Throwable $e) {
+	$KLOUDSPEAKER_SYSTEM_ERROR = ["Error in configuration.php", $e];
+}
+
 if (file_exists($KLOUDSPEAKER_ROOT."/api/version.info.php"))
 	include $KLOUDSPEAKER_ROOT."/api/version.info.php";
-global $VERSION, $REVISION;
 
-if (!isset($CONFIGURATION) or $CONFIGURATION == NULL) {	
+global $CONFIGURATION, $VERSION, $REVISION;
+
+if ($KLOUDSPEAKER_SYSTEM_ERROR != NULL or !isset($CONFIGURATION) or $CONFIGURATION == NULL) {	
 	$KLOUDSPEAKER_SYSTEM_INFO = array_merge($KLOUDSPEAKER_SYSTEM_INFO, [
 		"config_exists" => FALSE,
 		"config" => NULL,
+		"error" => $KLOUDSPEAKER_SYSTEM_ERROR,
 		"version" => $VERSION,
 		"revision" => $REVISION
 	]);

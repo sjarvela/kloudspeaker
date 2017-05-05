@@ -2,7 +2,7 @@
 require_once 'Kloudspeaker/Utils.php';
 require 'Kloudspeaker/Api.php';
 require 'Kloudspeaker/Configuration.php';
-require 'Kloudspeaker/legacy/Legacy.php';
+require 'Kloudspeaker/Legacy/Legacy.php';
 require 'Kloudspeaker/Authentication.php';
 require 'Kloudspeaker/Features.php';
 require 'Kloudspeaker/Session.php';

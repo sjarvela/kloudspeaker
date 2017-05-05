@@ -584,7 +584,22 @@ class LegacyPlugins {
 	}
 
 	public function setup() {
+		if (!$this->container->configuration->has("plugins")) {
+			return;
+		}
 
+		$plugins = $this->container->configuration->get("plugins");
+		if (!is_array($plugins)) {
+			throw new ServiceException("INVALID_CONFIGURATION");
+		}
+
+		foreach ($plugins as $p => $settings) {
+			$this->addPlugin($p, $settings);
+		}
+
+		foreach ($this->plugins as $id => $p) {
+			$p->setup();
+		}
 	}
 }
 
