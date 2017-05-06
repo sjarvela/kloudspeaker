@@ -10,6 +10,10 @@ class Configuration {
         if ($this->values == NULL) $this->values = [];
     }
 
+    public function values() {
+        return $this->values;
+    }
+
     public function getSystemInfo() {
         return $this->systemInfo;
     }
@@ -49,6 +53,20 @@ class Configuration {
     }
 
     public function get($name, $defaultValue = "__undefined__") {
+        if (strpos($name, ".") !== FALSE) {
+            $parts = explode(".", $name);
+            $current = $this->values;
+            foreach ($parts as $p) {
+                if (!isset($current[$p]))
+                    if ($defaultValue === "__undefined__")
+                        throw new KloudspeakerException("Missing config value: ".$name, Errors::InvalidConfiguration);
+                    else
+                        return $defaultValue;
+
+                $current = $current[$p];
+            }
+            return $current;
+        }
         if (!isset($this->values[$name])) {
             if ($defaultValue === "__undefined__")
                throw new KloudspeakerException("Missing config value: ".$name, Errors::InvalidConfiguration);

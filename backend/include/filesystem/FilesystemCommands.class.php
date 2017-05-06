@@ -21,7 +21,7 @@ class Kloudspeaker_FilesystemCommands {
 		$this->env->commands()->register("filesystem:upload", $this);
 	}
 
-	public function execute($cmd, $options) {
+	public function execute($cmd, $commands, $options) {
 		if (strcasecmp($cmd, "copy") == 0) {
 			$this->processCopy($options);
 		} else if (strcasecmp($cmd, "upload") == 0) {

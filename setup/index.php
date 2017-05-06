@@ -43,9 +43,8 @@ $app->initialize(new \KloudspeakerLegacy($config), [ "logger" => function() use 
 }]);
 $container = $app->getContainer();
 
-require 'Installer.php';
-$installer = new \Kloudspeaker\Setup\Installer($container);
-$installer->initialize();
+require 'setup/autoload.php';
+autoload_kloudspeaker_setup($container);
 
 if ($container->configuration->is("dev")) {
     require 'DevTools.php';

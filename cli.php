@@ -35,7 +35,7 @@ class ErrorHandler {
 	        ln(["code" => $exception->getErrorCode(), "msg" => $exception->type() . "/" . $exception->getMessage(), "result" => $exception->getResult(), "trace" => $exception->getTraceAsString()]);
 	    } else {
 	    	ln("Unknown exception: ".$exception->getMessage());
-	    	//var_dump($exception);
+	    	var_dump($exception);
 	        ln(["msg" => $exception->getMessage(), "trace" => $exception->getTraceAsString()]);
 	    }
 		die();
@@ -44,7 +44,7 @@ class ErrorHandler {
 	public function fatal() {
 		$error = error_get_last();
 		//var_dump($error);
-		if ($error !== NULL) ln("FATAL ERROR", $error);
+		if ($error !== NULL) ln("FATAL ERROR", var_export($error));
 		exit();
 	}
 }
@@ -77,7 +77,6 @@ ln("Kloudspeaker CLI", ["version" => $systemInfo["version"], "revision" => $syst
 set_include_path($systemInfo["root"].DIRECTORY_SEPARATOR.'api' . PATH_SEPARATOR . get_include_path());
 
 require 'autoload.php';
-require 'setup/Installer.php';
 
 $config = new Configuration($systemInfo);
 
@@ -87,14 +86,8 @@ $app->initialize(new \KloudspeakerLegacy($config), [ "logger" => function() use 
 }]);
 $container = $app->getContainer();
 
-$installer = new \Kloudspeaker\Setup\Installer($container);
-$installer->initialize();
-
-if ($container->configuration->is("dev")) {
-    require 'setup/DevTools.php';
-    $devTools = new \Kloudspeaker\Setup\DevTools($container, $installer);
-    $devTools->initialize();
-}
+require 'setup/autoload.php';
+autoload_kloudspeaker_setup($container);
 
 $opts = getOpts($argv);
 if (count($opts["commands"]) === 0) {
@@ -118,9 +111,10 @@ if (!$container->commands->exists($command)) {
 }
 
 ln("Command [$command]");
-$result = $container->commands->execute($command, $options);
+$result = $container->commands->execute($command, array_slice($opts["commands"], 1), $options);
 
 ln("Result:", $result);
+echo is_array($result) ? \Kloudspeaker\Utils::array2str($result) : $result;
 
 // TOOLS
 

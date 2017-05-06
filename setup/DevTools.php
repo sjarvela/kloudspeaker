@@ -20,17 +20,17 @@ class DevTools {
 		$info = $this->getVersionInfo();
 		$this->logger->debug("Current versions: ".\Kloudspeaker\Utils::array2str($info));
 
-		$info["versions"][] = ["id" => $id];
+		$info["versions"][] = ["id" => $id, "name" => "", "description" => ""];
 		$this->logger->debug("New versions: ".\Kloudspeaker\Utils::array2str($info));
 		$this->storeVersionInfo($info);
 	}
 
 	public function getVersionInfo() {
-		return json_decode($this->readFile('/setup/db/versions.json'), TRUE);
+		return json_decode($this->readFile('/setup/db/migrations.json'), TRUE);
 	}
 
 	public function storeVersionInfo($info) {
-		return $this->writeFile('/setup/db/versions.json', json_encode($info));
+		return $this->writeFile('/setup/db/migrations.json', json_encode($info));
 	}
 
 	private function readFile($path) {
