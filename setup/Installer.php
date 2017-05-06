@@ -20,6 +20,7 @@ class Installer {
 
 		$result = [
 			"system" => [
+				"site" => FALSE,
 				"configuration" => FALSE,
 				"database_configuration" => FALSE,
 				"database_connection" => FALSE,
@@ -31,8 +32,15 @@ class Installer {
 		];
 
 		$this->logger->info("Checking configuration...");
+		if (!$this->container->configuration->getSystemInfo()["site_folder_exists"]) {
+			$this->logger->error("Kloudspeaker site folder does not exist");
+			$result["available"][] = ["id" => "system:config"];
+			return $result;
+		}
+		$result["system"]["site"] = TRUE;
 		if (!$this->container->configuration->getSystemInfo()["config_exists"]) {
 			$this->logger->error("Kloudspeaker not configured");
+			$result["available"][] = ["id" => "system:config"];
 			return $result;
 		}
 		$result["system"]["configuration"] = TRUE;
@@ -142,8 +150,9 @@ class Installer {
 		return $result;
 	}
 
-	public function performInstallation() {
+	public function performInstallation($cmds, $opts) {		
 		$check = $this->checkInstallation();
+		$this->logger->info("Perform install: cmd=".\Kloudspeaker\Utils::array2str($cmds).", opts=".\Kloudspeaker\Utils::array2str($opts).",actions=".\Kloudspeaker\Utils::array2str($check["available"]));
 
 		if (count($check["available"]) == 0) {
 			return [
@@ -152,7 +161,16 @@ class Installer {
 				"success" => FALSE
 			];
 		}
+
 		$this->logger->info("Performing installation");
+
+		if ($check["available"][0]["id"] == "system:config") {
+			$values = ["db.dsn" => "foo"];//TODO get from opts
+
+			$result["system:config"] = $this->createConfiguration($values);
+			$result["success"] = TRUE;
+			return $result;
+		}
 
 		$this->container->db->startTransaction();
 		$result = [];
@@ -162,6 +180,8 @@ class Installer {
 				if ($action["id"] == "system:install") $actionResult = $this->installSystem();
 				else if ($action["id"] == "system:migrate") $actionResult = $this->migrateSystem();
 				else throw new \Kloudspeaker\KloudspeakerException("Invalid install action: ".$action["id"]);
+
+				$result[$action["id"]] = $actionResult;
 			}
 			$this->container->db->commit();
 		} catch (Exception $e) {
@@ -169,6 +189,25 @@ class Installer {
 		}
 		$result["success"] = TRUE;
 		return $result;
+	}
+
+	private function createConfiguration($values) {
+		$siteFolder = $this->container->configuration->getSiteFolderLocation();
+
+		if (!$this->container->configuration->getSystemInfo()["site_folder_exists"]) {
+			$this->logger->info("Site folder does not exist, creating: $siteFolder");
+
+			if (!is_writable($this->container->configuration->getInstallationRoot()))
+				throw new \Kloudspeaker\KloudspeakerException("Cannot create site folder, installation folder not writable");
+			mkdir($siteFolder);
+		}
+		$configFile = $this->container->configuration->getConfigurationFileLocation();
+		if (!$this->container->configuration->getSystemInfo()["config_exists"]) {
+			if (!touch($configFile))
+				throw new \Kloudspeaker\KloudspeakerException("Cannot create configuration file: $configFile");
+		}
+		$this->container->configuration->setValues($values);
+		$this->container->configuration->store();
 	}
 
 	private function installSystem() {

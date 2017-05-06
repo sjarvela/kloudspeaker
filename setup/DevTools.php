@@ -3,9 +3,8 @@
 namespace Kloudspeaker\Setup;
 
 class DevTools {
-	public function __construct($c, $installer) {
+	public function __construct($c) {
 		$this->container = $c;
-		$this->installer = $installer;
 		$this->logger = $c->logger;
 	}
 

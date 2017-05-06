@@ -2,8 +2,7 @@
 <?php
 namespace Kloudspeaker;
 
-require 'api/vendor/auto/autoload.php';
-require 'api/Kloudspeaker/Utils.php';
+require 'api/autoload.php';
 
 $logger = new \Monolog\Logger('kloudspeaker-cli');
 $logger->pushHandler(new \Monolog\Handler\StreamHandler('php://stdout', \Monolog\Logger::INFO));
@@ -54,13 +53,12 @@ set_error_handler(array($errorHandler, 'php'));
 set_exception_handler(array($errorHandler, 'exception'));
 register_shutdown_function(array($errorHandler, 'fatal'));
 
-require 'api/system.php';
 $systemInfo = getKloudspeakerSystemInfo();
 
 $logLevel = (isset($systemInfo["config"]["debug"]) and $systemInfo["config"]["debug"]) ? \Monolog\Logger::DEBUG : \Monolog\Logger::INFO;
 $logger = new \Monolog\Logger('kloudspeaker-cli');
 $logger->pushHandler(new \Monolog\Handler\StreamHandler('php://stdout', $logLevel));
-$logger->pushHandler(new \Monolog\Handler\StreamHandler("cli.log", $logLevel));
+$logger->pushHandler(new \Monolog\Handler\StreamHandler($systemInfo["root"]."/logs/cli.log", $logLevel));
 
 if ($systemInfo["error"] != NULL) {
 	ln("Kloudspeaker CLI");
@@ -73,10 +71,6 @@ if ($systemInfo["error"] != NULL) {
 	exit();
 }
 ln("Kloudspeaker CLI", ["version" => $systemInfo["version"], "revision" => $systemInfo["revision"]]);
-
-set_include_path($systemInfo["root"].DIRECTORY_SEPARATOR.'api' . PATH_SEPARATOR . get_include_path());
-
-require 'autoload.php';
 
 $config = new Configuration($systemInfo);
 

@@ -22,6 +22,14 @@ class Configuration {
         return $this->systemInfo["root"];
     }
 
+    public function getSiteFolderLocation() {
+        return $this->getInstallationRoot().DIRECTORY_SEPARATOR."site".DIRECTORY_SEPARATOR;
+    }
+
+    public function getConfigurationFileLocation() {
+        return $this->getSiteFolderLocation().DIRECTORY_SEPARATOR."configuration.php";
+    }
+
     public function getServerProperties() {
         return $this->serverProps;
     }
@@ -76,11 +84,57 @@ class Configuration {
         return $this->values[$name];
     }
 
+    private function setChildValue(&$list, $path, $value) {
+        if (count($path) == 1)
+            $list[$path[0]] = $value;
+        else {
+            $p = array_slice($path, 1);
+            $n = $path[0];
+            if (!isset($list[$n]))
+                $list[$n] = [];
+            $this->setChildValue($list[$n], $p, $value);
+        }
+    }
+
+    public function set($name, $value) {
+        echo \Kloudspeaker\Utils::array2str($this->values);
+        /*if (strpos($name, ".") !== FALSE) {
+            $parts = ;
+            $n = $parts[count($parts)-1];
+
+            $current = $this->values;
+            foreach (array_slice($parts, 0, -1) as $p) {
+                echo $p;
+                if (!isset($current[$p]))
+                    $current[$p] = [];
+                $current = $current[$p];
+            }
+            $current[$n] = $value;
+        } else {
+            $this->values[$name] = $value;
+        }*/
+        $this->setChildValue($this->values, explode(".", $name), $value);
+        echo \Kloudspeaker\Utils::array2str($this->values);
+    }
+
     public function is($name, $defaultValue = FALSE) {
         return isset($this->values[$name]) ? $this->values[$name] : $defaultValue;
     }
 
     public function has($name) {
         return array_key_exists($name, $this->values);
+    }
+
+    public function setValues($values) {
+        foreach ($values as $k => $v) {
+            $this->set($k, $v);
+        }
+    }
+
+    public function store() {
+        $file = $this->getConfigurationFileLocation();
+
+        if (!is_writable($file)) throw new \Kloudspeaker\KloudspeakerException("Configuration file not writable $file");
+        file_put_contents($file, "<?php\n\$CONFIGURATION = ".var_export($this->values, TRUE).";");
     }
 }

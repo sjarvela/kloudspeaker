@@ -100,7 +100,7 @@ class Api extends \Slim\App {
 
             $logger = new \Monolog\Logger('kloudspeaker');
             $logLevel = $config->isDebug() ? \Monolog\Logger::DEBUG : \Monolog\Logger::INFO;
-            $logger->pushHandler(new \Monolog\Handler\StreamHandler("../api.log", $logLevel));
+            $logger->pushHandler(new \Monolog\Handler\StreamHandler($c->configuration->getInstallationRoot()."/logs/api.log", $logLevel));
             return $logger;
         };
 
