@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Configure{% endblock %}
+
+{% block content %}
+	<h1>Installation configuration</h1>
+
+	{% if not systemInfo.config_writable %}
+		Installation folder is not writable, and Kloudspeaker cannot create configuration for you.
+
+		Either change permissions, or create configuration manually:
+		1) Create site folder installation root: '{{systemInfo.root}}'
+		2) Create configuration.php in this folder, with following content:
+
+		TODO
+	{% else %}
+		{% if error %}
+			ERROR:
+			{{ error[0] }} {{ error[1] }}
+		{% endif %}
+
+		Enter setup information below:
+
+		<form method="post">
+			<div class="form-group">
+				<label for="db-dsn">Database DSN</label>
+				<input id="db-dsn" type="text" name="dsn" value="{{values.dsn}}"></input>
+			</div>
+			<div class="form-group">
+				<label for="db-username">Database username</label>
+				<input id="db-username" type="text" name="username" value="{{values.username}}"></input>
+			</div>
+			<div class="form-group">
+				<label for="db-password">Database password</label>
+				<input id="db-password" type="text" name="password" value="{{values.password}}"></input>
+			</div>
+
+			<input class="btn" name="action" value="Save" type="submit" class="btn btn-primary"></input>
+		</form>
+	{% endif %}
+{% endblock %}

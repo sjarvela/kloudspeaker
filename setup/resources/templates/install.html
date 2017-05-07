@@ -4,6 +4,9 @@
 
 {% block content %}
 	<h1>Installation</h1>
+	{% if error %}
+		ERROR {{ error }}
+	{% endif %}
 
 	{% if result.system.configuration %}
 		Version: {{ system.version }}/{{ system.revision }}<br/>
@@ -41,6 +44,10 @@
 			{% endif %}
 		{% endif %}
 	{% else %}
-		{{ include('install/instructions_configuration.html') }}
+		{% if result.system.config_writable %}
+			{{ include('install/config.html') }}
+		{% else %}
+			{{ include('install/instructions_configuration.html') }}
+		{% endif %}
 	{% endif %}
 {% endblock %}

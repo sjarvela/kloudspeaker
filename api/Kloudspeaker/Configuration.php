@@ -62,9 +62,8 @@ class Configuration {
 
     public function get($name, $defaultValue = "__undefined__") {
         if (strpos($name, ".") !== FALSE) {
-            $parts = explode(".", $name);
             $current = $this->values;
-            foreach ($parts as $p) {
+            foreach (explode(".", $name) as $p) {
                 if (!isset($current[$p]))
                     if ($defaultValue === "__undefined__")
                         throw new KloudspeakerException("Missing config value: ".$name, Errors::InvalidConfiguration);
@@ -97,32 +96,32 @@ class Configuration {
     }
 
     public function set($name, $value) {
-        echo \Kloudspeaker\Utils::array2str($this->values);
-        /*if (strpos($name, ".") !== FALSE) {
-            $parts = ;
-            $n = $parts[count($parts)-1];
-
-            $current = $this->values;
-            foreach (array_slice($parts, 0, -1) as $p) {
-                echo $p;
-                if (!isset($current[$p]))
-                    $current[$p] = [];
-                $current = $current[$p];
-            }
-            $current[$n] = $value;
-        } else {
-            $this->values[$name] = $value;
-        }*/
         $this->setChildValue($this->values, explode(".", $name), $value);
-        echo \Kloudspeaker\Utils::array2str($this->values);
     }
 
     public function is($name, $defaultValue = FALSE) {
-        return isset($this->values[$name]) ? $this->values[$name] : $defaultValue;
+        $v = $this->get($name, $defaultValue);
+        if ($v === FALSE) return FALSE;
+        if ($v == NULL or $v === 0 or $v === '0' or $v === '') return FALSE;
+        //TODO non-boolean values that equal to false
+        return TRUE;
     }
 
-    public function has($name) {
-        return array_key_exists($name, $this->values);
+    public function has($name, $requireNonEmptyOrNull = FALSE) {
+        if (strpos($name, ".") !== FALSE) {
+            $current = $this->values;
+            foreach (explode(".", $name) as $p) {
+                if (!isset($current[$p]))
+                    return FALSE;
+                $current = $current[$p];
+            }
+            if (!$requireNonEmptyOrNull) return TRUE;
+            return ($current != NULL and $current !== "");
+        }
+        if (!array_key_exists($name, $this->values)) return FALSE;
+        if (!$requireNonEmptyOrNull) return TRUE;
+        $v = $this->values[$name];
+        return ($v != NULL and $v !== "");
     }
 
     public function setValues($values) {

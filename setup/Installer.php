@@ -34,13 +34,11 @@ class Installer {
 		$this->logger->info("Checking configuration...");
 		if (!$this->container->configuration->getSystemInfo()["site_folder_exists"]) {
 			$this->logger->error("Kloudspeaker site folder does not exist");
-			$result["available"][] = ["id" => "system:config"];
 			return $result;
 		}
 		$result["system"]["site"] = TRUE;
 		if (!$this->container->configuration->getSystemInfo()["config_exists"]) {
-			$this->logger->error("Kloudspeaker not configured");
-			$result["available"][] = ["id" => "system:config"];
+			$this->logger->error("Kloudspeaker configuration does not exist");
 			return $result;
 		}
 		$result["system"]["configuration"] = TRUE;
@@ -191,7 +189,7 @@ class Installer {
 		return $result;
 	}
 
-	private function createConfiguration($values) {
+	public function createConfiguration($values) {
 		$siteFolder = $this->container->configuration->getSiteFolderLocation();
 
 		if (!$this->container->configuration->getSystemInfo()["site_folder_exists"]) {
@@ -255,11 +253,12 @@ class Installer {
 
 	public function isDatabaseConfigured() {
 		$c = $this->container->configuration;
-		if (!$c->has("db")) return FALSE;
-		$dbc = $c->get("db");
-		if (!array_key_exists("dsn", $dbc)) return FALSE;
-		if (!array_key_exists("user", $dbc)) return FALSE;
-		if (!array_key_exists("password", $dbc)) return FALSE;
+
+		$this->logger->debug("is configured".$c->has("db.dsn")."/".$c->has("db.user")."/".$c->has("db.password"));
+		
+		if (!$c->has("db.dsn")) return FALSE;
+		if (!$c->has("db.user")) return FALSE;
+		if (!$c->has("db.password")) return FALSE;
 		return TRUE;
 	}
 }

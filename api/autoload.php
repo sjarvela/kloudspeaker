@@ -1,8 +1,14 @@
 <?php
 $KLOUDSPEAKER_ROOT = realpath(dirname(__FILE__)."/../");
+$KLOUDSPEAKER_SITE_FOLDER = $KLOUDSPEAKER_ROOT.DIRECTORY_SEPARATOR."site".DIRECTORY_SEPARATOR;
+$KLOUDSPEAKER_CONFIG_FILE = $KLOUDSPEAKER_SITE_FOLDER."configuration.php";
 $KLOUDSPEAKER_SYSTEM_INFO = [
 	"root" => $KLOUDSPEAKER_ROOT,
+	"site_folder" => $KLOUDSPEAKER_SITE_FOLDER,
+	"config_file" => $KLOUDSPEAKER_CONFIG_FILE,
 	"site_folder_exists" => FALSE,
+	"config_exists" => FALSE,
+	"config_writable" => FALSE,
 	"error" => NULL
 ];
 $KLOUDSPEAKER_SYSTEM_ERROR = NULL;
@@ -13,16 +19,23 @@ require 'vendor/auto/autoload.php';
 
 require_once 'Kloudspeaker/Utils.php';
 
-if (file_exists($KLOUDSPEAKER_ROOT."/site/"))
+if (file_exists($KLOUDSPEAKER_SYSTEM_INFO["site_folder"])) {
 	$KLOUDSPEAKER_SYSTEM_INFO["site_folder_exists"] = TRUE;
 
-try {
-	if (file_exists($KLOUDSPEAKER_ROOT."/site/configuration.php"))
-		include $KLOUDSPEAKER_ROOT."/configuration.php";
-} catch (Exception $e) {
-	$KLOUDSPEAKER_SYSTEM_ERROR = ["Error in configuration.php", $e];
-} catch (Throwable $e) {
-	$KLOUDSPEAKER_SYSTEM_ERROR = ["Error in configuration.php", $e];
+	try {
+		if (file_exists($KLOUDSPEAKER_CONFIG_FILE)) {
+			$KLOUDSPEAKER_SYSTEM_INFO["config_writable"] = is_writable($KLOUDSPEAKER_CONFIG_FILE);
+			include $KLOUDSPEAKER_CONFIG_FILE;
+		} else {
+			$KLOUDSPEAKER_SYSTEM_INFO["config_writable"] = is_writable($KLOUDSPEAKER_SITE_FOLDER);
+		}
+	} catch (Exception $e) {
+		$KLOUDSPEAKER_SYSTEM_ERROR = ["Error in configuration.php", $e];
+	} catch (Throwable $e) {
+		$KLOUDSPEAKER_SYSTEM_ERROR = ["Error in configuration.php", $e];
+	}
+} else {
+	$KLOUDSPEAKER_SYSTEM_INFO["config_writable"] = is_writable($KLOUDSPEAKER_ROOT);
 }
 
 include "version.info.php";
