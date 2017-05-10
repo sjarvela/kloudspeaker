@@ -85,7 +85,7 @@ autoload_kloudspeaker_setup($container);
 
 $opts = getOpts($argv);
 if (count($opts["commands"]) === 0) {
-	ln("No options specified");
+	ln("No command specified");
 	exit(0);
 }
 
@@ -99,20 +99,50 @@ if ("list" == $command) {
 	exit(0);
 }
 
+ln("Command [$command]");
+if (!$systemInfo["config_exists"] and ($command != "system:config" and !\Kloudspeaker\Utils::strStartsWith($command, "installer:"))) {
+    ln("System not configured, create configuration first with installer or command 'system:config'");
+    exit(0);
+}
+if ($command == "system:config" and !$systemInfo["config_exists"]) {
+	ln("System configuration");
+
+	$config = isset($options["config"]) ? $options["config"] : [];
+	ln($config);
+
+	if (!isset($config['db.dsn']) or \Kloudspeaker\Utils::isEmpty($config['db.dsn'])) {
+		echo 'Enter database DSN:';
+		$config['db.dsn'] = fgets(STDIN);		
+	}
+	if (!isset($config['db.user']) or \Kloudspeaker\Utils::isEmpty($config['db.user'])) {
+		echo 'Enter database user:';
+		$config['db.user'] = fgets(STDIN);
+	}
+	if (!isset($config['db.password']) or \Kloudspeaker\Utils::isEmpty($config['db.password'])) {
+		echo 'Enter database password:';
+		$config['db.password'] = fgets(STDIN);
+	}
+
+	ln($config);
+	$options["config"] = $config;
+}
+
 if (!$container->commands->exists($command)) {
 	ln("Command not found [$command]");
 	exit(0);
 }
 
-ln("Command [$command]");
 $result = $container->commands->execute($command, array_slice($opts["commands"], 1), $options);
 
 ln("Result:", $result);
 echo is_array($result) ? \Kloudspeaker\Utils::array2str($result) : $result;
+echo "\n";
 
 // TOOLS
 
 function getOpts($args) {
+	ln("args", $args);
+
 	array_shift($args);
 	$endofoptions = false;
 
@@ -124,6 +154,8 @@ function getOpts($args) {
 	);
 
 	while ($arg = array_shift($args)) {
+		echo "ARG=".$arg."\n";
+
 		// if we have reached end of options,
 		//we cast all remaining argvs as arguments
 		if ($endofoptions) {
@@ -135,6 +167,7 @@ function getOpts($args) {
 		if (substr($arg, 0, 2) === '--') {
 			// is it the end of options flag?
 			if (!isset($arg[3])) {
+				echo "end of options\n";
 				$endofoptions = true; // end of options;
 				continue;
 			}
@@ -142,13 +175,21 @@ function getOpts($args) {
 			$value = "";
 			$com = substr($arg, 2);
 
-			// is it the syntax '--option=argument'?
-			if (strpos($com, '=')) {
+			
+			if (strpos($com, '=') !== FALSE) {
+				// is it the syntax '--option:argument'?
+				list($com, $value) = explode(":", $com, 2);
+				if (strpos($value, '=') !== FALSE) {
+					list($key, $val) = explode("=", $value, 2);
+					if (!isset($ret['options'][$com])) $ret['options'][$com] = [];
+					$ret['options'][$com][$key] = $val;
+					continue;
+				}
+			} else if (strpos($com, '=') !== FALSE) {
+				// is it the syntax '--option=argument'?
 				list($com, $value) = explode("=", $com, 2);
-			}
-
-			// is the option not followed by another option but by arguments
-			elseif (strpos($args[0], '-') !== 0) {
+			} elseif (strpos($args[0], '-') !== 0) {
+				// is the option not followed by another option but by arguments
 				while (strpos($args[0], '-') !== 0) {
 					$value .= array_shift($args) . ' ';
 				}
@@ -178,7 +219,7 @@ function getOpts($args) {
 		$ret['arguments'] = array_merge($ret['commands'], $ret['arguments']);
 		$ret['commands'] = array();
 	}*/
-	\Logging::debug("=>" . Utils::array2str($ret));
+	
 	return $ret;
 }
 

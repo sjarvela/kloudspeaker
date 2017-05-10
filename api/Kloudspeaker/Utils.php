@@ -35,6 +35,13 @@ class Utils {
 		return $r;
 	}
 
+	public static function isEmpty($o, $strTrim = TRUE) {
+		if ($o == NULL) return TRUE;
+		if (is_array($o)) return count($o) == 0;
+		if (is_string($o)) return strlen($strTrim ? trim($o) : $o) == 0;
+		return FALSE;
+	}
+
 	public static function escapePathRegex($p, $double = TRUE) {
 		$rp = $p;		
 		$rp = str_replace("'", "\'", str_replace("*", "\*", str_replace("+", "\+", $rp)));

@@ -144,7 +144,7 @@ $webApp->post('/config', function ($request, $response, $args) use ($systemInfo,
     $values = $request->getParsedBody();
     $error = FALSE;
 
-    if (!isset($values["dsn"]) or strlen($values["dsn"]) == 0 or !isset($values["username"]) or strlen($values["username"]) == 0 or !isset($values["password"]) or strlen($values["password"]) == 0)
+    if (!isset($values["dsn"]) or strlen($values["dsn"]) == 0 or !isset($values["user"]) or strlen($values["user"]) == 0 or !isset($values["password"]) or strlen($values["password"]) == 0)
         $error = ["missing_config", ""];
     else {
         $conn = $container->dbfactory->checkConnection($values);
@@ -152,7 +152,8 @@ $webApp->post('/config', function ($request, $response, $args) use ($systemInfo,
             $container->logger->error("Cannot connect to database: ".$conn["reason"]);
             $error = ["invalid_db_config", $conn["reason"]];
         } else {
-            $container->installer->createConfiguration(["db.dsn" => $values["dsn"], "db.username" => $values["username"], "db.password" => $values["password"]]);
+            $result = $container->commands->execute("system:config", [], ["config" => $values]);
+            if (!$result["success"]) $error = [$result["error"], $result["details"]];
         }
     }
 

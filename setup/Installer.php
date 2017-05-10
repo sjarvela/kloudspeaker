@@ -13,6 +13,7 @@ class Installer {
 	public function initialize() {
 		$this->container->commands->register('installer:check', [$this, 'checkInstallation']);
 		$this->container->commands->register('installer:perform', [$this, 'performInstallation']);
+		$this->container->commands->register('system:config', [$this, 'systemConfig']);
 	}
 
 	public function checkInstallation() {
@@ -148,6 +149,23 @@ class Installer {
 		return $result;
 	}
 
+	public function systemConfig($cmds, $opts) {
+		$this->logger->info("System config: cmd=".\Kloudspeaker\Utils::array2str($cmds).", opts=".\Kloudspeaker\Utils::array2str($opts));
+
+		$values = isset($opts["config"]) ? $opts["config"] : [];
+		if (!isset($values["db.dsn"])) throw new \Kloudspeaker\KloudspeakerException("Missing required config value: db.dsn");
+		if (!isset($values["db.user"])) throw new \Kloudspeaker\KloudspeakerException("Missing required config value: db.user");
+		if (!isset($values["db.password"])) throw new \Kloudspeaker\KloudspeakerException("Missing required config value: db.password");
+
+        $conn = $this->container->dbfactory->checkConnection(["dsn" => $values["db.dsn"], "user" => $values["db.user"], "password" => $values["db.password"]]);
+        if (!$conn["connection"]) {
+            $this->container->logger->error("Cannot connect to database: ".$conn["reason"]);
+            return [ "success" => FALSE, "error" => "invalid_db_config", "details" => $conn["reason"]];
+        }
+        $this->createConfiguration($values);
+        return [ "success" => TRUE ];
+	}
+
 	public function performInstallation($cmds, $opts) {		
 		$check = $this->checkInstallation();
 		$this->logger->info("Perform install: cmd=".\Kloudspeaker\Utils::array2str($cmds).", opts=".\Kloudspeaker\Utils::array2str($opts).",actions=".\Kloudspeaker\Utils::array2str($check["available"]));
@@ -163,11 +181,7 @@ class Installer {
 		$this->logger->info("Performing installation");
 
 		if ($check["available"][0]["id"] == "system:config") {
-			$values = ["db.dsn" => "foo"];//TODO get from opts
-
-			$result["system:config"] = $this->createConfiguration($values);
-			$result["success"] = TRUE;
-			return $result;
+			return $this->systemConfig([], $opts);
 		}
 
 		$this->container->db->startTransaction();
