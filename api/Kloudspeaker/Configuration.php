@@ -18,6 +18,10 @@ class Configuration {
         return $this->systemInfo;
     }
 
+    public function isSystemConfigured() {
+        return $this->systemInfo["config_exists"];
+    }
+
     public function getInstallationRoot() {
         return $this->systemInfo["root"];
     }

@@ -171,14 +171,16 @@ class Api extends \Slim\App {
             return time();
         };
 
-        $load = $config->get('load_modules', []);
-        foreach ($load as $lm) {
-            $this->loadModule($lm);
+        if ($config->isSystemConfigured()) {
+            $load = $config->get('load_modules', []);
+            foreach ($load as $lm) {
+                $this->loadModule($lm);
+            }
+
+            $container->plugins->initialize();
+
+            $legacy->initialize($this);
         }
-
-        $container->plugins->initialize();
-
-        $legacy->initialize($this);
     }
 
      public function initializeDefaultRoutes() {

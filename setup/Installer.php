@@ -83,13 +83,13 @@ class Installer {
 					}
 
 					$this->logger->info("Old version detected: $migrateFromVersion");
-					if ($migrateFromVersion != "2_7_28") {
-						$this->logger->error("Cannot migrate from this version, update to last 2.x version");
+					if (!\Kloudspeaker\Utils::strStartsWith($migrateFromVersion, "2_7_")) {
+						$this->logger->error("Cannot migrate from this version, update to last 2.7.x version");
 						return $result;
 					}
 					$result["available"][] = ["id" => "system:migrate", "from" => $migrateFromVersion, "to" => $latestVersion];
 
-					//TODO check plugins
+					$result["available"] = array_merge($result["available"], $this->checkPluginMigrations());
 					return $result;
 				}
 
@@ -125,7 +125,7 @@ class Installer {
 
 	public function getVersionInfo() {
 		if ($this->versions == NULL)
-			$this->versions = json_decode($this->readFile('/setup/db/versions.json'), TRUE);
+			$this->versions = json_decode($this->readFile('/setup/db/migrations.json'), TRUE);
 		return $this->versions;
 	}
 
@@ -133,6 +133,21 @@ class Installer {
 		$ver = $this->getVersionInfo();	//make sure versions are read
 		if (count($ver["versions"]) == 0) throw new \Kloudspeaker\KloudspeakerException("No version info found");
 		return $ver["versions"][count($ver["versions"])-1];
+	}
+
+	private function checkPluginMigrations() {
+		$result = [];
+		foreach ($this->container->plugins->get() as $p) {
+			echo $p;
+			/*if ($p->version() == NULL) {
+				continue;
+			}
+			$ps = $settings[$id];
+			$custom = (isset($ps["custom"]) and $ps["custom"] == TRUE);
+
+			$util->execPluginCreateTables($id, ($custom ? $customPath : NULL));*/
+		}
+		return $result;
 	}
 
 	private function getAllInstallablePlugins() {
@@ -241,6 +256,7 @@ class Installer {
 	}
 
 	private function migrateSystem() {
+		return;
 		$db = $this->container->db;
 
 		$fromVersion = $db->select('parameter', ['name', 'value'])->where('name', 'version')->done()->execute()->firstValue('value');
@@ -251,12 +267,16 @@ class Installer {
 		}
 
 		$this->logger->info("Migrating from version: $fromVersion");
-		if ($fromVersion != "2_7_28") {
-			$this->logger->info("Cannot migrate from this version, update to last 2.x version");
+		if (!\Kloudspeaker\Utils::strStartsWith($fromVersion, "2_7_")) {
+			$this->logger->info("Cannot migrate from this version, update to last 2.7.x version");
 			return FALSE;
 		}
 
-		//TODO run migration job
+		$db->script($this->readFile('/setup/db/migrate_from_2.sql'));
+
+		// add version info
+		$latestVersion = $this->getLatestVersion();
+		$db->insert('parameter', ['name' => 'database', 'value' => $latestVersion["id"]])->execute();
 
 		return TRUE;
 	}

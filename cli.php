@@ -154,8 +154,6 @@ function getOpts($args) {
 	);
 
 	while ($arg = array_shift($args)) {
-		echo "ARG=".$arg."\n";
-
 		// if we have reached end of options,
 		//we cast all remaining argvs as arguments
 		if ($endofoptions) {

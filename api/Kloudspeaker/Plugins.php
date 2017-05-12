@@ -10,6 +10,7 @@ class Plugins {
     }
 
     public function initialize() {
+    	echo "pl";
     	foreach ($this->container->configuration->get('plugins', []) as $pl => $conf) {
     		$this->container->logger->debug("Initializing plugin $pl", $conf);
 
