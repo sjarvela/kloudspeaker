@@ -89,7 +89,7 @@ class LegacyEnvironment {
 		$this->eventHandler = new EventHandler($this);
 		$this->filesystem = new FilesystemController($this);
 		$this->permissions = new Kloudspeaker_PermissionsController($this);
-		$this->plugins = new PluginController($this);
+		//$this->plugins = new PluginController($this);
 		$this->resources = new ResourceLoader($this);
 		$this->commands = $this->container->commands;
 
@@ -583,8 +583,14 @@ class LegacyPlugins {
 		$this->container = $container;
 	}
 
+	public function load($name, $config) {
+
+	}
+
+	public function initialize() {}
+
 	public function setup() {
-		if (!$this->container->configuration->has("plugins")) {
+		/*if (!$this->container->configuration->has("plugins")) {
 			return;
 		}
 
@@ -599,7 +605,7 @@ class LegacyPlugins {
 
 		foreach ($this->plugins as $id => $p) {
 			$p->setup();
-		}
+		}*/
 	}
 }
 

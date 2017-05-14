@@ -25,26 +25,25 @@ class ErrorHandler {
 	}
 
 	public function exception($exception) {
-	    if (is_a($exception, "Kloudspeaker\KloudspeakerException")) {
-	    	ln("Kloudspeaker exception");
-	        ln(["code" => $exception->getErrorCode(), "msg" => $exception->getMessage(), "result" => $exception->getResult(), "trace" => $exception->getTraceAsString()]);
+		if (is_a($exception, "Kloudspeaker\Command\CommandException")) {
+	        ln("Command failed: " . $exception->getMessage());
+	    } else if (is_a($exception, "Kloudspeaker\KloudspeakerException")) {
+	        ln("Command failed", ["code" => $exception->getErrorCode(), "msg" => $exception->getMessage(), "result" => $exception->getResult(), "trace" => $exception->getTraceAsString()]);
 	    } else if (is_a($exception, "ServiceException")) {
 	        //legacy
-	        ln("Kloudspeaker exception");
-	        ln(["code" => $exception->getErrorCode(), "msg" => $exception->type() . "/" . $exception->getMessage(), "result" => $exception->getResult(), "trace" => $exception->getTraceAsString()]);
+	        ln("Command failed", ["code" => $exception->getErrorCode(), "msg" => $exception->type() . "/" . $exception->getMessage(), "result" => $exception->getResult(), "trace" => $exception->getTraceAsString()]);
 	    } else {
-	    	ln("Unknown exception: ".$exception->getMessage());
-	    	var_dump($exception);
-	        ln(["msg" => $exception->getMessage(), "trace" => $exception->getTraceAsString()]);
+	    	ln("Command failed, unknown exception", ["msg" => $exception->getMessage(), "trace" => $exception->getTraceAsString()]);
+	    	//var_dump($exception);
 	    }
-		die();
+		exit(-1);
 	}
 
 	public function fatal() {
 		$error = error_get_last();
 		//var_dump($error);
 		if ($error !== NULL) ln("FATAL ERROR", var_export($error));
-		exit();
+		exit(-1);
 	}
 }
 
@@ -68,7 +67,7 @@ if ($systemInfo["error"] != NULL) {
 		$logger->error(Utils::array2str(["msg" => $systemInfo["error"][0] . ": " . $e->getMessage(), "trace" => $e->getTraceAsString()]));
 	} else
 		$logger->error($systemInfo["error"][0]);
-	exit();
+	exit(-1);
 }
 ln("Kloudspeaker CLI", ["version" => $systemInfo["version"], "revision" => $systemInfo["revision"]]);
 
@@ -101,10 +100,10 @@ if ("list" == $command) {
 
 ln("Command [$command]");
 if (!$systemInfo["config_exists"] and ($command != "system:config" and !\Kloudspeaker\Utils::strStartsWith($command, "installer:"))) {
-    ln("System not configured, create configuration first with installer or command 'system:config'");
+    ln("System not configured, create configuration first with 'install:perform' or command 'system:config'");
     exit(0);
 }
-if ($command == "system:config" and !$systemInfo["config_exists"]) {
+if ($command == "system:config" or ($command == "installer:perform" and !$systemInfo["config_exists"])) {
 	ln("System configuration");
 
 	$config = isset($options["config"]) ? $options["config"] : [];
@@ -174,7 +173,7 @@ function getOpts($args) {
 			$com = substr($arg, 2);
 
 			
-			if (strpos($com, '=') !== FALSE) {
+			if (strpos($com, ':') !== FALSE) {
 				// is it the syntax '--option:argument'?
 				list($com, $value) = explode(":", $com, 2);
 				if (strpos($value, '=') !== FALSE) {

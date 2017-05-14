@@ -9,4 +9,12 @@ class CommentPlugin {
 	public function initialize($setup) {
 
 	}
+
+	public function getPluginInfo() {
+		return [
+			"id" => "comment",
+			"client_module" => TRUE,
+			"db" => TRUE
+		];
+	}
  }

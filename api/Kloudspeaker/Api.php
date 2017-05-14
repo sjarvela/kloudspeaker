@@ -171,6 +171,8 @@ class Api extends \Slim\App {
             return time();
         };
 
+        $container['legacy'] = $legacy;
+
         if ($config->isSystemConfigured()) {
             $load = $config->get('load_modules', []);
             foreach ($load as $lm) {
@@ -187,40 +189,84 @@ class Api extends \Slim\App {
         $this->loadModule("Routes/Session:\Kloudspeaker\Route\Session");
      }
 
-     public function loadModule($m, $o = NULL) {
+     public function loadModule($m, $o = NULL, $setup = TRUE) {
+        // "name" -> requires "name.php" and creates class "name"
+        // name[cls] -> requires "name.php" and creates class "cls"
+        $type = NULL;
         $file = NULL;
-        $cls = $m;
+        $cls = NULL;
         if (strpos($m, ":") !== FALSE) {
-            $parts = explode(":", $m);
-            $file = $parts[0];
-            $cls = $parts[1];
-        } else if (strpos($m, "/") !== FALSE) {
+            list($type, $file) = explode(":", $m, 2);
+        } else {
             $file = $m;
-            $cls = str_replace("/", "\\", $m);
-            if (!Utils::strStartsWith($cls, "\\"))
-                $cls = "\\".$cls;
         }
 
-        if ($file != NULL and !Utils::strEndsWith($file, ".php"))
-            $file .= ".php";
+        if (Utils::strEndsWith($file, "]")) {
+            $s = strpos($file, "[");
+            $file = substr($file, 0, $s);
+            $cls = substr($file, $s, -1);
+        } /*else if (strpos($file, "/") !== FALSE) {
+            $cls = str_replace("/", "\\", $file);
+            if (!Utils::strStartsWith($cls, "\\"))
+                $cls = "\\".$cls;
+        }*/
 
+        if ($type == "plugin") {
+            // Plugin type module behaviour:
+            //
+            // If not defined, plugin class file assumed to be "name.plugin.php"
+            // If not defined, plugin class name assumed to be "NamePlugin"
+
+            if ($file != NULL) {
+                if (!Utils::strEndsWith($file, ".php")) {
+                    $name = $file;
+                    if (strpos($file, "/") !== FALSE) {
+                        $parts = explode("/", $file);
+                        $name = $parts[count($parts)-1];
+                    }
+
+                    if ($cls == NULL)
+                        $cls = str_replace("/", "\\", $file)."\\".$name."Plugin";
+
+                    $file .= "/".$name.".plugin.php";
+                } else {
+                    if ($cls == NULL) {
+                        //TODO extract class name from file (remove .php or .plugin.php and possible folder/package)    
+                    }
+                }
+            }
+        } else {
+            // Default module behaviour
+
+            if ($file != NULL) {
+                if ($cls == NULL)
+                    $cls = str_replace("/", "\\", $file);
+
+                if (!Utils::strEndsWith($file, ".php"))
+                    $file .= ".php";
+            }
+        }
+        //TODO other module type behaviours
+
+        if (!Utils::strStartsWith($cls, "\\"))
+            $cls = "\\".$cls;
         if (Utils::strEndsWith($cls, ".php"))
             $cls = substr($cls, 0, -4);
 
-        $this->getContainer()->logger->debug("Loading module $m -> [$file]:$cls");
+        $this->getContainer()->logger->debug("Loading module $m -> type=$type file=$file class=$cls");
 
         if ($file != NULL and strlen($file) > 0)
             require_once $file;
 
-        if ($o != NULL)
+        if ($o !== NULL)
             $cls = new $cls($this->getContainer(), $o);
         else
             $cls = new $cls($this->getContainer());
 
-        return $this->addModule($cls);
+        return $setup ? $this->setupModule($cls, $type) : $cls;
      }
 
-    public function addModule($m) {
+    public function setupModule($m, $type) {
         $setup = new ModuleSetup($this);
 
         if (is_callable($m)) {

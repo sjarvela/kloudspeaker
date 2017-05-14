@@ -13,7 +13,7 @@ $KLOUDSPEAKER_SYSTEM_INFO = [
 ];
 $KLOUDSPEAKER_SYSTEM_ERROR = NULL;
 
-set_include_path($KLOUDSPEAKER_SYSTEM_INFO["root"].DIRECTORY_SEPARATOR.'api' . PATH_SEPARATOR . get_include_path());
+set_include_path($KLOUDSPEAKER_SYSTEM_INFO["root"].DIRECTORY_SEPARATOR.'api' . PATH_SEPARATOR . $KLOUDSPEAKER_SYSTEM_INFO["root"].DIRECTORY_SEPARATOR.'site' . PATH_SEPARATOR . get_include_path());
 
 require 'vendor/auto/autoload.php';
 

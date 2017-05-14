@@ -18,7 +18,7 @@ class ConfigTools {
 	public function cmdGet($cmds, $opts) {
 		$this->logger->info("Get: cmd=".\Kloudspeaker\Utils::array2str($cmds).", opts=".\Kloudspeaker\Utils::array2str($opts));
 
-		if (count($cmds) == 0) return NULL;
+		if (count($cmds) == 0) throw new \Kloudspeaker\Command\CommandException("No get command defined");
 
 		switch ($cmds[0]) {
 			case 'raw':
@@ -32,21 +32,21 @@ class ConfigTools {
 				if (count($cmds) != 2) return NULL;
 				return $this->container->configuration->get($cmds[1]);
 			default:
-				return NULL;
+				throw new \Kloudspeaker\Command\CommandException("Invalid command: ".$cmds[0]);
 		}
 	}
 
 	public function cmdSet($cmds, $opts) {
 		$this->logger->info("Set: cmd=".\Kloudspeaker\Utils::array2str($cmds).", opts=".\Kloudspeaker\Utils::array2str($opts));
 
-		if (count($cmds) == 0) return NULL;
+		if (count($cmds) == 0) throw new \Kloudspeaker\Command\CommandException("No set command defined");
 
 		switch ($cmds[0]) {
 			case 'value':
 				$values = $this->container->configuration->values();
 				for ($i=1; $i < count($cmds); $i++) { 
 					$p = explode("=", $cmds[$i]);
-					if (count($p) != 2) throw new \Kloudspeaker\KloudspeakerException("Invalid value definition: ".$cmds[$i]);
+					if (count($p) != 2) throw new \Kloudspeaker\Command\CommandException("Invalid value definition: ".$cmds[$i]);
 
 				}
 
@@ -58,11 +58,62 @@ class ConfigTools {
 	public function cmdPlugins($cmds, $opts) {
 		$this->logger->info("Plugins: cmd=".\Kloudspeaker\Utils::array2str($cmds).", opts=".\Kloudspeaker\Utils::array2str($opts));
 
-		if (count($cmds) == 0) return NULL;
+		if (count($cmds) == 0) throw new \Kloudspeaker\Command\CommandException("No plugins command defined");
 
 		switch ($cmds[0]) {
 			case 'list':
 				return array_keys($this->container->configuration->get("plugins"));
+			case 'add':
+				$def = $cmds[1];
+				//if (isset($opts["name"])) {
+					// built-in/existing plugin
+				$this->logger->info("Adding built-in/existing plugin:".$def);
+
+				$root = $this->container->configuration->getInstallationRoot();
+				$sitePath = $this->container->configuration->getSiteFolderLocation().DIRECTORY_SEPARATOR.$def.DIRECTORY_SEPARATOR;
+				$builtInPath = $root.DIRECTORY_SEPARATOR."api".DIRECTORY_SEPARATOR.$def.DIRECTORY_SEPARATOR;
+				$legacyPath = $root.DIRECTORY_SEPARATOR."backend".DIRECTORY_SEPARATOR.'plugin'.DIRECTORY_SEPARATOR.$def.DIRECTORY_SEPARATOR;
+				$this->logger->info("Checking [$builtInPath]");
+
+				if (file_exists($sitePath)) {
+					$module = $def;
+					$this->logger->info("Found site plugin from [$sitePath], loading $module");
+				} else if (file_exists($builtInPath)) {
+					$module = $def;
+					$this->logger->info("Found built-in plugin from [$builtInPath], loading $module");
+				} else if (file_exists($legacyPath)) {
+					$module = "Kloudspeaker/Plugins/".$def;
+					$this->logger->info("Found legacy plugin from [$legacyPath], loading $module");
+				} else {
+					throw new \Kloudspeaker\Command\CommandException("Plugin not found: ".$def);
+				}
+				try {
+					$plugin = $this->container->plugins->load($module, []);
+				} catch (Exception $e) {
+					$this->logger->error("Error loading plugin: ".$e->getMessage());
+				}
+
+				$this->logger->info("Plugin successfully loaded:".\Kloudspeaker\Utils::array2str($plugin));
+
+				if ($this->container->configuration->has("plugins.".$module))
+					throw new \Kloudspeaker\Command\CommandException("Plugin already configured");
+
+				$this->container->configuration->set("plugins.".$module, []);
+				$this->container->configuration->store();
+
+				//check for installation
+				$this->container->installer->installPlugin($plugin["id"]);
+				/*} else if (isset($opts["file"])) {
+					// zip
+				} else if (isset($opts["url"])) {
+					// download
+				} else {
+					throw new \Kloudspeaker\Command\CommandException("No plugin defined");
+				}*/
+				//if (count($cmds) < 2) throw new \Kloudspeaker\KloudspeakerException("Missing plugin id");
+				//$id = $cmds[1];
+				//if ($this->container->plugins->is($id)) throw new \Kloudspeaker\KloudspeakerException("Plugin already registered: ".$id);
+				return ["success" => TRUE];
 			default:
 				return NULL;
 		}
