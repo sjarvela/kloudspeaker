@@ -110,16 +110,13 @@ if ($command == "system:config" or ($command == "installer:perform" and !$system
 	ln($config);
 
 	if (!isset($config['db.dsn']) or \Kloudspeaker\Utils::isEmpty($config['db.dsn'])) {
-		echo 'Enter database DSN:';
-		$config['db.dsn'] = fgets(STDIN);		
+		$config['db.dsn'] = ask('Enter database DSN:');
 	}
 	if (!isset($config['db.user']) or \Kloudspeaker\Utils::isEmpty($config['db.user'])) {
-		echo 'Enter database user:';
-		$config['db.user'] = fgets(STDIN);
+		$config['db.user'] = ask('Enter database user:');
 	}
 	if (!isset($config['db.password']) or \Kloudspeaker\Utils::isEmpty($config['db.password'])) {
-		echo 'Enter database password:';
-		$config['db.password'] = fgets(STDIN);
+		$config['db.password'] = ask('Enter database password:');
 	}
 
 	ln($config);
@@ -138,6 +135,12 @@ echo is_array($result) ? \Kloudspeaker\Utils::array2str($result) : $result;
 echo "\n";
 
 // TOOLS
+
+function ask($title) {
+	echo $title;
+	$response = fgets(STDIN);
+	return rtrim($response, "\n");
+}
 
 function getOpts($args) {
 	ln("args", $args);
