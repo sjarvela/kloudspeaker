@@ -20,7 +20,7 @@ class Plugins {
     public function load($m, $conf) {
         $this->container->logger->debug("Initializing plugin module: $m", $conf);
 
-        if (strpos($m, "/") !== FALSE)
+        if (!isset($conf["legacy"]))
             $plugin = $this->container->api->loadModule("plugin:".$m, $conf);
         else {
             //legacy
@@ -43,7 +43,7 @@ class Plugins {
             throw new \KloudspeakerException("Module does not seem to be plugin: $module");
         $info = $plugin->getPluginInfo();
         if (array_key_exists($info["id"], $this->pluginsById))
-            throw new KloudspeakerException("Duplicate plugin module: ".$info["id"]);
+            throw new \KloudspeakerException("Duplicate plugin module: ".$info["id"]);
 
         $r = new \ReflectionClass($plugin);
         $info["root"] = dirname($r->getFileName());

@@ -129,7 +129,7 @@ class Installer {
 
 	public function getVersionInfo() {
 		if ($this->versions == NULL)
-			$this->versions = json_decode($this->readFile('/setup/db/migrations.json'), TRUE);
+			$this->versions = json_decode($this->readFile('/setup/db/versions.json'), TRUE);
 		return $this->versions;
 	}
 
@@ -137,7 +137,7 @@ class Installer {
 		$plugin = $this->container->plugins->get($id);
 		if (array_key_exists($id, $this->pluginVersions))
 			return $this->pluginVersions[$id];
-		$this->pluginVersions[$id] = json_decode(file_get_contents($plugin["root"].'/db/migrations.json'), TRUE);
+		$this->pluginVersions[$id] = json_decode(file_get_contents($plugin["root"].'/db/versions.json'), TRUE);
 		return $this->pluginVersions[$id];
 	}
 

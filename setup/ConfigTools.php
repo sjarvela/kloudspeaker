@@ -75,6 +75,7 @@ class ConfigTools {
 				$legacyPath = $root.DIRECTORY_SEPARATOR."backend".DIRECTORY_SEPARATOR.'plugin'.DIRECTORY_SEPARATOR.$def.DIRECTORY_SEPARATOR;
 				$this->logger->info("Checking [$builtInPath]");
 
+				$opts = [];
 				if (file_exists($sitePath)) {
 					$module = $def;
 					$this->logger->info("Found site plugin from [$sitePath], loading $module");
@@ -82,13 +83,14 @@ class ConfigTools {
 					$module = $def;
 					$this->logger->info("Found built-in plugin from [$builtInPath], loading $module");
 				} else if (file_exists($legacyPath)) {
-					$module = "Kloudspeaker/Plugins/".$def;
+					$module = "legacy:".$def;
+					$opts["legacy"] = TRUE;
 					$this->logger->info("Found legacy plugin from [$legacyPath], loading $module");
 				} else {
 					throw new \Kloudspeaker\Command\CommandException("Plugin not found: ".$def);
 				}
 				try {
-					$plugin = $this->container->plugins->load($module, []);
+					$plugin = $this->container->plugins->load($module, $opts);
 				} catch (Exception $e) {
 					$this->logger->error("Error loading plugin: ".$e->getMessage());
 				}
