@@ -23,9 +23,7 @@ class Plugins {
         if (!isset($conf["legacy"]))
             $plugin = $this->container->api->loadModule("plugin:".$m, $conf);
         else {
-            //legacy
             $plugin = $this->container->legacy->env->plugins->load($m, $conf);
-            //$legacyPlugins[] = $m;
         }
 
         $id = $this->register($plugin);
@@ -40,10 +38,10 @@ class Plugins {
 
     public function register($plugin) {
         if (!method_exists($plugin, "getPluginInfo"))
-            throw new \KloudspeakerException("Module does not seem to be plugin: $module");
+            throw new \Kloudspeaker\KloudspeakerException("Module does not seem to be plugin: $module");
         $info = $plugin->getPluginInfo();
         if (array_key_exists($info["id"], $this->pluginsById))
-            throw new \KloudspeakerException("Duplicate plugin module: ".$info["id"]);
+            throw new \Kloudspeaker\KloudspeakerException("Duplicate plugin module: ".$info["id"]);
 
         $r = new \ReflectionClass($plugin);
         $info["root"] = dirname($r->getFileName());

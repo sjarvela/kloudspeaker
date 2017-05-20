@@ -200,9 +200,8 @@ class Installer {
 				$result[$action["id"]] = NULL;
 
 				$actionResult = [];
-				if ($action["id"] == "system:install") $actionResult = $this->installSystem();
-				else if ($action["id"] == "system:migrate") $actionResult = $this->migrateSystem();
-				//TODO plugin install/update/migrate
+				if (\Kloudspeaker\Utils::strStartsWith($action["id"], "system:")) $actionResult = $this->performSystemAction($action);
+				else if (\Kloudspeaker\Utils::strStartsWith($action["id"], "plugin:")) $actionResult = $this->performPluginAction($action);
 				else throw new \Kloudspeaker\KloudspeakerException("Invalid install action: ".$action["id"]);
 
 				$result[$action["id"]] = $actionResult;
@@ -219,7 +218,7 @@ class Installer {
 			$result["success"] = FALSE;
 			$result["reason"] = $e->getMessage();
 			$result["exception"] = $e;
-		} 
+		}
 		
 		return $result;
 	}
@@ -243,47 +242,43 @@ class Installer {
 		$this->container->configuration->store();
 	}
 
-	private function installSystem() {
+	private function performSystemAction($action) {
 		$db = $this->container->db;
-		$db->script($this->readFile('/setup/db/create.sql'));
+		if ($action["id"] == "system:install") {
+			$db->script($this->readFile('/setup/db/create.sql'));
 
-		// add version info
-		$latestVersion = $this->getLatestVersion();
-		$db->insert('parameter', ['name' => 'database', 'value' => $latestVersion["id"]])->execute();
+			// add version info
+			$latestVersion = $this->getLatestVersion();
+			$db->insert('parameter', ['name' => 'database', 'value' => $latestVersion["id"]])->execute();
 
-		// install all plugins
-		foreach ($this->getAllInstallablePlugins() as $plugin) {
-			# code...
+			// install all plugins
+			foreach ($this->getAllInstallablePlugins() as $plugin) {
+				# code...
+			}
+		} else if ($action["id"] == "system:update") {
+			//TODO find&run all version migrations
+		} else if ($action["id"] == "system:migrate") {
+			$fromVersion = $db->select('parameter', ['name', 'value'])->where('name', 'version')->done()->execute()->firstValue('value');
+
+			if (!$fromVersion or $fromVersion == NULL) {
+				$this->logger->info("No migration version found");
+				return FALSE;
+			}
+
+			$this->logger->info("Migrating from version: $fromVersion");
+			if (!\Kloudspeaker\Utils::strStartsWith($fromVersion, "2_7_")) {
+				$this->logger->info("Cannot migrate from this version, update to last 2.7.x version");
+				return FALSE;
+			}
+
+			$db->script($this->readFile('/setup/db/migrate_from_2.sql'));
+
+			// add version info
+			$latestVersion = $this->getLatestVersion();
+			$db->insert('parameter', ['name' => 'database', 'value' => $latestVersion["id"]])->execute();
+		} else {
+			throw new \Kloudspeaker\KloudspeakerException("Invalid system action: ".$action["id"]);
 		}
-	}
-
-	private function updateSystem() {
-
-	}
-
-	private function migrateSystem() {
-		return;
-		$db = $this->container->db;
-
-		$fromVersion = $db->select('parameter', ['name', 'value'])->where('name', 'version')->done()->execute()->firstValue('value');
-
-		if (!$fromVersion or $fromVersion == NULL) {
-			$this->logger->info("No migration version found");
-			return FALSE;
-		}
-
-		$this->logger->info("Migrating from version: $fromVersion");
-		if (!\Kloudspeaker\Utils::strStartsWith($fromVersion, "2_7_")) {
-			$this->logger->info("Cannot migrate from this version, update to last 2.7.x version");
-			return FALSE;
-		}
-
-		$db->script($this->readFile('/setup/db/migrate_from_2.sql'));
-
-		// add version info
-		$latestVersion = $this->getLatestVersion();
-		$db->insert('parameter', ['name' => 'database', 'value' => $latestVersion["id"]])->execute();
-
 		return TRUE;
 	}
 
@@ -301,18 +296,41 @@ class Installer {
 		$current = $this->getPluginInstalledVersion($id);
 		$latest = $this->getLatestPluginVersion($id);
 
-		$this->logger->info("Current installed version: $current, latest $latest");
+		$this->logger->info("Current installed version: $current, latest ".$latest["id"]);
 
 		if ($current == NULL) return ["id" => "plugin:install", "plugin" => $id, "to" => $latest["id"]];
 		if ($current == $latest["id"]) return NULL;
 
-		if (strpos($current, "_") != NULL) return ["id" => "plugin:migrate", "plugin" => $id, "from" => $current, "to" => $latest["id"]];
+		if (strpos($current, "_") !== FALSE) return ["id" => "plugin:migrate", "plugin" => $id, "from" => $current, "to" => $latest["id"]];
 		return ["id" => "plugin:update", "plugin" => $id, "from" => $current, "to" => $latest["id"]];
 	}
 
-	public function installPlugin($id) {
-		$action = $this->getAvailablePluginAction($id);
-		if ($action == NULL) return;
+	public function performPluginAction($action) {
+		$db = $this->container->db;
+
+		if ($action["id"] == "plugin:install") {
+
+		} else if ($action["id"] == "plugin:update") {
+
+		} else if ($action["id"] == "plugin:migrate") {
+			$current = $this->getPluginInstalledVersion($action["plugin"]);
+			$latest = $this->getLatestPluginVersion($action["plugin"]);
+
+			$db->script($this->readPluginFile($action["plugin"], '/setup/db/migrate_from_2.sql'));
+
+			$db->delete('parameter')->where('name', "plugin_".$action["plugin"]."_version")->execute();
+			$db->insert('parameter', ['name' => "plugin_".$action["plugin"]."_database", 'value' => $latest["id"]])->execute();
+		} else {
+			throw new \Kloudspeaker\KloudspeakerException("Invalid plugin action: ".$action["id"]);
+		}
+		return TRUE;
+	}
+
+	private function readPluginFile($id, $path) {
+		$plugin = $this->container->plugins->get($id);
+		$path = $plugin["root"] . $path;
+		if (!file_exists($path)) return NULL;
+		return file_get_contents($path);
 	}
 
 	private function readFile($path) {
@@ -321,8 +339,7 @@ class Installer {
 
 	public function isDatabaseConfigured() {
 		$c = $this->container->configuration;
-
-		$this->logger->debug("is configured".$c->has("db.dsn")."/".$c->has("db.user")."/".$c->has("db.password"));
+		//$this->logger->debug("is configured".$c->has("db.dsn")."/".$c->has("db.user")."/".$c->has("db.password"));
 		
 		if (!$c->has("db.dsn")) return FALSE;
 		if (!$c->has("db.user")) return FALSE;

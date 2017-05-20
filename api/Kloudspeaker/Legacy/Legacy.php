@@ -9,10 +9,7 @@
  * License: http://www.kloudspeaker.com/license.php
  */
 
-require_once('Logging.php');
-
-$inc = __DIR__."/../../../backend/";
-set_include_path($inc . PATH_SEPARATOR . get_include_path());
+require_once 'Logging.php';
 
 class KloudspeakerLegacy {
 	public function __construct($config) {
@@ -38,27 +35,29 @@ class KloudspeakerLegacy {
 		//require_once "include/commands/CommandsController.class.php";
 		require_once "include/Util.class.php";
 
-        $this->env = new LegacyEnvironment($this->container);
-        $this->env->setup();
+		$this->env = new LegacyEnvironment($this->container);
+		$this->env->setup();
 	}
 
 	public function handleRequest($request) {
-        $path = $this->config->getRootPath();
-        $url = $request->getUri();
+		$path = $this->config->getRootPath();
+		$url = $request->getUri();
 
-        //error_log($path.":".$url);
+		//error_log($path.":".$url);
 
-        $legacyRequest = Request::get(substr($url, strlen($path)));
-        //$path = explode("/", );
-        $this->env->request = $legacyRequest;
+		$legacyRequest = Request::get(substr($url, strlen($path)));
+		//$path = explode("/", );
+		$this->env->request = $legacyRequest;
 
 		$service = $this->env->getService($legacyRequest);
-		if ($service == NULL) return FALSE;
+		if ($service == NULL) {
+			return FALSE;
+		}
 
 		if (!$service->isAuthenticated()) {
 			throw new ServiceException("UNAUTHORIZED");
 		}
-		
+
 		$service->processRequest();
 		//$this->container->logger->debug($path);
 		return TRUE;
@@ -100,8 +99,8 @@ class LegacyEnvironment {
 	}
 
 	public function setup() {
-        $this->app->setup();
-        $this->plugins->setup();
+		$this->app->setup();
+		$this->plugins->setup();
 	}
 
 	public function addService($id, $controller, $controllerPath = NULL) {
@@ -278,7 +277,7 @@ class LegacyEnvironment {
 	}
 
 	public function getPluginUrl($pluginId, $path = NULL, $file = FALSE) {
-		return $this->getPluginBaseUrl() . $pluginId . "/" . ($path != NULL ? $path . ($file ? "" : "/"):"");
+		return $this->getPluginBaseUrl() . $pluginId . "/" . ($path != NULL ? $path . ($file ? "" : "/") : "");
 	}
 
 	public function getClientUrl($path) {
@@ -301,23 +300,23 @@ class LegacyEnvironment {
 
 	private function getHost() {
 		/*if (!$this->settings->hasSetting("host_public_address")) {
-			if (!isset($_SERVER['HTTP_REFERER'])) {
-				throw new ServiceException("Cannot resolve host");
+				if (!isset($_SERVER['HTTP_REFERER'])) {
+					throw new ServiceException("Cannot resolve host");
+				}
+
+				$protocol = substr($_SERVER['HTTP_REFERER'], 0, strpos($_SERVER['HTTP_REFERER'], ":"));
+				$start = strlen($protocol) + 3;
+				$end = strpos($_SERVER['HTTP_REFERER'], "/", $start);
+				if ($end > 0) {
+					$host = substr($_SERVER['HTTP_REFERER'], $start, $end - $start);
+				} else {
+					$host = substr($_SERVER['HTTP_REFERER'], $start);
+				}
+
+				return $protocol . "://" . $host;
 			}
 
-			$protocol = substr($_SERVER['HTTP_REFERER'], 0, strpos($_SERVER['HTTP_REFERER'], ":"));
-			$start = strlen($protocol) + 3;
-			$end = strpos($_SERVER['HTTP_REFERER'], "/", $start);
-			if ($end > 0) {
-				$host = substr($_SERVER['HTTP_REFERER'], $start, $end - $start);
-			} else {
-				$host = substr($_SERVER['HTTP_REFERER'], $start);
-			}
-
-			return $protocol . "://" . $host;
-		}
-
-		return $this->settings->setting("host_public_address");*/
+		*/
 		return $this->container->configuration->getRootPath();
 	}
 
@@ -338,13 +337,15 @@ class LegacyDb {
 	}
 
 	private function db() {
-		if ($this->db == NULL) 
+		if ($this->db == NULL) {
 			$this->db = $this->container->db;
+		}
+
 		return $this->db;
 	}
 
 	public function type() {
-		return "mysql";	//TODO
+		return "mysql"; //TODO
 	}
 
 	public function table($name) {
@@ -510,9 +511,9 @@ class LegacySettings {
 		return $this->config->get($name, array_key_exists($name, self::$DEFAULT_VALUES) ? self::$DEFAULT_VALUES[$name] : NULL);
 	}
 
-    public function get($name, $defaultValue = "__undefined__") {
-        return $this->config->get($name, $defaultValue);
-    }
+	public function get($name, $defaultValue = "__undefined__") {
+		return $this->config->get($name, $defaultValue);
+	}
 }
 
 class LegacyResponse {
@@ -568,12 +569,12 @@ class LegacyApp {
 		$this->environment->addService("filesystem", "FilesystemServices");
 		$this->environment->addService("events", "EventServices");
 		$this->environment->addService("permissions", "PermissionServices");
-		
+
 		UserEvent::register($this->environment->events());
 		FolderEvent::register($this->environment->events());
-		
+
 		$this->environment->permissions()->registerPermission("change_password");
-		
+
 		$this->environment->plugins()->setup();
 	}
 }
@@ -591,21 +592,21 @@ class LegacyPlugins {
 
 	public function setup() {
 		/*if (!$this->container->configuration->has("plugins")) {
-			return;
-		}
+				return;
+			}
 
-		$plugins = $this->container->configuration->get("plugins");
-		if (!is_array($plugins)) {
-			throw new ServiceException("INVALID_CONFIGURATION");
-		}
+			$plugins = $this->container->configuration->get("plugins");
+			if (!is_array($plugins)) {
+				throw new ServiceException("INVALID_CONFIGURATION");
+			}
 
-		foreach ($plugins as $p => $settings) {
-			$this->addPlugin($p, $settings);
-		}
+			foreach ($plugins as $p => $settings) {
+				$this->addPlugin($p, $settings);
+			}
 
-		foreach ($this->plugins as $id => $p) {
-			$p->setup();
-		}*/
+			foreach ($this->plugins as $id => $p) {
+				$p->setup();
+		*/
 	}
 }
 
@@ -660,17 +661,19 @@ class Request {
 	}
 
 	private static function getParams($method) {
-		if (!$method) return array();
+		if (!$method) {
+			return array();
+		}
 
 		switch ($method) {
-			case self::METHOD_GET:
-			case self::METHOD_HEAD:
-				return $_GET;
+		case self::METHOD_GET:
+		case self::METHOD_HEAD:
+			return $_GET;
 
-			case self::METHOD_POST:
-			case self::METHOD_PUT:
-			case self::METHOD_DELETE:
-				return $_REQUEST;
+		case self::METHOD_POST:
+		case self::METHOD_PUT:
+		case self::METHOD_DELETE:
+			return $_REQUEST;
 		}
 	}
 
@@ -687,27 +690,29 @@ class Request {
 	}
 
 	private static function getData($method, $raw, $params) {
-		if (!$method) return NULL;
-		
+		if (!$method) {
+			return NULL;
+		}
+
 		switch ($method) {
-			case self::METHOD_GET:
-			case self::METHOD_HEAD:
-				break;
+		case self::METHOD_GET:
+		case self::METHOD_HEAD:
+			break;
 
-			case self::METHOD_POST:
-			case self::METHOD_PUT:
-			case self::METHOD_DELETE:
+		case self::METHOD_POST:
+		case self::METHOD_PUT:
+		case self::METHOD_DELETE:
 
-				if (!$raw and (!isset($params['format']) or $params['format'] != 'binary')) {
-					$data = file_get_contents("php://input");
-					if ($data and strlen($data) > 0) {
-						return json_decode($data, TRUE);
-					}
-
+			if (!$raw and (!isset($params['format']) or $params['format'] != 'binary')) {
+				$data = file_get_contents("php://input");
+				if ($data and strlen($data) > 0) {
+					return json_decode($data, TRUE);
 				}
-				break;
-			default:
-				throw new Exception("Unsupported method: " . $method);
+
+			}
+			break;
+		default:
+			throw new Exception("Unsupported method: " . $method);
 		}
 		return NULL;
 	}
@@ -759,8 +764,10 @@ class Request {
 	}
 
 	public function param($param) {
-		if ($this->hasParam($param))
+		if ($this->hasParam($param)) {
 			return $this->params[$param];
+		}
+
 		return NULL;
 	}
 
@@ -831,17 +838,21 @@ class ServiceException extends Exception {
 	}
 
 	function getHttpCode() {
-    	if ($this->errorCode === \Kloudspeaker\Errors::NotAuthenticated || $this->errorCode === \Kloudspeaker\Errors::InsufficientPermissions)
-    		return \Kloudspeaker\HttpCodes::FORBIDDEN;
+		if ($this->errorCode === \Kloudspeaker\Errors::NotAuthenticated || $this->errorCode === \Kloudspeaker\Errors::InsufficientPermissions) {
+			return \Kloudspeaker\HttpCodes::FORBIDDEN;
+		}
+
 		return \Kloudspeaker\HttpCodes::INTERNAL_ERROR;
 	}
 
 	function resolveErrorCode() {
 		//TODO
-		if ($this->type == 'UNAUTHORIZED')
+		if ($this->type == 'UNAUTHORIZED') {
 			return \Kloudspeaker\Errors::NotAuthenticated;
-		else if ($this->type == 'INSUFFICIENT_PERMISSIONS')
+		} else if ($this->type == 'INSUFFICIENT_PERMISSIONS') {
 			return \Kloudspeaker\Errors::InsufficientPermissions;
+		}
+
 		return \Kloudspeaker\Errors::Unknown;
 	}
 

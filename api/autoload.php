@@ -1,7 +1,7 @@
 <?php
-$KLOUDSPEAKER_ROOT = realpath(dirname(__FILE__)."/../");
-$KLOUDSPEAKER_SITE_FOLDER = $KLOUDSPEAKER_ROOT.DIRECTORY_SEPARATOR."site".DIRECTORY_SEPARATOR;
-$KLOUDSPEAKER_CONFIG_FILE = $KLOUDSPEAKER_SITE_FOLDER."configuration.php";
+$KLOUDSPEAKER_ROOT = realpath(dirname(__FILE__) . "/../");
+$KLOUDSPEAKER_SITE_FOLDER = $KLOUDSPEAKER_ROOT . DIRECTORY_SEPARATOR . "site" . DIRECTORY_SEPARATOR;
+$KLOUDSPEAKER_CONFIG_FILE = $KLOUDSPEAKER_SITE_FOLDER . "configuration.php";
 $KLOUDSPEAKER_SYSTEM_INFO = [
 	"root" => $KLOUDSPEAKER_ROOT,
 	"site_folder" => $KLOUDSPEAKER_SITE_FOLDER,
@@ -9,11 +9,11 @@ $KLOUDSPEAKER_SYSTEM_INFO = [
 	"site_folder_exists" => FALSE,
 	"config_exists" => FALSE,
 	"config_writable" => FALSE,
-	"error" => NULL
+	"error" => NULL,
 ];
 $KLOUDSPEAKER_SYSTEM_ERROR = NULL;
 
-set_include_path($KLOUDSPEAKER_SYSTEM_INFO["root"].DIRECTORY_SEPARATOR.'api' . PATH_SEPARATOR . $KLOUDSPEAKER_SYSTEM_INFO["root"].DIRECTORY_SEPARATOR.'site' . PATH_SEPARATOR . get_include_path());
+set_include_path($KLOUDSPEAKER_SYSTEM_INFO["root"] . DIRECTORY_SEPARATOR . 'site' . PATH_SEPARATOR . $KLOUDSPEAKER_SYSTEM_INFO["root"] . DIRECTORY_SEPARATOR . 'api' . PATH_SEPARATOR . $KLOUDSPEAKER_SYSTEM_INFO["root"] . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'backend' . PATH_SEPARATOR . get_include_path());
 
 require 'vendor/auto/autoload.php';
 
@@ -42,20 +42,20 @@ include "version.info.php";
 
 global $CONFIGURATION, $VERSION, $REVISION;
 
-if ($KLOUDSPEAKER_SYSTEM_ERROR != NULL or !isset($CONFIGURATION) or $CONFIGURATION == NULL) {	
+if ($KLOUDSPEAKER_SYSTEM_ERROR != NULL or !isset($CONFIGURATION) or $CONFIGURATION == NULL) {
 	$KLOUDSPEAKER_SYSTEM_INFO = array_merge($KLOUDSPEAKER_SYSTEM_INFO, [
 		"config_exists" => FALSE,
 		"config" => NULL,
 		"error" => $KLOUDSPEAKER_SYSTEM_ERROR,
 		"version" => $VERSION,
-		"revision" => $REVISION
+		"revision" => $REVISION,
 	]);
 } else {
 	$KLOUDSPEAKER_SYSTEM_INFO = array_merge($KLOUDSPEAKER_SYSTEM_INFO, [
 		"config_exists" => TRUE,
 		"config" => $CONFIGURATION,
 		"version" => $VERSION,
-		"revision" => $REVISION
+		"revision" => $REVISION,
 	]);
 }
 
