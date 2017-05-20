@@ -118,7 +118,7 @@ class LegacyEnvironment {
 		}
 
 		$id = $path[0];
-		error_log($id);
+
 		if (!array_key_exists($id, $this->services)) {
 			return NULL;
 		}

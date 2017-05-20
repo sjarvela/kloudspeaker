@@ -1,9 +1,9 @@
 <?php
 namespace Kloudspeaker\Plugins\Comment;
 
-class CommentPlugin {
+class CommentPlugin extends \Kloudspeaker\Plugins\AbstractPlugin {
 	public function __construct($container, $config) {
-		$this->container = $container;
+		parent::__construct($container);
 	}
 
 	public function initialize($setup) {
@@ -11,10 +11,10 @@ class CommentPlugin {
 	}
 
 	public function getPluginInfo() {
-		return [
+		return array_merge(parent::getPluginInfo(), [
 			"id" => "comment",
 			"client_module" => TRUE,
-			"db" => TRUE
-		];
+			"db" => TRUE,
+		]);
 	}
- }
+}

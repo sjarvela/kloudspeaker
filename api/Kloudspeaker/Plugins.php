@@ -2,64 +2,94 @@
 namespace Kloudspeaker;
 
 class Plugins {
-	private $plugins = [];
 	private $pluginsById = [];
-    //private $legacyPlugins = [];
 
-    public function __construct($container) {
-        $this->container = $container;
-        $this->logger = $container->logger;
-    }
+	public function __construct($container) {
+		$this->container = $container;
+		$this->logger = $container->logger;
+	}
 
-    public function initialize() {
-    	foreach ($this->container->configuration->get('plugins', []) as $m => $conf) {
-            $this->load($m, $conf);
-    	}
-    }
+	public function initialize() {
+		foreach ($this->container->configuration->get('plugins', []) as $m => $conf) {
+			$this->load($m, $conf);
+		}
+	}
 
-    public function load($m, $conf) {
-        $this->container->logger->debug("Initializing plugin module: $m", $conf);
+	public function load($m, $conf) {
+		$this->container->logger->debug("Initializing plugin module: $m", $conf);
 
-        if (!isset($conf["legacy"]))
-            $plugin = $this->container->api->loadModule("plugin:".$m, $conf);
-        else {
-            $plugin = $this->container->legacy->env->plugins->load($m, $conf);
-        }
+		if (!isset($conf["legacy"])) {
+			$plugin = $this->container->api->loadModule("plugin:" . $m, $conf);
+		} else {
+			$plugin = $this->container->legacy->env->plugins->load($m, $conf);
+		}
 
-        $id = $this->register($plugin);
-        $this->pluginsById[$id]["module"] = $m;
+		$id = $this->register($plugin);
+		$this->pluginsById[$id]["module"] = $m;
 
-        return $this->pluginsById[$id];
-    }
-
-    public function getSessionInfo() {
-        return [];
-    }
-
-    public function register($plugin) {
-        if (!method_exists($plugin, "getPluginInfo"))
-            throw new \Kloudspeaker\KloudspeakerException("Module does not seem to be plugin: $module");
-        $info = $plugin->getPluginInfo();
-        if (array_key_exists($info["id"], $this->pluginsById))
-            throw new \Kloudspeaker\KloudspeakerException("Duplicate plugin module: ".$info["id"]);
-
-        $r = new \ReflectionClass($plugin);
-        $info["root"] = dirname($r->getFileName());
-        $info["cls"] = $plugin;
-
-    	$this->plugins[] = $info;
-        $this->pluginsById[$info["id"]] = $info;
-
-        return $info["id"];
-    }
-
-    public function get($id = NULL) {
-    	if ($id == NULL)
-    		return $this->plugins;
 		return $this->pluginsById[$id];
-    }
+	}
 
-    public function is($id) {
-        return isset($this->pluginsById[$id]);
-    }
+	public function getSessionInfo() {
+		$result = [];
+		foreach ($this->pluginsById as $id => $p) {
+			$p = [
+				"id" => $id,
+			];
+			if (isset($p["client_module"]) and (is_string($p["client_module"]) or $p["client_module"] === TRUE)) {
+				$p["client"] = [
+					"package" => $id,
+				];
+			}
+			$result[$id] = $p;
+		}
+		return $result;
+	}
+
+	public function register($plugin) {
+		if (!method_exists($plugin, "getPluginInfo")) {
+			throw new \Kloudspeaker\KloudspeakerException("Module does not seem to be plugin: $module");
+		}
+
+		$info = $plugin->getPluginInfo();
+		if (array_key_exists($info["id"], $this->pluginsById)) {
+			throw new \Kloudspeaker\KloudspeakerException("Duplicate plugin module: " . $info["id"]);
+		}
+
+		$r = new \ReflectionClass($plugin);
+		$info["root"] = dirname($r->getFileName());
+		$info["cls"] = $plugin;
+
+		$this->pluginsById[$info["id"]] = $info;
+
+		$this->container->api->group('/p/' . $info["id"], function () use ($info) {
+			$this->get('/', function ($request, $response, $args) {
+				$this->out->success("foo");
+			});
+			if (isset($info["client_module"])) {
+				$this->get('/client[/{params:.*}]', function ($request, $response, $args) use ($info) {
+					$file = $info["root"] . "/" . $request->getAttribute('params');
+					$this->out->success("c " . $file);
+				});
+			}
+		});
+
+		return $info["id"];
+	}
+
+	public function urlFor($id) {
+		$root = $this->container->api->url();
+	}
+
+	public function get($id = NULL) {
+		if ($id == NULL) {
+			return $this->plugins;
+		}
+
+		return $this->pluginsById[$id];
+	}
+
+	public function is($id) {
+		return isset($this->pluginsById[$id]);
+	}
 }
