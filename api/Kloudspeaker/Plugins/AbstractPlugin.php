@@ -7,13 +7,12 @@ class AbstractPlugin {
 	}
 
 	public function initialize($setup) {
-
 	}
 
 	public function getPluginInfo() {
 		return [
 			"id" => NULL,
-			"client_module" => FALSE,
+			"client_module" => NULL,
 			"db" => FALSE,
 		];
 	}

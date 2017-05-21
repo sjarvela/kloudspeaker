@@ -33,15 +33,13 @@ class Plugins {
 	public function getSessionInfo() {
 		$result = [];
 		foreach ($this->pluginsById as $id => $p) {
-			$p = [
+			$r = [
 				"id" => $id,
 			];
-			if (isset($p["client_module"]) and (is_string($p["client_module"]) or $p["client_module"] === TRUE)) {
-				$p["client"] = [
-					"package" => $id,
-				];
+			if (isset($p["client_module"])) {
+				$r["client"] = $p["client_module"];
 			}
-			$result[$id] = $p;
+			$result[$id] = $r;
 		}
 		return $result;
 	}
@@ -68,8 +66,12 @@ class Plugins {
 			});
 			if (isset($info["client_module"])) {
 				$this->get('/client[/{params:.*}]', function ($request, $response, $args) use ($info) {
-					$file = $info["root"] . "/" . $request->getAttribute('params');
-					$this->out->success("c " . $file);
+					$file = $info["root"] . "/client/" . $request->getAttribute('params');
+					if (!file_exists($file)) {
+						$this->out->error("Resource does not exist");
+					}
+
+					echo file_get_contents($file);
 				});
 			}
 		});

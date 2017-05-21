@@ -6,14 +6,10 @@ class CommentPlugin extends \Kloudspeaker\Plugins\AbstractPlugin {
 		parent::__construct($container);
 	}
 
-	public function initialize($setup) {
-
-	}
-
 	public function getPluginInfo() {
 		return array_merge(parent::getPluginInfo(), [
 			"id" => "comment",
-			"client_module" => TRUE,
+			"client_module" => "kloudspeaker/plugins/comment",
 			"db" => TRUE,
 		]);
 	}
