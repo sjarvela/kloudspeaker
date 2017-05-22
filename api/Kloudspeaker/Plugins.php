@@ -89,7 +89,7 @@ class Plugins {
 
 	public function get($id = NULL) {
 		if ($id == NULL) {
-			return $this->plugins;
+			return $this->pluginsById;
 		}
 
 		return $this->pluginsById[$id];

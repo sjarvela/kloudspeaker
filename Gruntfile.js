@@ -204,6 +204,7 @@ module.exports = function (grunt) {
                         'jquery': 'empty:',
                         'knockout': 'empty:',
                         'durandal': 'durandal/js/',
+                        'underscore': 'underscore/undescore',
                         'text': 'requirejs-text/text'
                     }
                 }
@@ -223,6 +224,7 @@ module.exports = function (grunt) {
                     out: "out/app-modules.js",
                     paths: {
                         'text': 'requirejs-text/text',
+                        'underscore': 'empty:',
                         'jquery': 'empty:',
                         'durandal': 'empty:',
                         'knockout': 'empty:',
