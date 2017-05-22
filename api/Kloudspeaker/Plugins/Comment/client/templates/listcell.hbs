@@ -1,0 +1,7 @@
+{{#if data}}
+	{{#if data.any}}
+		<div id='item-comment-count-{{data.id}}' class='filelist-item-comment-count'>{{data.count}}</div>
+	{{else}}
+		<div id='item-comment-count-{{data.id}}' class='filelist-item-comment-count-none'></div>
+	{{/if}}
+{{/if}}

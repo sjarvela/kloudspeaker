@@ -53,6 +53,8 @@ class Database {
     }
 
     public function script($s) {
+        if ($s == NULL) return;
+        
         $sql = str_replace('{TABLE_PREFIX}', (isset($this->tablePrefix) and $this->tablePrefix != '') ? $this->tablePrefix : '', $s);
 
         $this->logger->debug("DB script", ["script" => $sql]);
