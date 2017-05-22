@@ -2,12 +2,14 @@ define(['kloudspeaker/settings', 'kloudspeaker/dom', 'kloudspeaker/utils'], func
     var pl = {};
     var session = null;
     var loc = null;
+    var app = null;
 
     pl._list = {};
 
     pl.setup = function() {
         session = require('kloudspeaker/session');
         loc = require('kloudspeaker/localization');
+        app = require('kloudspeaker/instance');
     }
 
     pl.register = function(p) {
@@ -77,28 +79,32 @@ define(['kloudspeaker/settings', 'kloudspeaker/dom', 'kloudspeaker/utils'], func
         return !!pl._list[id];
     };
 
-    pl.url = function(id, p, admin) {
+    pl.url = function(id, p) {
         var s = session.get();
-        var ps = s && s.data.plugins[id];
-        var custom = (ps && ps.custom);
+        if (!s.data.plugins[id]) return null;
 
-        var url = custom ? s.data.resources.custom_url : settings["service-path"];
-        url = url + "plugin/" + id;
+        return app.pageUrl + "api/p/"+id+"/" + (p || '');
+        //var ps = s && s.data.plugins[id];
 
-        if (!p) return url;
-        return url + (admin ? "/admin/" : "/client/") + p;
+        //var custom = (ps && ps.custom);
+
+        //var url = custom ? s.data.resources.custom_url : settings["service-path"];
+        //url = url + "plugin/" + id;
+
+        //if (!p) return url;
+        //return url + (admin ? "/admin/" : "/client/") + p;
     };
 
-    pl.adminUrl = function(id, p) {
+    /*pl.adminUrl = function(id, p) {
         return pl.url(id) + "/admin/" + p;
-    };
+    };*/
 
     pl.getLocalizationUrl = function(id) {
-        return pl.url(id) + "/localization/texts_" + loc.locale + ".json";
+        return pl.url(id) + "client/localization/texts_" + loc.locale + ".json";
     };
 
-    pl.getStyleUrl = function(id, admin) {
-        return pl.url(id, "style.css", admin);
+    pl.getStyleUrl = function(id) {
+        return pl.url(id, "client/css/plugin.css");
     };
 
     pl.getItemContextRequestData = function(item) {

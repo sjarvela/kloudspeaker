@@ -227,9 +227,15 @@ class FilesystemController {
 		$this->actionValidators[$key] = $validator;
 	}
 
-	public function registerDataRequestPlugin($keys, $plugin) {
+	public function registerDataRequestPlugin($k, $h) {
+		if (is_array($k)) {
+			$keys = $k;
+		} else {
+			$keys = [$k];
+		}
+
 		foreach ($keys as $key) {
-			$this->dataRequestPlugins[$key] = $plugin;
+			$this->dataRequestPlugins[$key] = $h;
 		}
 	}
 
@@ -249,12 +255,19 @@ class FilesystemController {
 
 		//Logging::logDebug("RQ data: " . Util::array2str($items) . " : " . Util::array2str($data));
 
-		foreach ($this->getDataRequestPlugins() as $key => $plugin) {
+		foreach ($this->getDataRequestPlugins() as $key => $h) {
 			if (!array_key_exists($key, $data)) {
 				continue;
 			}
 
-			$d = $plugin->getRequestData($parent, $items, $key, $data[$key]);
+			if ($h instanceof Closure) {
+				$d = $h($parent, $items, $key, $data[$key]);
+			} else if (is_object($h)) {
+				$d = $h->getRequestData($parent, $items, $key, $data[$key]);
+			} else {
+				throw new ServiceException("INVALID_CONFIGURATION", "Request data handler type not supported");
+			}
+
 			if ($d !== NULL) {
 				$requestDataResult[$key] = $d;
 			}
@@ -389,7 +402,9 @@ class FilesystemController {
 	}
 
 	private function getUserFilesystemIds() {
-		if ($this->filesystemIdCache != NULL) return $this->filesystemIdCache;
+		if ($this->filesystemIdCache != NULL) {
+			return $this->filesystemIdCache;
+		}
 
 		$folderDefs = $this->env->configuration()->getUserFolders($this->env->session()->userId(), TRUE);
 
@@ -402,11 +417,16 @@ class FilesystemController {
 	}
 
 	private function hasItemRights($item, $required) {
-		if ($this->allowFilesystems and ($required == self::PERMISSION_LEVEL_READ or $required == self::PERMISSION_LEVEL_READWRITE)) return TRUE;
+		if ($this->allowFilesystems and ($required == self::PERMISSION_LEVEL_READ or $required == self::PERMISSION_LEVEL_READWRITE)) {
+			return TRUE;
+		}
 
 		if (!$this->env->authentication()->isAdmin()) {
 			// if not admin, folder must be assigned
-			if (!$item->filesystem()->allowUnassigned() and !in_array($item->filesystem()->id(), $this->getUserFilesystemIds())) return FALSE;
+			if (!$item->filesystem()->allowUnassigned() and !in_array($item->filesystem()->id(), $this->getUserFilesystemIds())) {
+				return FALSE;
+			}
+
 		}
 		return $this->env->permissions()->hasFilesystemPermission(self::FILESYSTEM_ITEM_ACCESS_PERMISSION, $item, $required);
 	}
@@ -459,7 +479,7 @@ class FilesystemController {
 			"max_upload_total_size" => Util::inBytes(ini_get("post_max_size")),
 			"allowed_file_upload_types" => $this->allowedFileUploadTypes(),
 			"forbidden_file_upload_types" => $this->forbiddenFileUploadTypes(),
-			"supported_thumbnail_types" => $this->env->thumbnailGenerator()->getSupportedThumbnailTypes()
+			"supported_thumbnail_types" => $this->env->thumbnailGenerator()->getSupportedThumbnailTypes(),
 		);
 
 		$this->itemIdProvider()->loadRoots();
@@ -476,7 +496,7 @@ class FilesystemController {
 				"group" => implode("/", $nameParts),
 				"parent_id" => NULL,
 				"root_id" => $folder->id(),
-				"path" => ""
+				"path" => "",
 			);
 		}
 
@@ -618,7 +638,10 @@ class FilesystemController {
 
 		$details = $item->details();
 		$metadata = $this->metadata->get($item);
-		if ($metadata == NULL) $metadata = array();
+		if ($metadata == NULL) {
+			$metadata = array();
+		}
+
 		$details["metadata"] = $metadata;
 		$details["permissions"] = $this->env->permissions()->getAllFilesystemPermissions($item);
 		$details["parent_permissions"] = $item->isRoot() ? NULL : $this->env->permissions()->getAllFilesystemPermissions($item->parent());
@@ -723,7 +746,7 @@ class FilesystemController {
 		$cacheTime = $this->setting_or_default("folder_info_cache_time", 3600);
 		$cached = FALSE;
 		if (array_key_exists($id, $this->infoCache)) {
-			$result = $this->infoCache[$id];			
+			$result = $this->infoCache[$id];
 			$cached = TRUE;
 			Logging::logDebug("Found from cache");
 		} else if ($cacheTime > 0) {
@@ -733,21 +756,23 @@ class FilesystemController {
 
 				$age = $now - $result["_time"];
 				if ($age <= $cacheTime) {
-					Logging::logDebug("Found from cache, age = ".$age);
+					Logging::logDebug("Found from cache, age = " . $age);
 					$cached = TRUE;
 				} else {
-					Logging::logDebug("Found from cache, expired ".$age."/".$cacheTime);
+					Logging::logDebug("Found from cache, expired " . $age . "/" . $cacheTime);
 				}
 			} else {
 				Logging::logDebug("Not found from cache");
 			}
 		}
 
-		if ($cached and !$hierarchy) return $result;
+		if ($cached and !$hierarchy) {
+			return $result;
+		}
 
 		$hierarchyInfo = array();
 
-		if ($result == NULL)
+		if ($result == NULL) {
 			$result = array(
 				"size" => 0,
 				"size_recursive" => 0,
@@ -755,12 +780,13 @@ class FilesystemController {
 				"folder_count" => 0,
 				"file_count_recursive" => 0,
 				"folder_count_recursive" => 0,
-				"_time" => $now
+				"_time" => $now,
 			);
+		}
 
 		$this->idProvider->load($folder, $hierarchy);
 
-		foreach($folder->items() as $item) {
+		foreach ($folder->items() as $item) {
 			if ($item->isFile()) {
 				if (!$cached) {
 					$result["file_count"] = $result["file_count"] + 1;
@@ -779,14 +805,20 @@ class FilesystemController {
 					$result["folder_count_recursive"] = $result["folder_count_recursive"] + $subresult["folder_count_recursive"] + 1;
 					$result["size_recursive"] = $result["size_recursive"] + $subresult["size_recursive"];
 				}
-				if ($hierarchy) $hierarchyInfo = array_merge($hierarchyInfo, $subresult["by_id"]);
+				if ($hierarchy) {
+					$hierarchyInfo = array_merge($hierarchyInfo, $subresult["by_id"]);
+				}
+
 			}
 		}
 		$this->infoCache[$id] = $result;
-		if ($cacheTime > 0 and !$cached)
+		if ($cacheTime > 0 and !$cached) {
 			$this->metadata->set($folder, "folder_info", json_encode($result, TRUE));
-		if (Logging::isDebug())
-			Logging::logDebug('Resolved folder info for ' . $folder->path()."=".Util::array2str($result));
+		}
+
+		if (Logging::isDebug()) {
+			Logging::logDebug('Resolved folder info for ' . $folder->path() . "=" . Util::array2str($result));
+		}
 
 		if ($hierarchy) {
 			$hierarchyInfo[$id] = $result;
@@ -1195,13 +1227,16 @@ class FilesystemController {
 	}
 
 	public function validateDownload($f, $ac = "download") {
-		if (!is_array($f)) $files = array($f);
-		else $files = $f;
+		if (!is_array($f)) {
+			$files = array($f);
+		} else {
+			$files = $f;
+		}
 
 		foreach ($files as $file) {
 			$this->assertRights($file, self::PERMISSION_LEVEL_READ, $ac);
 		}
-		
+
 		$this->validateAction(FileEvent::DOWNLOAD, $files);
 	}
 
@@ -1215,7 +1250,9 @@ class FilesystemController {
 		$size = $file->size();
 		$range = $this->getDownloadRangeInfo($range, $size);
 
-		if ($range or $range[0] == 0)  $this->validateAction(FileEvent::DOWNLOAD, $file, array("mobile" => $mobile, "range" => $range, "size" => $size));
+		if ($range or $range[0] == 0) {
+			$this->validateAction(FileEvent::DOWNLOAD, $file, array("mobile" => $mobile, "range" => $range, "size" => $size));
+		}
 
 		if ($this->triggerActionInterceptor(FileEvent::DOWNLOAD, $file, array("mobile" => $mobile, "range" => $range, "size" => $size))) {
 			return;
@@ -1276,7 +1313,7 @@ class FilesystemController {
 		} else {
 			$this->env->events()->onEvent(FileEvent::view($file));
 		}
-		
+
 		$this->env->response()->send($file->name(), $file->extension(), $file->read($range), $size, $range);
 	}
 
@@ -1321,8 +1358,10 @@ class FilesystemController {
 			if (!isset($_SERVER['HTTP_CONTENT_DISPOSITION'])) {
 				if (isset($_SERVER['CONTENT_LENGTH'])) {
 					$maxSize = Util::inBytes(ini_get('upload_max_filesize'));
-					if ($_SERVER['CONTENT_LENGTH'] > $maxSize)
+					if ($_SERVER['CONTENT_LENGTH'] > $maxSize) {
 						throw new ServiceException(array(301, "File size exceeded"));
+					}
+
 				}
 
 				throw new ServiceException("NO_UPLOAD_DATA");
@@ -1585,8 +1624,10 @@ class FilesystemController {
 	}
 
 	public function setting_or_default($setting, $dv) {
-		if ($this->env->settings()->hasSetting($setting))
+		if ($this->env->settings()->hasSetting($setting)) {
 			return $this->env->settings()->setting($setting);
+		}
+
 		return $dv;
 	}
 

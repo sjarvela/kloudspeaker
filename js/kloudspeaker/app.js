@@ -1,4 +1,4 @@
-define([], function() {
+define(['underscore'], function(_) {
     //TODO remove global references
 
     var kloudspeaker_defaults = {
@@ -115,11 +115,11 @@ define([], function() {
                 var modules = [];
                 var packages = [];
                 _.each(s.plugins, function(pl) {
-                    if (pl.client_module_path) {
-                        modules.push(pl.client_module_id);
+                    if (pl.client) {
+                        modules.push(pl.client);
                         packages.push({
-                            name: pl.client_module_id,
-                            location: pl.client_module_path
+                            name: pl.client,
+                            location: plugins.url(pl.id) + 'client'
                         });
                     }
                 });
