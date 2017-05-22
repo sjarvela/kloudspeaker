@@ -62,17 +62,21 @@ class Plugins {
 
 		$this->container->api->group('/p/' . $info["id"], function () use ($info) {
 			$this->get('/', function ($request, $response, $args) {
-				$this->out->success("foo");
+				//TODO plugin info
+				$this->out->success([]);
 			});
 			if (isset($info["client_module"])) {
-				$this->get('/client[/{params:.*}]', function ($request, $response, $args) use ($info) {
-					$file = $info["root"] . "/client/" . $request->getAttribute('params');
+				$this->get('/client[/{path:.*}]', function ($request, $response, $args) use ($info) {
+					$file = $info["root"] . "/client/" . $request->getAttribute('path');
 					if (!file_exists($file)) {
-						$this->out->error("Resource does not exist");
+						$this->out->error("Resource does not exist", 0, \Kloudspeaker\HttpCodes::NOT_FOUND);
 					}
 
 					echo file_get_contents($file);
 				});
+			}
+			if (isset($info["api"])) {
+				$info["api"]($this);
 			}
 		});
 

@@ -187,9 +187,9 @@ class Api extends \Slim\App {
 				$this->loadModule($lm);
 			}
 
-			$container->plugins->initialize();
-
 			$legacy->initialize($this);
+
+			$container->plugins->initialize();
 		}
 	}
 
@@ -332,6 +332,7 @@ abstract class HttpCodes {
 
 	const BAD_REQUEST = 400;
 	const FORBIDDEN = 403;
+	const NOT_FOUND = 404;
 	const NOT_ACCEPTABLE = 406;
 
 	const INTERNAL_ERROR = 500;

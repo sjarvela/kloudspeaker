@@ -13,54 +13,69 @@ namespace Kloudspeaker;
 
 class Utils {
 	public static function strStartsWith($haystack, $needle) {
-	     $length = strlen($needle);
-	     return (substr($haystack, 0, $length) === $needle);
+		$length = strlen($needle);
+		return (substr($haystack, 0, $length) === $needle);
 	}
 
 	public static function strEndsWith($haystack, $needle) {
-	    $length = strlen($needle);
-	    if ($length == 0) {
-	        return true;
-	    }
+		$length = strlen($needle);
+		if ($length == 0) {
+			return true;
+		}
 
-	    return (substr($haystack, -$length) === $needle);
+		return (substr($haystack, -$length) === $needle);
 	}
 
 	public static function strList($s, $count, $delimiter = ",") {
 		$r = "";
-		for ($i=0; $i < $count; $i++) { 
+		for ($i = 0; $i < $count; $i++) {
 			$r .= $s;
-			if ($i < $count-1) $r .= $delimiter;
+			if ($i < $count - 1) {
+				$r .= $delimiter;
+			}
+
 		}
 		return $r;
 	}
 
 	public static function isEmpty($o, $strTrim = TRUE) {
-		if ($o == NULL) return TRUE;
-		if (is_array($o)) return count($o) == 0;
-		if (is_string($o)) return strlen($strTrim ? trim($o) : $o) == 0;
+		if ($o == NULL) {
+			return TRUE;
+		}
+
+		if (is_array($o)) {
+			return count($o) == 0;
+		}
+
+		if (is_string($o)) {
+			return strlen($strTrim ? trim($o) : $o) == 0;
+		}
+
 		return FALSE;
 	}
 
 	public static function escapePathRegex($p, $double = TRUE) {
-		$rp = $p;		
+		$rp = $p;
 		$rp = str_replace("'", "\'", str_replace("*", "\*", str_replace("+", "\+", $rp)));
-		if ($double) $rp = str_replace("\\", "\\\\", $rp);
+		if ($double) {
+			$rp = str_replace("\\", "\\\\", $rp);
+		}
+
 		return $rp;
 	}
-	
+
 	public static function inBytes($a) {
 		$amount = trim($a);
 		$last = strtolower($amount[strlen($amount) - 1]);
 		$amount = substr($amount, 0, -1);
 
 		switch ($last) {
-			case 'g':
-				$amount *= 1024;
-			case 'm':
-				$amount *= 1024;
-			case 'k':
-				$amount *= 1024;
+		case 'g':
+			$amount *= 1024;
+		case 'm':
+			$amount *= 1024;
+		case 'k':
+			$amount *= 1024;
 		}
 
 		return (float) $amount;
@@ -113,7 +128,10 @@ class Utils {
 	}
 
 	static function isAssocArray($arr) {
-		if (!is_array($arr)) return FALSE;
+		if (!is_array($arr)) {
+			return FALSE;
+		}
+
 		return array_keys($arr) !== range(0, count($arr) - 1);
 	}
 
@@ -172,13 +190,14 @@ class Utils {
 	}
 
 	static function guidv4() {
-	    if (function_exists('com_create_guid') === true)
-	        return trim(com_create_guid(), '{}');
+		if (function_exists('com_create_guid') === true) {
+			return trim(com_create_guid(), '{}');
+		}
 
-	    $data = openssl_random_pseudo_bytes(16);
-	    $data[6] = chr(ord($data[6]) & 0x0f | 0x40); // set version to 0100
-	    $data[8] = chr(ord($data[8]) & 0x3f | 0x80); // set bits 6-7 to 10
-	    return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+		$data = openssl_random_pseudo_bytes(16);
+		$data[6] = chr(ord($data[6]) & 0x0f | 0x40); // set version to 0100
+		$data[8] = chr(ord($data[8]) & 0x3f | 0x80); // set bits 6-7 to 10
+		return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
 	}
 
 	static function winCpToUtf8($str) {
@@ -277,6 +296,19 @@ class Utils {
 		foreach ($array as $item) {
 			$v = $item[$p];
 			$result[$v] = $item;
+		}
+		return $result;
+	}
+
+	static function extract($a, $p) {
+		$result = [];
+		foreach ($a as $i) {
+			if (is_array($i)) {
+				$result[] = $i[$p];
+			} else {
+				$result[] = call_user_method($p, $i);
+			}
+
 		}
 		return $result;
 	}

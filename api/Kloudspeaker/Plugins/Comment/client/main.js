@@ -1,5 +1,63 @@
-define(['kloudspeaker/session', 'kloudspeaker/plugins', 'kloudspeaker/service', 'kloudspeaker/permissions', 'kloudspeaker/localization', 'kloudspeaker/ui/formatters', 'kloudspeaker/utils', 'kloudspeaker/dom', 'kloudspeaker/templates', 'kloudspeaker/ui/controls', 'kloudspeaker/events'], function(session, plugins, service, permissions, loc, formatters, utils, dom, templates, controls, events) {
-    console.log('comments');
+define(['kloudspeaker/session', 'kloudspeaker/plugins', 'kloudspeaker/service', 'kloudspeaker/permissions', 'kloudspeaker/localization', 'kloudspeaker/ui/formatters', 'kloudspeaker/utils', 'kloudspeaker/events', 'hbs!kloudspeaker/plugins/comment/templates/listcell'], function(session, plugins, service, permissions, loc, formatters, utils, events, ListCellTmpl) {
+    var CommentPlugin = function() {
+        var that = this;
+
+        events.on('localization/init', function() {
+            that._timestampFormatter = new formatters.Timestamp(loc.get('shortDateTimeFormat'));
+        });
+
+        plugins.register({
+            id: 'comment',
+            resources: {
+                css: true,
+                texts: true
+            },
+            
+            initialize: function() {},
+
+            fileViewHandler: {
+                filelistColumns: function() {
+                    return [{
+                        "id": "comment-count",
+                        "request-id": "plugin-comment-count",
+                        "title-key": "",
+                        "width": 50,
+                        "content": that.getListCellContent,
+                        "request": function(parent) {
+                            return {};
+                        },
+                        "on-click": function(item, data, ctx) {
+                            //that.showCommentsBubble(item, $("#item-comment-count-" + item.id), ctx);
+                        }
+                    }];
+                }
+            },
+            itemContextHandler: function(item, ctx, data) {
+                return {
+                    details: {
+                        "title-key": "plugin.comment.contexttitle",
+                        "on-render": function(el, $content, ctx) {
+                            //that.renderItemContextDetails(el, item, ctx, $content, data);
+                        }
+                    }
+                };
+            }
+        });
+
+        this.getListCellContent = function(item, data) {
+            var data = false;
+            if (item.id && item.id.length > 0 && data && data["plugin-comment-count"]) {
+                var counts = data["plugin-comment-count"];
+                data = {
+                    id: item.id,
+                    count: counts[item.id],
+                    any: counts[item.id] > 0
+                };
+            }
+            return ListCellTmpl({data: data});
+        };
+    };
+    return new CommentPlugin();
     //TODO rewrite using viewmodel
     /*var that = {};
 

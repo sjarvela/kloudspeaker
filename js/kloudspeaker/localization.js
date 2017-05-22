@@ -82,6 +82,7 @@ define(['kloudspeaker/resources', 'kloudspeaker/events', 'kloudspeaker/utils', '
             url: url
         }).done(function(r) {
             if (!r || (typeof(r) != "string")) {
+                ui.showError('<b>Localization file empty or invalid</b> (<code>' + url + '</code>)');
                 df.reject();
                 return;
             }
