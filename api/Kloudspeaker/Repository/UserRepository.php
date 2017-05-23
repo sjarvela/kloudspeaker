@@ -5,6 +5,7 @@ use \Kloudspeaker\Database\Database as Database;
 
 class UserRepository {
     public function __construct($container) {
+        $this->container = $container;
         $this->logger = $container->logger;
         $this->db = $container->db;
     }
@@ -64,9 +65,54 @@ class UserRepository {
         return $result->firstRow();
     }
 
+    public function add($user, $pw = NULL, $hint = NULL) {
+        $q = $this->db->select('user', ["count(id)"])->where('is_group', 0)->andWhere('name', $user["name"]);
+
+        if (isset($user["email"]) and strlen($user["email"]) > 0) {
+            $q->or('email', $user["email"]);
+        }
+
+        $matches = $q->execute()->value();
+
+        if ($matches > 0) {
+            throw new \Kloudspeaker\KloudspeakerException("Duplicate user found with name [" . $user["name"] . "] or email [" . (isset($user["email"]) ? $user["email"] : "") . "]");
+        }
+
+        $data = array_merge($user, ["lang" => NULL, "email" => NULL, "user_type" => NULL, "expiration" => NULL]);
+        $data["is_group"] = 0;
+
+        $this->db->insert("user", ["name", "lang", "email", "user_type", "is_group", "expiration"])->types(["expiration" => Database::TYPE_DATETIME_INTERNAL, "is_group" => Database::TYPE_INT])->values($data)->execute();
+
+        $id = $this->db->lastId();
+        if ($pw != NULL) {
+            $this->storeAuth($id, $user["name"], "pw", $pw, $hint);
+        }
+        return $id;
+    }
+
     public function getUserAuth($userId) {
         $this->logger->debug("get auth ".$userId);
 
         return $this->db->select('user_auth', ['user_id', 'lower(type) as type', 'hash', 'salt', 'hint'])->where('user_id', $userId)->execute()->firstRow();
+    }
+
+    public function storeAuth($id, $username, $type, $pw, $hint = "") {
+        $transaction = $this->db->isTransaction();
+        if (!$transaction) {
+            $this->db->startTransaction();
+        }
+
+        $this->db->delete("user_auth")->where("user_id", $id)->execute();
+
+        $hash = $this->container->passwordhash->createHash($pw);
+        $hash["user_id"] = $id;
+        $hash["a1hash"] = md5($username . ":" . $this->container->config->authRealm() . ":" . $pw);
+        $hash["hint"] = $hint;
+
+        $this->db->insert("user_auth", ['user_id', 'type', 'hash', 'salt', 'hint'])->values($hash)->execute();
+
+        if (!$transaction) {
+            $this->db->commit();
+        }
     }
 }

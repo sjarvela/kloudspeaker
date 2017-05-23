@@ -167,6 +167,11 @@ class Api extends \Slim\App {
 			return new \Slim\Http\Cookies($cp);
 		};
 
+        $container['passwordhash'] = function ($c) {
+            $config = $c->configuration;
+            return new \Kloudspeaker\Auth\PasswordHash($config->get('server_hash_salt', 'KLOUDSPEAKER_SERVER_SALT'), $config->get('no_udev_random', FALSE));
+        };
+
 		$container['auth_pw'] = function ($c) {
 			return new \Kloudspeaker\Auth\PasswordAuth($c);
 		};

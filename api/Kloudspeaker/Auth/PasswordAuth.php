@@ -4,9 +4,7 @@ namespace Kloudspeaker\Auth;
 class PasswordAuth {
     public function __construct($container) {
         $this->container = $container;
-        //TODO server hash & no_Dev_urandom
-        $config = $container->configuration;
-        $this->hash = new \Kloudspeaker\Auth\PasswordHash($config->get('server_hash_salt', 'KLOUDSPEAKER_SERVER_SALT'), $config->get('no_udev_random', FALSE));
+        $this->hash = $container->passwordhash;
     }
 
     public function authenticate($user, $pw) {

@@ -9,6 +9,7 @@ class Database {
     const TYPE_DATETIME_INTERNAL = "datetime_internal";
 
     private $tablePrefix = "";  //TODO
+    private $transaction = FALSE;
 
     public function __construct($db, $logger) {
         $this->logger = $logger;
@@ -26,14 +27,21 @@ class Database {
 
     public function startTransaction() {
         $this->db->beginTransaction();
+        $this->transaction = TRUE;
     }
 
     public function commit() {
         $this->db->commit();
+        $this->transaction = FALSE;
     }
 
     public function rollback() {
         $this->db->rollback();
+        $this->transaction = FALSE;
+    }
+
+    public function isTransaction() {
+        return $this->transaction;
     }
 
     public function select($from, array $columns = array('*')) {
@@ -79,6 +87,11 @@ class Database {
 
     public function db() {
         return $this->db;
+    }
+
+
+    public function lastId() {
+        return $this->db->lastInsertId();
     }
 }
 

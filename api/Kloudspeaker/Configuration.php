@@ -38,6 +38,10 @@ class Configuration {
         return $this->serverProps;
     }
 
+    public function authRealm() {
+        return $this->get('auth_realm', 'kloudspeaker');
+    }
+
     public function getHost() {
         $host = $this->serverProps["SERVER_NAME"];
         
