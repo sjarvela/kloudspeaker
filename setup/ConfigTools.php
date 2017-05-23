@@ -136,9 +136,9 @@ class ConfigTools {
 
 				$this->logger->info("Adding new user:".$opts["username"]);
 
-				$userId = $this->container->users->add(["name" => $opts["username"]], $opts["password"]);
-				$this->container->users->storeAuth($userId);
-				return ["success" => TRUE];
+				$userId = $this->container->users->add(["name" => $opts["username"]], ["pw" => $opts["password"]]);
+				
+				return ["success" => TRUE, "user_id" => $userId];
 			default:
 				return NULL;
 		}

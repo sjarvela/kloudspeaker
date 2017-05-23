@@ -65,7 +65,9 @@ class UserRepository {
         return $result->firstRow();
     }
 
-    public function add($user, $pw = NULL, $hint = NULL) {
+    public function add($user, $auth = NULL) {
+        if ($auth != NULL) $this->db->startTransaction();
+
         $q = $this->db->select('user', ["count(id)"])->where('is_group', 0)->andWhere('name', $user["name"]);
 
         if (isset($user["email"]) and strlen($user["email"]) > 0) {
@@ -84,8 +86,9 @@ class UserRepository {
         $this->db->insert("user", ["name", "lang", "email", "user_type", "is_group", "expiration"])->types(["expiration" => Database::TYPE_DATETIME_INTERNAL, "is_group" => Database::TYPE_INT])->values($data)->execute();
 
         $id = $this->db->lastId();
-        if ($pw != NULL) {
-            $this->storeAuth($id, $user["name"], "pw", $pw, $hint);
+        if ($auth != NULL) {
+            $this->storeAuth($id, $user["name"], isset($auth["type"]) ? $auth["type"] : NULL, $auth["pw"], isset($auth["hint"]) ? $auth["hint"] : NULL);
+            $this->db->commit();
         }
         return $id;
     }
@@ -106,7 +109,8 @@ class UserRepository {
 
         $hash = $this->container->passwordhash->createHash($pw);
         $hash["user_id"] = $id;
-        $hash["a1hash"] = md5($username . ":" . $this->container->config->authRealm() . ":" . $pw);
+        $hash["a1hash"] = md5($username . ":" . $this->container->configuration->authRealm() . ":" . $pw);
+        $hash["type"] = $type;
         $hash["hint"] = $hint;
 
         $this->db->insert("user_auth", ['user_id', 'type', 'hash', 'salt', 'hint'])->values($hash)->execute();
