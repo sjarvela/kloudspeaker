@@ -24,6 +24,36 @@ class DBTest extends TestCase {
 		$this->assertEquals('SELECT id, bar FROM foo', $this->mockDB->query);
 	}
 
+	public function testSelectOrderBy() {
+		$this->db()->select("foo", ["id", "bar"])->orderBy("bar")->execute();
+		$this->assertEquals('SELECT id, bar FROM foo ORDER BY bar ASC', $this->mockDB->query);
+	}
+
+	public function testSelectOrderByAsc() {
+		$this->db()->select("foo", ["id", "bar"])->orderBy("bar", TRUE)->execute();
+		$this->assertEquals('SELECT id, bar FROM foo ORDER BY bar ASC', $this->mockDB->query);
+	}
+
+	public function testSelectOrderByDesc() {
+		$this->db()->select("foo", ["id", "bar"])->orderBy("bar", FALSE)->execute();
+		$this->assertEquals('SELECT id, bar FROM foo ORDER BY bar DESC', $this->mockDB->query);
+	}
+
+	public function testSelectWhereOrderBy() {
+		$this->db()->select("foo", ["id", "bar"])->where("id", "1")->done()->orderBy("bar")->execute();
+		$this->assertEquals('SELECT id, bar FROM foo WHERE (id = ?) ORDER BY bar ASC', $this->mockDB->prepare->query);
+	}
+
+	public function testSelectWhereOrderByAsc() {
+		$this->db()->select("foo", ["id", "bar"])->where("id", "1")->done()->orderBy("bar", TRUE)->execute();
+		$this->assertEquals('SELECT id, bar FROM foo WHERE (id = ?) ORDER BY bar ASC', $this->mockDB->prepare->query);
+	}
+
+	public function testSelectWhereOrderByDesc() {
+		$this->db()->select("foo", ["id", "bar"])->where("id", "1")->done()->orderBy("bar", FALSE)->execute();
+		$this->assertEquals('SELECT id, bar FROM foo WHERE (id = ?) ORDER BY bar DESC', $this->mockDB->prepare->query);
+	}
+
 	public function testSelectWhere() {
 		$this->db()->select("foo", ["id", "bar"])->where("id", "1")->execute();
 		$this->assertEquals('SELECT id, bar FROM foo WHERE (id = ?)', $this->mockDB->prepare->query);
@@ -138,19 +168,39 @@ class DBTest extends TestCase {
 		$this->assertEquals('baz', $this->mockDB->prepare->bind[3]);
 	}
 
-	public function testSelectWhereInSelect() {
+	public function testSelectAndInSelect() {
 		$s = $this->db()->select("foo", ["id", "bar"])->where("id", "1");
 		$s->andInSelect("bar", "foo2", "id")->where("bar", "2")->and("baz", "3");
 		$s->execute();
 		$this->assertEquals('SELECT id, bar FROM foo WHERE (id = ? AND bar in (SELECT id FROM foo2 WHERE (bar = ? AND baz = ?)))', $this->mockDB->prepare->query);
 		$this->assertEquals('1', $this->mockDB->prepare->bind[1]);
-		$this->assertEquals('2', $this->mockDB->prepare->bind[1]);
-		$this->assertEquals('3', $this->mockDB->prepare->bind[2]);
+		$this->assertEquals('2', $this->mockDB->prepare->bind[2]);
+		$this->assertEquals('3', $this->mockDB->prepare->bind[3]);
+	}
+
+	public function testSelectOrInSelect() {
+		$s = $this->db()->select("foo", ["id", "bar"])->where("id", "1");
+		$s->orInSelect("bar", "foo2", "id")->where("bar", "2")->and("baz", "3");
+		$s->execute();
+		$this->assertEquals('SELECT id, bar FROM foo WHERE (id = ? OR bar in (SELECT id FROM foo2 WHERE (bar = ? AND baz = ?)))', $this->mockDB->prepare->query);
+		$this->assertEquals('1', $this->mockDB->prepare->bind[1]);
+		$this->assertEquals('2', $this->mockDB->prepare->bind[2]);
+		$this->assertEquals('3', $this->mockDB->prepare->bind[3]);
+	}
+
+	public function testSelectWhereInSelect() {
+		$s = $this->db()->select("foo", ["id", "bar"]);
+		$s->whereInSelect("bar", "foo2", "id")->where("bar", "1")->and("baz", "2");
+		$s->execute();
+		$this->assertEquals('SELECT id, bar FROM foo WHERE bar in (SELECT id FROM foo2 WHERE (bar = ? AND baz = ?))', $this->mockDB->prepare->query);
+		$this->assertEquals('1', $this->mockDB->prepare->bind[1]);
+		$this->assertEquals('2', $this->mockDB->prepare->bind[2]);
 	}
 
 	public function testSelectWhereInSelect2() {
 		$s = $this->db()->select("foo", ["id", "bar"]);
-		$s->whereInSelect("bar", "foo2", "id")->where("bar", "1")->and("baz", "2");
+		$ss = $s->whereInSelect("bar");
+		$ss->from("foo2", ["id"])->where("bar", "1")->and("baz", "2");
 		$s->execute();
 		$this->assertEquals('SELECT id, bar FROM foo WHERE bar in (SELECT id FROM foo2 WHERE (bar = ? AND baz = ?))', $this->mockDB->prepare->query);
 		$this->assertEquals('1', $this->mockDB->prepare->bind[1]);

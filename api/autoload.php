@@ -76,6 +76,7 @@ require 'Kloudspeaker/Repository/SessionRepository.php';
 require 'Kloudspeaker/Auth/PasswordAuth.php';
 require 'Kloudspeaker/Auth/PasswordHash.php';
 require 'Kloudspeaker/Command/CommandManager.php';
+require 'Kloudspeaker/Filesystem/ItemIdProvider.php';
 
 function getKloudspeakerSystemInfo() {
 	global $KLOUDSPEAKER_SYSTEM_INFO;

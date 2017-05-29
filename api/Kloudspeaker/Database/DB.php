@@ -103,6 +103,7 @@ class SelectStatementBuilder extends WhereStatementBuilder {
 		$this->joins = [];
 		$this->from = $from;
 		$this->orderBy = NULL;
+		$this->groupBy = NULL;
 		$this->parent = NULL;
 	}
 
@@ -117,8 +118,13 @@ class SelectStatementBuilder extends WhereStatementBuilder {
 		return $this;
 	}
 
-	public function orderBy($o) {
-		$this->orderBy = $o;
+	public function orderBy($o, $asc = TRUE) {
+		$this->orderBy = [$o, $asc];
+		return $this;
+	}
+
+	public function groupBy($g) {
+		$this->groupBy = $g;
 		return $this;
 	}
 
@@ -131,7 +137,11 @@ class SelectStatementBuilder extends WhereStatementBuilder {
 		$q .= $this->buildWhere($bound);
 
 		if ($this->orderBy != NULL) {
-			$q .= ' ORDER BY ' . $this->orderBy;
+			$q .= ' ORDER BY ' . $this->orderBy[0] . " " . ($this->orderBy[1] ? "ASC" : "DESC");
+		}
+
+		if ($this->groupBy != NULL) {
+			$q .= ' GROUP BY ' . $this->groupBy;
 		}
 
 		return $q;
@@ -496,31 +506,29 @@ abstract class WhereStatementBuilder extends BoundStatementBuilder {
 		return new WhereGroupBuilder($this, $g);
 	}
 
-	public function whereInSelect($field, $table, $col = NULL, $and = TRUE) {
+	public function whereInSelect($field, $table = NULL, $col = NULL, $and = TRUE) {
 		$g = new WhereGroup(NULL, $and);
 		$wgb = new WhereGroupBuilder($this, $g);
-
-		$s = new SelectStatementBuilder($this->logger, NULL, $table, ($col != NULL ? [$col] : NULL));
-		$s->parent($wgb)->keyPrefix("ins" . count($this->values));
-
+		$s = $this->createSelectBuilder($wgb, $table, ($col != NULL ? [$col] : NULL));
 		$this->where[] = new WhereInSelect($this, $field, $and, $s);
 		return $s;
 	}
 
-    public function createSelectBuilder($table, $cols) {
-        return new SelectStatementBuilder($this->logger, NULL, $table, $cols);
-    }
+	public function createSelectBuilder($parent, $table, $cols) {
+		$s = new SelectStatementBuilder($this->logger, NULL, $table, $cols);
+		$s->parent($parent)->keyPrefix("sub" . count($this->values));
+		return $s;
+	}
 
 	protected function buildWhere(&$bound) {
-		if (count($this->where) === 0) {
-			return "";
-		}
-
-		$r = " WHERE ";
-		$first = TRUE;
-		foreach ($this->where as $item) {
-			$r .= $item->build($bound, $first);
-			$first = FALSE;
+		$r = "";
+		if (count($this->where) > 0) {
+			$r .= " WHERE ";
+			$first = TRUE;
+			foreach ($this->where as $item) {
+				$r .= $item->build($bound, $first);
+				$first = FALSE;
+			}
 		}
 		return $r;
 	}
@@ -586,18 +594,17 @@ class WhereGroupBuilder {
 		return $this;
 	}
 
-    public function andInSelect($field, $table, $col = NULL) {
-        $s = $this->stmt->createSelectBuilder($table, ($col != NULL ? [$col] : NULL));
-        /*$g = new WhereGroup(NULL, $and);
-        $wgb = new WhereGroupBuilder($this, $g);
+	public function andInSelect($field, $table, $col = NULL) {
+		$s = $this->stmt->createSelectBuilder($this, $table, ($col != NULL ? [$col] : NULL));
+		$this->group->addItem(new WhereInSelect($this->stmt, $field, TRUE, $s));
+		return $s;
+	}
 
-        $s = new SelectStatementBuilder($this->logger, NULL, $table, ($col != NULL ? [$col] : NULL));
-        $s->parent($wgb)->keyPrefix("ins" . count($this->values));
-
-        $this->where[] = new WhereInSelect($this, $field, $and, $s);*/
-        $this->group->add($field, ["in", $s], TRUE);
-        return $s;
-    }
+	public function orInSelect($field, $table, $col = NULL) {
+		$s = $this->stmt->createSelectBuilder($this, $table, ($col != NULL ? [$col] : NULL));
+		$this->group->addItem(new WhereInSelect($this->stmt, $field, FALSE, $s));
+		return $s;
+	}
 
 	public function orIn($field, array $values) {
 		$this->group->add($field, "in", FALSE, $this->stmt->addFieldValues($field, $values));
@@ -749,6 +756,10 @@ class SelectResult {
 			$list[] = $row[$col];
 		}
 		return $list;
+	}
+
+	public function valueMap($keyCol, $valueCol = NULL, $valueCol2 = NULL) {
+		return $this->map($keyCol, $valueCol, $valueCol2);
 	}
 
 	public function map($keyCol, $valueCol = NULL, $valueCol2 = NULL) {

@@ -10,11 +10,17 @@ class ItemIdProvider {
 	}
 
 	public function addFilter($q, $parent, $recursive = FALSE, $prefix = "i") {
-		$pathFilter = ($prefix != NULL ? $prefix . ".path" : "path") . " like '" . $this->env->db()->string(str_replace("'", "\'", $this->itemQueryPath($parent))) . "%'";
-		if (!$recursive) {
-			$pathFilter = $pathFilter . " and " . ($prefix != NULL ? $prefix . ".level" : "level") . "=" . ($this->getLevel($parent) + 1);
+		$p = $this->itemQueryPath($parent);
+		$q->from("item_id", ["item_id"])->where("path", $p . "%", 'like');
+
+		if ($recursive) {
+			$q->and('level', $this->getLevel($parent) + 1);
 		}
-		return $pathFilter;
+		/*$pathFilter = ($prefix != NULL ? $prefix . ".path" : "path") . " like '" . $this->env->db()->string(str_replace("'", "\'", $this->itemQueryPath($parent))) . "%'";
+			if (!$recursive) {
+				$pathFilter = $pathFilter . " and " . ($prefix != NULL ? $prefix . ".level" : "level") . "=" . ($this->getLevel($parent) + 1);
+			}
+		*/
 	}
 
 	private function itemQueryPath($i, $escape = FALSE) {
