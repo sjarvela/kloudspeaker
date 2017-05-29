@@ -11,5 +11,6 @@
         <var name="DB_DBNAME" value="ks_unit" />
 
         <includePath>api</includePath>
+        <includePath>backend</includePath>
     </php>
 </phpunit>

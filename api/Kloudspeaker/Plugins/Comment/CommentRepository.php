@@ -11,6 +11,9 @@ class CommentRepository {
 	}
 
 	public function getCommentCountForChildren($parent) {
+		$q = $this->db->select('comment', ['item_id', 'count(id) as count'])->groupBy('item_id');
+		$this->container->itemIdProvider->addFilter($q->whereInSelect(), $parent, FALSE, NULL);
+		return $q->execute()->map("item_id", "count");
 		//$db = $this->env->db();
 		/*$pathFilter = $this->env->filesystem()->itemIdProvider()->pathQueryFilter($parent, FALSE, NULL);
 		$itemFilter = "select id from " . $db->table("item_id") . " where " . $pathFilter;
