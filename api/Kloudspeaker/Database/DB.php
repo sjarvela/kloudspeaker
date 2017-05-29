@@ -507,6 +507,10 @@ abstract class WhereStatementBuilder extends BoundStatementBuilder {
 		return $s;
 	}
 
+    public function createSelectBuilder($table, $cols) {
+        return new SelectStatementBuilder($this->logger, NULL, $table, $cols);
+    }
+
 	protected function buildWhere(&$bound) {
 		if (count($this->where) === 0) {
 			return "";
@@ -581,6 +585,19 @@ class WhereGroupBuilder {
 		$this->group->add($field, "in", TRUE, $this->stmt->addFieldValues($field, $values));
 		return $this;
 	}
+
+    public function andInSelect($field, $table, $col = NULL) {
+        $s = $this->stmt->createSelectBuilder($table, ($col != NULL ? [$col] : NULL));
+        /*$g = new WhereGroup(NULL, $and);
+        $wgb = new WhereGroupBuilder($this, $g);
+
+        $s = new SelectStatementBuilder($this->logger, NULL, $table, ($col != NULL ? [$col] : NULL));
+        $s->parent($wgb)->keyPrefix("ins" . count($this->values));
+
+        $this->where[] = new WhereInSelect($this, $field, $and, $s);*/
+        $this->group->add($field, ["in", $s], TRUE);
+        return $s;
+    }
 
 	public function orIn($field, array $values) {
 		$this->group->add($field, "in", FALSE, $this->stmt->addFieldValues($field, $values));
