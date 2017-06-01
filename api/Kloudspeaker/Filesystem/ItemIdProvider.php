@@ -9,9 +9,8 @@ class ItemIdProvider {
 		$this->convertPathDelimiter = (DIRECTORY_SEPARATOR != self::PATH_DELIMITER);
 	}
 
-	public function addFilter($q, $parent, $recursive = FALSE, $prefix = "i") {
-		$p = $this->itemQueryPath($parent);
-		$q->from("item_id", ["item_id"])->where("path", $p . "%", 'like');
+	public function addFilter($q, $parent, $recursive = FALSE) {
+		$q->from("item_id", ["item_id"])->where("path", $this->itemQueryPath($parent) . "%", 'like');
 
 		if ($recursive) {
 			$q->and('level', $this->getLevel($parent) + 1);
