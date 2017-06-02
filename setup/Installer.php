@@ -309,21 +309,32 @@ class Installer {
 		$db = $this->container->db;
 
 		if ($action["id"] == "plugin:install") {
-
+			$current = $this->getPluginInstalledVersion($action["plugin"]);
+			if ($current != NULL) throw new \Kloudspeaker\KloudspeakerException("Cannot install plugin, old version exists: ".$action["plugin"]);
+			$this->installPlugin($action["plugin"]);
 		} else if ($action["id"] == "plugin:update") {
 
 		} else if ($action["id"] == "plugin:migrate") {
-			$current = $this->getPluginInstalledVersion($action["plugin"]);
-			$latest = $this->getLatestPluginVersion($action["plugin"]);
-
-			$db->script($this->readPluginFile($action["plugin"], '/setup/db/migrate_from_2.sql'));
-
-			$db->delete('parameter')->where('name', "plugin_".$action["plugin"]."_version")->execute();
-			$db->insert('parameter', ['name' => "plugin_".$action["plugin"]."_database", 'value' => $latest["id"]])->execute();
+			$this->migratePlugin($action["plugin"]);
 		} else {
 			throw new \Kloudspeaker\KloudspeakerException("Invalid plugin action: ".$action["id"]);
 		}
 		return TRUE;
+	}
+
+	public function installPlugin($id) {
+		$current = $this->getPluginInstalledVersion($action["plugin"]);
+		$latest = $this->getLatestPluginVersion($action["plugin"]);
+		$db->script($this->readPluginFile($action["plugin"], '/setup/db/create.sql'));
+		$db->insert('parameter', ['name' => "plugin_".$id."_database", 'value' => $latest["id"]])->execute();
+	}
+
+	private function migratePlugin($id) {
+		$latest = $this->getLatestPluginVersion($action["plugin"]);
+		$db->script($this->readPluginFile($action["plugin"], '/setup/db/migrate_from_2.sql'));
+
+		$db->delete('parameter')->where('name', "plugin_".$action["plugin"]."_version")->execute();
+		$db->insert('parameter', ['name' => "plugin_".$action["plugin"]."_database", 'value' => $latest["id"]])->execute();
 	}
 
 	private function readPluginFile($id, $path) {
