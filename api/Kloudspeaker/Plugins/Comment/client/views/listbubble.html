@@ -1,5 +1,12 @@
 <div data-bind="attr: {class: 'comments-list-container' + (model.loading() ? ' loading' : '')}">
     <!-- ko if: !model.loading() -->
+		<!-- ko if:  model.canAdd() -->
+		<div id='new-comment-container' class="input-append pull-right">
+			<input class="comments-dialog-add-text" type="text" data-bind="value: model.newComment" data-i18n="[hint]comments.new-comments">
+			<button class="comments-dialog-add btn" type="button" data-bind="click: onAdd"><i class="fa fa-comment"></i></button>
+		</div>
+		<!-- /ko -->
+
 	    <!-- ko if: (model.comments().length == 0) -->
 	    <div class="no-comments" data-i18n="comments.no-comments"></div>
 	    <!-- /ko -->
@@ -7,7 +14,7 @@
 		<div class="comments-list" data-bind="foreach: model.comments">
 			<div class="comment">
 				<div class="user" data-bind="text: username"></div>
-				<div class="time" data-bind="text: time"></div>
+				<div class="time" data-bind="format: time, formatter: 'timestamp-short'"></div>
 				<div class="content" data-bind="text: comment"></div>
 			</div>
 		</div>

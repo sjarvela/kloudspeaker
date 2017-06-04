@@ -10,6 +10,8 @@ class CommentPlugin extends \Kloudspeaker\Plugins\AbstractPlugin {
 	}
 
 	public function initialize($setup) {
+		$this->container->permissions->registerFilesystemPermission("comment_item");
+
 		$this->container->filesystem->registerDataRequestPlugin("plugin-comment-count", function ($parent, $items, $key, $rq) {
 			if ($parent != NULL) {
 				return $this->repository->getCommentCountForChildren($parent);
@@ -28,7 +30,24 @@ class CommentPlugin extends \Kloudspeaker\Plugins\AbstractPlugin {
 			"db" => TRUE,
 			"api" => function ($route) use ($t) {
 				$route->get("/items/{item}/comments", function ($request, $response, $args) use ($t) {
-					$this->out->success($t->repository->getAllCommentsForItem($t->item($args['item'])));
+					$item = $t->item($args['item']);
+					$result = ["comments" => $t->repository->getAllCommentsForItem($item)];
+					if ("1" == $request->getParam("p")) {
+						$result["permission"] = ["add" => $this->permissions->hasFilesystemPermission("comment_item", $item)];
+					}
+
+					$this->out->success($result);
+				});
+				$route->post("/items/{item}/comments", function ($request, $response, $args) use ($t) {
+					$item = $t->item($args['item']);
+					$data = $request->getParsedBody();
+					if ($data == NULL or !isset($data["comment"]) or strlen($data["comment"]) == 0) {
+						throw new \Kloudspeaker\KloudspeakerException("Comment missing");
+					}
+					$t->assertFilesystemPermission($item, "comment_item");
+
+					$t->repository->addCommentForItem($item, $this->session->getUser()["id"], $this->now, $data["comment"]);
+					$this->out->success(["count" => $t->repository->getCommentCountForItem($item)]);
 				});
 			},
 		]);

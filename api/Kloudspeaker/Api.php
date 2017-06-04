@@ -189,6 +189,10 @@ class Api extends \Slim\App {
 			return $legacy->env()->filesystem();
 		};
 
+		$container['permissions'] = function ($c) use ($legacy) {
+			return $legacy->env()->permissions();
+		};
+
 		$container['legacy'] = $legacy;
 
 		if ($config->isSystemConfigured()) {

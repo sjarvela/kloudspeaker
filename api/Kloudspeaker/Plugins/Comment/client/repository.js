@@ -6,7 +6,7 @@ define(['kloudspeaker/service', 'kloudspeaker/localization', 'kloudspeaker/ui/fo
 
         //TODO _.each
         for (var i = 0, j = comments.length; i < j; i++) {
-            comments[i].time = timestampFormatter.format(utils.parseInternalTime(comments[i].time));
+            //comments[i].time = timestampFormatter.format(utils.parseInternalTime(comments[i].time));
             //comments[i].comment = comments[i].comment.replace(new RegExp('\n', 'g'), '<br/>');
             comments[i].remove = (s.user && s.user.admin) || (userId == comments[i].user_id);
         }
@@ -14,7 +14,10 @@ define(['kloudspeaker/service', 'kloudspeaker/localization', 'kloudspeaker/ui/fo
     };
     return {
         getAllCommentsForItem: function(item, permission) {
-            return service.get("p/comment/items/" + item.id + "/comments" + (permission ? '?p=1' : '')).done(processComments);
+            return service.get("p/comment/items/" + item.id + "/comments" + (permission ? '?p=1' : ''));//.done(processComments);
+        },
+        addCommentForItem: function(item, comment) {
+            return service.post("p/comment/items/" + item.id + "/comments", { comment: comment });
         }
     }
 });

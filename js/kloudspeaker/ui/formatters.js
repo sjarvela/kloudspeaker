@@ -1,4 +1,5 @@
 define(['kloudspeaker/localization', 'kloudspeaker/utils', 'kloudspeaker/filesystem'], function(loc, utils, fs) {
+    var predefined = {};
     var formatters = {
         ByteSize: function(nf) {
             this.format = function(b) {
@@ -52,7 +53,16 @@ define(['kloudspeaker/localization', 'kloudspeaker/utils', 'kloudspeaker/filesys
                 if (!item) return "";
                 return (fs.rootsById[item.root_id] ? fs.rootsById[item.root_id].name : item.root_id) + (item.path.length > 0 ? (":" + (noHtml ? ' ' : '&nbsp;') + item.path) : "");
             }
+        },
+        addPredefined: function(name, fn) {
+            predefined[name] = fn;
+        },
+        getPredefined: function(name) {
+            return predefined[name]();
         }
     };
+    formatters.addPredefined('timestamp-short', function() {
+        return new formatters.Timestamp(loc.get('shortDateTimeFormat'));
+    });
     return formatters;
 });

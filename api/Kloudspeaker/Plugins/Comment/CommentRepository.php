@@ -7,7 +7,7 @@ class CommentRepository {
 		$this->db = $container->db;
 	}
 
-	public function getCommentCount($item) {
+	public function getCommentCountForItem($item) {
 		return $this->db->select('comment', ['count(id)'])->where('item_id', $item->id())->execute()->value(0);
 	}
 
@@ -38,9 +38,17 @@ class CommentRepository {
 	}
 
 	public function getAllCommentsForItem($item) {
-		return $this->db->select('comment c', ['c.id as id', 'u.id as userid', 'u.name as username', 'c.time as time', 'c.comment as comment'])->types(["time" => \Kloudspeaker\Database\Database::TYPE_DATETIME])->leftJoin('user u', 'c.user_id = u.id')->where('c.item_id', $item->id())->done()->orderBy('time', FALSE)->execute()->rows();
+		return $this->db->select('comment c', ['c.id as id', 'u.id as userid', 'u.name as username', 'c.time as time', 'c.comment as comment'])->types(["time" => \Kloudspeaker\Database\Database::TYPE_DATETIME_INTERNAL])->leftJoin('user u', 'c.user_id = u.id')->where('c.item_id', $item->id())->done()->orderBy('time', TRUE)->execute()->rows();
 
 		/*$db = $this->env->db();
 		return $db->query("select c.id as id, u.id as user_id, u.name as username, c.time as time, c.comment as comment from " . $db->table("comment") . " c, " . $db->table("user") . " u where c.`item_id` = " . $db->string($item->id(), TRUE) . " and u.id = c.user_id order by time desc")->rows();*/
+	}
+
+	public function addCommentForItem($item, $userId, $time, $comment) {
+		$this->db->insert('comment', ['user_id' => $userId, 'item_id' => (is_string($item) ? $item : $item->id()), 'time' => $time, 'comment' => $comment])->types(["time" => \Kloudspeaker\Database\Database::TYPE_DATETIME_INTERNAL])->execute();
+		return $this->db->lastId();
+		/*$db = $this->env->db();
+			$db->update(sprintf("INSERT INTO " . $db->table("comment") . " (user_id, item_id, time, comment) VALUES (%s, %s, %s, %s)", $db->string($userId, TRUE), $db->string($item->id(), TRUE), $db->string(date('YmdHis', $time)), $db->string($comment, TRUE)));
+		*/
 	}
 }

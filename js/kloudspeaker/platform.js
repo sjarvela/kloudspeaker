@@ -1,6 +1,6 @@
 define(['knockout', 'text', 'durandal/system', 'durandal/viewlocator', 'durandal/composition', 'durandal/binder', 'durandal/plugins/widget'], function(ko, txt, ds, vl, comp, binder, dw) {
     var setup = function() {
-        require(['kloudspeaker/settings', 'kloudspeaker/localization', 'kloudspeaker/ui/uploader', 'kloudspeaker/ui/clipboard', 'kloudspeaker/ui/dnd'], function(settings, loc, uploader, clipboard, dnd) {
+        require(['kloudspeaker/settings', 'kloudspeaker/localization', 'kloudspeaker/ui/formatters', 'kloudspeaker/ui/uploader', 'kloudspeaker/ui/clipboard', 'kloudspeaker/ui/dnd'], function(settings, loc, formatters, uploader, clipboard, dnd) {
             ds.debug(!!settings.debug); //TODO remove
 
             //install durandal widget plugin
@@ -57,6 +57,7 @@ define(['knockout', 'text', 'durandal/system', 'durandal/viewlocator', 'durandal
                 var val = '';
                 if (formatter) {
                     if (typeof(formatter) === 'function') val = formatter(value);
+                    else if (typeof(formatter) === 'string') val = formatters.getPredefined(formatter).format(value);
                     else val = formatter.format(value);
                 } else {
                     if (value)
