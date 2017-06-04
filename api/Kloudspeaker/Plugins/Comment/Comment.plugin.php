@@ -27,8 +27,8 @@ class CommentPlugin extends \Kloudspeaker\Plugins\AbstractPlugin {
 			"client_module" => "kloudspeaker/plugins/comment",
 			"db" => TRUE,
 			"api" => function ($route) use ($t) {
-				$route->get("/test", function ($request, $response, $args) use ($t) {
-					$this->out->success("test result");
+				$route->get("/items/{item}/comments", function ($request, $response, $args) use ($t) {
+					$this->out->success($t->repository->getAllCommentsForItem($t->item($args['item'])));
 				});
 			},
 		]);

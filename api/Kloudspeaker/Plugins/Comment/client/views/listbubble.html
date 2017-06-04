@@ -1,0 +1,16 @@
+<div data-bind="attr: {class: 'comments-list-container' + (model.loading() ? ' loading' : '')}">
+    <!-- ko if: !model.loading() -->
+	    <!-- ko if: (model.comments().length == 0) -->
+	    <div class="no-comments" data-i18n="comments.no-comments"></div>
+	    <!-- /ko -->
+	    <!-- ko if: (model.comments().length > 0) -->
+		<div class="comments-list" data-bind="foreach: model.comments">
+			<div class="comment">
+				<div class="user" data-bind="text: username"></div>
+				<div class="time" data-bind="text: time"></div>
+				<div class="content" data-bind="text: comment"></div>
+			</div>
+		</div>
+		<!-- /ko -->
+	<!-- /ko -->
+</div>

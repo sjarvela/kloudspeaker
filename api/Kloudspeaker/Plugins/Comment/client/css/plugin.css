@@ -1,0 +1,22 @@
+.kloudspeaker-filelist-col-comment-count {
+	width: 22px;
+}
+
+.filelist-item-comment-count {
+	height: 16px;
+	width: 20px;
+	font-weight: bold;
+	background: url(../images/comment.png) no-repeat;
+	padding-left: 18px;
+	float: right;
+	cursor: pointer;
+}
+
+.kloudspeaker-filelist-item.hover .filelist-item-comment-count-none, html.touch .filelist-item-comment-count-none {
+	background: url(../images/comment_add.png) no-repeat;
+	height: 16px;
+	width: 20px;
+	padding-left: 10px;
+	float: right;
+	cursor: pointer;
+}

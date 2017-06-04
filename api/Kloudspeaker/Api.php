@@ -36,7 +36,6 @@ class Api extends \Slim\App {
 
 		$this->add(function ($request, $response, $next) use ($legacy, $t) {
 			$this->session->initialize($request);
-
 			$route = $request->getAttribute('route');
 
 			if (empty($route)) {
@@ -47,9 +46,7 @@ class Api extends \Slim\App {
 				throw new KloudspeakerException("Route not found", Errors::InvalidRequest);
 			}
 
-			$next($request, $response);
-
-			return $t->doRespond($response);
+			return $t->doRespond($next($request, $response));
 		});
 
 		$container = $this->getContainer();
@@ -185,7 +182,11 @@ class Api extends \Slim\App {
 		};
 
 		$container['itemIdProvider'] = function ($c) {
-			return new \Kloudspeaker\ItemIdProvider($c);
+			return new \Kloudspeaker\Filesystem\ItemIdProvider($c);
+		};
+
+		$container['filesystem'] = function ($c) use ($legacy) {
+			return $legacy->env()->filesystem();
 		};
 
 		$container['legacy'] = $legacy;
@@ -302,6 +303,25 @@ class Api extends \Slim\App {
 			return $m;
 		}
 		return NULL;
+	}
+
+	public function serveFile($response, $request, $file) {
+		$info = pathinfo($file);
+		$this->getContainer()->logger->debug("Serving file", ["file" => $file, "info" => $info]);
+		$s = new \GuzzleHttp\Psr7\LazyOpenStream($file, 'r');
+		$mime = $this->getMimeType(strtolower($info["extension"]));
+		return $response->withHeader('Content-Type', $mime)->withBody($s);
+	}
+
+	private function getMimeType($type) {
+		switch ($type) {
+		case 'css':
+			return 'text/css';
+		case 'js':
+			return 'application/javascript';
+		default:
+			return 'text/plain';
+		}
 	}
 }
 

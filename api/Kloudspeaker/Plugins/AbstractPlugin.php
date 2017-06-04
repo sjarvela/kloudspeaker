@@ -9,6 +9,10 @@ class AbstractPlugin {
 	public function initialize($setup) {
 	}
 
+	protected function item($id) {
+		return $this->container->filesystem->item($id);
+	}
+
 	public function getPluginInfo() {
 		return [
 			"id" => NULL,
