@@ -1,7 +1,7 @@
 define(['kloudspeaker/plugins', 'kloudspeaker/ui/controls', 'hbs!kloudspeaker/plugins/comment/templates/listcell'], function(plugins, controls, ListCellTmpl) {
     plugins.register({
         id: 'comment',
-        
+
         resources: {
             css: true,
             texts: true
@@ -36,7 +36,23 @@ define(['kloudspeaker/plugins', 'kloudspeaker/ui/controls', 'hbs!kloudspeaker/pl
                             element: $("#item-comment-count-" + item.id),
                             title: item.name,
                             container: ctx.container,
-                            model: ['kloudspeaker/plugins/comment/views/listbubble', item]
+                            model: ['kloudspeaker/plugins/comment/views/listbubble', {
+                                item: item,
+                                list: {
+                                    updateCommentCount: function(count) {
+                                        var e = document.getElementById("item-comment-count-" + item.id);
+                                        if (!e) return;
+
+                                        if (count < 1) {
+                                            e.innerHTML = '';
+                                            e.setAttribute('class', 'filelist-item-comment-count-none');
+                                        } else {
+                                            e.innerHTML = count;
+                                            e.setAttribute('class', 'filelist-item-comment-count');
+                                        }
+                                    }
+                                }
+                            }]
                         });
                     }
                 }];

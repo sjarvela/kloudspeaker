@@ -10,8 +10,9 @@ define(['kloudspeaker/plugins/comment/repository', 'kloudspeaker/localization', 
         };
 
         return {
-            activate: function(item) {
-                that.item = item;
+            activate: function(o) {
+                that.item = o.item;
+                that.list = o.list;
             },
             onShow: function(c) {
                 that.container = c;
@@ -25,8 +26,10 @@ define(['kloudspeaker/plugins/comment/repository', 'kloudspeaker/localization', 
             },
             onAdd: function() {
                 if (model.newComment().length == 0) return;
-                repository.addCommentForItem(that.item, model.newComment());
-                that.container.close();
+                repository.addCommentForItem(that.item, model.newComment()).done(function(r) {
+                    that.list.updateCommentCount(r.count);
+                    that.container.close();
+                });
             },
             model: model
         };

@@ -1,4 +1,6 @@
 {
 	"locale": "en",
-	"texts": {}
+	"texts": {
+		"comments.no-comments" : "No comments"
+	}
 }

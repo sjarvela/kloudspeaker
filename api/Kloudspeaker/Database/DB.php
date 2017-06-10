@@ -710,8 +710,9 @@ class SelectResult {
 			return $this->rows;
 		}
 
-		$rows = $this->result->fetchAll(\PDO::FETCH_BOTH);
 		$this->rows = [];
+		$rows = $this->result->fetchAll(\PDO::FETCH_BOTH);
+
 		if ($this->types and count($this->types) > 0) {
 			foreach ($rows as $row) {
 				foreach ($this->types as $field => $type) {

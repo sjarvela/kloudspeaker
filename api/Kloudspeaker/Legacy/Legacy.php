@@ -43,10 +43,9 @@ class KloudspeakerLegacy {
 		$path = $this->config->getRootPath();
 		$url = $request->getUri();
 
-		//error_log($path.":".$url);
+		$this->container->logger->debug("LEGACY rq:" . $url);
 
 		$legacyRequest = Request::get(substr($url, strlen($path)));
-		//$path = explode("/", );
 		$this->env->request = $legacyRequest;
 
 		$service = $this->env->getService($legacyRequest);
@@ -59,7 +58,6 @@ class KloudspeakerLegacy {
 		}
 
 		$service->processRequest();
-		//$this->container->logger->debug($path);
 		return TRUE;
 	}
 
@@ -538,6 +536,7 @@ class LegacyResponse {
 	}
 
 	public function success($data) {
+		$this->container->logger->debug("Legacy success", $data);
 		$this->container->out->success($data);
 	}
 

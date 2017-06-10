@@ -20,7 +20,8 @@ class Api extends \Slim\App {
 			$container->logger->error("ERROR", ["error" => $out->error]);
 			return $response->withJson(["success" => FALSE, "error" => $out->error["error"]], $out->error["http_code"]);
 		}
-		if ($container->out->result) {
+		if ($container->out->isResultSet()) {
+			$container->logger->debug("Api success", $out->result);
 			return $response->withJson(["success" => TRUE, "result" => $out->result])->withHeader('Set-Cookie', $container->cookie->toHeaders());
 		}
 
@@ -40,6 +41,7 @@ class Api extends \Slim\App {
 
 			if (empty($route)) {
 				if ($legacy->handleRequest($request)) {
+					$this->logger->debug("Legacy response");
 					return $t->doRespond($response);
 				}
 
@@ -437,10 +439,16 @@ class AuthRoute {
 
 class AppResponse {
 	public $result = NULL;
+	private $resultSet = FALSE;
 	public $error = NULL;
 
 	public function success($result) {
+		$this->resultSet = TRUE;
 		$this->result = $result;
+	}
+
+	public function isResultSet() {
+		return $this->resultSet;
 	}
 
 	public function error($msg = "Unknown error", $code = 0, $httpCode = 500, $result = NULL) {
