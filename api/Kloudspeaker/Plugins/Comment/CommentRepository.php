@@ -38,7 +38,7 @@ class CommentRepository {
 	}
 
 	public function getAllCommentsForItem($item) {
-		return $this->db->select('comment c', ['c.id as id', 'u.id as userid', 'u.name as username', 'c.time as time', 'c.comment as comment'])->types(["time" => \Kloudspeaker\Database\Database::TYPE_DATETIME_INTERNAL])->leftJoin('user u', 'c.user_id = u.id')->where('c.item_id', $item->id())->done()->orderBy('time', TRUE)->execute()->rows();
+		return $this->db->select('comment c', ['c.id as id', 'u.id as userid', 'u.name as username', 'c.time as time', 'c.comment as comment'])->types(["time" => \Kloudspeaker\Database\Database::TYPE_DATETIME_INTERNAL])->leftJoin('user u', 'c.user_id = u.id')->where('c.item_id', $item->id())->done()->orderBy('time', FALSE)->execute()->rows();
 
 		/*$db = $this->env->db();
 		return $db->query("select c.id as id, u.id as user_id, u.name as username, c.time as time, c.comment as comment from " . $db->table("comment") . " c, " . $db->table("user") . " u where c.`item_id` = " . $db->string($item->id(), TRUE) . " and u.id = c.user_id order by time desc")->rows();*/

@@ -62,7 +62,7 @@ class Plugins {
 
 		$t = $this;
 
-		$this->container->api->group('/p/' . $info["id"], function () use ($info) {
+		$this->container->api->group('/p/' . $info["id"], function () use ($t, $info) {
 			$this->get('/', function ($request, $response, $args) {
 				//TODO plugin info
 				$this->out->success([]);

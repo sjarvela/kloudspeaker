@@ -721,14 +721,14 @@ class SelectResult {
 					}
 
 					if ($type === Database::TYPE_DATETIME) {
-						$row[$field] = $row[$field] != NULL ? strtotime($row[$field]) : NULL;
+						$row[$field] = $row[$field] != NULL ? new \Kloudspeaker\DateTime($row[$field]) : NULL;
 					} else if ($type === Database::TYPE_DATETIME_INTERNAL) {
 						$val = $row[$field];
 						if ($val != NULL) {
 							$str = "" . $val;
 
 							$str = sprintf("%s-%s-%s %s:%s:%s", substr($val, 0, 4), substr($val, 4, 2), substr($val, 6, 2), substr($val, 8, 2), substr($val, 10, 2), substr($val, 12, 2));
-							$val = strtotime($str);
+							$val = new \Kloudspeaker\DateTime($str);
 						}
 						$row[$field] = $val;
 					}

@@ -33,7 +33,7 @@ class CommentPlugin extends \Kloudspeaker\Plugins\AbstractPlugin {
 					$item = $t->item($args['item']);
 					$result = ["comments" => $t->repository->getAllCommentsForItem($item)];
 					if ("1" == $request->getParam("p")) {
-						$result["permission"] = ["add" => $this->permissions->hasFilesystemPermission("comment_item", $item)];
+						$result["permissions"] = ["add" => $this->permissions->hasFilesystemPermission("comment_item", $item)];
 					}
 
 					$this->out->success($result);

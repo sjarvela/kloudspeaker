@@ -298,6 +298,11 @@ define([], function() {
             return ft;
         },
 
+        parseTime: function(s) {
+            if (s.indexOf('-') >= 0) return new Date(s);
+            return utils.parseInternalTime(s);
+        },
+
         parseInternalTime: function(time) {
             if (!time || time == null || typeof(time) !== 'string' || time.length != 14) return null;
 

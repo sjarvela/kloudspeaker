@@ -447,3 +447,13 @@ class AppResponse {
 		$this->error = ["http_code" => $httpCode, "error" => ["code" => $code, "msg" => $msg, "result" => $result]];
 	}
 }
+
+class DateTime extends \DateTime implements \JsonSerializable {
+	public function __construct($d) {
+		parent::__construct($d);
+	}
+
+	public function jsonSerialize() {
+		return $this->format(\DateTime::ISO8601);
+	}
+}

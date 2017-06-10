@@ -18,8 +18,9 @@ define(['kloudspeaker/plugins/comment/repository', 'kloudspeaker/localization', 
 
                 repository.getAllCommentsForItem(that.item, true).done(function(l) {
                     model.comments(l.comments);
-                    model.canAdd(l.permission.add);
+                    model.canAdd(l.permissions.add);
                     model.loading(false);
+                    that.container.position();
                 });
             },
             onAdd: function() {
