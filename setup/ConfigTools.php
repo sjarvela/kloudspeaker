@@ -22,6 +22,8 @@ class ConfigTools {
 		if (count($cmds) == 0) throw new \Kloudspeaker\Command\CommandException("No get command defined");
 
 		switch ($cmds[0]) {
+			case 'all':
+				return $this->container->configuration->values();
 			case 'raw':
 				$s = var_export($this->container->configuration->values(), true);
 				if (array_key_exists("file", $opts)) {
@@ -41,19 +43,32 @@ class ConfigTools {
 		$this->logger->info("Set: cmd=".\Kloudspeaker\Utils::array2str($cmds).", opts=".\Kloudspeaker\Utils::array2str($opts));
 
 		if (count($cmds) == 0) throw new \Kloudspeaker\Command\CommandException("No set command defined");
-
+		$set = 0;
 		switch ($cmds[0]) {
 			case 'value':
 				$values = $this->container->configuration->values();
 				for ($i=1; $i < count($cmds); $i++) { 
 					$p = explode("=", $cmds[$i]);
 					if (count($p) != 2) throw new \Kloudspeaker\Command\CommandException("Invalid value definition: ".$cmds[$i]);
+					$pn = $p[0];
+					$pv = $p[1];
+					//TODO value type
+					if ($pv == 'TRUE') $pv = TRUE;
+					if ($pn == 'FALSE') $pv = FALSE;
 
+					$this->logger->info("Setting $pn = $pv");
+					$this->container->configuration->set($pn, $pv);
+					$set = $set + 1;
 				}
+				break;
 
 			default:
 				return NULL;
 		}
+
+		if ($set > 0)
+			$this->container->configuration->store();
+		return TRUE;
 	}
 
 	public function cmdPlugins($cmds, $opts) {
