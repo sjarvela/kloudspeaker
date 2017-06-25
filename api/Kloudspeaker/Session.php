@@ -67,6 +67,8 @@ class Session {
     }
 
     public function end() {
+        $this->container->logger->debug("Ending/clearing session");
+
         $this->id = NULL;
         $this->user = NULL;
         $this->setCookie(NULL);
