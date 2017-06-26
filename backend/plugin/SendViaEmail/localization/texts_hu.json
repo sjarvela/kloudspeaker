@@ -1,0 +1,13 @@
+{
+	"locale" : "hu",
+	"texts": {
+		"actionSendViaEmailSingle" : "Küldés…",
+
+		"sendViaEmailSendSingleTitle": "Fájl küldése e-mailben",
+		"sendViaEmailSendItemTitle" : "Elem:",
+		"sendViaEmailSendRecipient" : "Címzett:",
+		"sendViaEmailSendTitle": "Cím:",
+		"sendViaEmailSendMsg": "Üzenet:",
+		"sendViaEmailSendAction": "Küldés"
+	}
+}

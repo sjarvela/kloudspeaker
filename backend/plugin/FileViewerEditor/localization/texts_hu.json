@@ -1,0 +1,13 @@
+{
+	"locale" : "hu",
+	"texts": {
+		"fileViewerEditor.edit" : "Szerkesztés",
+		"fileViewerEditor.save" : "Mentés",
+		"fileViewerEditor.cancel" : "Mégsem",
+		"fileViewerEditor.fullscreen" : "Megnyitás új ablakban",
+		"fileViewerEditor.zoomIn" : "Nagyítás",
+		"fileViewerEditor.zoomFit" : "Magasság igazítása",
+		"fileViewerEditor.zoomReal" : "Megjelenítés valós méretben",
+		"fileViewerEditor.zoomOut" : "Kicsinyítés"
+	}
+}

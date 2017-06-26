@@ -1,0 +1,29 @@
+{
+	"locale" : "hu",
+	"texts": {
+		"pluginEventLoggingAdminNavTitle" : "Események",
+		"pluginEventLoggingEventTypeTitle" : "Esemény",
+		"pluginEventLoggingUserTitle" : "Felhasználó",
+		"pluginEventLoggingTimeTitle" : "Időpont",
+		"pluginEventLoggingIPTitle" : "IP",
+		"pluginEventLoggingAdminOptionsTitle" : "Szűrő",
+		"pluginEventLoggingAdminOptionEventType" : "Esemény típusa:",
+		"pluginEventLoggingAdminOptionUser" : "Felhasználó:",
+		"pluginEventLoggingAdminOptionTime" : "Időpont:",
+		"pluginEventLoggingAdminOptionItem": "Elem:",
+		"pluginEventLoggingAdminOptionItem_filesystem_item": "Fájl vagy mappa",
+		"pluginEventLoggingAdminOptionItem_filesystem_child": "Bármely tartalmazott fájl vagy mappa",
+		"pluginEventLoggingAdminOptionItem_path": "Útvonal",
+		"pluginEventLoggingSelectItemTitle": "Elem kijelölése",
+		"pluginEventLoggingSelectItemMsg": "Elem kijelölése",
+		"pluginEventLoggingSelectFolderTitle": "Mappa kijelölése",
+		"pluginEventLoggingSelectFolderMsg": "Mappa kijelölése",
+		"pluginEventLoggingAdminAny" : "Bármely",
+		"pluginEventLoggingAdminEventTypeCustom" : "Egyedi",
+		"pluginEventLoggingAdminDetailsTime" : "Időpont",
+		"pluginEventLoggingAdminDetailsUser" : "Felhasználó",
+		"pluginEventLoggingAdminDetailsIP" : "IP",
+		"pluginEventLoggingAdminDetailsItem" : "Elem",
+		"pluginEventLoggingAdminDetailsDetails" : "Részletek"
+	}
+}
