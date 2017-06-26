@@ -3,7 +3,7 @@
 /**
  * Authentication.class.php
  *
- * Copyright 2015- Samuli Järvelä
+ * Copyright 2015- Samuli JÃ¤rvelÃ¤
  * Released under GPL License.
  *
  * License: http://www.kloudspeaker.com/license.php
@@ -34,7 +34,7 @@ class Authentication {
 				return;
 			}
 
-			if (isset($_SERVER["REMOTE_USER"]) and strcasecmp($this->env->session()->username(), $_SERVER["REMOTE_USER"]) == 0) {
+			if (((isset($_SERVER["REMOTE_USER"]) and strcasecmp($this->env->session()->username(), $_SERVER["REMOTE_USER"]) == 0)) or (isset($_SERVER["REDIRECT_REMOTE_USER"]) and strcasecmp($this->env->session()->username(), $_SERVER["REDIRECT_REMOTE_USER"]) == 0)) {
 				return;
 			}
 
@@ -54,11 +54,17 @@ class Authentication {
 	}
 
 	private function checkRemoteAuth() {
-		if (!isset($_SERVER["REMOTE_USER"])) {
+		if (!isset($_SERVER["REMOTE_USER"]) and !isset($_SERVER["REDIRECT_REMOTE_USER"])) {
 			return FALSE;
 		}
 
-		$userName = $_SERVER["REMOTE_USER"];
+		if (isset($_SERVER["REDIRECT_REMOTE_USER"])) {
+			$userName = $_SERVER["REDIRECT_REMOTE_USER"];
+		}
+		if (isset($_SERVER["REMOTE_USER"])) {
+			$userName = $_SERVER["REMOTE_USER"];
+		}
+
 		Logging::logDebug("Remote authentication found for [" . $userName . "] " . (isset($_SERVER["AUTH_TYPE"]) ? $_SERVER["AUTH_TYPE"] : ""));
 
 		$user = $this->env->configuration()->getUserByName($userName);
@@ -161,7 +167,7 @@ class Authentication {
 			$authType = $this->getDefaultAuthenticationMethod();
 		}
 
-		if (strcasecmp($authType, "remote") === 0 and !isset($_SERVER["REMOTE_USER"])) {
+		if ((strcasecmp($authType, "remote") === 0 and !isset($_SERVER["REMOTE_USER"])) or (strcasecmp($authType, "remote") === 0 and !isset($_SERVER["REDIRECT_REMOTE_USER"]))) {
 			throw new ServiceException("AUTHENTICATION_FAILED");
 		}
 
