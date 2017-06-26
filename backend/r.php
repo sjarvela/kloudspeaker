@@ -18,28 +18,8 @@ require_once "include/Version.info.php";
 
 $responseHandler = NULL;
 
-function globalErrorHandler($errno, $errstr, $errfile, $errline) {
-	global $responseHandler;
-	$info = "PHP error #" . $errno . ", " . $errstr . " (" . $errfile . ":" . $errline . ")";
-
-	if (Logging::isDebug()) {
-		$data = debug_backtrace();
-	} else {
-		$msg = "Backtrace disabled as it may contain passwords. ";
-		$msg .= "Enable 'debug' setting in configuration.php to see ";
-		$msg .= "backtrace.";
-
-		$data = array("NOTE" => $msg);
-	}
-
-	Logging::logError($info . "\n" . Util::array2str($data));
-
-	if ($responseHandler == NULL) {
-		$responseHandler = new ResponseHandler(new OutputHandler());
-	}
-
-	$responseHandler->unknownServerError($info);
-	die();
+function globalErrorHandler($severity, $message, $file, $line) {
+	throw new ErrorException($message, 0, $severity, $file, $line);
 }
 set_error_handler('globalErrorHandler');
 

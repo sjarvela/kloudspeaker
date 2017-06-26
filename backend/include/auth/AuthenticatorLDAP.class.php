@@ -93,9 +93,14 @@
 			}
 
 			Logging::logDebug("Authenticating with LDAP: ".$connString);
-			$bind = @ldap_bind($conn, $connString, $pw);
-			if (!$bind) {
-				Logging::logDebug("LDAP error: ".ldap_error($conn));
+			try {
+				$bind = @ldap_bind($conn, $connString, $pw);
+				if (!$bind) {
+					Logging::logDebug("LDAP error: ".ldap_error($conn));
+					return FALSE;
+				}
+			} catch (Exception $e) {
+				Logging::logDebug("LDAP error: ".ldap_error($conn)."/".$e->getMessage());
 				return FALSE;
 			}
 			ldap_close($conn);
