@@ -1,0 +1,13 @@
+{
+	"locale" : "de",
+	"texts": {
+		"actionSendViaEmailSingle" : "Senden...",
+
+		"sendViaEmailSendSingleTitle": "Datei per E-Mail senden",
+		"sendViaEmailSendItemTitle" : "Objekt:",
+		"sendViaEmailSendRecipient" : "An:",
+		"sendViaEmailSendTitle": "Betreff:",
+		"sendViaEmailSendMsg": "Nachricht:",
+		"sendViaEmailSendAction": "Senden"
+	}
+}
