@@ -1,0 +1,29 @@
+{
+	"locale" : "de",
+	"texts": {
+		"pluginEventLoggingAdminNavTitle" : "Ereignisse",
+		"pluginEventLoggingEventTypeTitle" : "Ereignis",
+		"pluginEventLoggingUserTitle" : "Benutzer",
+		"pluginEventLoggingTimeTitle" : "Zeit",
+		"pluginEventLoggingIPTitle" : "IP",
+		"pluginEventLoggingAdminOptionsTitle" : "Filtern",
+		"pluginEventLoggingAdminOptionEventType" : "Ereignistyp:",
+		"pluginEventLoggingAdminOptionUser" : "Benutzer:",
+		"pluginEventLoggingAdminOptionTime" : "Zeit:",
+		"pluginEventLoggingAdminOptionItem": "Objekt:",
+		"pluginEventLoggingAdminOptionItem_filesystem_item": "Datei oder Ordner",
+		"pluginEventLoggingAdminOptionItem_filesystem_child": "Jede Datei oder Ordner unter",
+		"pluginEventLoggingAdminOptionItem_path": "Pfad",
+		"pluginEventLoggingSelectItemTitle": "Ausgewähltes Objekt",
+		"pluginEventLoggingSelectItemMsg": "Objekt auswählen",
+		"pluginEventLoggingSelectFolderTitle": "Ordner auswählen",
+		"pluginEventLoggingSelectFolderMsg": "Ordner auswählen",
+		"pluginEventLoggingAdminAny" : "Alle",
+		"pluginEventLoggingAdminEventTypeCustom" : "Individuell",
+		"pluginEventLoggingAdminDetailsTime" : "Zeit",
+		"pluginEventLoggingAdminDetailsUser" : "Benutzer",
+		"pluginEventLoggingAdminDetailsIP" : "IP",
+		"pluginEventLoggingAdminDetailsItem" : "Objekt",
+		"pluginEventLoggingAdminDetailsDetails" : "Details"
+	}
+}

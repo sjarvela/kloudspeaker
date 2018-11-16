@@ -1,0 +1,13 @@
+{
+	"locale" : "de",
+	"texts": {
+		"fileViewerEditor.edit" : "Bearbeiten",
+		"fileViewerEditor.save" : "Speichern",
+		"fileViewerEditor.cancel" : "Abbrechen",
+		"fileViewerEditor.fullscreen" : "In neuem Fenster öffnen",
+		"fileViewerEditor.zoomIn" : "Hereinzoomen",
+		"fileViewerEditor.zoomFit" : "Vollbild",
+		"fileViewerEditor.zoomReal" : "Originalgröße",
+		"fileViewerEditor.zoomOut" : "Herauszoomen"
+	}
+}
